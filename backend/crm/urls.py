@@ -1,0 +1,14 @@
+from django.urls import path
+from . import views
+
+
+urlpatterns = [
+     path("category/", views.CategoriesView.as_view()),
+     path("settings/", views.FetchUserSettingsView.as_view()),
+     path("requests/", views.EmailRequestView.as_view()),
+     path("actions/", views.ActionsView.as_view()),
+     path("template/", views.EmailTemplatesView.as_view()),
+     path("send-email/", views.SendEmailView.as_view()),
+     path("template-clone/", views.EmailTemplatesCloneView.as_view()),
+     path("smtp-email/", views.SMTPEmailView.as_view()),
+]

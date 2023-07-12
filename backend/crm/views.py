@@ -1,0 +1,654 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from . serializer import (
+    EmailrequestSerializer, CategoriesSerializer,
+    EmailTemplateSerializer, EmailTemplateListSerializer,
+    EmailTemplateSchema
+)
+from utils.helper import (
+    send_email_with_template, generate_unique_string,
+    gmail_checker
+)
+from django.conf import settings
+from datetime import datetime
+import requests
+from . import models
+import imaplib
+import email
+import traceback
+import re
+import uuid
+import json
+
+
+class CategoriesView(APIView):
+
+    def get(self, request):
+
+        params = self.request.query_params
+        if params.get("search", None):
+            response = self.search_category(params.get("search"))
+            if response.status_code == 200:
+                try:
+                    keys = response.json()["tagValue"]["tags"].keys()
+                    categories = list(map(int, keys))
+                    instance = models.Categories.objects.filter(
+                        categories_id__in=categories
+                    )
+                    serializer = CategoriesSerializer(instance, many=True).data
+                except Exception:
+                    serializer = []
+        else:
+            instance = models.Categories.objects.all()
+            serializer = CategoriesSerializer(instance, many=True).data
+        return Response(
+            {
+                "success": True,
+                "data": serializer
+            }
+        )
+
+    def post(self, request):
+        try:
+            self.fetch_categories()
+            return Response({
+                "success": True,
+                "message": "Updated successfully"
+            }, status=200)
+        except Exception:
+            return Response({
+                "success": False,
+                "message": "Something went wrong, Please try again later"
+            }, status=400)
+
+    def put(self, request):
+        param = request.data
+        try:
+            instance = models.Categories.objects.get(
+                categories_id=param.get("id")
+            )
+            action = models.Actions.objects.filter(id__in=list(param.get("action", [])))
+            instance.actions.clear()
+            instance.actions.add(*action)
+            instance.save()
+            return Response({
+                "success": True,
+                "message": "Action updated"
+            }, status=200)
+        except Exception:
+            return Response({
+                "success": False,
+                "message": "Invalid category id"
+            }, status=400)
+
+    def fetch_categories(self):
+        response = self.api_request()
+
+        if response.status_code == 200:
+            categories = response.json().get("list")
+            # Process the categories and save them to your database
+            for category in categories:
+                category_id = category['id']
+                category_description = category['description']
+                models.Categories.objects.update_or_create(
+                    categories_id=category_id,
+                    defaults={
+                        "description": category_description
+                    }
+                )
+
+            # Return or process the categories as needed
+            return True
+        return False
+
+    def api_request(self):
+        login_url = 'https://netfree.link/api/user/login-by-password'
+        tags_url = 'https://netfree.link/api/tags/list'
+        headers = {
+            'authority': 'netfree.link',
+            'accept': 'application/json, text/plain, */*',
+            'accept-language': 'en-US,en;q=0.9',
+            'content-type': 'application/json',
+            'origin': 'https://netfree.link',
+            'referer': 'https://netfree.link/app/',
+            'sec-ch-ua': '"Chromium";v="112", "Google Chrome";v="112", "Not:A-Brand";v="99"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"macOS"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'
+        }
+        login_data = {
+            'password': settings.USER_PASSWORD,
+            'phone': settings.USERNAME
+        }
+        # Static for testing only
+        tags_data = {
+            'inspector': True
+        }
+        session = requests.Session()
+        login_response = session.post(login_url, headers=headers, json=login_data)
+        cookie = login_response.cookies.get_dict()
+        headers['cookie'] = '; '.join([f"{name}={value}" for name, value in cookie.items()])
+        tags_response = session.post(tags_url, headers=headers, json=tags_data)
+
+        return tags_response
+
+    def search_category(self, params):
+        url = "https://netfree.link/api/tags/value/edit/get"
+        login_url = 'https://netfree.link/api/user/login-by-password'
+
+        USER_PASSWORD = settings.USER_PASSWORD
+        USERNAME = settings.USERNAME
+
+        login_data = {
+            'password': USER_PASSWORD,
+            'phone': USERNAME
+        }
+
+        valid_domain = self.find_domain(params)
+        domain = valid_domain.json()["foundHost"] if valid_domain.status_code == 200 else ""
+        payload = json.dumps({
+            "host": str(domain)
+        })
+        headers = {
+            'authority': 'netfree.link',
+            'accept': 'application/json, text/plain, */*',
+            'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+            'content-type': 'application/json',
+            'origin': 'https://netfree.link',
+            'referer': 'https://netfree.link/app/',
+            'save-data': 'on',
+            'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
+        }
+
+        session = requests.Session()
+        login_response = session.post(login_url, headers=headers, json=login_data)
+        cookie = login_response.cookies.get_dict()
+        headers['cookie'] = '; '.join([f"{name}={value}" for name, value in cookie.items()])
+        tags_response = session.post(url, headers=headers, data=payload)
+        return tags_response
+
+    def find_domain(self, params):
+        url = "https://netfree.link/api/tags/search-url"
+        login_url = 'https://netfree.link/api/user/login-by-password'
+
+        USER_PASSWORD = settings.USER_PASSWORD
+        USERNAME = settings.USERNAME
+
+        login_data = {
+            'password': USER_PASSWORD,
+            'phone': USERNAME
+        }
+
+        payload = json.dumps({
+            "search": params
+        })
+        headers = {
+            'authority': 'netfree.link',
+            'accept': 'application/json, text/plain, */*',
+            'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+            'content-type': 'application/json',
+            'origin': 'https://netfree.link',
+            'referer': 'https://netfree.link/app/',
+            'save-data': 'on',
+            'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
+        }
+
+        session = requests.Session()
+        login_response = session.post(login_url, headers=headers, json=login_data)
+        cookie = login_response.cookies.get_dict()
+        headers['cookie'] = '; '.join([f"{name}={value}" for name, value in cookie.items()])
+        response = session.post(url, headers=headers, data=payload)
+        return response
+
+class FetchUserSettingsView(APIView):
+
+    def get(self, *args, **options):
+        user_id = 7722 # Static for testing
+        url = f"https://netfree.link/api/user/get-filter-settings?id={user_id}"
+        response = requests.get(url)
+        data = response.json()
+        return Response(data)
+
+
+class EmailRequestView(APIView):
+
+    def get(self, *args, **options):
+        queryset = models.Emailrequest.objects.all()
+        serializer = EmailrequestSerializer(
+            queryset, many=True
+        )
+        return Response(
+            {
+                "success": True,
+                "data": serializer.data
+
+            }
+        )
+
+
+class ActionsView(APIView):
+
+    def get(self, *args, **options):
+        params = self.request.query_params
+        queryset = models.Actions.objects.all()
+        if params.get("default", 0):
+            values_list = queryset.filter(is_default=True).values("id", "label")
+        else:
+            values_list = queryset.values("id", "label")
+        return Response(
+            {
+                "success": True,
+                "data": list(values_list)
+
+            }
+        )
+
+    def post(self, request):
+        actions = request.data.get("actions", None)
+        try:
+            # models.Actions.objects.all().update(is_defautl=False)
+            # default_actions = models.Actions.objects.filter(is_default=True)
+            # default_action = default_actions.last()
+
+            # default_actions.update(is_default=False)
+
+            all_actions = models.Actions.objects.all()
+            queryset = all_actions.filter(
+                id__in=actions
+            )
+
+            non_deafult_actions =  all_actions.exclude(pk__in=actions)
+            non_deafult_actions.update(is_default=0)
+
+            queryset.update(is_default=1)
+            categories_without_actions = models.Categories.objects.all()
+            for cate in categories_without_actions:
+                cate.actions.set(queryset.values_list("id", flat=True))
+
+            return Response(
+                {
+                    "success": True,
+                    "message": "Default action set successfully"
+
+                }
+            )
+        except Exception:
+            return Response(
+                    {
+                        "success": False,
+                        "message": "Invalid action id"
+
+                    }
+                )
+
+
+class EmailTemplatesView(APIView):
+
+    def get(self, request):
+        params = self.request.query_params
+        queryset = models.EmailTemplate.objects.all()
+        serializer = None
+        if params.get("id"):
+            email_template = queryset.filter(id=params.get("id")).last()
+            if not email_template:
+                return Response(
+                    {
+                        "success": True,
+                        "message": "Invalid template id"
+
+                    }
+                )
+            serializer = EmailTemplateSerializer(email_template)
+        else:
+            serializer = EmailTemplateListSerializer(queryset, many=True)
+        return Response(
+            {
+                "success": True,
+                "data": serializer.data
+
+            }
+        )
+
+    def post(self, request):
+
+        serializer = EmailTemplateSchema(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        payload = serializer.validated_data
+        body = payload.get("body", {})
+        models.EmailTemplate.objects.create(
+            name=payload.get("name", ""),
+            email_to=payload.get("email_to", ""),
+            subject=payload.get("subject", ""),
+            design=body.get("design", {}),
+            html=body.get("html", "")
+        )
+        return Response(
+            {
+                "success": True,
+                "message": "created successfully"
+
+            }
+        )
+
+    def patch(self, request):
+        try:
+            instance = models.EmailTemplate.objects.get(
+                id=request.data.get("id")
+            )
+        except models.EmailTemplate.DoesNotExist:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid template id"
+
+                }
+            )
+        body = request.data.pop("body", {})
+        payload = request.data
+        if body.get("design", None):
+            payload["design"] = body.get("design", None)
+        if body.get("html", None):
+            payload["html"] = body.get("html", None)
+        serializer = EmailTemplateSerializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {
+                "success": True,
+                "message": "Added successfully"
+
+            }
+        )
+
+    def delete(self, request):
+        params = self.request.query_params
+        try:
+            instance = models.EmailTemplate.objects.get(
+                id=params.get("id")
+            )
+            instance.delete()
+            return Response(
+                {
+                    "success": True,
+                    "message": "Template removed successfully"
+
+                }
+            )
+        except models.EmailTemplate.DoesNotExist:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid template id"
+
+                }
+            )
+
+
+class EmailTemplatesCloneView(APIView):
+
+    def post(self, request):
+        try:
+            email_template = models.EmailTemplate.objects.get(
+                pk=request.data.get("id")
+            )
+            name = ""
+            unique_string = generate_unique_string()
+
+            name = email_template.name + unique_string
+
+            models.EmailTemplate.objects.create(
+                name=name,
+                email_to=email_template.email_to,
+                subject=email_template.subject,
+                html=email_template.html,
+                design=email_template.design,
+            )
+            return Response(
+                {
+                    "success": True,
+                    "message": "Template cloned successfully"
+
+                }
+            )
+        except models.EmailTemplate.DoesNotExist:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid template id"
+
+                }
+            )
+
+
+class SendEmailView(APIView):
+
+    def post(self, request):
+        template_id = request.data.get(
+            "template_id", None
+        )
+        request_id = request.data.get(
+            "request_id", None
+        )
+        try:
+            template = models.EmailTemplate.objects.get(
+                id=template_id
+            )
+            email_request = models.Emailrequest.objects.get(
+                id=request_id
+            )
+        except models.EmailTemplate.DoesNotExist:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid template id"
+
+                }
+            )
+        except models.Emailrequest.DoesNotExist:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid emailrequest id" 
+
+                }
+            )
+        subject = email_request.id
+        to_email = email_request.sender_email
+        template_name = "email.html"
+
+        format_variables = {
+            "request_id": email_request.id,
+            "client_name": email_request.username,
+            "client_email": email_request.sender_email,
+            "admin_email": "netfree-test@mailinator.com",
+            "domain_requested": email_request.requested_website
+        }
+        context = {
+            "your_string": template.body.format(**format_variables)
+        }
+        # send_email_with_template(subject, to_email, template_name, context)   
+        return Response(
+            {
+                "success": True,
+                "data": "Email sent"
+
+            }
+        )
+
+
+class SMTPEmailView(APIView):
+
+    def get(self, request):
+        try:
+            params = self.request.query_params
+            smtp_email = models.SMTPEmail.objects.get(id=params.get("id"))
+            return Response(
+                {
+                    "success": True,
+                    "data": {
+                        "id": smtp_email.id,
+                        "email": smtp_email.email
+                    }
+
+                }
+            )
+        except models.SMTPEmail.DoesNotExist:
+            smtp_email = models.SMTPEmail.objects.last()
+            return Response(
+                {
+                    "success": True,
+                    "data": {
+                        "id": smtp_email.id,
+                        "email": smtp_email.email
+                    }
+
+                }
+            )
+
+    def post(self, request):
+        email = request.data.get("email")
+        password = request.data.get("password")
+
+        try:
+            response = gmail_checker(email, password)
+            if gmail_checker(email, password):
+                models.SMTPEmail.objects.get_or_create(
+                    email=email,
+                    password=password
+                )
+                return Response(
+                    {
+                        "success": True,
+                        "message": "Added successfully"
+
+                    }
+                )
+            return Response(
+                    {
+                        "success": False,
+                        "message": "Invalid username or password"
+
+                    }
+                )
+        except models.SMTPEmail.DoesNotExist:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid params"
+
+                }
+            )
+
+
+class ReadEmail():
+
+    def read_email_from_gmail(self):
+        print("working!!")
+
+        instance = models.SMTPEmail.objects.last()
+        FROM_EMAIL = ""
+        FROM_PWD = ""
+        if instance:
+            FROM_EMAIL = instance.email
+            FROM_PWD = instance.password
+
+        try:
+            imap_server = imaplib.IMAP4_SSL(settings.SMTP_SERVER)
+
+            imap_server.login(FROM_EMAIL, FROM_PWD)
+
+            mailbox = 'INBOX'
+            imap_server.select(mailbox)
+
+            subject = "Request from user"
+            search_criteria = f'(SUBJECT "{subject}")'
+            status, message_ids = imap_server.search(None, search_criteria)
+
+            # Fetch and process the email messages
+            for message_id in message_ids[0].split():
+
+                try:
+                    _ , response = imap_server.fetch(message_id, '(UID)')
+                    uid = response[0].split()[2].decode().replace(")", "")
+                except Exception:
+                    uid = uuid.uuid4()
+
+                status, message_data = imap_server.fetch(message_id, '(RFC822)')
+                raw_email = message_data[0][1]
+                email_message = email.message_from_bytes(raw_email)
+
+                # Access email attributes
+
+                if email_message.is_multipart():
+                    # If the email has multiple parts, iterate over them
+                    for part in email_message.walk():
+                        if part.get_content_type() == "text/plain":
+                            body = part.get_payload(decode=True).decode()
+                            break
+                else:
+                    body = email_message.get_payload(decode=True).decode()
+
+
+                pattern = r'(https?://\S+)'
+                match = re.search(pattern, body)
+
+                website_url = ""
+                if match:
+                    website_url = match.group(1)
+
+                email_subject = email_message['Subject']
+                customer_id = email_subject.split("#")[-1]
+                username, sender_email = self.decode_header(email_message['From'])
+                received_date = email_message['Date']
+
+                received_datetime = datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
+                formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S")
+
+                models.Emailrequest.objects.update_or_create(
+                    email_id=uid,
+                    defaults={
+                        "sender_email": sender_email,
+                        "username": username,
+                        "customer_id": customer_id,
+                        "requested_website": website_url,
+                        "text": body,
+                        "created_at": formatted_received_date,
+                        "ticket_id": 15665,
+                    }
+                )
+
+            # Close the connection
+            imap_server.close()
+            imap_server.logout()
+
+        except Exception as e:
+            traceback.print_exc()
+            print(str(e))
+
+    def decode_header(self, value):
+        try:
+            username = value.split("<")[0]
+            email = value.split("<")[-1].replace(">", "")
+        except Exception:
+            username = ""
+            email = value
+        return username, email
+
+
+# res = ReadEmail()
+# res.read_email_from_gmail()

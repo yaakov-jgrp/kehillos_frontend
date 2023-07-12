@@ -1,0 +1,14 @@
+{
+    "auth": {
+        "email": "Email",
+        "password": "Password",
+        "forgotPassword": "I forgot the password",
+        "signin" : "Signin"
+    },
+    "sidebar": {
+        "title": "system of inquiries",
+        "dashboard": "Dashboard",
+        "request": "Request",
+        "profile": "Profile"
+    }
+}

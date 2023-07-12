@@ -1,0 +1,14 @@
+{
+    "auth": {
+        "email": "אימייל",
+        "password": "סיסמה",
+        "forgotPassword": "שכחתי את הסיסמה",
+        "signin" : "כניסה"
+    },
+    "sidebar": {
+        "title": "מערכת פניות",
+        "dashboard": "דשבורד",
+        "request": "פניות",
+        "profile": "פרופיל"
+    }
+}
