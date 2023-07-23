@@ -1,17 +1,21 @@
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+
+
+class Categories(models.Model):
+    description = models.CharField(max_length=2000)
+    categories_id = models.IntegerField()
 
 
 class Actions(models.Model):
     label = models.CharField(max_length=200)
     is_default = models.BooleanField(default=False)
+    template = models.BooleanField(default=False)
+    category = models.ForeignKey(
+        Categories, on_delete=models.SET_NULL,
+        null=True, related_name="action_category",
+        blank=True, default=None
+    )
 
-
-class Categories(models.Model):
-    description = models.CharField(max_length=2000)
-    actions = models.ManyToManyField(Actions, related_name='categories_action')
-    categories_id = models.IntegerField()
 
 # @receiver(post_save, sender=Categories)
 # def update_stock(sender, instance, **kwargs):
@@ -38,6 +42,10 @@ class EmailTemplate(models.Model):
     subject = models.CharField(max_length=100)
     design = models.JSONField()
     html = models.TextField()
+    action = models.ForeignKey(
+        Actions, on_delete=models.SET_NULL,
+        null=True, blank=True, default=None
+    )
 
 
 class SMTPEmail(models.Model):

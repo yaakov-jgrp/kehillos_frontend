@@ -39,7 +39,7 @@ class CategoriesView(APIView):
                 except Exception:
                     serializer = []
         else:
-            instance = models.Categories.objects.all()
+            instance = models.Categories.objects.all().order_by("-id")
             serializer = CategoriesSerializer(instance, many=True).data
         return Response(
             {
@@ -63,22 +63,74 @@ class CategoriesView(APIView):
 
     def put(self, request):
         param = request.data
+        to_add = param.get("to_add", None)
+        to_remove = param.get("to_remove", None)
+        inputs = param.get("inputs", None)
+        template_id = param.get("template_id", None)
+
+        if not to_add and not to_remove:
+            return Response({
+                "success": False,
+                "message": "Add or Remove action required"
+            }, status=400)
+    
+        if  to_add and  to_remove:
+            return Response({
+                "success": False,
+                "message": "Can't perform both action at same time"
+            }, status=400)
+
         try:
             instance = models.Categories.objects.get(
                 categories_id=param.get("id")
             )
-            action = models.Actions.objects.filter(id__in=list(param.get("action", [])))
-            instance.actions.clear()
-            instance.actions.add(*action)
-            instance.save()
+            if to_add:
+                action = models.Actions.objects.get(
+                    id=to_add
+                )
+
+                if inputs and action.label.count("{}") > len(inputs.keys()):
+                    return Response({
+                        "success": False,
+                        "message": "Invalid inputs"
+                    }, status=400)
+            
+                instance, _ = models.Actions.objects.get_or_create(
+                    label=action.label.format(inputs["resource"], inputs["hours"]),
+                    category=instance
+                )
+                if template_id:
+                    template = models.EmailTemplate.objects.get(
+                        id=template_id
+                    )
+                    template.action=instance
+                    template.save()
+
+            if to_remove:
+                action = models.Actions.objects.get(
+                    category=instance,
+                    id=to_remove,
+                ).delete()
             return Response({
                 "success": True,
                 "message": "Action updated"
             }, status=200)
-        except Exception:
+        except models.Categories.DoesNotExist:
             return Response({
                 "success": False,
                 "message": "Invalid category id"
+            }, status=400)
+
+        except models.Actions.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "Invalid action id"
+            }, status=400)
+
+        except Exception as e:
+            return Response({
+                "success": False,
+                "message": str(e)
             }, status=400)
 
     def fetch_categories(self):
@@ -228,7 +280,7 @@ class FetchUserSettingsView(APIView):
 class EmailRequestView(APIView):
 
     def get(self, *args, **options):
-        queryset = models.Emailrequest.objects.all()
+        queryset = models.Emailrequest.objects.all().order_by("-id")
         serializer = EmailrequestSerializer(
             queryset, many=True
         )
@@ -260,41 +312,48 @@ class ActionsView(APIView):
 
     def post(self, request):
         actions = request.data.get("actions", None)
+
+        all_actions = models.Actions.objects.all()
+        queryset = all_actions.filter(
+            id__in=actions
+        )
+
+        non_deafult_actions =  all_actions.exclude(pk__in=actions)
+        non_deafult_actions.update(is_default=0)
+
+        queryset.update(is_default=1)
+
+        return Response(
+            {
+                "success": True,
+                "message": "Default action set successfully"
+
+            }
+        )
+
+    def put(self, request):
+        action = request.data.get("action")
+        label = request.data.get("label")
+
         try:
-            # models.Actions.objects.all().update(is_defautl=False)
-            # default_actions = models.Actions.objects.filter(is_default=True)
-            # default_action = default_actions.last()
-
-            # default_actions.update(is_default=False)
-
-            all_actions = models.Actions.objects.all()
-            queryset = all_actions.filter(
-                id__in=actions
-            )
-
-            non_deafult_actions =  all_actions.exclude(pk__in=actions)
-            non_deafult_actions.update(is_default=0)
-
-            queryset.update(is_default=1)
-            categories_without_actions = models.Categories.objects.all()
-            for cate in categories_without_actions:
-                cate.actions.set(queryset.values_list("id", flat=True))
-
+            instance = models.Actions.objects.get(id=action)
+            instance.label = label
+            instance.save()
             return Response(
                 {
                     "success": True,
-                    "message": "Default action set successfully"
+                    "message": "Action updated"
 
-                }
+                }, status=200
             )
-        except Exception:
+        except models.Actions.DoesNotExist:
             return Response(
-                    {
-                        "success": False,
-                        "message": "Invalid action id"
+                {
+                    "success": False,
+                    "message": "Invalid action id"
 
-                    }
-                )
+                }, status=400
+            )
 
 
 class EmailTemplatesView(APIView):
@@ -457,7 +516,7 @@ class SendEmailView(APIView):
                     "success": False,
                     "message": "Invalid template id"
 
-                }
+                }, status=400
             )
         except models.Emailrequest.DoesNotExist:
             return Response(
@@ -496,28 +555,21 @@ class SMTPEmailView(APIView):
     def get(self, request):
         try:
             params = self.request.query_params
-            smtp_email = models.SMTPEmail.objects.get(id=params.get("id"))
-            return Response(
-                {
-                    "success": True,
-                    "data": {
-                        "id": smtp_email.id,
-                        "email": smtp_email.email
-                    }
-
-                }
-            )
-        except models.SMTPEmail.DoesNotExist:
             smtp_email = models.SMTPEmail.objects.last()
             return Response(
                 {
                     "success": True,
                     "data": {
                         "id": smtp_email.id,
-                        "email": smtp_email.email
+                        "email": smtp_email.email,
+                        "password": ""
                     }
 
                 }
+            )
+        except Exception:
+            return Response(
+                {}
             )
 
     def post(self, request):
@@ -543,7 +595,7 @@ class SMTPEmailView(APIView):
                         "success": False,
                         "message": "Invalid username or password"
 
-                    }
+                    }, status=400
                 )
         except models.SMTPEmail.DoesNotExist:
             return Response(
@@ -577,10 +629,11 @@ class ReadEmail():
 
             subject = "Request from user"
             search_criteria = f'(SUBJECT "{subject}")'
-            status, message_ids = imap_server.search(None, search_criteria)
 
+            status, message_ids = imap_server.search(None, 'ALL')
             # Fetch and process the email messages
-            for message_id in message_ids[0].split():
+            message_ids = message_ids[0].split()
+            for message_id in message_ids[-10:]:
 
                 try:
                     _ , response = imap_server.fetch(message_id, '(UID)')
@@ -592,52 +645,79 @@ class ReadEmail():
                 raw_email = message_data[0][1]
                 email_message = email.message_from_bytes(raw_email)
 
-                # Access email attributes
+                subject = email_message.get('Subject')
+                decoded_subject = email.header.decode_header(subject)
 
-                if email_message.is_multipart():
-                    # If the email has multiple parts, iterate over them
-                    for part in email_message.walk():
-                        if part.get_content_type() == "text/plain":
-                            body = part.get_payload(decode=True).decode()
-                            break
-                else:
-                    body = email_message.get_payload(decode=True).decode()
+                # Combine the parts of the decoded subject into a single string
+                subject = ""
+                for part, encoding in decoded_subject:
+                    if isinstance(part, bytes):
+                        subject += part.decode(encoding or 'utf-8', errors='ignore')
+                    else:
+                        subject += part
+                try:
+                    target_sub = subject.split("#")[0][::-1]
+                except:
+                    target_sub = ""
+                matching_str = "שמתשמ תאמ הינפ"
+                if len(target_sub) >0 and target_sub in " שמתשמ תאמ הינפ":
+
+                    if email_message.is_multipart():
+                        # If the email has multiple parts, iterate over them
+                        for part in email_message.walk():
+                            if part.get_content_type() == "text/plain":
+                                body = part.get_payload(decode=True).decode()
+                                break
+                    else:
+                        body = email_message.get_payload(decode=True).decode()
 
 
-                pattern = r'(https?://\S+)'
-                match = re.search(pattern, body)
+                    pattern = r'(https?://\S+)'
+                    match = re.search(pattern, body)
 
-                website_url = ""
-                if match:
-                    website_url = match.group(1)
+                    website_url = ""
+                    if match:
+                        website_url = match.group(1)
 
-                email_subject = email_message['Subject']
-                customer_id = email_subject.split("#")[-1]
-                username, sender_email = self.decode_header(email_message['From'])
-                received_date = email_message['Date']
+                    email_subject = subject
+                    customer_id = email_subject.split("#")[-1]
+                    username, sender_email = self.decode_header(email_message['From'])
 
-                received_datetime = datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
-                formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S")
 
-                models.Emailrequest.objects.update_or_create(
-                    email_id=uid,
-                    defaults={
-                        "sender_email": sender_email,
-                        "username": username,
-                        "customer_id": customer_id,
-                        "requested_website": website_url,
-                        "text": body,
-                        "created_at": formatted_received_date,
-                        "ticket_id": 15665,
-                    }
-                )
+                    decoded_username = email.header.decode_header(username)
+                    # Combine the parts of the decoded subject into a single string
+                    subject = ""
+                    for username_part, username_encoding in decoded_username:
+                        if isinstance(username_part, bytes):
+                            username =  username_part.decode(username_encoding or 'utf-8', errors='ignore')
+
+                        else:
+                            username = username_part
+                    received_date = email_message['Date']
+                    received_datetime = datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
+                    formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S")
+
+                    models.Emailrequest.objects.update_or_create(
+                        email_id=uid,
+                        defaults={
+                            "sender_email": sender_email,
+                            "username": username,
+                            "customer_id": customer_id,
+                            "requested_website": website_url,
+                            "text": body,
+                            "created_at": formatted_received_date,
+                            "ticket_id": 15665,
+                        }
+                    )
 
             # Close the connection
             imap_server.close()
             imap_server.logout()
+            print("Done!!!")
 
         except Exception as e:
             traceback.print_exc()
+            print("Error!!!")
             print(str(e))
 
     def decode_header(self, value):

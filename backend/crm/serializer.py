@@ -50,7 +50,13 @@ class CategoriesSerializer(serializers.ModelSerializer):
         )
 
     def get_actions(self, instance):
-        return instance.actions.filter(is_default=0).values_list("label", flat=True)
+        def fill_label(item):
+            return {
+                "id": item["id"],
+                "label": item["label"].format("https://kehillos.com/", "5")} if '{}' in item["label"] else item
+        data = instance.action_category.all().values("id", "label")
+        data_filled = list(map(fill_label, data))
+        return data_filled
 
 
 class EmailTemplateSchema(serializers.Serializer):
