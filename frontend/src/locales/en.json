@@ -1,14 +1,77 @@
 {
+    "common": {
+        "pages": "Pages"
+    },
     "auth": {
         "email": "Email",
         "password": "Password",
         "forgotPassword": "I forgot the password",
-        "signin" : "Signin"
+        "signin" : "Signin",
+        "loginSuccess" : "Login Successfully",
+        "loginFailed": "Login failed, try again!!!"
     },
     "sidebar": {
         "title": "system of inquiries",
         "dashboard": "Dashboard",
-        "request": "Request",
-        "profile": "Profile"
+        "request": "Requests",
+        "settings": "Settings",
+        "netfree": "NetFree",
+        "emails": "Emails",
+        "profile": "Profile",
+        "logout": "Logout"
+    },
+    "requests": {
+        "title": "Requests",
+        "$requestId": "$request_id",
+        "$clinetName": "$client_name",
+        "$clientEmail": "$client_email",
+        "$domainQuested": "$domain_quested",
+        "$adminEmail": "$admin_email"
+    },
+    "emails": {
+        "templates": "Templates",
+        "smtp": "SMTP",
+        "newTemplate": "New Template",
+        "save": "SAVE",
+        "templateName": "Template Name",
+        "edit": "Edit",
+        "cancel": "Cancel",
+        "connect": "CONNECT",
+        "connected": "Connected",
+        "templateUpdated" : "Template Updated Successfully",
+        "templateUpdateFailed" : "Template Update Failed",
+        "templateAdded" : "Template Added Successfully",
+        "templateAddFailed" : "Adding New Template Failed",
+        "deleteTemplateSuccess" : "Deleted Template Successfully",
+        "deleteTemplateFailed": "Deleting Template Failed",
+        "duplicateTemplateSuccess": "Duplicated Template Successfully",
+        "duplicateTemplateFailed": "Duplicating Template Failed"
+    },
+    "netfree":{
+        "categories": "Categories",
+        "name": "Name",
+        "actions": "Actions",
+        "searchSiteSetting":"Search Site Setting",
+        "updateCategoryButton": "Click to update categories",
+        "defaultAction": "Default Action",
+        "remove": "Remove",
+        "edit": "Edit",
+        "addAction": "Add Action",
+        "selectAction": "Select Action",
+        "domain-url": "Domain / URL",
+        "openinhours": "Opne For (In Hours)",
+        "template":  "Template",
+        "selectTemplate": "Select Template",
+        "close":  "Close",
+        "save": "Save"
+    },
+    "searchbox":{
+        "placeHolder":"Search",
+        "requestId":"Request ID",
+        "dateCreated":"Date Created",
+        "from":"From",
+        "requestType":"Request Type",
+        "requestdetail":"Request Details",
+        "actionsDone":"Actions Done"
     }
 }

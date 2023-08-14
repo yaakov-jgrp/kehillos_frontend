@@ -9,62 +9,93 @@ import { useTranslation } from "react-i18next";
 import Dashboard from "../../views/Dashboard";
 import Request from "../../views/Request";
 import Profile from "../../views/Profile";
+import Emails from "../../views/Emails";
 import {
   MdHome,
   MdOutlineShoppingCart,
   // MdBarChart,
   MdPerson,
   // MdLock,
+  MdLogout,
+  MdSpaceDashboard
 } from "react-icons/md";
+import NetFree from "../../views/NetFree";
 
 const Sidebar = ({ open, onClose }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const routes = [
-    {
-      name: t('sidebar.dashboard'),
-      path: "dashboard",
-      icon: <MdHome className="h-6 w-6" />,
-      component: <Dashboard />,
-    },
+    // {
+    //   name: t('sidebar.dashboard'),
+    //   path: "dashboard",
+    //   type: 'menu',
+    //   icon: <MdHome className="h-6 w-6" />,
+    //   component: <Dashboard />,
+    // },
     {
       name: t('sidebar.request'),
       path: "request",
+      type: 'menu',
       icon: <MdOutlineShoppingCart className="h-6 w-6" />,
       component: <Request />,
     },
     {
-      name: t('sidebar.profile'),
+      name: t('sidebar.settings'),
+      type: 'top-menu',
+      icon: <MdSpaceDashboard className="h-6 w-6" />,
+      children: [
+        {
+          name: t('sidebar.netfree'),
+          path: "settings/netfree",
+          type: "menu",
+          icon: <MdSpaceDashboard className="h-6 w-6" />,
+          component: <NetFree />,
+        },
+        {
+          name: t('sidebar.emails'),
+          path: "settings/emails",
+          type: "menu",
+          icon: <MdSpaceDashboard className="h-6 w-6" />,
+          component: <Emails />,
+        },
+      ]
+    },
+    // {
+    //   name: t('sidebar.profile'),
+    //   path: "profile",
+    //   type: 'menu',
+    //   icon: <MdPerson className="h-6 w-6" />,
+    //   component: <Profile />,
+    // },
+    {
+      name: t('sidebar.logout'),
       path: "profile",
-      icon: <MdPerson className="h-6 w-6" />,
-      component: <Profile />,
+      type: 'button',
+      icon: <MdLogout className="h-6 w-6" />
     }
   ];
 
   return (
     <div
-      className={`sm:none duration-175 linear fixed !z-50 flex min-h-full flex-col bg-white pb-10 shadow-2xl shadow-white/5 transition-all dark:!bg-navy-800 dark:text-white md:!z-50 lg:!z-50 xl:!z-0 ${
-        open ? "translate-x-0" : "-translate-x-96"
+      className={`sm:none duration-175 xl:min-w-[250px] fixed linear !z-50 flex min-h-full flex-col bg-white pb-10 shadow-2xl shadow-white/5 transition-all md:!z-50 lg:!z-50 xl:!z-0 ${
+        open ? i18n.dir() === 'ltr'  ? `left-0` : 'right-0' : i18n.dir() === 'ltr'  ? "-left-96" : '-right-96'
       }`}
     >
       <span
-        className="absolute top-4 block cursor-pointer end-4 xl:hidden"
+        className="absolute top-2 block cursor-pointer end-2 xl:hidden"
         onClick={onClose}
       >
         <HiX />
       </span>
 
-      <div className={`mx-[56px] mt-[50px] flex items-center`}>
-        <div className="mt-1 h-2.5 font-poppins text-[20px] font-bold uppercase text-navy-700 ms-1 dark:text-white">
+      <div className={`mx-auto mt-5 flex items-center`}>
+        <div className="mt-1 h-2.5 font-poppins text-[18px] font-bold uppercase text-navy-700 ms-1 dark:text-white">
           { t('sidebar.title') }
         </div>
       </div>
-      <div class="mb-7 mt-[58px] h-px bg-gray-300 dark:bg-white/30" />
-      {/* Nav item */}
-
-      <ul className="mb-auto pt-1">
-        <SidebarLinks routes={routes} />
-      </ul>
-      {/* Nav item end */}
+      <div className={`mb-5 mt-[40px] h-px bg-gray-300 dark:bg-white/30`} />
+        <ul className="mb-auto pt-1">
+          <SidebarLinks routes={routes} />
+        </ul>
     </div>
   );
 };

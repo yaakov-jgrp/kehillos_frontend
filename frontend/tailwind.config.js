@@ -4,6 +4,17 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      animation: {
+        loader: 'loader 0.6s infinite alternate'
+      },
+      keyframes: {
+        loader: {
+          to: {
+            opacity: 0.1,
+            transform: 'translate3d(0, -1rem, 0)'
+          }
+        }
+      },
       width: {
         "1p": "1%",
         "2p": "2%",
@@ -117,6 +128,9 @@ module.exports = {
       borderRadius: {
         primary: "20px",
       },
+      dropShadow:{
+        '0': '0 0 5px #4318FF'
+      }
     },
     screens: {
       sm: "576px",

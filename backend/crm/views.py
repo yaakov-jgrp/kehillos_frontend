@@ -96,7 +96,7 @@ class CategoriesView(APIView):
                     }, status=400)
             
                 instance, _ = models.Actions.objects.get_or_create(
-                    label=action.label.format(inputs["resource"], inputs["hours"]),
+                    label=action.label.format(inputs.get("resource"), inputs.get("hours")),
                     category=instance
                 )
                 if template_id:
@@ -297,7 +297,7 @@ class ActionsView(APIView):
 
     def get(self, *args, **options):
         params = self.request.query_params
-        queryset = models.Actions.objects.all()
+        queryset = models.Actions.objects.filter(template=1)
         if params.get("default", 0):
             values_list = queryset.filter(is_default=True).values("id", "label")
         else:
@@ -624,6 +624,8 @@ class ReadEmail():
 
             imap_server.login(FROM_EMAIL, FROM_PWD)
 
+            # __, folder_list = imap_server.list()
+            # print("IGIUGUUI", folder_list)
             mailbox = 'INBOX'
             imap_server.select(mailbox)
 

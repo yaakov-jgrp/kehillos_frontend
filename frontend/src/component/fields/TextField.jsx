@@ -1,8 +1,8 @@
 // Custom components
 import React from "react";
 
-function InputField(props) {
-  const { label, id, extra, placeholder, cols, rows, state, disabled } = props;
+function TextField(props) {
+  const { label, id, extra, placeholder, cols, rows, state, disabled, onChange, value } = props;
 
   return (
     <div className={`${extra}`}>
@@ -14,8 +14,10 @@ function InputField(props) {
       </label>
       <div>
         <textarea
+          onChange={onChange}
           cols={cols}
           rows={rows}
+          value={value}
           placeholder={placeholder}
           className={`flex w-full items-center justify-center rounded-xl border bg-white/0 pl-3 pt-3 text-sm outline-none ${
             disabled === true
@@ -36,4 +38,4 @@ function InputField(props) {
   );
 }
 
-export default InputField;
+export default TextField;

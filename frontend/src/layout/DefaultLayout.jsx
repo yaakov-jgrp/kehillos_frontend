@@ -1,12 +1,29 @@
 import React, { useEffect, useState } from 'react'
-import { Routes,Route } from 'react-router-dom'
+import { Routes,Route, useLocation } from 'react-router-dom'
 import Sidebar from '../component/common/Sidebar';
-import Dashboard from '../views/Dashboard';
+// import Dashboard from '../views/Dashboard';
+import { useTranslation } from "react-i18next";
+import Navbar from '../component/common/Navbar';
+import Request from '../views/Request';
+// import Profile from '../views/Profile';
+import Emails from '../views/Emails';
+import AlertPopup from '../component/common/AlertPopup';
+import {
+  MdHome,
+  MdOutlineShoppingCart,
+  MdPerson,
+  MdSpaceDashboard
+} from "react-icons/md";
+import NetFree from '../views/NetFree';
 
 const DefaultLayout = () => {
 
   const [open, setOpen] = useState(true);
-  // const [currentRoute, setCurrentRoute] = useState("Main Dashboard");
+  const [currentRoute, setCurrentRoute] = useState("Dashboard");
+  const [currentRouteName, setCurrentRouteName] = useState("Dashboard");
+  const location = useLocation();
+
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     window.addEventListener("resize", () =>
@@ -14,38 +31,96 @@ const DefaultLayout = () => {
     );
   }, []);
 
+  const routes = [
+    // {
+    //   name: t('sidebar.dashboard'),
+    //   path: "dashboard",
+    //   icon: <MdHome className="h-6 w-6" />,
+    //   component: <Dashboard />,
+    // },
+    {
+      name: t('sidebar.request'),
+      path: "request",
+      icon: <MdOutlineShoppingCart className="h-6 w-6" />,
+      component: <Request />,
+    },
+    {
+      name: t('sidebar.netfree'),
+      path: "settings/netfree",
+      type: "menu",
+      icon: <MdSpaceDashboard className="h-6 w-6" />,
+      component: <NetFree />,
+    },
+    {
+      name: t('sidebar.emails'),
+      path: "settings/emails",
+      type: "menu",
+      icon: <MdSpaceDashboard className="h-6 w-6" />,
+      component: <Emails />,
+    },
+    // {
+    //   name: t('sidebar.profile'),
+    //   path: "profile",
+    //   icon: <MdPerson className="h-6 w-6" />,
+    //   component: <Profile />,
+    // }
+  ];
+
+  useEffect(() => {
+    getActiveRoute(routes);
+  }, [location.pathname]);
+
+  const getActiveRoute = (routes) => {
+    for (let i = 0; i < routes.length; i++) {
+      if (
+        window.location.href.indexOf(
+          "/" + routes[i].path
+        ) !== -1
+      ) {
+        setCurrentRoute(routes[i].path);
+        setCurrentRouteName(routes[i].name);
+      }
+    }
+  };
+  const getActiveNavbar = (routes) => {
+    let activeNavbar = false;
+    for (let i = 0; i < routes.length; i++) {
+      if (
+        window.location.href.indexOf(routes[i].path) !== -1
+      ) {
+        return routes[i].secondary;
+      }
+    }
+    return activeNavbar;
+  };
+
+  const getRoutes = (routes) => {
+    return routes.map((prop, key) => {
+        return (
+          <Route path={`/${prop.path}`} element={prop.component} key={key} />
+        );
+    });
+  };
+
   return (
-    // <div>
-
-    // <Routes>
-    //        <Route path='/dashboard' element={<Dashboard />} />
-
-    //        {/* <Route path='/hellow2' element={<Hellow2 />}/> */}
-
-    // </Routes>
-
-    // </div>
-
-    <div className="flex h-full w-full">
+    <div className="flex gap-4 max-h-[100vh] md:overflow-y-hidden h-full w-full">
+      <AlertPopup />
       <Sidebar open={open} onClose={() => setOpen(false)} />
-      {/* Navbar & Main Content */}
-      <div className="h-full w-full bg-lightPrimary dark:!bg-navy-900">
-        {/* Main Content */}
+      <div className="h-full w-full bg-lightPrimary">
         <main
-          className={`mx-[12px] h-full flex-none transition-all md:pe-2 xl:mr-[313px]`}
+          className={`mx-[12px] h-full flex-none transition-all md:pe-2 ${ i18n.dir() === 'rtl' ? 'xl:mr-[250px]' : 'xl:ml-[250px]'}`}
         >
-          {/* Routes */}
-          <div className="h-full">
-            {/* <Navbar
+          <div className="h-full md:h-[100vh]">
+            <Navbar
               onOpenSidenav={() => setOpen(true)}
               logoText={"Horizon UI Tailwind React"}
               brandText={currentRoute}
+              brandName={currentRouteName}
               secondary={getActiveNavbar(routes)}
-              {...rest}
-            /> */}
-            <div className="pt-5s mx-auto mb-auto h-full min-h-[84vh] p-2 md:pr-2">
+            />
+            <div className={`pt-5s mx-auto mb-auto h-[calc(100%-100px)] p-2 md:pr-2 ${ i18n.dir() === 'rtl' ? 'xl:mr-3' : 'xl:ml-3'}`}>
               <Routes>
-                <Route path='/dashboard' element={<Dashboard />} />
+                {getRoutes(routes)}
               </Routes>
             </div>
           </div>
