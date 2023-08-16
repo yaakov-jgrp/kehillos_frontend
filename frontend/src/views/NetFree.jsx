@@ -6,7 +6,7 @@ import categoryService from "../services/category";
 import { useEffect, useState } from "react";
 import {
     MdExpandMore
-  } from "react-icons/md";
+} from "react-icons/md";
 import Loader from "../component/common/Loader";
 import { debounce } from "lodash";
 import ActionModal from "../component/category/ActionModal";
@@ -22,12 +22,12 @@ const NetFree = () => {
     const { t, i18n } = useTranslation();
     const [showActionModal, setShowActionModal] = useState(false);
     const [currentSelectedCategoryId, setCurrentSelectedCategoryId] = useState(0);
-;
+    ;
     const setResponseDataToState = (res) => {
         const response = res.data.data.map(el => {
             el.isActionUpdateEnabled = false;
             el.actions = el.actions.map(item => {
-                return {isClicked : false, isActionEditOn: false, ...item};
+                return { isClicked: false, isActionEditOn: false, ...item };
             })
             return el;
         })
@@ -49,12 +49,12 @@ const NetFree = () => {
 
     const deleteDefaultAction = async (actionId) => {
         setIsLoading(true);
-        const actionsPayload = defaultActionList.map(el  =>  {
-            if(el.id != actionId) {
+        const actionsPayload = defaultActionList.map(el => {
+            if (el.id != actionId) {
                 return el.id
             }
         })
-        await categoryService.setDefaultAction({actions: actionsPayload});
+        await categoryService.setDefaultAction({ actions: actionsPayload });
         await getActionsList();
         getCategoryData();
         setIsLoading(false);
@@ -71,8 +71,10 @@ const NetFree = () => {
         categoryService.updateCategories();
     }
 
-    const enableActionUpdate= (element) => {
-        setCurrentSelectedCategoryId(element.categories_id);
+    const enableActionUpdate = (element) => {
+        if (element) {
+            setCurrentSelectedCategoryId(element.categories_id);
+        }
         setShowActionModal(true);
     }
 
@@ -85,14 +87,14 @@ const NetFree = () => {
 
     const deleteAction = (categoryId, actionToRemove) => {
         setIsLoading(true);
-        updateAction({id: categoryId, to_remove:actionToRemove});
+        updateAction({ id: categoryId, to_remove: actionToRemove });
         setIsLoading(false);
     }
 
     // update/edit action value
     const editAction = (categoryId, currentActions, actionToRemove, newValue) => {
         setIsLoading(true);
-        updateAction({id: categoryId, to_add: newValue})
+        updateAction({ id: categoryId, to_add: newValue })
         setIsLoading(false);
     }
 
@@ -104,7 +106,7 @@ const NetFree = () => {
     }
 
     const searchCategories = (searchTerm) => {
-        if(searchTerm.trim().length) {
+        if (searchTerm.trim().length) {
             setCategoriesData(categoriesData.filter((el) => el.name.toLowerCase().includes(searchTerm.toLowerCase())));
         } else {
             setCategoriesData(categoriesDataCopy);
@@ -114,7 +116,7 @@ const NetFree = () => {
     const searchSetting = async (query) => {
         setIsLoading(true);
         const response = await categoryService.searchSiteSetting(query);
-        if(query.length){
+        if (query.length) {
             setSearchResult(response.data.data);
         } else {
             setSearchResult([]);
@@ -123,12 +125,12 @@ const NetFree = () => {
         setIsLoading(false);
     }
 
-    const handleSiteSearch= debounce((e) => searchSetting(e.target.value), 500);
+    const handleSiteSearch = debounce((e) => searchSetting(e.target.value), 500);
 
     const openActionOptions = (categoyIndex, action) => {
         let updatedCategoryData = JSON.parse(JSON.stringify(categoriesData));
         updatedCategoryData.forEach((el, ind) => {
-            if(ind===categoyIndex) {
+            if (ind === categoyIndex) {
                 el.actions = el.actions.map(item => {
                     item.label === action.label ? item.isClicked = !item.isClicked : item.isClicked = false;
                     return item;
@@ -138,30 +140,30 @@ const NetFree = () => {
         setCategoriesData(updatedCategoryData);
     }
 
-    const setDefaultAction = async (actionId) =>  {
+    const setDefaultAction = async (actionId) => {
         setIsLoading(true);
-        const actionsPayload = defaultActionList.map(el  =>  el.id);
-        await categoryService.setDefaultAction({actions: [...actionsPayload, actionId]});
+        const actionsPayload = defaultActionList.map(el => el.id);
+        await categoryService.setDefaultAction({ actions: [...actionsPayload, actionId] });
         await getActionsList();
         getCategoryData();
         setIsDefaultActionSelectOpen(false);
         setIsLoading(false);
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         getCategoryData();
         getActionsList();
     }, []);
 
-    const ActionSelectBox = ({options, categoryName, categoryId, currentActions, operationType, previousValue}) => {
+    const ActionSelectBox = ({ options, categoryName, categoryId, currentActions, operationType, previousValue }) => {
         return (
             <div className="w-auto mx-3 mt-1">
-                <select onChange={(e) => operationType === 'edit' ? editAction(categoryId, currentActions, previousValue, e.target.value): updateAction({id: categoryId, to_add: Number(e.target.value) })} placeholder="Select Action" value={'selectAction'} className="bg-white border-[1px] py-1 px-2 outline-none rounded-md" onBlur={() => editSelectedAction(categoryId, {label: 'close edit options'})}>
+                <select onChange={(e) => operationType === 'edit' ? editAction(categoryId, currentActions, previousValue, e.target.value) : updateAction({ id: categoryId, to_add: Number(e.target.value) })} placeholder="Select Action" value={'selectAction'} className="bg-white border-[1px] py-1 px-2 outline-none rounded-md" onBlur={() => editSelectedAction(categoryId, { label: 'close edit options' })}>
                     <option value={'selectAction'} disabled>Select Action</option>
                     {
                         options?.map(el => {
                             return (
-                                    el ? <option key={categoryName+el.id} value={el.id}>{ el.label }</option> : null
+                                el ? <option key={categoryName + el.id} value={el.id}>{el.label}</option> : null
                             );
                         })
                     }
@@ -176,15 +178,17 @@ const NetFree = () => {
                 setShowModal={setShowActionModal}
                 updateAction={updateAction}
                 categoryId={currentSelectedCategoryId}
+                setDefaultAction={setDefaultAction}
+                isDefault={isDefaultActionSelectOpen}
             />
             <div className="bg-white rounded-3xl w-full md:w-[calc(100%-260px)]">
                 <h3 className='py-4 px-7 font-bold text-[#2B3674]'>{t('netfree.categories')}</h3>
                 {
-                            isLoading && 
-                            <div className='h-[calc(100%-36px)] w-full flex justify-center items-center'>
-                                <Loader />
-                            </div>
-                        }
+                    isLoading &&
+                    <div className='h-[calc(100%-36px)] w-full flex justify-center items-center'>
+                        <Loader />
+                    </div>
+                }
                 <div className='h-[calc(100%-72px)] max-w-[100%] overflow-x-auto overflow-y-auto mx-5 px-2'>
                     <table className='!table text-[12px] overflow-y-auto w-full'>
                         <thead className="sticky top-0 z-10">
@@ -214,37 +218,37 @@ const NetFree = () => {
                                             </td>
                                             <td className='pl-5 pr-5 flex gap-2 py-[6px]'>
                                                 {
-                                                    el.actions.map((action, index)=> {
+                                                    el.actions.map((action, index) => {
                                                         return (
                                                             action.label.length ?
-                                                            action.isActionEditOn ?
-                                                            <ActionSelectBox 
-                                                                options={actionsList.map(item => !el.actions.some(el => el.label === item.label) ? item : null)} 
-                                                                categoryName={el.name} 
-                                                                categoryId={el.categories_id} 
-                                                                currentActions={actionsList.map((item, index) => el.actions.some(el => el.label === item.label) ? item.id : null)}
-                                                                operationType="edit"
-                                                                previousValue={action.label}
-                                                            />
-                                                            :
-                                                            <div key={action+index} className="px-3 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap">{action.label}
-                                                                <span onClick={() => openActionOptions(currentIndex, action)}>
-                                                                    <MdExpandMore className="h-5 w-5 text-blueSecondary cursor-pointer"/>
-                                                                </span>
-                                                                {
-                                                                    action.isClicked &&
-                                                                    <div 
-                                                                        className={`absolute top-[20px] z-10 drop-shadow-md bg-white cursor-pointer ${ i18n.dir() === 'rtl' ? 'left-[-15px]' : 'right-[-15px]'}`} 
-                                                                        
-                                                                    >
-                                                                        {/* <div className="py-1 px-3 border-b-[1px] hover:bg-[#f2f3f5]" onClick={() => editSelectedAction(el.categories_id, action)}>{t('netfree.edit')}</div> */}
-                                                                        <div className="py-1 px-3 hover:bg-[#f2f3f5]" onClick={() => deleteAction(el.categories_id, action.id)}>{t('netfree.remove')}</div>
-                                                                        
+                                                                action.isActionEditOn ?
+                                                                    <ActionSelectBox
+                                                                        options={actionsList.map(item => !el.actions.some(el => el.label === item.label) ? item : null)}
+                                                                        categoryName={el.name}
+                                                                        categoryId={el.categories_id}
+                                                                        currentActions={actionsList.map((item, index) => el.actions.some(el => el.label === item.label) ? item.id : null)}
+                                                                        operationType="edit"
+                                                                        previousValue={action.label}
+                                                                    />
+                                                                    :
+                                                                    <div key={action + index} className="px-3 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap">{action.label}
+                                                                        <span onClick={() => openActionOptions(currentIndex, action)}>
+                                                                            <MdExpandMore className="h-5 w-5 text-blueSecondary cursor-pointer" />
+                                                                        </span>
+                                                                        {
+                                                                            action.isClicked &&
+                                                                            <div
+                                                                                className={`absolute top-[20px] z-10 drop-shadow-md bg-white cursor-pointer ${i18n.dir() === 'rtl' ? 'left-[-15px]' : 'right-[-15px]'}`}
+
+                                                                            >
+                                                                                {/* <div className="py-1 px-3 border-b-[1px] hover:bg-[#f2f3f5]" onClick={() => editSelectedAction(el.categories_id, action)}>{t('netfree.edit')}</div> */}
+                                                                                <div className="py-1 px-3 hover:bg-[#f2f3f5]" onClick={() => deleteAction(el.categories_id, action.id)}>{t('netfree.remove')}</div>
+
+                                                                            </div>
+                                                                        }
                                                                     </div>
-                                                                }
-                                                            </div>
-                                                            :
-                                                            null
+                                                                :
+                                                                null
                                                         );
                                                     })
                                                 }
@@ -303,23 +307,10 @@ const NetFree = () => {
                             })
                         }
                     </div>
-                    {
-                        !isDefaultActionSelectOpen ?
-                            <AddButtonIcon extra={''} onClick={() => setIsDefaultActionSelectOpen(true)} />
-                        :
-                            <div className="w-full text-[13px] mb-4">
-                                <select onChange={(e) => setDefaultAction(e.target.value)} placeholder="Select Action" value={'selectAction'} className="bg-white border-[1px] py-1 px-2 outline-none rounded-md">
-                                    <option value={'selectAction'} disabled>Select Action</option>
-                                    {
-                                        actionsList.map(el => {
-                                            return (
-                                                    el ? <option key={el.id} value={el.id} disabled={defaultActionList.some(action  => el.id === action.id)}>{ el.label }</option> : null
-                                            );
-                                        })
-                                    }
-                                </select>
-                            </div>
-                    }
+                    <AddButtonIcon extra={''} onClick={() => {
+                        setIsDefaultActionSelectOpen(true);
+                        enableActionUpdate();
+                    }} />
                 </div>
                 <div className="py-3 bg-white h-[23%] rounded-3xl text-center text-[#2B3674]">
                     <div className="flex items-center justify-center">
