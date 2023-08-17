@@ -3,7 +3,7 @@ import categoryService from "../../services/category";
 import emailService from "../../services/email";
 import { useTranslation } from "react-i18next";
 
-const ActionModal = ({showModal, setShowModal, updateAction, categoryId}) => {
+const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDefaultAction, isDefault }) => {
   const [actionsList, setActionsList] = useState([]);
   const [templateList, setTemplateList] = useState([]);
   const [selectedAction, setSelectedAction] = useState("selectAction");
@@ -14,36 +14,47 @@ const ActionModal = ({showModal, setShowModal, updateAction, categoryId}) => {
   const { t } = useTranslation();
 
   const getActionsList = async () => {
-        const response = await categoryService.getActions();
-        setActionsList(response.data.data);
+    const response = await categoryService.getActions();
+    setActionsList(response.data.data);
   }
 
-  const getTemplates = async() => {
+  const getTemplates = async () => {
     const response = await emailService.getTemplates();
     setTemplateList(response.data.data);
   }
 
   const setActionValue = (e) => {
     const actionId = e.target.value;
-    const selected = actionsList.find(el=> el.id == actionId);
+    const selected = actionsList.find(el => el.id == actionId);
     const isNeeded = selected.label.split('').filter(el => el === '{');
     setActionNeedsOtherFields(isNeeded);
     setSelectedAction(actionId)
   }
 
   const submitForm = async () => {
-    await updateAction({id: categoryId, to_add: selectedAction, inputs: {resource: domainUrl, hours: hours}, template_id: selectedTemplate})
+    if (isDefault) {
+      await setDefaultAction(selectedAction);
+    } else {
+      let data;
+      if (selectedAction == 1) {
+        data = { id: categoryId, to_add: selectedAction, inputs: { resource: domainUrl, hours: hours }, template_id: selectedTemplate };
+      } else {
+        data = { id: categoryId, to_add: selectedAction, inputs: { resource: domainUrl, hours: hours } }
+      }
+      await updateAction(data);
+    }
     setSelectedAction("selectAction");
     setSelectedTemplate("selectTemplate");
+    setActionNeedsOtherFields([]);
     setDomainUrl('');
     setHours('');
     setShowModal(false);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     getActionsList();
     getTemplates();
-  },[])
+  }, [])
 
   return (
     <>
@@ -69,48 +80,52 @@ const ActionModal = ({showModal, setShowModal, updateAction, categoryId}) => {
                       {t('netfree.actions')}
                     </label>
                     <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={(e) => setActionValue(e)} value={selectedAction} placeholder="Select Action">
-                        <option value={'selectAction'} disabled>{t('netfree.selectAction')}</option>
-                        {
-                            actionsList?.map(el => {
-                                return (
-                                        el ? <option key={el.id} value={el.id}>{ el.label }</option> : null
-                                );
-                            })
-                        }
+                      <option value={'selectAction'} disabled>{t('netfree.selectAction')}</option>
+                      {
+                        actionsList?.map(el => {
+                          return (
+                            el ? <option key={el.id} value={el.id}>{el.label}</option> : null
+                          );
+                        })
+                      }
                     </select>
                     {
-                        actionNeedsOtherFields.length >= 1 ?
+                      actionNeedsOtherFields.length >= 1 ?
                         <>
-                            <label className="block text-black text-sm font-bold mb-1">
-                            {t('netfree.domain-url')}
-                            </label>
-                            <input className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" type="text" onChange={(e) => setDomainUrl(e.target.value)}/>
+                          <label className="block text-black text-sm font-bold mb-1">
+                            {actionsList.length > 0 && actionsList.find(el => el.id == selectedAction)?.label?.includes("Domain") ? t('netfree.domain') : t('netfree.url')}
+                          </label>
+                          <input className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" type="text" onChange={(e) => setDomainUrl(e.target.value)} />
                         </>
                         : null
                     }
                     {
-                        actionNeedsOtherFields.length >= 2 ?
+                      actionNeedsOtherFields.length >= 2 ?
                         <>
-                            <label className="block text-black text-sm font-bold mb-1">
+                          <label className="block text-black text-sm font-bold mb-1">
                             {t('netfree.openinhours')}
-                            </label>
-                            <input className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" type="number" min={0} onChange={(e) => setHours(e.target.value)} />
+                          </label>
+                          <input className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" type="number" min={0} onChange={(e) => setHours(e.target.value)} />
                         </>
                         : null
                     }
-                    <label className="block text-black text-sm font-bold mb-1">
-                      {t('netfree.template')}
-                    </label>
-                    <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={(e) => setSelectedTemplate(e.target.value)} value={selectedTemplate} placeholder="Select Action">
-                        <option value={'selectTemplate'} disabled>{t('netfree.selectTemplate')}</option>
-                        {
+                    {
+                      selectedAction == 1 &&
+                      <>
+                        <label className="block text-black text-sm font-bold mb-1">
+                          {t('netfree.template')}
+                        </label>
+                        <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={(e) => setSelectedTemplate(e.target.value)} value={selectedTemplate} placeholder="Select Action">
+                          <option value={'selectTemplate'} disabled>{t('netfree.selectTemplate')}</option>
+                          {
                             templateList?.map(el => {
-                                return (
-                                        el ? <option key={el.id} value={el.id}>{ el.name }</option> : null
-                                );
+                              return (
+                                el ? <option key={el.id} value={el.id}>{el.name}</option> : null
+                              );
                             })
-                        }
-                    </select>
+                          }
+                        </select></>
+                    }
                   </div>
                 </div>
                 <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
