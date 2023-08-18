@@ -326,7 +326,7 @@ class ActionsView(APIView):
         return Response(
             {
                 "success": True,
-                "message": "Default action set successfully"
+                "message": "Default actions set successfully"
 
             }
         )
