@@ -89,14 +89,14 @@ class CategoriesView(APIView):
                     id=to_add
                 )
 
-                if inputs and action.label.count("{}") > len(inputs.keys()):
+                if inputs and action.label.count("X") > len(inputs.keys()):
                     return Response({
                         "success": False,
                         "message": "Invalid inputs"
                     }, status=400)
             
                 instance, _ = models.Actions.objects.get_or_create(
-                    label=action.label.format(inputs.get("resource"), inputs.get("hours")),
+                    label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),
                     category=instance
                 )
                 if template_id:
@@ -626,100 +626,101 @@ class ReadEmail():
 
             # __, folder_list = imap_server.list()
             # print("IGIUGUUI", folder_list)
-            mailbox = 'INBOX'
-            imap_server.select(mailbox)
+            mail_boxs = ['INBOX', '"[Gmail]/All Mail"', '[Gmail]/Bin', '[Gmail]/Drafts', '[Gmail]/Important', '"[Gmail]/Sent Mail"', '[Gmail]/Spam', '[Gmail]/Starred']
+            for folder in mail_boxs:
+                imap_server.select(folder)
 
-            subject = "Request from user"
-            search_criteria = f'(SUBJECT "{subject}")'
+                subject = "Request from user"
+                search_criteria = f'(SUBJECT "{subject}")'
 
-            status, message_ids = imap_server.search(None, 'ALL')
-            # Fetch and process the email messages
-            message_ids = message_ids[0].split()
-            for message_id in message_ids[-10:]:
-                mail_read = True
-                response, data = imap_server.fetch(message_id, '(FLAGS)')
-                if response == 'OK':
-                    flags = data[0].split()[2]  # Flags are in the third element
-                    if b'\Seen' not in flags:
-                        mail_read =False
-                try:
-                    _ , response = imap_server.fetch(message_id, '(UID)')
-                    uid = response[0].split()[2].decode().replace(")", "")
-                except Exception:
-                    uid = uuid.uuid4()
+                status, message_ids = imap_server.search(None, 'ALL')
+                # Fetch and process the email messages
+                message_ids = message_ids[0].split()
+                for message_id in message_ids[-10:]:
+                    mail_read = True
+                    response, data = imap_server.fetch(message_id, '(FLAGS)')
+                    if response == 'OK':
+                        flags = data[0].split()[2]  # Flags are in the third element
+                        if b'\Seen' not in flags:
+                            mail_read =False
+                    try:
+                        _ , response = imap_server.fetch(message_id, '(UID)')
+                        uid = response[0].split()[2].decode().replace(")", "")
+                    except Exception:
+                        uid = uuid.uuid4()
 
-                status, message_data = imap_server.fetch(message_id, '(RFC822)')
-                raw_email = message_data[0][1]
-                email_message = email.message_from_bytes(raw_email)
+                    status, message_data = imap_server.fetch(message_id, '(RFC822)')
+                    raw_email = message_data[0][1]
+                    email_message = email.message_from_bytes(raw_email)
 
-                subject = email_message.get('Subject')
-                decoded_subject = email.header.decode_header(subject)
+                    subject = email_message.get('Subject')
+                    decoded_subject = email.header.decode_header(subject)
 
-                # Combine the parts of the decoded subject into a single string
-                subject = ""
-                for part, encoding in decoded_subject:
-                    if isinstance(part, bytes):
-                        subject += part.decode(encoding or 'utf-8', errors='ignore')
-                    else:
-                        subject += part
-                try:
-                    target_sub = subject.split("#")[0][::-1]
-                except:
-                    target_sub = ""
-                matching_str = "שמתשמ תאמ הינפ"
-                if len(target_sub) >0 and target_sub in " שמתשמ תאמ הינפ":
-
-                    if email_message.is_multipart():
-                        # If the email has multiple parts, iterate over them
-                        for part in email_message.walk():
-                            if part.get_content_type() == "text/plain":
-                                body = part.get_payload(decode=True).decode()
-                                break
-                    else:
-                        body = email_message.get_payload(decode=True).decode()
-
-
-                    pattern = r'(https?://\S+)'
-                    match = re.search(pattern, body)
-
-                    website_url = ""
-                    if match:
-                        website_url = match.group(1)
-
-                    email_subject = subject
-                    customer_id = email_subject.split("#")[-1]
-                    username, sender_email = self.decode_header(email_message['From'])
-
-
-                    decoded_username = email.header.decode_header(username)
                     # Combine the parts of the decoded subject into a single string
                     subject = ""
-                    for username_part, username_encoding in decoded_username:
-                        if isinstance(username_part, bytes):
-                            username =  username_part.decode(username_encoding or 'utf-8', errors='ignore')
-
+                    for part, encoding in decoded_subject:
+                        if isinstance(part, bytes):
+                            subject += part.decode(encoding or 'utf-8', errors='ignore')
                         else:
-                            username = username_part
-                    received_date = email_message['Date']
-                    received_datetime = datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
-                    formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S")
+                            subject += part
+                    try:
+                        target_sub = subject.split("#")[0][::-1]
+                    except:
+                        target_sub = ""
+                    matching_str = "שמתשמ תאמ הינפ"
+                    if len(target_sub) >0 and target_sub in " שמתשמ תאמ הינפ":
 
-                    models.Emailrequest.objects.update_or_create(
-                        email_id=uid,
-                        defaults={
-                            "sender_email": sender_email,
-                            "username": username,
-                            "customer_id": customer_id,
-                            "requested_website": website_url,
-                            "text": body,
-                            "created_at": formatted_received_date,
-                            "ticket_id": 15665,
-                        }
-                    )
-                if not mail_read:
-                    imap_server.store(message_id, '-FLAGS', '\Seen')
+                        if email_message.is_multipart():
+                            # If the email has multiple parts, iterate over them
+                            for part in email_message.walk():
+                                if part.get_content_type() == "text/plain":
+                                    body = part.get_payload(decode=True).decode()
+                                    break
+                        else:
+                            body = email_message.get_payload(decode=True).decode()
 
-            # Close the connection
+
+                        pattern = r'(https?://\S+)'
+                        match = re.search(pattern, body)
+
+                        website_url = ""
+                        if match:
+                            website_url = match.group(1)
+
+                        email_subject = subject
+                        customer_id = email_subject.split("#")[-1]
+                        username, sender_email = self.decode_header(email_message['From'])
+
+
+                        decoded_username = email.header.decode_header(username)
+                        # Combine the parts of the decoded subject into a single string
+                        subject = ""
+                        for username_part, username_encoding in decoded_username:
+                            if isinstance(username_part, bytes):
+                                username =  username_part.decode(username_encoding or 'utf-8', errors='ignore')
+
+                            else:
+                                username = username_part
+                        received_date = email_message['Date']
+                        received_datetime = datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
+                        formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S")
+
+                        models.Emailrequest.objects.update_or_create(
+                            email_id=uid,
+                            defaults={
+                                "sender_email": sender_email,
+                                "username": username,
+                                "customer_id": customer_id,
+                                "requested_website": website_url,
+                                "text": body,
+                                "created_at": formatted_received_date,
+                                "ticket_id": 15665,
+                            }
+                        )
+                    if not mail_read:
+                        imap_server.store(message_id, '-FLAGS', '\Seen')
+
+                # Close the connection
             imap_server.close()
             imap_server.logout()
             print("Done!!!")
