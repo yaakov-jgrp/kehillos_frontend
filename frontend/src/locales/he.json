@@ -31,10 +31,10 @@
     "emails": {
         "templates": "תבניות",
         "smtp": "SMTP",
-        "newTemplate": "תבנית חדש",
+        "newTemplate": "תבנית חדשה",
         "save": "שמור",
         "templateName": "שם התבנית",
-        "edit": "עריכה",
+        "edit": "ערוך",
         "cancel": "ביטול",
         "connect": "חיבור",
         "connected": "מחובר",
@@ -44,7 +44,7 @@
         "templateAddFailed" : "הוספת תבנית חדשה נכשלה",
         "deleteTemplateSuccess" : "התבנית נמחקה בהצלחה",
         "deleteTemplateFailed": "מחיקת התבנית נכשלה",
-        "duplicateTemplateSuccess": "תבנית משוכפלת בהצלחה",
+        "duplicateTemplateSuccess": "התבנית שוכפלה בהצלחה",
         "duplicateTemplateFailed": "שכפול התבנית נכשלה"
     },
     "netfree":{
@@ -52,7 +52,7 @@
         "name": "שם",
         "actions": "פעולות",
         "searchSiteSetting":"מצא הגדרות אתר",
-        "updateCategoryButton": "לחץ כדי לעדכן קטגוריות",
+        "updateCategoryButton": "לחץ לעדכן רשימת הקטגוריות",
         "defaultAction": "פעולת ברירת מחדל",
         "remove": "הסרה",
         "edit": "עריכה",
@@ -68,11 +68,11 @@
     },
     "searchbox":{
         "placeHolder":"חיפוש",
-        "requestId":"מספר הפניה",
+        "requestId":"מספר פניה",
         "dateCreated":"תאריך יצירה",
-        "from":"מ",
-        "requestType":"בקשת אתר - נטפרי",
-        "requestdetail":"פרטי הפניה",
+        "from":"מאת",
+        "requestType":"סוג פניה",
+        "requestdetail":"פרטי פניה",
         "actionsDone":"פעולות שבוצעו"
     },
         "buttons.add_column": "הוסף עמודה",
