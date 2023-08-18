@@ -60,11 +60,16 @@
         "selectAction": "Select Action",
         "domain": "Domain",
         "url":"URL",
-        "openinhours": "Open For (In Hours)",
+        "amount":"Amount",
+        "openfor": "Open For",
         "template":  "Template",
         "selectTemplate": "Select Template",
         "close":  "Close",
-        "save": "Save"
+        "save": "Save",
+        "minutes":"Minutes",
+        "hours":"Hours",
+        "days":"Days",
+        "weeks":"Weeks"
     },
     "searchbox":{
         "placeHolder":"Search",

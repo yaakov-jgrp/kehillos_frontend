@@ -7,11 +7,13 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   const [actionsList, setActionsList] = useState([]);
   const [templateList, setTemplateList] = useState([]);
   const [selectedAction, setSelectedAction] = useState("selectAction");
-  const [domainUrl, setDomainUrl] = useState("");
-  const [hours, setHours] = useState("");
+  const [timeAmount, setTimeAmount] = useState("");
+  const [timePeriod, setTimePeriod] = useState("Hours");
   const [selectedTemplate, setSelectedTemplate] = useState('selectTemplate');
   const [actionNeedsOtherFields, setActionNeedsOtherFields] = useState([]);
   const { t } = useTranslation();
+
+  const periods = [t('netfree.minutes'), t('netfree.hours'), t('netfree.days'), t('netfree.weeks')];
 
   const getActionsList = async () => {
     const response = await categoryService.getActions();
@@ -26,7 +28,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   const setActionValue = (e) => {
     const actionId = e.target.value;
     const selected = actionsList.find(el => el.id == actionId);
-    const isNeeded = selected.label.split('').filter(el => el === '{');
+    const isNeeded = selected.label.split('').filter(el => el === 'X');
     setActionNeedsOtherFields(isNeeded);
     setSelectedAction(actionId)
   }
@@ -37,17 +39,17 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
     } else {
       let data;
       if (selectedAction == 1) {
-        data = { id: categoryId, to_add: selectedAction, inputs: { resource: domainUrl, hours: hours }, template_id: selectedTemplate };
+        data = { id: categoryId, to_add: selectedAction, inputs: {}, template_id: selectedTemplate };
       } else {
-        data = { id: categoryId, to_add: selectedAction, inputs: { resource: domainUrl, hours: hours } }
+        data = { id: categoryId, to_add: selectedAction, inputs: selectedAction == 4 || selectedAction == 5 ? { amount: timeAmount === "" ? "1" : timeAmount, openfor: timePeriod } : {} }
       }
       await updateAction(data);
     }
     setSelectedAction("selectAction");
     setSelectedTemplate("selectTemplate");
     setActionNeedsOtherFields([]);
-    setDomainUrl('');
-    setHours('');
+    setTimeAmount('');
+    setTimePeriod('Hours');
     setShowModal(false);
   }
 
@@ -90,22 +92,24 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                       }
                     </select>
                     {
-                      actionNeedsOtherFields.length >= 1 ?
-                        <>
-                          <label className="block text-black text-sm font-bold mb-1">
-                            {actionsList.length > 0 && actionsList.find(el => el.id == selectedAction)?.label?.includes("Domain") ? t('netfree.domain') : t('netfree.url')}
-                          </label>
-                          <input className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" type="text" onChange={(e) => setDomainUrl(e.target.value)} />
-                        </>
-                        : null
-                    }
-                    {
                       actionNeedsOtherFields.length >= 2 ?
                         <>
                           <label className="block text-black text-sm font-bold mb-1">
-                            {t('netfree.openinhours')}
+                            {t('netfree.amount')}
                           </label>
-                          <input className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" type="number" min={0} onChange={(e) => setHours(e.target.value)} />
+                          <input className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" required type="number" min={1} onChange={(e) => setTimeAmount(e.target.value)} />
+                          <label className="block text-black text-sm font-bold mb-1">
+                            {t('netfree.openfor')}
+                          </label>
+                          <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={(e) => setTimePeriod(e.target.value)} value={timePeriod} placeholder="Select period">
+                            {
+                              periods?.map((el, i) => {
+                                return (
+                                  el ? <option key={i} value={el}>{el}</option> : null
+                                );
+                              })
+                            }
+                          </select>
                         </>
                         : null
                     }
