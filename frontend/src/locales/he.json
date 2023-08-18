@@ -60,11 +60,16 @@
         "selectAction": "בחר פעולה",
         "domain": "כתובת אתר",
         "url":"דומיין",
-        "openinhours": "פתוח עבור (X שעות)",
+        "amount":"כמות",
+        "openfor": "פתוח עבור",
         "template":  "תבנית",
         "selectTemplate": "בחר תבנית",
         "close":  "סגור",
-        "save": "שמור"
+        "save": "להציל",
+        "minutes":"דקות",
+        "hours":"שעה (ות",
+        "days":"ימים",
+        "weeks":"שבועות"
     },
     "searchbox":{
         "placeHolder":"חיפוש",
