@@ -4,7 +4,7 @@ from . import models
 
 class EmailrequestSerializer(serializers.ModelSerializer):
     request_type = serializers.CharField(
-        default="שתמש בשם"
+        default="פתיחת אתר - נטפרי"
     )
     action_done = serializers.SerializerMethodField()
 
@@ -36,10 +36,10 @@ class EmailTemplateListSerializer(serializers.ModelSerializer):
 
 class CategoriesSerializer(serializers.ModelSerializer):
     request_type = serializers.CharField(
-        default="שתמש בשם"
+        default="פתיחת אתר - נטפרי"
     )
     name = serializers.CharField(
-        source="description", default="שתמש בשם"
+        source="description", default="פתיחת אתר - נטפרי"
     )
     actions = serializers.SerializerMethodField()
 
