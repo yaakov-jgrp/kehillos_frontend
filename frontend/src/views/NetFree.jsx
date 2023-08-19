@@ -140,10 +140,10 @@ const NetFree = () => {
         setCategoriesData(updatedCategoryData);
     }
 
-    const setDefaultAction = async (actionId) => {
+    const setDefaultAction = async (actionId, data) => {
         setIsLoading(true);
         const actionsPayload = defaultActionList.map(el => el.id);
-        await categoryService.setDefaultAction({ actions: [...actionsPayload, actionId] });
+        await categoryService.setDefaultAction({ actions: [...actionsPayload, actionId], ...data });
         await getActionsList();
         getCategoryData();
         setIsDefaultActionSelectOpen(false);
@@ -296,13 +296,13 @@ const NetFree = () => {
                         {t('netfree.updateCategoryButton')}
                     </button>
                 </div>
-                <div className="flex flex-col px-3 py-3 items-start bg-white h-[37%] rounded-3xl text-center text-[#2B3674]">
+                <div className="flex flex-col px-3 py-3 overflow-x-hidden items-start bg-white h-[37%] rounded-3xl text-center text-[#2B3674]">
                     <h5 className="font-bold text-[20px]">{t('netfree.defaultAction')}</h5>
                     <div className="max-h-[calc(100%-30px)] overflow-y-auto mb-2">
                         {
                             defaultActionList.map(el => {
                                 return (
-                                    <div key={el.id} className="px-3 text-[13px] mb-2 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap">{el.label} <div className="text-[13px] text-[#fc3232] cursor-pointer" onClick={() => deleteDefaultAction(el.id)}>x</div></div>
+                                    <div key={el.id} className="px-3 w-full w-fit whitespace-break-spaces text-left text-[13px] mb-2 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap">{el.label} <div className="text-[13px] text-[#fc3232] cursor-pointer" onClick={() => deleteDefaultAction(el.id)}>x</div></div>
                                 );
                             })
                         }

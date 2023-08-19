@@ -34,15 +34,15 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   }
 
   const submitForm = async () => {
-    if (isDefault) {
-      await setDefaultAction(selectedAction);
+    let data;
+    if (selectedAction == 1) {
+      data = { id: categoryId, to_add: selectedAction, inputs: {}, template_id: selectedTemplate };
     } else {
-      let data;
-      if (selectedAction == 1) {
-        data = { id: categoryId, to_add: selectedAction, inputs: {}, template_id: selectedTemplate };
-      } else {
-        data = { id: categoryId, to_add: selectedAction, inputs: selectedAction == 4 || selectedAction == 5 ? { amount: timeAmount === "" ? "1" : timeAmount, openfor: timePeriod } : {} }
-      }
+      data = { id: categoryId, to_add: selectedAction, inputs: selectedAction == 4 || selectedAction == 5 ? { amount: timeAmount === "" ? "1" : timeAmount, openfor: timePeriod } : {} }
+    }
+    if (isDefault) {
+      await setDefaultAction(selectedAction, data);
+    } else {
       await updateAction(data);
     }
     setSelectedAction("selectAction");
