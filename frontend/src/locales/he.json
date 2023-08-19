@@ -11,14 +11,14 @@
         "loginFailed": "הכניסה נכשלה, נסה שוב!!!"
     },
     "sidebar": {
-        "title": "מערכת פניות",
+        "title": "מערכת קהילות",
         "dashboard": "דשבורד",
         "request": "פניות",
         "settings": "הגדרות",
         "netfree": "נטפרי",
         "emails": "אימייל",
         "profile": "פרופיל",
-        "logout": "להתנתק"
+        "logout": "התנתק"
     },
     "requests": {
         "title": "פניות",
@@ -29,33 +29,33 @@
         "$adminEmail": "אימייל מנהל"
     },
     "emails": {
-        "templates": "טמפלטים",
+        "templates": "תבניות",
         "smtp": "SMTP",
-        "newTemplate": "תבנית חדש",
+        "newTemplate": "תבנית חדשה",
         "save": "שמור",
         "templateName": "שם התבנית",
-        "edit": "לַעֲרוֹך",
-        "cancel": "לְבַטֵל",
-        "connect": "לְחַבֵּר",
-        "connected": "מְחוּבָּר",
+        "edit": "ערוך",
+        "cancel": "ביטול",
+        "connect": "חיבור",
+        "connected": "מחובר",
         "templateUpdated" : "התבנית עודכנה בהצלחה",
         "templateUpdateFailed" : "עדכון התבנית נכשל",
         "templateAdded" : "התבנית נוספה בהצלחה",
         "templateAddFailed" : "הוספת תבנית חדשה נכשלה",
         "deleteTemplateSuccess" : "התבנית נמחקה בהצלחה",
         "deleteTemplateFailed": "מחיקת התבנית נכשלה",
-        "duplicateTemplateSuccess": "תבנית משוכפלת בהצלחה",
-        "duplicateTemplateFailed": "שכפול התבנית נכשל"
+        "duplicateTemplateSuccess": "התבנית שוכפלה בהצלחה",
+        "duplicateTemplateFailed": "שכפול התבנית נכשלה"
     },
     "netfree":{
         "categories": "קטגוריות",
         "name": "שם",
         "actions": "פעולות",
-        "searchSiteSetting":"הגדרת אתר חיפוש",
-        "updateCategoryButton": "לחץ כדי לעדכן קטגוריות",
+        "searchSiteSetting":"מצא הגדרות אתר",
+        "updateCategoryButton": "לחץ לעדכן רשימת הקטגוריות",
         "defaultAction": "פעולת ברירת מחדל",
-        "remove": "לְהַסִיר",
-        "edit": "לַעֲרוֹך",
+        "remove": "הסרה",
+        "edit": "עריכה",
         "addAction": "הוסף פעולה",
         "selectAction": "בחר פעולה",
         "domain": "כתובת אתר",
@@ -73,12 +73,12 @@
     },
     "searchbox":{
         "placeHolder":"חיפוש",
-        "requestId":"זיהוי בקשה",
+        "requestId":"מספר פניה",
         "dateCreated":"תאריך יצירה",
-        "from":"מ",
-        "requestType":"בקשת אתר - נטפרי",
-        "requestdetail":"בקש פרטים",
-        "actionsDone":"פעולות בוצעו"
+        "from":"מאת",
+        "requestType":"סוג פניה",
+        "requestdetail":"פרטי פניה",
+        "actionsDone":"פעולות שבוצעו"
     },
         "buttons.add_column": "הוסף עמודה",
         "buttons.add_content": "הוסף תוכן",

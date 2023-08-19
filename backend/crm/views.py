@@ -636,7 +636,12 @@ class ReadEmail():
             # Fetch and process the email messages
             message_ids = message_ids[0].split()
             for message_id in message_ids[-10:]:
-
+                mail_read = True
+                response, data = imap_server.fetch(message_id, '(FLAGS)')
+                if response == 'OK':
+                    flags = data[0].split()[2]  # Flags are in the third element
+                    if b'\Seen' not in flags:
+                        mail_read =False
                 try:
                     _ , response = imap_server.fetch(message_id, '(UID)')
                     uid = response[0].split()[2].decode().replace(")", "")
@@ -711,6 +716,8 @@ class ReadEmail():
                             "ticket_id": 15665,
                         }
                     )
+                if not mail_read:
+                    imap_server.store(message_id, '-FLAGS', '\Seen')
 
             # Close the connection
             imap_server.close()
