@@ -80,6 +80,13 @@ class CategoriesView(APIView):
                 "message": "Can't perform both action at same time"
             }, status=400)
 
+        if template_id:
+            if not str(template_id).isdigit():
+                return Response({
+                "success": False,
+                "message": "Invalid inputs"
+                }, status=400)
+            
         try:
             instance = models.Categories.objects.get(
                 categories_id=param.get("id")
@@ -105,6 +112,9 @@ class CategoriesView(APIView):
                     )
                     template.action=instance
                     template.save()
+                    if "Send email template" in instance.label:
+                        instance.label = instance.label + f" {template.name}"
+                        instance.save()
 
             if to_remove:
                 action = models.Actions.objects.get(
@@ -302,6 +312,10 @@ class ActionsView(APIView):
             values_list = queryset.filter(is_default=True).values("id", "label")
         else:
             values_list = queryset.values("id", "label")
+
+        if params.get('get_default',None):
+            values_list = models.Actions.objects.filter(is_default=True).values("id", "label")
+
         return Response(
             {
                 "success": True,
@@ -312,15 +326,53 @@ class ActionsView(APIView):
 
     def post(self, request):
         actions = request.data.get("actions", None)
+        to_add = request.data.get("to_add", None)
+        if to_add:
+            to_add = int(to_add)
+            if not isinstance(to_add,int):
+                return Response({
+                            "success": False,
+                            "message": "Invalid inputs"
+                        }, status=400)
 
+        inputs = request.data.get("inputs", None)
+        template_id = request.data.get("template_id", None)
+        ids = models.Actions.objects.filter(template=1).values_list("id",flat=True)
         all_actions = models.Actions.objects.all()
-        queryset = all_actions.filter(
-            id__in=actions
-        )
+        updated_list = []
+        queryset = all_actions.filter(id__in=actions)
 
-        non_deafult_actions =  all_actions.exclude(pk__in=actions)
+        for action in queryset:
+            if to_add and to_add in ids and to_add == action.id:
+                if inputs and action.label.count("X") > len(inputs.keys()):
+                        return Response({
+                            "success": False,
+                            "message": "Invalid inputs"
+                        }, status=400)
+                
+                if str(template_id).isdigit():
+                    print("secon template")
+                    template = models.EmailTemplate.objects.get(
+                        id=template_id
+                    )
+                    if "Send email template" in action.label:
+                        text_search = action.label + f" {template.name}"
+                        instance, _ = models.Actions.objects.filter(template=False).get_or_create(label=text_search,category=None)
+                        template.action=instance
+                        template.save()
+                else:
+                    instance, _ = models.Actions.objects.filter(template=False).get_or_create(
+                    label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),category=None
+                    )
+                updated_list.append(instance.id)
+            else:
+                updated_list.append(action.id)
+
+        non_deafult_actions =  all_actions.exclude(pk__in=updated_list)
         non_deafult_actions.update(is_default=0)
-
+        queryset = all_actions.filter(
+                    id__in=updated_list
+                )
         queryset.update(is_default=1)
 
         return Response(
