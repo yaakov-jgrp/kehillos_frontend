@@ -272,9 +272,9 @@ def email_request_created_or_updated(sender, instance,created, **kwargs):
             all_urls = remove_duplicate_combinations(all_urls)
             all_urls += urls
             actions_done = list(set(actions_done))
-            if post_user_data(instance.customer_id,categories,all_urls,data.get("filterSettings")).status_code == 200 :
+            if post_user_data(instance.customer_id,categories,all_urls,data).status_code == 200 :
                 if actions_done:
-                    instance.action_done = ",".join(actions_done)
+                    instance.action_done = " ,".join(actions_done)
                     instance.save()
         if hasattr(instance, '_processing'):
             del instance._processing

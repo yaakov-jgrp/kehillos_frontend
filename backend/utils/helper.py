@@ -85,7 +85,7 @@ def get_user_deatils(user_id):
     return tags_response
 
 
-def post_user_data(user_id,tags,urls,filterSettings):
+def post_user_data(user_id,tags,urls,data):
     url = "https://netfree.link/user/ajax/set-filter-settings"
     login_url = "https://netfree.link/api/user/login-by-password"
 
@@ -109,12 +109,13 @@ def post_user_data(user_id,tags,urls,filterSettings):
         "sec-fetch-site": "same-origin",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
     }
+    inspectorSettings = data.get("inspectorSettings")
+    inspectorSettings.update({'tagsList': tags, 'urls': urls })
     payload = {
         "id":int(user_id),
-        "filterSettings": filterSettings,
-        "inspectorSettings": {'tagsList': tags, 'urls': urls }
+        "filterSettings": data.get("filterSettings"),
+        "inspectorSettings": inspectorSettings
     }
-    print(payload)
     session = requests.Session()
     login_response = session.post(login_url, headers=headers, json=login_data)
     cookie = login_response.cookies.get_dict()
