@@ -6,14 +6,10 @@ class EmailrequestSerializer(serializers.ModelSerializer):
     request_type = serializers.CharField(
         default="פתיחת אתר - נטפרי"
     )
-    action_done = serializers.SerializerMethodField()
-
     class Meta:
         model = models.Emailrequest
         fields = "__all__"
 
-    def get_action_done(self, instance):
-        return models.Actions.objects.last().label
 
 
 class ActionsSerializer(serializers.ModelSerializer):
