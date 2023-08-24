@@ -146,10 +146,13 @@ class Emailrequest(models.Model):
     def send_mail(self, template_name):
         try:
             template = EmailTemplate.objects.filter(name=template_name).first()
+            instance = SMTPEmail.objects.last()
+            settings.EMAIL_HOST_USER = instance.email
+            settings.EMAIL_HOST_PASSWORD = instance.password
             subject = self.id
             to_email = self.sender_email
             template_name = "email.html"
-            admin_email = settings.EMAIL_HOST_ADMIN_USER
+            admin_email = instance.email
             format_variables = {
                 "request_id": str(self.id),
                 "client_name": self.username,
@@ -209,76 +212,72 @@ class Emailrequest(models.Model):
 
 
 @receiver(post_save, sender=Emailrequest)
-def email_request_created_or_updated(sender, instance, **kwargs):
-    if hasattr(instance, '_processing'):
-        return
-    instance._processing = True
-    user_detail = get_user_deatils(instance.customer_id)
-    if user_detail.status_code == 200:
-        data = user_detail.json()
-        all_urls = []
-        categories = (
-            data.get("filterSettings", {})
-            .get("profiles", {})
-            .get("0", {})
-            .get("tagsList")
-        )
-        urls = data.get("filterSettings", {}).get("profiles", {}).get("0", {}).get("urls",[])
-        all_urls += urls
-        categories_obj = Categories.objects.filter(
-            categories_id__in=[int(i) for i in categories]
-        )
-        actions_done = []
-        for i in categories_obj:
-            actions = Actions.objects.filter(category=i)
-            if actions.exists():
-                for action in actions:
-                    if "Send email template" in action.label:
-                        if instance.send_mail(
-                            action.label.split("Send email template")[-1].strip()
-                        ):
-                            actions_done.append(action.label)
+def email_request_created_or_updated(sender, instance,created, **kwargs):
+    if created:
+        if hasattr(instance, '_processing'):
+            return
+        instance._processing = True
+        user_detail = get_user_deatils(instance.customer_id)
+        if user_detail.status_code == 200:
+            data = user_detail.json()
+            all_urls = []
+            categories = data.get("inspectorSettings", {}).get("tagsList",[])
+            urls = data.get("inspectorSettings", {}).get("urls",[])
+            categories_obj = Categories.objects.filter(
+                categories_id__in=[int(i) for i in categories]
+            )
+            actions_done = []
+            for i in categories_obj:
+                actions = Actions.objects.filter(category=i)
+                if actions.exists():
+                    for action in actions:
+                        if "Send email template" in action.label:
+                            if instance.send_mail(
+                                action.label.split("Send email template")[-1].strip()
+                            ):
+                                actions_done.append(action.label)
 
-                    if "Open URL" in action.label:
-                        open_url_data = instance.open_url(action.label,instance.requested_website)
-                        if open_url_data:
-                            all_urls.append(open_url_data)
-                            actions_done.append(action.label)
+                        if "Open URL" in action.label:
+                            open_url_data = instance.open_url(action.label,instance.requested_website)
+                            if open_url_data:
+                                all_urls.append(open_url_data)
+                                actions_done.append(action.label)
 
-                    if "Open Domain" in action.label:
-                        open_url_data = instance.open_domain(action.label,instance.requested_website)
-                        if open_url_data:
-                            all_urls.append(open_url_data)
-                            actions_done.append(action.label)
-        if not actions_done:
-            actions = Actions.objects.filter(is_default=True,category=None)
-            if actions.exists():
-                for action in actions:
-                    if "Send email template" in action.label:
-                        if instance.send_mail(
-                            action.label.split("Send email template")[-1].strip()
-                        ):
-                            actions_done.append(action.label)
+                        if "Open Domain" in action.label:
+                            open_url_data = instance.open_domain(action.label,instance.requested_website)
+                            if open_url_data:
+                                all_urls.append(open_url_data)
+                                actions_done.append(action.label)
+            if not actions_done:
+                actions = Actions.objects.filter(is_default=True,category=None)
+                if actions.exists():
+                    for action in actions:
+                        if "Send email template" in action.label:
+                            if instance.send_mail(
+                                action.label.split("Send email template")[-1].strip()
+                            ):
+                                actions_done.append(action.label)
 
-                    if "Open URL" in action.label:
-                        open_url_data = instance.open_url(action.label,instance.requested_website)
-                        if open_url_data:
-                            all_urls.append(open_url_data)
-                            actions_done.append(action.label)
+                        if "Open URL" in action.label:
+                            open_url_data = instance.open_url(action.label,instance.requested_website)
+                            if open_url_data:
+                                all_urls.append(open_url_data)
+                                actions_done.append(action.label)
 
-                    if "Open Domain" in action.label:
-                        open_url_data = instance.open_domain(action.label,instance.requested_website)
-                        if open_url_data:
-                            all_urls.append(open_url_data)
-                            actions_done.append(action.label)
-        all_urls = remove_duplicate_combinations(all_urls)
-        actions_done = list(set(actions_done))
-        if post_user_data(instance.customer_id,categories,all_urls,data.get("inspectorSettings")).status_code == 200 :
-            if actions_done:
-                instance.action_done = ",".join(actions_done)
-                instance.save()
-    if hasattr(instance, '_processing'):
-        del instance._processing
+                        if "Open Domain" in action.label:
+                            open_url_data = instance.open_domain(action.label,instance.requested_website)
+                            if open_url_data:
+                                all_urls.append(open_url_data)
+                                actions_done.append(action.label)
+            all_urls = remove_duplicate_combinations(all_urls)
+            all_urls += urls
+            actions_done = list(set(actions_done))
+            if post_user_data(instance.customer_id,categories,all_urls,data.get("filterSettings")).status_code == 200 :
+                if actions_done:
+                    instance.action_done = ",".join(actions_done)
+                    instance.save()
+        if hasattr(instance, '_processing'):
+            del instance._processing
 
 class EmailTemplate(models.Model):
     name = models.CharField(max_length=100, unique=True)

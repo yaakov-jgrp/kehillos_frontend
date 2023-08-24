@@ -351,7 +351,6 @@ class ActionsView(APIView):
                         }, status=400)
                 
                 if str(template_id).isdigit():
-                    print("secon template")
                     template = models.EmailTemplate.objects.get(
                         id=template_id
                     )
