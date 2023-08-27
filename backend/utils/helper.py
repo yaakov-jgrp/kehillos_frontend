@@ -53,7 +53,7 @@ def replace_placeholders(template, replacements):
 
 
 def get_user_deatils(user_id):
-    url = "https://netfree.link/api/user/get-filter-settings?id=138766"
+    url = f"https://netfree.link/api/user/get-filter-settings?id={str(user_id)}"
     login_url = "https://netfree.link/api/user/login-by-password"
 
     USER_PASSWORD = settings.USER_PASSWORD
