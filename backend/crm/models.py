@@ -9,7 +9,9 @@ from utils.helper import post_user_data
 from utils.helper import get_user_deatils
 from urllib.parse import urlparse
 from utils.helper import send_email_with_template, replace_placeholders
+import logging
 
+cronjob_email_log = logging.getLogger('cronjob-email')
 def calculate_future_timestamp(amount, condition):
     current_datetime = datetime.datetime.now()
 
@@ -146,30 +148,33 @@ class Emailrequest(models.Model):
     def send_mail(self, template_name):
         try:
             template = EmailTemplate.objects.filter(name=template_name).first()
-            instance = SMTPEmail.objects.last()
-            settings.EMAIL_HOST_USER = instance.email
-            settings.EMAIL_HOST_PASSWORD = instance.password
-            subject = self.id
-            to_email = self.sender_email
-            template_name = "email.html"
-            admin_email = instance.email
-            format_variables = {
-                "request_id": str(self.id),
-                "client_name": self.username,
-                "client_email": self.sender_email,
-                "admin_email": admin_email,
-                "domain_requested": self.requested_website,
-            }
-            context = {
-                "your_string": replace_placeholders(template.html, format_variables)
-            }
-            if template.email_to == "admin_email":
-                to_email = admin_email
+            if template:
+                instance = SMTPEmail.objects.last()
+                settings.EMAIL_HOST_USER = instance.email
+                settings.EMAIL_HOST_PASSWORD = instance.password
+                subject = self.id
+                to_email = self.sender_email
+                template_name = "email.html"
+                admin_email = instance.email
+                format_variables = {
+                    "request_id": str(self.id),
+                    "client_name": self.username,
+                    "client_email": self.sender_email,
+                    "admin_email": admin_email,
+                    "domain_requested": self.requested_website,
+                }
+                context = {
+                    "your_string": replace_placeholders(template.html, format_variables)
+                }
+                if template.email_to == "admin_email":
+                    to_email = admin_email
 
-            send_email_with_template(subject, to_email, template_name, context)
-            return True
-        except Exception:
-            return False
+                send_email_with_template(subject, to_email, template_name, context)
+                cronjob_email_log.info(f"customer id : {self.customer_id}. email send to : {to_email}. domain_requested : {self.requested_website}. template id and name : {template.id}/{template.name}")
+                return True
+        except Exception as e:
+            cronjob_email_log.error(f"customer id : {self.customer_id}. error while sending mail : {e}")
+        return False
 
     def open_url(self,label,url):
         try:
@@ -179,9 +184,11 @@ class Emailrequest(models.Model):
                 amount_time = label.split("Open URL for")[1].strip().split(" ")
                 timestamp = calculate_future_timestamp(int(amount_time[0]),amount_time[1])
                 data.update({'exp':timestamp})
+            cronjob_email_log.info(f"customer id : {self.customer_id}. open url : {json.dumps(data)}")
             return data
         except Exception as e:
             print(e)
+            cronjob_email_log.error(f"customer id : {self.customer_id}. error while open url : {e}")
             return False
 
     def open_domain(self,label,url):
@@ -204,10 +211,11 @@ class Emailrequest(models.Model):
                 amount_time = label.split("Open Domain for")[1].strip().split(" ")
                 timestamp = calculate_future_timestamp(int(amount_time[0]),amount_time[1])
                 data.update({'exp':timestamp})
-
+            cronjob_email_log.info(f"customer id : {self.customer_id}. open doamin : {json.dumps(data)}")
             return data
         except Exception as e:
             print(e)
+            cronjob_email_log.error(f"customer id : {self.customer_id}. error while open domain : {e}")
             return False
 
 
@@ -216,8 +224,10 @@ def email_request_created_or_updated(sender, instance,created, **kwargs):
     if created:
         if hasattr(instance, '_processing'):
             return
+        cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
         instance._processing = True
         user_detail = get_user_deatils(instance.customer_id)
+        cronjob_email_log.info(f"customer id : {instance.customer_id}. get_user_data response code : {user_detail.status_code}")
         if user_detail.status_code == 200:
             data = user_detail.json()
             all_urls = []
@@ -270,12 +280,17 @@ def email_request_created_or_updated(sender, instance,created, **kwargs):
                                 all_urls.append(open_url_data)
                                 actions_done.append(action.label)
             all_urls = remove_duplicate_combinations(all_urls)
+            cronjob_email_log.info(f"customer id : {instance.customer_id}. Already requested website : {str(urls)}")
+            cronjob_email_log.info(f"customer id : {instance.customer_id}. New requested website : {str(all_urls)}")
             all_urls += urls
+
             actions_done = list(set(actions_done))
             if post_user_data(instance.customer_id,categories,all_urls,data).status_code == 200 :
                 if actions_done:
                     instance.action_done = " ,".join(actions_done)
                     instance.save()
+                    cronjob_email_log.info(f"customer id : {instance.customer_id}. total action done : {str(actions_done)}")
+                    cronjob_email_log.info(f"email request saving process end for customer id : {instance.customer_id} ")
         if hasattr(instance, '_processing'):
             del instance._processing
 

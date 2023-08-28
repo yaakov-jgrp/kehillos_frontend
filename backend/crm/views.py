@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from . serializer import (
+from crm.serializer import (
     EmailrequestSerializer, CategoriesSerializer,
     EmailTemplateSerializer, EmailTemplateListSerializer,
     EmailTemplateSchema
@@ -12,14 +12,16 @@ from utils.helper import (
 from django.conf import settings
 from datetime import datetime
 import requests
-from . import models
+from crm import models
 import imaplib
 import email
 import traceback
 import re
 import uuid
 import json
+import logging
 
+cronjob_log = logging.getLogger('cronjob-log')
 
 class CategoriesView(APIView):
 
@@ -662,6 +664,7 @@ class ReadEmail():
 
     def read_email_from_gmail(self):
         print("working!!")
+        cronjob_log.info(f"Cronjob start at {datetime.now()}")
 
         instance = models.SMTPEmail.objects.last()
         FROM_EMAIL = ""
@@ -775,11 +778,13 @@ class ReadEmail():
             imap_server.close()
             imap_server.logout()
             print("Done!!!")
+            cronjob_log.info(f"Cronjob done at {datetime.now()}")
 
         except Exception as e:
             traceback.print_exc()
             print("Error!!!")
             print(str(e))
+            cronjob_log.error(f"Cronjob error : {str(e)}")
 
     def decode_header(self, value):
         try:

@@ -194,3 +194,56 @@ SMTP_SERVER = "imap.gmail.com"
 USER_PASSWORD = "88069067"
 USERNAME = "+972583230207"
 EMAIL_HOST_ADMIN_USER = os.environ.get("EMAIL_HOST_ADMIN_USER")
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'root': {
+        'level': 'WARNING',
+        'handlers': ['general'],
+    },
+    'formatters': {
+        'default': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        }
+    },
+    'handlers': {
+        'general': {
+            'level': 'INFO',
+            'class': 'logging.handlers.WatchedFileHandler',
+            'formatter': 'default',
+            'filename': 'logs/error.log'
+        },
+        'cronjob': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.WatchedFileHandler',
+            'formatter': 'default',
+            'filename': 'logs/cronjob.log',
+            'encoding': 'utf-8' 
+        },
+        'cronjob-email': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.WatchedFileHandler',
+            'formatter': 'default',
+            'filename': 'logs/cronjob_requests.log',
+            'encoding': 'utf-8' 
+        }
+    },
+    'loggers': {
+        'general': {
+            'level': 'INFO',
+            'handlers': ['general'],
+            'propagate': False,
+        },
+        'cronjob-log': {
+            'level': 'DEBUG',
+            'handlers': ['cronjob'],
+            'propagate': False,
+        },
+        'cronjob-email': {
+            'level': 'DEBUG',
+            'handlers': ['cronjob-email'],
+            'propagate': False,
+        }
+    }
+}
