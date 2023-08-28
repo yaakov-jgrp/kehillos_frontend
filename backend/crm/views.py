@@ -785,6 +785,7 @@ class ReadEmail():
             print("Error!!!")
             print(str(e))
             cronjob_log.error(f"Cronjob error : {str(e)}")
+            cronjob_log.error(f"Cronjob error exception: {str(traceback.print_exc())}")
 
     def decode_header(self, value):
         try:
