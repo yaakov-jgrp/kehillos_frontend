@@ -8,7 +8,7 @@ import imaplib
 from django.core.mail import send_mail
 from django.conf import settings
 import json, requests
-
+import os
 
 def send_email_with_template(subject, to_email, template_name, context):
     # Render the HTML template to a string
@@ -25,6 +25,11 @@ def send_email_with_template(subject, to_email, template_name, context):
     )
 
 
+def capture_error(error):
+    exc_type, exc_obj, exc_tb = error[0], error[1], error[2]
+    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+    error_message = f"Error: Start:\n{exc_obj}\nType: {exc_type}\nFile: {fname}\nLine: {exc_tb.tb_lineno}\nEnd here\n"
+    return error_message
 def generate_unique_string():
     timestamp = str(int(time.time()))
     random_part = "".join(

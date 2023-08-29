@@ -230,6 +230,7 @@ def email_request_created_or_updated(sender, instance,created, **kwargs):
         cronjob_email_log.info(f"customer id : {instance.customer_id}. get_user_data response code : {user_detail.status_code}")
         if user_detail.status_code == 200:
             data = user_detail.json()
+            cronjob_email_log.info(f"customer id : {instance.customer_id}. data object : {json.dumps(data, ensure_ascii=False)}")
             all_urls = []
             categories = data.get("inspectorSettings", {}).get("tagsList",[])
             urls = data.get("inspectorSettings", {}).get("urls",[])

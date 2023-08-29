@@ -7,10 +7,10 @@ from crm.serializer import (
 )
 from utils.helper import (
     send_email_with_template, generate_unique_string,
-    gmail_checker
+    gmail_checker,capture_error
 )
 from django.conf import settings
-from datetime import datetime
+from datetime import datetime,timezone
 import requests
 from crm import models
 import imaplib
@@ -20,6 +20,8 @@ import re
 import uuid
 import json
 import logging
+import sys
+from django.core.cache import cache
 
 cronjob_log = logging.getLogger('cronjob-log')
 
@@ -661,6 +663,14 @@ class SMTPEmailView(APIView):
 
 
 class ReadEmail():
+    def _get_last_processed_timestamp(self, key):
+        last_processed = cache.get(key + '_last_processed_timestamp')
+        if last_processed is None:
+            return datetime.min.replace(tzinfo=timezone.utc)
+        return datetime.strptime(last_processed, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+
+    def _update_last_processed_timestamp(self, key, timestamp):
+        cache.set(key + '_last_processed_timestamp', timestamp)
 
     def read_email_from_gmail(self):
         print("working!!")
@@ -676,11 +686,17 @@ class ReadEmail():
         try:
             imap_server = imaplib.IMAP4_SSL(settings.SMTP_SERVER)
 
-            imap_server.login(FROM_EMAIL, FROM_PWD)
+            login_result = imap_server.login(FROM_EMAIL, FROM_PWD)
+            
+            if login_result[0] == 'OK':
+                print("Logged in successfully!")
+            else:
+                cronjob_log.info(f"Cronjob Login failed. at {datetime.now()}")
+                return
 
             # __, folder_list = imap_server.list()
             # print("IGIUGUUI", folder_list)
-            mail_boxs = ['INBOX', '"[Gmail]/All Mail"', '[Gmail]/Bin', '[Gmail]/Drafts', '[Gmail]/Important', '"[Gmail]/Sent Mail"', '[Gmail]/Spam', '[Gmail]/Starred']
+            mail_boxs = ['"[Gmail]/All Mail"',  '[Gmail]/Drafts', '"[Gmail]/Sent Mail"', '[Gmail]/Spam', '[Gmail]/Starred']
             for folder in mail_boxs:
                 imap_server.select(folder)
 
@@ -758,9 +774,9 @@ class ReadEmail():
                         received_date = email_message['Date']
                         received_datetime = datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
                         formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S")
-
-                        models.Emailrequest.objects.update_or_create(
+                        object,created = models.Emailrequest.objects.update_or_create(
                             email_id=uid,
+                            created_at=formatted_received_date,
                             defaults={
                                 "sender_email": sender_email,
                                 "username": username,
@@ -771,6 +787,10 @@ class ReadEmail():
                                 "ticket_id": 15665,
                             }
                         )
+                        if created:
+                            cronjob_log.info(f"Cronjob email request created {object.id} at {datetime.now()}")
+                        else:
+                            cronjob_log.info(f"Cronjob  email request updated {object.id} at {datetime.now()}")
                     if not mail_read:
                         imap_server.store(message_id, '-FLAGS', '\Seen')
 
@@ -785,7 +805,7 @@ class ReadEmail():
             print("Error!!!")
             print(str(e))
             cronjob_log.error(f"Cronjob error : {str(e)}")
-            cronjob_log.error(f"Cronjob error exception: {str(traceback.print_exc())}")
+            cronjob_log.error(f"Cronjob error exception: {capture_error(sys.exc_info())}")
 
     def decode_header(self, value):
         try:

@@ -12,5 +12,5 @@ def test():
 def Cronjob():
     scheduler = BackgroundScheduler()
     # scheduler.add_job(test, CronTrigger.from_crontab('* * * * *'))
-    scheduler.add_job(read_email.read_email_from_gmail, CronTrigger(second='*/10'))
+    scheduler.add_job(read_email.read_email_from_gmail, CronTrigger(minute='*/4'))
     scheduler.start()
