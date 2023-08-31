@@ -8,7 +8,7 @@ from utils.helper import remove_duplicate_combinations
 from utils.helper import post_user_data
 from utils.helper import get_user_deatils
 from urllib.parse import urlparse
-from utils.helper import send_email_with_template, replace_placeholders
+from utils.helper import send_email_with_template, replace_placeholders,NetfreeAPI
 import logging
 
 cronjob_email_log = logging.getLogger('cronjob-email')
@@ -234,11 +234,21 @@ def email_request_created_or_updated(sender, instance,created, **kwargs):
             all_urls = []
             categories = data.get("inspectorSettings", {}).get("tagsList",[])
             urls = data.get("inspectorSettings", {}).get("urls",[])
+            obj = NetfreeAPI()
+            res = obj.search_category(instance.requested_website)
+            categories_list = []
+            if res.status_code == 200:
+                try:
+                    keys = res.json()["tagValue"]["tags"].keys()
+                    categories_list = list(map(int, keys))
+                except Exception as e:
+                    cronjob_email_log.error(f"customer id : {instance.customer_id}. error while get categories : {e}")
+                    categories_list = []
             categories_obj = Categories.objects.filter(
-                categories_id__in=[int(i) for i in categories]
+                categories_id__in=[int(i) for i in categories_list]
             )
             actions_done = []
-            for i in categories_obj:
+            for i in categories_obj[:1]:
                 actions = Actions.objects.filter(category=i)
                 if actions.exists():
                     for action in actions:

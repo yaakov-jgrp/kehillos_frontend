@@ -214,7 +214,7 @@ class CategoriesView(APIView):
         }
 
         valid_domain = self.find_domain(params)
-        domain = valid_domain.json()["foundHost"] if valid_domain.status_code == 200 else ""
+        domain = valid_domain.json().get("foundHost","") if valid_domain.status_code == 200 else ""
         payload = json.dumps({
             "host": str(domain)
         })
