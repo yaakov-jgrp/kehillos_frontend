@@ -290,12 +290,11 @@ def email_request_created_or_updated(sender, instance,created, **kwargs):
                             if open_url_data:
                                 all_urls.append(open_url_data)
                                 actions_done.append(action.label)
-            all_urls = remove_duplicate_combinations(all_urls)
             cronjob_email_log.info(f"customer id : {instance.customer_id}. Already requested website : {str(urls)}")
             cronjob_email_log.info(f"customer id : {instance.customer_id}. New requested website : {str(all_urls)}")
             all_urls += urls
 
-            actions_done = list(set(actions_done))
+            actions_done = actions_done
             if post_user_data(instance.customer_id,categories,all_urls,data).status_code == 200 :
                 if actions_done:
                     instance.action_done = " ,".join(actions_done)
