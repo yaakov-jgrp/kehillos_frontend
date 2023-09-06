@@ -4,17 +4,13 @@ from django.dispatch import receiver
 import requests, json
 import datetime
 from django.conf import settings
-from utils.helper import remove_duplicate_combinations
-from utils.helper import post_user_data
-from utils.helper import get_user_deatils
-from urllib.parse import urlparse
+from crm.manager import EmailRequestProcessor
+
 from utils.helper import send_email_with_template, replace_placeholders,NetfreeAPI
 import logging
 
 cronjob_email_log = logging.getLogger('cronjob-email')
-def calculate_future_timestamp(amount, condition):
-    current_datetime = datetime.datetime.now()
-
+def calculate_future_timestamp(amount, condition,current_datetime):
     if condition == "Minutes":
         future_datetime = current_datetime + datetime.timedelta(minutes=amount)
     elif condition == "Hours":
@@ -176,13 +172,13 @@ class Emailrequest(models.Model):
             cronjob_email_log.error(f"customer id : {self.customer_id}. error while sending mail : {e}")
         return False
 
-    def open_url(self,label,url):
+    def open_url(self,label,url,current_datetime=False):
         try:
             data = {"url":url,
                     "rule":"open"}
             if len(label.split("Open URL for"))==2:
                 amount_time = label.split("Open URL for")[1].strip().split(" ")
-                timestamp = calculate_future_timestamp(int(amount_time[0]),amount_time[1])
+                timestamp = calculate_future_timestamp(int(amount_time[0]),amount_time[1],current_datetime)
                 data.update({'exp':timestamp})
             cronjob_email_log.info(f"customer id : {self.customer_id}. open url : {json.dumps(data)}")
             return data
@@ -191,7 +187,7 @@ class Emailrequest(models.Model):
             cronjob_email_log.error(f"customer id : {self.customer_id}. error while open url : {e}")
             return False
 
-    def open_domain(self,label,url):
+    def open_domain(self,label,url,current_datetime):
         try:
             parts = url.split("://")
             protocol = parts[0] if len(parts) > 1 else None
@@ -209,7 +205,7 @@ class Emailrequest(models.Model):
 
             if len(label.split("Open Domain for"))==2:
                 amount_time = label.split("Open Domain for")[1].strip().split(" ")
-                timestamp = calculate_future_timestamp(int(amount_time[0]),amount_time[1])
+                timestamp = calculate_future_timestamp(int(amount_time[0]),amount_time[1],current_datetime)
                 data.update({'exp':timestamp})
             cronjob_email_log.info(f"customer id : {self.customer_id}. open doamin : {json.dumps(data)}")
             return data
@@ -224,83 +220,12 @@ def email_request_created_or_updated(sender, instance,created, **kwargs):
     if created:
         if hasattr(instance, '_processing'):
             return
-        cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
         instance._processing = True
-        user_detail = get_user_deatils(instance.customer_id)
-        cronjob_email_log.info(f"customer id : {instance.customer_id}. get_user_data response code : {user_detail.status_code}")
-        if user_detail.status_code == 200:
-            data = user_detail.json()
-            cronjob_email_log.info(f"customer id : {instance.customer_id}. data object : {json.dumps(data, ensure_ascii=False)}")
-            all_urls = []
-            categories = data.get("inspectorSettings", {}).get("tagsList",[])
-            urls = data.get("inspectorSettings", {}).get("urls",[])
-            obj = NetfreeAPI()
-            res = obj.search_category(instance.requested_website)
-            categories_list = []
-            if res.status_code == 200:
-                try:
-                    keys = res.json()["tagValue"]["tags"].keys()
-                    categories_list = list(map(int, keys))
-                except Exception as e:
-                    cronjob_email_log.error(f"customer id : {instance.customer_id}. error while get categories : {e}")
-                    categories_list = []
-            categories_obj = Categories.objects.filter(
-                categories_id__in=[int(i) for i in categories_list]
-            )
-            actions_done = []
-            for i in categories_obj[:1]:
-                actions = Actions.objects.filter(category=i)
-                if actions.exists():
-                    for action in actions:
-                        if "Send email template" in action.label:
-                            if instance.send_mail(
-                                action.label.split("Send email template")[-1].strip()
-                            ):
-                                actions_done.append(action.label)
-
-                        if "Open URL" in action.label:
-                            open_url_data = instance.open_url(action.label,instance.requested_website)
-                            if open_url_data:
-                                all_urls.append(open_url_data)
-                                actions_done.append(action.label)
-
-                        if "Open Domain" in action.label:
-                            open_url_data = instance.open_domain(action.label,instance.requested_website)
-                            if open_url_data:
-                                all_urls.append(open_url_data)
-                                actions_done.append(action.label)
-            if not actions_done:
-                actions = Actions.objects.filter(is_default=True,category=None)
-                if actions.exists():
-                    for action in actions:
-                        if "Send email template" in action.label:
-                            if instance.send_mail(
-                                action.label.split("Send email template")[-1].strip()
-                            ):
-                                actions_done.append(action.label)
-
-                        if "Open URL" in action.label:
-                            open_url_data = instance.open_url(action.label,instance.requested_website)
-                            if open_url_data:
-                                all_urls.append(open_url_data)
-                                actions_done.append(action.label)
-
-                        if "Open Domain" in action.label:
-                            open_url_data = instance.open_domain(action.label,instance.requested_website)
-                            if open_url_data:
-                                all_urls.append(open_url_data)
-                                actions_done.append(action.label)
-            cronjob_email_log.info(f"customer id : {instance.customer_id}. Already requested website : {str(urls)}")
-            cronjob_email_log.info(f"customer id : {instance.customer_id}. New requested website : {str(all_urls)}")
-            all_urls += urls
-
-            actions_done = actions_done
-            if post_user_data(instance.customer_id,categories,all_urls,data).status_code == 200 :
-                if actions_done:
-                    instance.action_done = " ,".join(actions_done)
-                    instance.save()
-                    cronjob_email_log.info(f"customer id : {instance.customer_id}. total action done : {str(actions_done)}")
-                    cronjob_email_log.info(f"email request saving process end for customer id : {instance.customer_id} ")
+        obj =EmailRequestProcessor(instance)
+        if obj.process():
+            cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
+        else:
+            cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
         if hasattr(instance, '_processing'):
             del instance._processing
 
