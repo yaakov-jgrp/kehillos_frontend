@@ -41,6 +41,18 @@ class EmailRequestProcessor:
         self.email_request = email_request
         self.action_priority_queue = ActionPriorityQueue()
         self.netfree_api = NetfreeAPI()
+        self.category_count = 0
+        self.default = False
+        self.all_urls = []
+        self.actions_done = []
+        self.base_ranks = {
+            'Open URL for':2,
+            'Open URL': 3,
+            'Open Domain for':4,
+            'Open Domain': 5,
+
+        }
+
     def send_mail(self, template_name):
         from crm.models import EmailTemplate,SMTPEmail
         try:
@@ -133,7 +145,7 @@ class EmailRequestProcessor:
                 data.update({'exp':timestamp})
             return data
         except Exception as e:
-            print(e)
+            cronjob_email_log.error(f"customer id : {self.email_request.customer_id}. error while open domain : {e}")
             return False
     def is_domain_or_full_url(self,input_str):
         try:
@@ -160,6 +172,7 @@ class EmailRequestProcessor:
         categories_obj = Categories.objects.filter(
                 categories_id__in=[int(i) for i in categories_list]
             )
+        self.category_count = categories_obj.count()
         empty = True
         data = {}
         for i in categories_obj:
@@ -184,10 +197,10 @@ class EmailRequestProcessor:
                             amount_time = action.label.split("Open Domain for")[1].strip().split(" ")
                             timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
                             data2.update({"rule":"Open Domain for",'exp':timestamp})
-                        print(data2)
                         data.get(i.id).append(data2)
             if empty:
                 actions = Actions.objects.filter(is_default=True,category=None)
+                self.default = True
                 if actions.exists():
                     data.update({"default":[]})
                     empty = False
@@ -213,56 +226,141 @@ class EmailRequestProcessor:
                             data.get(i.id).append(data2)
             categories_data.update(data)
         return categories_data
+    def has_data_in_single_key(self,d):
+        data_count = 0
+        categories_key = False
 
+        for key, value in d.items():
+            if isinstance(value, list) and len(value) > 0:
+                categories_key = key
+                data_count += 1
+                if data_count > 1:
+                    return False,False # Data in more than one key
+
+        return data_count == 1,categories_key
+    def cate_process(self,categories):
+        current_datetime = datetime.datetime.now()
+        for action_data in categories:
+            action = action_data.get('rule', '')  # Extract the action from the dictionary
+            duration = action_data.get('exp', None)  # Extract the duration from the dictionary
+            label = action_data.get('label', None)
+            if action == 'Send email template':
+                if self.send_mail(label.split("Send email template")[-1].strip()):
+                    self.actions_done.append(label)
+            elif action == 'Open URL':
+                open_url_data = self.email_request.open_url("Open URL",self.email_request.requested_website,current_datetime)
+                if open_url_data:
+                    self.all_urls.append(open_url_data)
+                    self.actions_done.append(label)
+
+            elif action == 'Open URL for':
+                data = {"url":self.email_request.requested_website,
+                            "rule":"open"}
+                timestamp = self.calculate_future_timestamp(duration,"Minutes",current_datetime)
+                data.update({'exp':timestamp})
+                self.all_urls.append(data)
+                self.actions_done.append(label)
+            elif action == 'Open Domain for':
+                data = self.open_domain('Open Domain for',self.email_request.requested_website,duration,current_datetime)
+                self.all_urls.append(data)
+                self.actions_done.append(label)
+            elif action == 'Open Domain':
+                data = self.open_domain('Open Domain',self.email_request.requested_website,duration,current_datetime)
+                self.all_urls.append(data)
+                self.actions_done.append(label)
+        return True
+
+    def calculate_min_rank(self,data_list):
+        def custom_sort(item):
+            rule_value = item['rule']
+            exp_value = item.get('exp', 0)
+            base_rank = self.base_ranks.get(rule_value, 0)
+            return (base_rank, exp_value)
+        for key, value_list in data_list.items():
+            value_list.sort(key=custom_sort)
+        min_exp_value = float('inf')  # Set to positive infinity initially
+        min_exp_value_domain = float('inf')
+        corresponding_keys = set()  # Use a set to store keys with the same minimum 'exp' value
+
+        # Iterate through the dictionaries to find the minimum 'exp' value and corresponding keys
+        for key, item_list in data_list.items():
+            for item in item_list:
+                if item['rule'] == "Open URL for" and item['exp'] < min_exp_value:
+                    min_exp_value = item['exp']
+                    corresponding_keys = {key}  # Start a new set with the current key
+                elif item['rule'] == "Open URL for" and item['exp'] == min_exp_value:
+                    corresponding_keys.add(key)  # Add the current key to the set
+        # Only keep the corresponding_keys set if it contains more than one key
+        if len(corresponding_keys) > 1:
+            result_set = corresponding_keys.copy()
+            corresponding_key = set({}) 
+            for i in result_set:
+                for item_list in data_list.get(i):
+                    if item_list['rule'] == "Open URL":
+                        corresponding_key.add(i)  # Add the current key to the 
+            if len(corresponding_key) > 1:
+                corresponding_keys = corresponding_key.copy()
+            elif len(corresponding_keys) == 1:
+                return list(corresponding_keys)[0] 
+            else:
+                return None
+
+        if len(corresponding_keys) > 1:
+            result_set = corresponding_keys.copy()
+            corresponding_key = set({}) 
+            for i in result_set:
+                for item in data_list.get(i):
+                    if item['rule'] == "Open Domain for" and item['exp'] < min_exp_value_domain:
+                        min_exp_value_domain = item['exp']
+                        corresponding_key.add(i)
+                    elif item['rule'] == "Open Domain for" and item['exp'] == min_exp_value_domain:
+                        corresponding_key.add(i)  # Add the current key to the set
+            if len(corresponding_key) > 1:
+                corresponding_keys = corresponding_key.copy()
+            elif len(corresponding_key) == 1:
+                return list(corresponding_key)[0] 
+            else:
+                return list(corresponding_keys)[0]
+        if len(corresponding_keys) > 1:
+            result_set = corresponding_keys.copy()
+            corresponding_key = set({}) 
+            for i in result_set:
+                for item_list in data_list.get(i):
+                    if item_list['rule'] == "Open Domain":
+                        corresponding_key.add(i)  # Add the current key to the set
+            if len(corresponding_key) > 1:
+                return list(corresponding_key)[0] 
+            elif len(corresponding_key) == 1:
+                return list(corresponding_key)[0] 
+            else:
+                return list(corresponding_keys)[0]
+        return False
     def process(self):
         # Use find_categories_by_url_or_domain to get all actions and durations associated with the URL or domain
         categories_data = self.find_categories_by_url_or_domain(self.email_request.requested_website)
-        # Populate action_priority_queue by adding these actions and durations using add_action()
-        for category, action_duration_list in categories_data.items():
-            for action_data in action_duration_list:
-                action = action_data.get('rule', '')  # Extract the action from the dictionary
-                duration = action_data.get('exp', None)  # Extract the duration from the dictionary
-                label = action_data.get('label', None)
-                self.action_priority_queue.add_action(action, duration,label)
-
-        # Call get_strictest_action() to find the strictest action and its duration
-        strictest_action, strictest_duration,strictest_label = self.action_priority_queue.get_strictest_action()
-        all_urls = []
-        actions_done = []
-        current_datetime = datetime.datetime.now()
-        if strictest_action == 'Send email template':
-            if self.send_mail(strictest_duration):
-                actions_done.append(strictest_label)
-        elif strictest_action == 'Open URL':
-            open_url_data = self.email_request.open_url("Open URL",self.email_request.requested_website,current_datetime)
-            if open_url_data:
-                all_urls.append(open_url_data)
-                actions_done.append(strictest_label)
-
-        elif strictest_action == 'Open URL for':
-            data = {"url":self.email_request.requested_website,
-                    "rule":"open"}
-            timestamp = self.calculate_future_timestamp(strictest_duration,"Minutes",current_datetime)
-            data.update({'exp':timestamp})
-            all_urls.append(data)
-            actions_done.append(strictest_label)
-        elif strictest_action == 'Open Domain for':
-            data = self.open_domain('Open Domain for',self.email_request.requested_website,strictest_duration,current_datetime)
-            all_urls.append(data)
-            actions_done.append(strictest_label)
-        elif strictest_action == 'Open Domain':
-            data = self.open_domain('Open Domain',self.email_request.requested_website,strictest_duration,current_datetime)
-            all_urls.append(data)
-            actions_done.append(strictest_label)
-        if all_urls:
-            if not self.sync_data_with_netfree(all_urls):
-                return False
-        cronjob_email_log.info(f"customer id : {self.email_request.customer_id}. total urls : {str(all_urls)}")
-        cronjob_email_log.info(f"customer id : {self.email_request.customer_id}. strictest_action : {str(strictest_label)}")
-        if actions_done:
-            self.email_request.action_done = " ,".join(actions_done)
-            self.email_request.save()
-            cronjob_email_log.info(f"customer id : {self.email_request.customer_id}. total action done : {str(actions_done)}")
-            cronjob_email_log.info(f"email request saving process end for customer id : {self.email_request.customer_id} ")
-            return True
+        single,cate_key = self.has_data_in_single_key(categories_data)
+        if single:
+            if self.cate_process(categories_data.get(cate_key)):
+                if self.all_urls:
+                    if not self.sync_data_with_netfree(self.all_urls):
+                        return False
+                if self.actions_done:
+                    self.email_request.action_done = " ,".join(self.actions_done)
+                    self.email_request.save()
+                    cronjob_email_log.info(f"customer id : {self.email_request.customer_id}. total action done : {str(self.actions_done)}")
+                    cronjob_email_log.info(f"email request saving process end for customer id : {self.email_request.customer_id} ")
+                    return True
+                
+        if not single and self.category_count>0:
+            lowest_rank_key = self.calculate_min_rank(categories_data)
+            if self.cate_process(categories_data.get(lowest_rank_key)):
+                if self.all_urls:
+                    if not self.sync_data_with_netfree(self.all_urls):
+                        return False
+                if self.actions_done:
+                    self.email_request.action_done = " ,".join(self.actions_done)
+                    self.email_request.save()
+                    cronjob_email_log.info(f"customer id : {self.email_request.customer_id}. total action done : {str(self.actions_done)}")
+                    cronjob_email_log.info(f"email request saving process end for customer id : {self.email_request.customer_id} ")
+                    return True
         return False
