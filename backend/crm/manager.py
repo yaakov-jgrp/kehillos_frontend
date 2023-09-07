@@ -304,6 +304,8 @@ class EmailRequestProcessor:
                 return list(corresponding_keys)[0] 
             else:
                 return None
+        elif len(corresponding_keys) == 1:
+                return list(corresponding_keys)[0]
 
         if len(corresponding_keys) > 1:
             result_set = corresponding_keys.copy()
