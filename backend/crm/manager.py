@@ -280,53 +280,56 @@ class EmailRequestProcessor:
             value_list.sort(key=custom_sort)
         min_exp_value = float('inf')  # Set to positive infinity initially
         min_exp_value_domain = float('inf')
-        corresponding_keys = set()  # Use a set to store keys with the same minimum 'exp' value
+        corresponding_keys = set({})  # Use a set to store keys with the same minimum 'exp' value
 
         # Iterate through the dictionaries to find the minimum 'exp' value and corresponding keys
         for key, item_list in data_list.items():
             for item in item_list:
                 if item['rule'] == "Open URL for" and item['exp'] < min_exp_value:
                     min_exp_value = item['exp']
-                    corresponding_keys = {key}  # Start a new set with the current key
+                    corresponding_keys.clear()
+                    corresponding_keys.add(key) # Start a new set with the current key
                 elif item['rule'] == "Open URL for" and item['exp'] == min_exp_value:
                     corresponding_keys.add(key)  # Add the current key to the set
         # Only keep the corresponding_keys set if it contains more than one key
-        if len(corresponding_keys) > 1:
-            result_set = corresponding_keys.copy()
-            corresponding_key = set({}) 
-            for i in result_set:
-                for item_list in data_list.get(i):
-                    if item_list['rule'] == "Open URL":
-                        corresponding_key.add(i)  # Add the current key to the 
-            if len(corresponding_key) > 1:
-                corresponding_keys = corresponding_key.copy()
-            elif len(corresponding_keys) == 1:
-                return list(corresponding_keys)[0] 
-            else:
-                return None
-        elif len(corresponding_keys) == 1:
+        if len(corresponding_keys) == 1:
                 return list(corresponding_keys)[0]
 
-        if len(corresponding_keys) > 1:
+        if len(corresponding_keys) > 1 or len(corresponding_keys) ==0 :
             result_set = corresponding_keys.copy()
             corresponding_key = set({}) 
-            for i in result_set:
-                for item in data_list.get(i):
-                    if item['rule'] == "Open Domain for" and item['exp'] < min_exp_value_domain:
-                        min_exp_value_domain = item['exp']
+            for i in result_set if len(corresponding_keys) > 1 else data_list :
+                for item_list in data_list.get(i):
+                    if item_list['rule'] == "Open URL":
                         corresponding_key.add(i)
-                    elif item['rule'] == "Open Domain for" and item['exp'] == min_exp_value_domain:
-                        corresponding_key.add(i)  # Add the current key to the set
             if len(corresponding_key) > 1:
                 corresponding_keys = corresponding_key.copy()
             elif len(corresponding_key) == 1:
                 return list(corresponding_key)[0] 
-            else:
+        elif len(corresponding_keys) == 1:
                 return list(corresponding_keys)[0]
-        if len(corresponding_keys) > 1:
+
+        result_set = corresponding_keys.copy()
+        corresponding_key = set({})
+
+        for i in result_set if len(corresponding_keys) > 1 else data_list:
+            for item in data_list.get(i):
+                if item['rule'] == "Open Domain for" and item['exp'] < min_exp_value_domain:
+                    min_exp_value_domain = item['exp']
+                    corresponding_key.clear()
+                    corresponding_key.add(i)
+                elif item['rule'] == "Open Domain for" and item['exp'] == min_exp_value_domain:
+                    corresponding_key.add(i)
+
+        if len(corresponding_key) > 1:
+            corresponding_keys = corresponding_key.copy()
+        elif len(corresponding_key) == 1:
+            return list(corresponding_key)[0] 
+
+        if len(corresponding_keys) > 1 or len(corresponding_keys) ==0:
             result_set = corresponding_keys.copy()
             corresponding_key = set({}) 
-            for i in result_set:
+            for i in result_set if len(corresponding_keys) > 1 else data_list:
                 for item_list in data_list.get(i):
                     if item_list['rule'] == "Open Domain":
                         corresponding_key.add(i)  # Add the current key to the set
@@ -334,8 +337,6 @@ class EmailRequestProcessor:
                 return list(corresponding_key)[0] 
             elif len(corresponding_key) == 1:
                 return list(corresponding_key)[0] 
-            else:
-                return list(corresponding_keys)[0]
         return False
     def process(self):
         # Use find_categories_by_url_or_domain to get all actions and durations associated with the URL or domain
