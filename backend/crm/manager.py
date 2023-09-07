@@ -7,39 +7,9 @@ import logging
 
 cronjob_email_log = logging.getLogger('cronjob-email')
 
-class ActionPriorityQueue:
-    def __init__(self):
-        self.queue = []
-
-    def add_action(self, action: str, duration: Union[int, None],label:str):
-        rank = self.calculate_rank(action, duration)
-        self.queue.append((action, duration, rank,label))
-
-    def calculate_rank(self, action: str, duration: Union[int, None]) -> int:
-        base_ranks = {
-            'Send email template': 1,
-            'Open URL for':2,
-            'Open URL': 3,
-            'Open Domain for':4,
-            'Open Domain': 5,
-
-        }
-
-        return base_ranks.get(action, 1)
-
-    def get_strictest_action(self) -> Tuple[str, Union[int, None]]:
-        # Sort the queue by rank in ascending order
-        self.queue.sort(key=lambda x: (x[2], x[1] if x[0] in ('Open URL for', 'Open Domain for') else None))
-        # Return the action and duration of the tuple with the lowest rank
-        if self.queue:
-            return self.queue[0][0], self.queue[0][1],self.queue[0][3]
-        else:
-            return '', None
-
 class EmailRequestProcessor:
     def __init__(self,email_request):
         self.email_request = email_request
-        self.action_priority_queue = ActionPriorityQueue()
         self.netfree_api = NetfreeAPI()
         self.category_count = 0
         self.default = False
@@ -79,10 +49,10 @@ class EmailRequestProcessor:
                     to_email = admin_email
 
                 send_email_with_template(subject, to_email, template_name, context)
-                # cronjob_email_log.info(f"customer id : {self.customer_id}. email send to : {to_email}. domain_requested : {self.requested_website}. template id and name : {template.id}/{template.name}")
+                cronjob_email_log.info(f"customer id : {self.email_request.customer_id}. email send to : {to_email}. domain_requested : {self.email_request.requested_website}. template id and name : {template.id}/{template.name}")
                 return True
         except Exception as e:
-            # cronjob_email_log.error(f"customer id : {self.customer_id}. error while sending mail : {e}")
+            cronjob_email_log.error(f"customer id : {self.email_request.customer_id}. error while sending mail : {e}")
             pass
         return False
     def calculate_future_timestamp(self,amount, condition,current_datetime):
@@ -198,33 +168,30 @@ class EmailRequestProcessor:
                             timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
                             data2.update({"rule":"Open Domain for",'exp':timestamp})
                         data.get(i.id).append(data2)
-            if empty:
-                actions = Actions.objects.filter(is_default=True,category=None)
-                self.default = True
-                if actions.exists():
-                    data.update({"default":[]})
-                    empty = False
-                    for action in actions:
-                        if "Send email template" in action.label:
-                            data.get(i.id).append({"url":action.label,"rule":"Send email template","exp":action.label.split("Send email template")[-1].strip(),'label':action.label})
-                        if "Open URL" in action.label:
-                            data2 = {"url":action.label,"rule":"Open URL",'label':action.label}
-
-                            if len(action.label.split("Open URL for"))==2:
-                                amount_time = action.label.split("Open URL for")[1].strip().split(" ")
-                                timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
-                                data2.update({"rule":"Open URL for",'exp':timestamp})
-                            data.get(i.id).append(data2)
-
-                        if "Open Domain" in action.label:
-                            data2 = {"url":action.label,"rule":"Open Domain",'label':action.label}
-
-                            if len(action.label.split("Open Domain for"))==2:
-                                amount_time = action.label.split("Open Domain for")[1].strip().split(" ")
-                                timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
-                                data2.update({"rule":"Open Domain for",'exp':timestamp})
-                            data.get(i.id).append(data2)
-            categories_data.update(data)
+        if empty:
+            actions = Actions.objects.filter(is_default=True,category=None)
+            self.default = True
+            if actions.exists():
+                data.update({"default":[]})
+                empty = False
+                for action in actions:
+                    if "Send email template" in action.label:
+                        data.get(i.id).append({"url":action.label,"rule":"Send email template","exp":action.label.split("Send email template")[-1].strip(),'label':action.label})
+                    if "Open URL" in action.label:
+                        data2 = {"url":action.label,"rule":"Open URL",'label':action.label}
+                        if len(action.label.split("Open URL for"))==2:
+                            amount_time = action.label.split("Open URL for")[1].strip().split(" ")
+                            timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
+                            data2.update({"rule":"Open URL for",'exp':timestamp})
+                        data.get(i.id).append(data2)
+                    if "Open Domain" in action.label:
+                        data2 = {"url":action.label,"rule":"Open Domain",'label':action.label}
+                        if len(action.label.split("Open Domain for"))==2:
+                            amount_time = action.label.split("Open Domain for")[1].strip().split(" ")
+                            timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
+                            data2.update({"rule":"Open Domain for",'exp':timestamp})
+                        data.get(i.id).append(data2)
+        categories_data.update(data)
         return categories_data
     def has_data_in_single_key(self,d):
         data_count = 0
@@ -356,7 +323,8 @@ class EmailRequestProcessor:
                 
         if not single and self.category_count>0:
             lowest_rank_key = self.calculate_min_rank(categories_data)
-            if self.cate_process(categories_data.get(lowest_rank_key)):
+            cronjob_email_log.info(f"customer id : {self.email_request.customer_id}. lowest_rank_key : {str(lowest_rank_key)}")
+            if lowest_rank_key and self.cate_process(categories_data.get(lowest_rank_key)):
                 if self.all_urls:
                     if not self.sync_data_with_netfree(self.all_urls):
                         return False
