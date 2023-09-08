@@ -52,7 +52,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'user',
+    'celery',
     'crm',
+    'django_celery_beat',
     'corsheaders',
     'django_apscheduler',
 ]
@@ -194,6 +196,12 @@ SMTP_SERVER = "imap.gmail.com"
 USER_PASSWORD = "88069067"
 USERNAME = "+972583230207"
 EMAIL_HOST_ADMIN_USER = os.environ.get("EMAIL_HOST_ADMIN_USER")
+
+BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 LOGGING = {
     'version': 1,
