@@ -4,6 +4,7 @@ import SearchField from "../component/fields/SearchField";
 import requestService from '../services/request';
 import Loader from '../component/common/Loader';
 
+
 let filterFields = {
   id: '',
   created: '',
@@ -151,9 +152,18 @@ const Request = () => {
                   <tr className='h-[75px]' key={el.id}>
                     <td>#{el.id}</td>
                     <td>{formateDateTime(el.created_at).date}<br />{formateDateTime(el.created_at).time}</td>
-                    <td>#{el.customer_id}<br /> {el.username}<br />{el.sender_email}</td>
+                    <td>
+                      <a href={`https://netfree.link/app/#/sectors/user-filter-settings/${el.customer_id}`} target='_blank' rel="noreferrer"
+                        className='text-[#2B3674] hover:text-[#2B3674] font-bold'
+                      >#{el.customer_id}<br /> {el.username}<br />{el.sender_email}</a>
+                    </td>
                     <td>{el.request_type}</td>
-                    <td>{el.requested_website}<br />{el.text}</td>
+                    <td>
+                      <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold'>{el.requested_website}</a>
+                      <br />
+                      {el.text}
+                        {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />                  */}
+                      </td> 
                     <td className='flex justify-center gap-4 px-2'>
                       <div className='bg-[#F4F7FE] px-2 py-1'>{el.action_done}</div>
                     </td>
