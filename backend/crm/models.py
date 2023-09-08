@@ -5,7 +5,7 @@ import requests, json
 import datetime
 from django.conf import settings
 from crm.manager import EmailRequestProcessor
-
+from django.db import transaction
 from utils.helper import send_email_with_template, replace_placeholders,NetfreeAPI
 import logging
 
@@ -221,13 +221,15 @@ def email_request_created_or_updated(sender, instance,created, **kwargs):
         if hasattr(instance, '_processing'):
             return
         instance._processing = True
-        obj =EmailRequestProcessor(instance)
-        if obj.process():
-            cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
-        else:
-            cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
-        if hasattr(instance, '_processing'):
-            del instance._processing
+        
+        with transaction.atomic():
+            obj =EmailRequestProcessor(instance)
+            if obj.process():
+                cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
+            else:
+                cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
+            if hasattr(instance, '_processing'):
+                del instance._processing
 
 class EmailTemplate(models.Model):
     name = models.CharField(max_length=100, unique=True)

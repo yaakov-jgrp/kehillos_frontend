@@ -10,7 +10,8 @@ from utils.helper import (
     gmail_checker,capture_error
 )
 from django.conf import settings
-from datetime import datetime,timezone
+from datetime import datetime
+from django.utils import timezone
 import requests
 from crm import models
 import imaplib
@@ -22,7 +23,7 @@ import json
 import logging
 import sys
 from django.core.cache import cache
-
+from django.db import transaction
 cronjob_log = logging.getLogger('cronjob-log')
 
 class CategoriesView(APIView):
@@ -696,7 +697,7 @@ class ReadEmail():
 
             # __, folder_list = imap_server.list()
             # print("IGIUGUUI", folder_list)
-            mail_boxs = ['"[Gmail]/All Mail"',  '[Gmail]/Drafts', '"[Gmail]/Sent Mail"', '[Gmail]/Spam', '[Gmail]/Starred']
+            mail_boxs = ['"[Gmail]/All Mail"',  '[Gmail]/Drafts']
             for folder in mail_boxs:
                 imap_server.select(folder)
 
@@ -773,24 +774,27 @@ class ReadEmail():
                                 username = username_part
                         received_date = email_message['Date']
                         received_datetime = datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
-                        formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S")
-                        object,created = models.Emailrequest.objects.update_or_create(
-                            email_id=uid,
-                            created_at=formatted_received_date,
-                            defaults={
-                                "sender_email": sender_email,
-                                "username": username,
-                                "customer_id": customer_id,
-                                "requested_website": website_url,
-                                "text": body,
-                                "created_at": formatted_received_date,
-                                "ticket_id": 15665,
-                            }
-                        )
-                        if created:
-                            cronjob_log.info(f"Cronjob email request created {object.id} at {datetime.now()}")
-                        else:
-                            cronjob_log.info(f"Cronjob  email request updated {object.id} at {datetime.now()}")
+                        formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S %z")
+                        created_at_datetime = timezone.datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
+                        
+                        with transaction.atomic():
+                            object,created = models.Emailrequest.objects.update_or_create(
+                                email_id=uid,
+                                created_at=created_at_datetime,
+                                defaults={
+                                    "sender_email": sender_email,
+                                    "username": username,
+                                    "customer_id": customer_id,
+                                    "requested_website": website_url,
+                                    "text": body,
+                                    "created_at": created_at_datetime,
+                                    "ticket_id": 15665,
+                                }
+                            )
+                            if created:
+                                cronjob_log.info(f"Cronjob email request created {object.id} at {datetime.now()}")
+                            else:
+                                cronjob_log.info(f"Cronjob  email request updated {object.id} at {datetime.now()}")
                     if not mail_read:
                         imap_server.store(message_id, '-FLAGS', '\Seen')
 
