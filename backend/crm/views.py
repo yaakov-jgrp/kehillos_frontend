@@ -744,95 +744,98 @@ class ReadEmail():
                 cronjob_log.info(f"fetched ids {str(message_ids)}")
                 cronjob_log.info(f"new messages ids {str(new)}")
                 for message_id in new:
-                    mail_read = True
-                    response, data = imap_server.fetch(message_id, '(FLAGS)')
-                    if response == 'OK':
-                        flags = data[0].split()[2]  # Flags are in the third element
-                        if b'\Seen' not in flags:
-                            mail_read =False
                     try:
-                        _ , response = imap_server.fetch(message_id, '(UID)')
-                        uid = response[0].split()[2].decode().replace(")", "")
-                    except Exception:
-                        uid = uuid.uuid4()
+                        mail_read = True
+                        response, data = imap_server.fetch(message_id, '(FLAGS)')
+                        if response == 'OK':
+                            flags = data[0].split()[2]  # Flags are in the third element
+                            if b'\Seen' not in flags:
+                                mail_read =False
+                        try:
+                            _ , response = imap_server.fetch(message_id, '(UID)')
+                            uid = response[0].split()[2].decode().replace(")", "")
+                        except Exception:
+                            uid = uuid.uuid4()
 
-                    status, message_data = imap_server.fetch(message_id, '(RFC822)')
-                    raw_email = message_data[0][1]
-                    email_message = email.message_from_bytes(raw_email)
+                        status, message_data = imap_server.fetch(message_id, '(RFC822)')
+                        raw_email = message_data[0][1]
+                        email_message = email.message_from_bytes(raw_email)
 
-                    subject = email_message.get('Subject')
-                    decoded_subject = email.header.decode_header(subject)
+                        subject = email_message.get('Subject')
+                        decoded_subject = email.header.decode_header(subject)
 
-                    # Combine the parts of the decoded subject into a single string
-                    subject = ""
-                    for part, encoding in decoded_subject:
-                        if isinstance(part, bytes):
-                            subject += part.decode(encoding or 'utf-8', errors='ignore')
-                        else:
-                            subject += part
-                    try:
-                        target_sub = subject.split("#")[0][::-1]
-                    except:
-                        target_sub = ""
-                    matching_str = "שמתשמ תאמ הינפ"
-                    if len(target_sub) >0 and target_sub in " שמתשמ תאמ הינפ":
-
-                        if email_message.is_multipart():
-                            # If the email has multiple parts, iterate over them
-                            for part in email_message.walk():
-                                if part.get_content_type() == "text/plain":
-                                    body = part.get_payload(decode=True).decode()
-                                    break
-                        else:
-                            body = email_message.get_payload(decode=True).decode()
-
-
-                        pattern = r'(https?://\S+)'
-                        match = re.search(pattern, body)
-
-                        website_url = ""
-                        if match:
-                            website_url = match.group(1)
-
-                        email_subject = subject
-                        customer_id = email_subject.split("#")[-1]
-                        username, sender_email = self.decode_header(email_message['From'])
-
-
-                        decoded_username = email.header.decode_header(username)
                         # Combine the parts of the decoded subject into a single string
                         subject = ""
-                        for username_part, username_encoding in decoded_username:
-                            if isinstance(username_part, bytes):
-                                username =  username_part.decode(username_encoding or 'utf-8', errors='ignore')
+                        for part, encoding in decoded_subject:
+                            if isinstance(part, bytes):
+                                subject += part.decode(encoding or 'utf-8', errors='ignore')
+                            else:
+                                subject += part
+                        try:
+                            target_sub = subject.split("#")[0][::-1]
+                        except:
+                            target_sub = ""
+                        matching_str = "שמתשמ תאמ הינפ"
+                        if len(target_sub) >0 and target_sub in " שמתשמ תאמ הינפ":
 
+                            if email_message.is_multipart():
+                                # If the email has multiple parts, iterate over them
+                                for part in email_message.walk():
+                                    if part.get_content_type() == "text/plain":
+                                        body = part.get_payload(decode=True).decode()
+                                        break
                             else:
-                                username = username_part
-                        received_date = email_message['Date']
-                        received_datetime = datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
-                        formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S %z")
-                        created_at_datetime = timezone.datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
-                        
-                        with transaction.atomic():
-                            object,created = models.Emailrequest.objects.update_or_create(
-                                email_id=uid,
-                                created_at=created_at_datetime,
-                                defaults={
-                                    "sender_email": sender_email,
-                                    "username": username,
-                                    "customer_id": customer_id,
-                                    "requested_website": website_url,
-                                    "text": body,
-                                    "created_at": created_at_datetime,
-                                    "ticket_id": 15665,
-                                }
-                            )
-                            if created:
-                                cronjob_log.info(f"Cronjob email request created {object.id} at {datetime.now()}")
-                            else:
-                                cronjob_log.info(f"Cronjob  email request updated {object.id} at {datetime.now()}")
-                    if not mail_read:
-                        imap_server.store(message_id, '-FLAGS', '\Seen')
+                                body = email_message.get_payload(decode=True).decode()
+
+
+                            pattern = r'(https?://\S+)'
+                            match = re.search(pattern, body)
+
+                            website_url = ""
+                            if match:
+                                website_url = match.group(1)
+
+                            email_subject = subject
+                            customer_id = email_subject.split("#")[-1]
+                            username, sender_email = self.decode_header(email_message['From'])
+
+
+                            decoded_username = email.header.decode_header(username)
+                            # Combine the parts of the decoded subject into a single string
+                            subject = ""
+                            for username_part, username_encoding in decoded_username:
+                                if isinstance(username_part, bytes):
+                                    username =  username_part.decode(username_encoding or 'utf-8', errors='ignore')
+
+                                else:
+                                    username = username_part
+                            received_date = email_message['Date']
+                            received_datetime = datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
+                            formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S %z")
+                            created_at_datetime = timezone.datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
+                            
+                            with transaction.atomic():
+                                object,created = models.Emailrequest.objects.update_or_create(
+                                    email_id=uid,
+                                    created_at=created_at_datetime,
+                                    defaults={
+                                        "sender_email": sender_email,
+                                        "username": username,
+                                        "customer_id": customer_id,
+                                        "requested_website": website_url,
+                                        "text": body,
+                                        "created_at": created_at_datetime,
+                                        "ticket_id": 15665,
+                                    }
+                                )
+                                if created:
+                                    cronjob_log.info(f"Cronjob email request created {object.id} at {datetime.now()}")
+                                else:
+                                    cronjob_log.info(f"Cronjob  email request updated {object.id} at {datetime.now()}")
+                        if not mail_read:
+                            imap_server.store(message_id, '-FLAGS', '\Seen')
+                    except Exception as e:
+                        cronjob_log.error(f"Cronjob error exception: {capture_error(sys.exc_info())}")
 
                 # Close the connection
                 if is_delete:
