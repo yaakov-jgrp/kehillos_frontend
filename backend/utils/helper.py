@@ -196,17 +196,18 @@ class NetfreeAPI:
         return response
         
     def get_user_deatils(self,user_id):
-        url = f"https://netfree.link/api/user/get-filter-settings?id={str(user_id)}"
+        url = f"https://netfree.link/api/user/get-filter-settings?id={str(user_id).strip()}"
         self.login()
         tags_response = self.session.get(url, headers=self.headers)
         return tags_response
     
     def post_user_data(self,user_id,urls,data):
+        clean_user_id = ''.join(filter(str.isdigit, user_id))
         url = "https://netfree.link/user/ajax/set-filter-settings"
         inspectorSettings = data.get("inspectorSettings")
         inspectorSettings.update({'urls': urls })
         payload = {
-            "id":int(user_id),
+            "id":int(clean_user_id),
             "filterSettings": data.get("filterSettings"),
             "inspectorSettings": inspectorSettings
         }

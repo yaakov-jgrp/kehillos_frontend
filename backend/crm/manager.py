@@ -48,6 +48,8 @@ class EmailRequestProcessor:
                 if template.email_to == "admin_email":
                     to_email = admin_email
 
+                subject = replace_placeholders(template.subject, format_variables)
+
                 send_email_with_template(subject, to_email, template_name, context)
                 cronjob_email_log.info(f"customer id : {self.email_request.customer_id}. email send to : {to_email}. domain_requested : {self.email_request.requested_website}. template id and name : {template.id}/{template.name}")
                 return True

@@ -1,3 +1,4 @@
+import time
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from crm.serializer import (
@@ -10,7 +11,7 @@ from utils.helper import (
     gmail_checker,capture_error
 )
 from django.conf import settings
-from datetime import datetime
+from datetime import datetime,timedelta
 from django.utils import timezone
 import requests
 from crm import models
@@ -482,6 +483,9 @@ class EmailTemplatesView(APIView):
         serializer = EmailTemplateSerializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        instance.html = payload["html"]
+        instance.save()
+
         return Response(
             {
                 "success": True,
@@ -697,17 +701,49 @@ class ReadEmail():
 
             # __, folder_list = imap_server.list()
             # print("IGIUGUUI", folder_list)
-            mail_boxs = ['"[Gmail]/All Mail"',  '[Gmail]/Drafts']
+            mail_boxs = ['"[Gmail]/All Mail"']
             for folder in mail_boxs:
                 imap_server.select(folder)
 
                 subject = "Request from user"
                 search_criteria = f'(SUBJECT "{subject}")'
 
-                status, message_ids = imap_server.search(None, 'ALL')
+                one_day_ago = (datetime.now().strftime('%d-%b-%Y'))
+                search_criteria = f'(SINCE "{one_day_ago}")'
+                status, message_ids = imap_server.search(None,search_criteria)
+                
                 # Fetch and process the email messages
                 message_ids = message_ids[0].split()
-                for message_id in message_ids[-10:]:
+                key = folder+one_day_ago
+                key2 = folder+one_day_ago+"count"
+                if folder == '"[Gmail]/All Mail"':
+                    key = "all-mail"+one_day_ago
+                    key2 = "all-mail"+one_day_ago+"count"
+                old_ids = cache.get(key)
+                count = cache.get(key2)
+                cronjob_log.info(f"debug old ids {str(old_ids)} : count : {count}")
+                is_delete = False
+                if not old_ids:
+                    old_ids = []
+                if not count:
+                    cache.set(key2,len(old_ids))
+                    count = len(old_ids)
+                new = []
+                if len(message_ids)>count:
+                    new = [item for item in message_ids if item not in old_ids]
+                    cronjob_log.info(f"{len(new)} mail recived")
+                elif len(message_ids)==count:
+                    cronjob_log.info("no new emails")
+                    break
+                elif len(message_ids)<count:
+                    diffrence = count - len(message_ids)
+                    is_delete = True
+                    new = message_ids[-diffrence:]
+                    cronjob_log.info(f"{len(new)} mail delete, sync again")
+                cronjob_log.info(f"old mesages ids {str(old_ids)}")
+                cronjob_log.info(f"fetched ids {str(message_ids)}")
+                cronjob_log.info(f"new messages ids {str(new)}")
+                for message_id in new:
                     mail_read = True
                     response, data = imap_server.fetch(message_id, '(FLAGS)')
                     if response == 'OK':
@@ -799,6 +835,15 @@ class ReadEmail():
                         imap_server.store(message_id, '-FLAGS', '\Seen')
 
                 # Close the connection
+                if is_delete:
+                    cache.set(key, message_ids)
+                    cache.set(key2,len(message_ids))
+                else:
+                    combine = new+old_ids
+                    cache.set(key, combine)
+                    cache.set(key2,len(combine))
+            
+
             imap_server.close()
             imap_server.logout()
             print("Done!!!")

@@ -123,7 +123,15 @@ AUTH_USER_MODEL = 'user.User'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/3',  # Replace with your Redis server location
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
 DATABASES = {
    'default': {
        'ENGINE': 'django.db.backends.postgresql',
@@ -197,8 +205,8 @@ USER_PASSWORD = "88069067"
 USERNAME = "+972583230207"
 EMAIL_HOST_ADMIN_USER = os.environ.get("EMAIL_HOST_ADMIN_USER")
 
-BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
