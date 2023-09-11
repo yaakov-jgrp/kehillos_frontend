@@ -721,12 +721,12 @@ class ReadEmail():
                     key2 = "all-mail"+one_day_ago+"count"
                 old_ids = cache.get(key)
                 count = cache.get(key2)
-                cronjob_log.info(f"debug old ids {str(old_ids)} : count : {count}")
+                cronjob_log.info(f"debug old ids key: {key} {str(old_ids)} : count key {key2}: {count}")
                 is_delete = False
                 if not old_ids:
                     old_ids = []
                 if not count:
-                    cache.set(key2,len(old_ids))
+                    cache.set(key2,len(old_ids), timeout=86400)
                     count = len(old_ids)
                 new = []
                 if len(message_ids)>count:
@@ -839,12 +839,12 @@ class ReadEmail():
 
                 # Close the connection
                 if is_delete:
-                    cache.set(key, message_ids)
-                    cache.set(key2,len(message_ids))
+                    cache.set(key, message_ids,timeout=86400)
+                    cache.set(key2,len(message_ids),timeout=86400)
                 else:
                     combine = new+old_ids
-                    cache.set(key, combine)
-                    cache.set(key2,len(combine))
+                    cache.set(key, combine,timeout=86400)
+                    cache.set(key2,len(combine),timeout=86400)
             
 
             imap_server.close()
