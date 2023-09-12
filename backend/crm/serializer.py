@@ -1,4 +1,5 @@
 from rest_framework import serializers
+import re
 from crm import models
 
 
@@ -6,9 +7,17 @@ class EmailrequestSerializer(serializers.ModelSerializer):
     request_type = serializers.CharField(
         default="פתיחת אתר - נטפרי"
     )
+    text = serializers.SerializerMethodField()
     class Meta:
         model = models.Emailrequest
-        fields = "__all__"
+        fields = ["id","email_id","sender_email","username","request_type","text","action_done","customer_id","ticket_id","requested_website","created_at"]
+
+    def get_text(self,obj):
+        paragraphs = re.split(r'\n\s*\n', obj.text)
+        try:
+            return paragraphs[-2]
+        except Exception as e:
+            return obj.text
 
 
 
