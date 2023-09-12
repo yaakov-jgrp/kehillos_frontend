@@ -25,7 +25,7 @@
         "$requestId": "$request_id",
         "$clinetName": "$client_name",
         "$clientEmail": "$client_email",
-        "$domainQuested": "$domain_quested",
+        "$domainRequested": "$domain_requested",
         "$adminEmail": "$admin_email"
     },
     "emails": {

@@ -33,9 +33,9 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
         name: t('requests.$clientEmail'),
         value: "{client_email}"
       },
-      $domain_quested: {
-        name: t('requests.$domainQuested'),
-        value: '{domain_quested}'
+      $domain_requested: {
+        name: t('requests.$domainRequested'),
+        value: '{domain_requested}'
       },
       $admin_email: {
         name: t('requests.$adminEmail'),
