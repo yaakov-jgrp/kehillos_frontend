@@ -35,10 +35,20 @@ class EmailRequestProcessor:
                 to_email = self.email_request.sender_email
                 template_name = "email.html"
                 admin_email = instance.email
+                user_detail = self.netfree_api.get_user(self.email_request.customer_id)
+                client_name = ""
+                client_email = ""
+                if user_detail.status_code == 200:
+                    data = user_detail.json()
+                    data = data.get('users',[])
+                    if len(data)>0:
+                        client_name = data[0].get('full_name',"")
+                        client_email = data[0].get("email","")
+                cronjob_email_log.info(f"user data id  name: {client_name} {client_email}.{user_detail} customer data : {str(data)}")
                 format_variables = {
                     "request_id": str(self.email_request.id),
-                    "client_name": self.email_request.username,
-                    "client_email": self.email_request.sender_email,
+                    "client_name": client_name,
+                    "client_email": client_email,
                     "admin_email": admin_email,
                     "domain_requested": self.email_request.requested_website,
                 }
@@ -47,6 +57,11 @@ class EmailRequestProcessor:
                 }
                 if template.email_to == "admin_email":
                     to_email = admin_email
+                if template.email_to == "client_email":
+                    to_email = client_email
+                    if client_email=="":
+                        to_email = admin_email
+
 
                 subject = replace_placeholders(template.subject, format_variables)
 

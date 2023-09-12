@@ -15,7 +15,7 @@ class EmailrequestSerializer(serializers.ModelSerializer):
     def get_text(self,obj):
         paragraphs = re.split(r'\n\s*\n', obj.text)
         try:
-            return paragraphs[-2]
+            return paragraphs[-3]
         except Exception as e:
             return obj.text
 

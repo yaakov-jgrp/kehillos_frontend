@@ -194,7 +194,13 @@ class NetfreeAPI:
         self.login()
         response = self.session.post(url, headers=self.headers, data=payload)
         return response
-        
+    def get_user(self, user_id):
+        user_id = int(''.join(filter(str.isdigit, user_id)))
+        url = "https://netfree.link/api/users/search-user"
+        payload = json.dumps({"search": user_id,"lastSurfing":False})
+        self.login()
+        response = self.session.post(url, headers=self.headers, data=payload)
+        return response
     def get_user_deatils(self,user_id):
         url = f"https://netfree.link/api/user/get-filter-settings?id={str(user_id).strip()}"
         self.login()
