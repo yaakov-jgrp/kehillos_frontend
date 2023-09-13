@@ -44,6 +44,9 @@ class EmailRequestProcessor:
                     if len(data)>0:
                         client_name = data[0].get('full_name',"")
                         client_email = data[0].get("email","")
+                        self.email_request.username = client_name
+                        self.email_request.sender_email = client_email
+                        self.email_request.save()
                 cronjob_email_log.info(f"user data id  name: {client_name} {client_email}.{user_detail} customer data : {str(data)}")
                 format_variables = {
                     "request_id": str(self.email_request.id),
