@@ -155,7 +155,9 @@ const Request = () => {
                     <td>
                       <a href={`https://netfree.link/app/#/sectors/user-filter-settings/${el.customer_id}`} target='_blank' rel="noreferrer"
                         className='text-[#2B3674] hover:text-[#2B3674] font-bold'
-                      >#{el.customer_id}<br /> {el.username}<br />{el.sender_email}</a>
+                      >#{el.customer_id}<br /></a>
+                       {el.username}<br />
+                       <a href={`mailto:${el.sender_email}`} className='text-[#2B3674] hover:text-[#2B3674] font-bold' >{el.sender_email}</a>
                     </td>
                     <td>{el.request_type}</td>
                     <td>
