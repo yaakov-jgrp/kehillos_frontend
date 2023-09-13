@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import emailService from "../../services/email";
 import EmailEditor from 'react-email-editor';
 import useAlert from "../../Hooks/useAlert";
-// import emailEditorHe from "../../locales/emailEditorHe.json";
+import { DEFAULT_LANGUAGE } from "../../constants";
+import emailEditorHe from "../../locales/emailEditorHe.json";
 
 const NewTemplate = ({ editableTemplateId, onSave }) => {
   const formObject = {
@@ -18,6 +19,8 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   const { t } = useTranslation();
   const { setAlert } = useAlert();
   const emailEditorRef = useRef(null);
+  const defaultLanguageValue = localStorage.getItem(DEFAULT_LANGUAGE);
+
 
   const onReady = () => {
     emailEditorRef.current.editor.setMergeTags({
@@ -169,7 +172,14 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
                 />
               </div>
               <div className="w-full my-5 h-[calc(100vh-330px)] [&_iframe]:!min-w-[100%] [&_iframe]:!h-[calc(100vh-330px)] [&_div]:!max-h-[calc(100vh-330px)]">
-                <EmailEditor ref={emailEditorRef} onReady={onReady} />
+                <EmailEditor ref={emailEditorRef} onReady={onReady}
+                  options = {{
+                    locale: 'en-US',
+                    translations :{
+                      ...(defaultLanguageValue == 'he' && { 'en-US': emailEditorHe })
+                    }
+                  }}
+                />
               </div>
               <button className={`linear mb-2 px-[30px] rounded-lg py-2 text-base font-medium transition duration-200 ${formValidate() ? 'bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white' : 'bg-gray-300'}`}>{t('emails.save')}</button>
             </div>
