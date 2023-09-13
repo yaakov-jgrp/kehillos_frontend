@@ -25,7 +25,7 @@
         "$requestId": "מספר פניה",
         "$clinetName": "שם לקוח",
         "$clientEmail": "אימייל לקוח",
-        "$domainQuested": "אתר מבוקש",
+        "$domainRequested": "אתר מבוקש",
         "$adminEmail": "אימייל מנהל"
     },
     "emails": {
