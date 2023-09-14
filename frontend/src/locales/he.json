@@ -30,6 +30,7 @@
     },
     "emails": {
         "templates": "תבניות",
+        "subject": "נושא",
         "smtp": "SMTP",
         "newTemplate": "תבנית חדשה",
         "save": "שמור",

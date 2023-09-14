@@ -165,7 +165,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
                   className="text-[13px]"
                   id="emailSubject"
                   type="text"
-                  placeholder="Subject"
+                  placeholder={t('emails.subject')}
                   value={formdata.subject}
                   onChange={handleInput}
                   name="subject"
