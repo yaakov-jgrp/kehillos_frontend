@@ -23,6 +23,19 @@ class EmailRequestProcessor:
 
         }
 
+    def update_usernmae_or_email(self):
+        user_detail = self.netfree_api.get_user(self.email_request.customer_id)
+        if user_detail.status_code == 200:
+            data = user_detail.json()
+            data = data.get('users',[])
+            if len(data)>0:
+                client_name = data[0].get('full_name',"")
+                client_email = data[0].get("email","")
+                self.email_request.username = client_name
+                self.email_request.sender_email = client_email
+                self.email_request.save()
+                cronjob_email_log.info(f"user data id  name: {client_name} {client_email}.{user_detail} customer data : {str(data)}")
+
     def send_mail(self, template_name):
         from crm.models import EmailTemplate,SMTPEmail
         try:
@@ -35,23 +48,12 @@ class EmailRequestProcessor:
                 to_email = self.email_request.sender_email
                 template_name = "email.html"
                 admin_email = instance.email
-                user_detail = self.netfree_api.get_user(self.email_request.customer_id)
-                client_name = ""
-                client_email = ""
-                if user_detail.status_code == 200:
-                    data = user_detail.json()
-                    data = data.get('users',[])
-                    if len(data)>0:
-                        client_name = data[0].get('full_name',"")
-                        client_email = data[0].get("email","")
-                        self.email_request.username = client_name
-                        self.email_request.sender_email = client_email
-                        self.email_request.save()
-                cronjob_email_log.info(f"user data id  name: {client_name} {client_email}.{user_detail} customer data : {str(data)}")
+                client_email = self.email_request.sender_email
+
                 format_variables = {
                     "request_id": str(self.email_request.id),
-                    "client_name": client_name,
-                    "client_email": client_email,
+                    "client_name": self.email_request.username,
+                    "client_email": self.email_request.sender_email,
                     "admin_email": admin_email,
                     "domain_requested": self.email_request.requested_website,
                 }
@@ -326,6 +328,7 @@ class EmailRequestProcessor:
                 return list(corresponding_key)[0] 
         return False
     def process(self):
+        self.update_usernmae_or_email()
         # Use find_categories_by_url_or_domain to get all actions and durations associated with the URL or domain
         categories_data = self.find_categories_by_url_or_domain(self.email_request.requested_website)
         single,cate_key = self.has_data_in_single_key(categories_data)
