@@ -132,6 +132,27 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
     }
   }, []);
 
+
+  const option = {
+    locale: 'en-US',
+    translations: {
+      'en-US': emailEditorHe 
+    },
+    tools: {
+      text: {
+        properties: {
+          text: { value: '<p style="line-height: 140%;">זהו בלוק טקסט חדש. שנה את הטקסט.</p>' }
+        }
+      },
+      button : {
+        properties: {
+          text: { value: 'טקסט לחצן' }
+        }
+      }
+    }
+  }
+                
+
   return (
     <div className="h-full w-full flex flex-col-reverse md:flex-row gap-4">
       <div className="bg-white rounded-3xl w-full">
@@ -173,12 +194,9 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
               </div>
               <div className="w-full my-5 h-[calc(100vh-330px)] [&_iframe]:!min-w-[100%] [&_iframe]:!h-[calc(100vh-330px)] [&_div]:!max-h-[calc(100vh-330px)]">
                 <EmailEditor ref={emailEditorRef} onReady={onReady}
-                  options = {{
-                    locale: 'en-US',
-                    translations :{
-                      ...(defaultLanguageValue == 'he' && { 'en-US': emailEditorHe })
-                    }
-                  }}
+                  options={
+                    defaultLanguageValue === 'he' ? option : null
+                  }
                 />
               </div>
               <button className={`linear mb-2 px-[30px] rounded-lg py-2 text-base font-medium transition duration-200 ${formValidate() ? 'bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white' : 'bg-gray-300'}`}>{t('emails.save')}</button>
