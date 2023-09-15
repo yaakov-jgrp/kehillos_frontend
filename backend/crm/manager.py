@@ -328,14 +328,18 @@ class EmailRequestProcessor:
                 return list(corresponding_key)[0] 
         return False
     def process(self):
+        cronjob_email_log.debug(f"Requested id : {str(self.email_request.id)}")
         self.update_usernmae_or_email()
         # Use find_categories_by_url_or_domain to get all actions and durations associated with the URL or domain
         categories_data = self.find_categories_by_url_or_domain(self.email_request.requested_website)
         single,cate_key = self.has_data_in_single_key(categories_data)
+        cronjob_email_log.debug(f"customer id : {self.email_request.customer_id}. categories_data : {str(categories_data)}")
+        cronjob_email_log.debug(f"customer id : {self.email_request.customer_id}. signle categories key  :{single} {str(cate_key)}")
         if single:
             if self.cate_process(categories_data.get(cate_key)):
                 if self.all_urls:
                     if not self.sync_data_with_netfree(self.all_urls):
+                        cronjob_email_log.debug(f"customer id : {self.email_request.customer_id}. data sync faild  requested id : {str(self.email_request.id)}")
                         return False
                 if self.actions_done:
                     self.email_request.action_done = " ,".join(self.actions_done)
@@ -350,6 +354,7 @@ class EmailRequestProcessor:
             if lowest_rank_key and self.cate_process(categories_data.get(lowest_rank_key)):
                 if self.all_urls:
                     if not self.sync_data_with_netfree(self.all_urls):
+                        cronjob_email_log.debug(f"customer id : {self.email_request.customer_id}. data sync faild  requested id : {str(self.email_request.id)}")
                         return False
                 if self.actions_done:
                     self.email_request.action_done = " ,".join(self.actions_done)

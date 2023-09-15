@@ -227,7 +227,7 @@ def email_request_created_or_updated(sender, instance,created, **kwargs):
             if obj.process():
                 cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
             else:
-                cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
+                cronjob_email_log.info(f"email request created failed for customer id : {instance.customer_id}")
             if hasattr(instance, '_processing'):
                 del instance._processing
 
