@@ -33,6 +33,7 @@ class EmailRequestProcessor:
                 client_email = data[0].get("email","")
                 self.email_request.username = client_name
                 self.email_request.sender_email = client_email
+                self.email_request.requested_website = re.sub(r'^(https?://)www\.', r'\1', self.email_request.requested_website)
                 self.email_request.save()
                 cronjob_email_log.info(f"user data id  name: {client_name} {client_email}.{user_detail} customer data : {str(data)}")
 
