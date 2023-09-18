@@ -198,21 +198,21 @@ class EmailRequestProcessor:
                 empty = False
                 for action in actions:
                     if "Send email template" in action.label:
-                        data.get(i.id).append({"url":action.label,"rule":"Send email template","exp":action.label.split("Send email template")[-1].strip(),'label':action.label})
+                        data.get('default').append({"url":action.label,"rule":"Send email template","exp":action.label.split("Send email template")[-1].strip(),'label':action.label})
                     if "Open URL" in action.label:
                         data2 = {"url":action.label,"rule":"Open URL",'label':action.label}
                         if len(action.label.split("Open URL for"))==2:
                             amount_time = action.label.split("Open URL for")[1].strip().split(" ")
                             timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
                             data2.update({"rule":"Open URL for",'exp':timestamp})
-                        data.get(i.id).append(data2)
+                        data.get('default').append(data2)
                     if "Open Domain" in action.label:
                         data2 = {"url":action.label,"rule":"Open Domain",'label':action.label}
                         if len(action.label.split("Open Domain for"))==2:
                             amount_time = action.label.split("Open Domain for")[1].strip().split(" ")
                             timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
                             data2.update({"rule":"Open Domain for",'exp':timestamp})
-                        data.get(i.id).append(data2)
+                        data.get('default').append(data2)
         categories_data.update(data)
         return categories_data
     def has_data_in_single_key(self,d):
