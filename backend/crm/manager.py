@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 from utils.helper import NetfreeAPI,replace_placeholders,send_email_with_template
 from django.conf import settings
 import logging
-
+import re
 cronjob_email_log = logging.getLogger('cronjob-email')
 
 class EmailRequestProcessor:
@@ -126,6 +126,9 @@ class EmailRequestProcessor:
                 domain, path = domain_and_path.split("/", 1)
             else:
                 domain, path = parts[0].split("/", 1)
+            
+            if domain.startswith("www."):
+                domain = domain[4:]
 
             # Concatenate the protocol and domain
             full_domain = f"{protocol}://{domain}"
@@ -174,7 +177,7 @@ class EmailRequestProcessor:
                 empty = False
                 for action in actions:
                     if "Send email template" in action.label:
-                        data.get(i.id).append({"url":action.label,"rule":"Send email template","exp":action.label.split("Send email template")[-1].strip(),'label':action.label})
+                        data.get(i.id).append({"url":action.label,"rule":"Send email template","exp":action.get_label.split("Send email template")[-1].strip(),'label':action.get_label})
                     if "Open URL" in action.label:
                         data2 = {"url":action.label,"rule":"Open URL",'label':action.label}
                         if len(action.label.split("Open URL for"))==2:
@@ -198,7 +201,7 @@ class EmailRequestProcessor:
                 empty = False
                 for action in actions:
                     if "Send email template" in action.label:
-                        data.get('default').append({"url":action.label,"rule":"Send email template","exp":action.label.split("Send email template")[-1].strip(),'label':action.label})
+                        data.get('default').append({"url":action.label,"rule":"Send email template","exp":action.get_label.split("Send email template")[-1].strip(),'label':action.get_label})
                     if "Open URL" in action.label:
                         data2 = {"url":action.label,"rule":"Open URL",'label':action.label}
                         if len(action.label.split("Open URL for"))==2:
@@ -237,13 +240,15 @@ class EmailRequestProcessor:
                 if self.send_mail(label.split("Send email template")[-1].strip()):
                     self.actions_done.append(label)
             elif action == 'Open URL':
-                open_url_data = self.email_request.open_url("Open URL",self.email_request.requested_website,current_datetime)
+                url_without_www = re.sub(r'^(https?://)www\.', r'\1', self.email_request.requested_website)
+                open_url_data = self.email_request.open_url("Open URL",url_without_www,current_datetime)
                 if open_url_data:
                     self.all_urls.append(open_url_data)
                     self.actions_done.append(label)
 
             elif action == 'Open URL for':
-                data = {"url":self.email_request.requested_website,
+                url_without_www = re.sub(r'^(https?://)www\.', r'\1', self.email_request.requested_website)
+                data = {"url":url_without_www,
                             "rule":"open"}
                 timestamp = self.calculate_future_timestamp(duration,"Minutes",current_datetime)
                 data.update({'exp':timestamp})

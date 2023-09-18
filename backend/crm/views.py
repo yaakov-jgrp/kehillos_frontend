@@ -1,4 +1,5 @@
 import time
+from crm.serializer import ActionsSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from crm.serializer import (
@@ -108,19 +109,16 @@ class CategoriesView(APIView):
                         "message": "Invalid inputs"
                     }, status=400)
             
-                instance, _ = models.Actions.objects.get_or_create(
-                    label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),
-                    category=instance
-                )
                 if template_id:
                     template = models.EmailTemplate.objects.get(
                         id=template_id
                     )
-                    template.action=instance
-                    template.save()
-                    if "Send email template" in instance.label:
-                        instance.label = instance.label + f" {template.name}"
-                        instance.save()
+                    action_instance, _ = models.Actions.objects.filter(template=False).get_or_create(label = "Send email template",email_template=template,category=instance)
+                else:
+                    action, _ = models.Actions.objects.get_or_create(
+                    label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),
+                    category=instance
+                )
 
             if to_remove:
                 action = models.Actions.objects.get(
@@ -315,17 +313,19 @@ class ActionsView(APIView):
         params = self.request.query_params
         queryset = models.Actions.objects.filter(template=1)
         if params.get("default", 0):
-            values_list = queryset.filter(is_default=True).values("id", "label")
+            values_list = queryset.filter(is_default=True)
+            values_list = ActionsSerializer(values_list,many=True).data
         else:
             values_list = queryset.values("id", "label")
 
         if params.get('get_default',None):
-            values_list = models.Actions.objects.filter(is_default=True).values("id", "label")
+            values_list = models.Actions.objects.filter(is_default=True)
+            values_list = ActionsSerializer(values_list,many=True).data
 
         return Response(
             {
                 "success": True,
-                "data": list(values_list)
+                "data": values_list
 
             }
         )
@@ -361,10 +361,7 @@ class ActionsView(APIView):
                         id=template_id
                     )
                     if "Send email template" in action.label:
-                        text_search = action.label + f" {template.name}"
-                        instance, _ = models.Actions.objects.filter(template=False).get_or_create(label=text_search,category=None)
-                        template.action=instance
-                        template.save()
+                        instance, _ = models.Actions.objects.filter(template=False).get_or_create(label = "Send email template",category=None,email_template=template)
                 else:
                     instance, _ = models.Actions.objects.filter(template=False).get_or_create(
                     label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),category=None
