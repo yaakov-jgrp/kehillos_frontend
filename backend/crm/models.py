@@ -8,8 +8,9 @@ from crm.manager import EmailRequestProcessor
 from django.db import transaction
 from utils.helper import send_email_with_template, replace_placeholders,NetfreeAPI
 import logging
-
+from django.db.utils import IntegrityError 
 cronjob_email_log = logging.getLogger('cronjob-email')
+cronjob_error_log = logging.getLogger('cronjob-error')
 def calculate_future_timestamp(amount, condition,current_datetime):
     if condition == "Minutes":
         future_datetime = current_datetime + datetime.timedelta(minutes=amount)
@@ -194,7 +195,7 @@ class Emailrequest(models.Model):
             return data
         except Exception as e:
             print(e)
-            cronjob_email_log.error(f"customer id : {self.customer_id}. error while open url : {e}")
+            cronjob_error_log.error(f"requested id: {self.email_request.id} customer id : {self.customer_id}. error while open url : {e}")
             return False
 
     def open_domain(self,label,url,current_datetime):
@@ -226,18 +227,25 @@ class Emailrequest(models.Model):
 
 
 @receiver(post_save, sender=Emailrequest)
-def email_request_created_or_updated(sender, instance,created, **kwargs):
+def email_request_created_or_updated(sender, instance, created, **kwargs):
     if created:
         if hasattr(instance, '_processing'):
             return
         instance._processing = True
         
-        with transaction.atomic():
-            obj =EmailRequestProcessor(instance)
+        try:  
+            obj = EmailRequestProcessor(instance)
             if obj.process():
-                cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
+                cronjob_email_log.info(f"Email request created for customer id: {instance.customer_id}")
             else:
-                cronjob_email_log.info(f"email request created failed for customer id : {instance.customer_id}")
+                cronjob_email_log.info(f"Email request created failed for customer id: {instance.customer_id}")
+        except IntegrityError as e:
+            # Handle the specific database integrity error, if necessary
+            cronjob_error_log.error(f"requested id: {instance.id} IntegrityError occurred: {str(e)}")
+        except Exception as e:
+            # Handle other exceptions that may occur during processing
+            cronjob_error_log.error(f"requested id: {instance.id} An error occurred during email processing: {str(e)}")
+        finally:
             if hasattr(instance, '_processing'):
                 del instance._processing
 

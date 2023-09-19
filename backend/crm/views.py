@@ -811,24 +811,23 @@ class ReadEmail():
                             formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S %z")
                             created_at_datetime = timezone.datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
                             
-                            with transaction.atomic():
-                                object,created = models.Emailrequest.objects.update_or_create(
-                                    email_id=uid,
-                                    created_at=created_at_datetime,
-                                    defaults={
-                                        "sender_email": sender_email,
-                                        "username": username,
-                                        "customer_id": customer_id,
-                                        "requested_website": website_url,
-                                        "text": body,
-                                        "created_at": created_at_datetime,
-                                        "ticket_id": 15665,
-                                    }
-                                )
-                                if created:
-                                    cronjob_log.info(f"Cronjob email request created {object.id} at {datetime.now()}")
-                                else:
-                                    cronjob_log.info(f"Cronjob  email request updated {object.id} at {datetime.now()}")
+                            object,created = models.Emailrequest.objects.update_or_create(
+                                email_id=uid,
+                                created_at=created_at_datetime,
+                                defaults={
+                                    "sender_email": sender_email,
+                                    "username": username,
+                                    "customer_id": customer_id,
+                                    "requested_website": website_url,
+                                    "text": body,
+                                    "created_at": created_at_datetime,
+                                    "ticket_id": 15665,
+                                }
+                            )
+                            if created:
+                                cronjob_log.info(f"Cronjob email request created {object.id} at {datetime.now()}")
+                            else:
+                                cronjob_log.info(f"Cronjob  email request updated {object.id} at {datetime.now()}")
                         if not mail_read:
                             imap_server.store(message_id, '-FLAGS', '\Seen')
                     except Exception as e:

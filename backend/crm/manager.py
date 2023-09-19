@@ -6,7 +6,7 @@ from django.conf import settings
 import logging
 import re
 cronjob_email_log = logging.getLogger('cronjob-email')
-
+cronjob_error_log = logging.getLogger('cronjob-error')
 class EmailRequestProcessor:
     def __init__(self,email_request):
         self.email_request = email_request
@@ -33,12 +33,14 @@ class EmailRequestProcessor:
                 client_email = data[0].get("email","")
                 self.email_request.username = client_name
                 self.email_request.sender_email = client_email
-                url_without_www = re.sub(r'^(https?://)?www\.', 'http://', self.email_request.requested_website)
-                if self.email_request.requested_website.startswith("https://"):
-                    url_without_www = url_without_www.replace("https://", "http://", 1)
-                self.email_request.requested_website = url_without_www
-                self.email_request.save()
-                cronjob_email_log.info(f"user data id  name: {client_name} {client_email}.{user_detail} customer data : {str(data)}")
+            else:
+                cronjob_error_log.error(f"requested id: {self.email_request.id} user data not found")
+            url_without_www = self.email_request.requested_website
+            if self.email_request.requested_website.startswith("https://"):
+                url_without_www = url_without_www.replace("https://", "http://", 1)
+            self.email_request.requested_website = url_without_www
+            self.email_request.save()
+            cronjob_email_log.info(f"user data id  name: {client_name} {client_email}.{user_detail} customer data : {str(data)}")
 
     def send_mail(self, template_name):
         from crm.models import EmailTemplate,SMTPEmail
@@ -107,7 +109,9 @@ class EmailRequestProcessor:
             res = self.netfree_api.post_user_data(self.email_request.customer_id,user_all_urls,data)
             if res.status_code == 200:
                 return True
+            cronjob_error_log.error(f"requested id: {self.email_request.id} user_deatils update {str(user_detail.status_code)}")
         else:
+            cronjob_error_log.error(f"requested id: {self.email_request.id} user_deatils {str(user_detail.status_code)}")
             return False
     def convert_condition_to_minutes(self,amount,condition):
         if condition == "Minutes":
@@ -144,7 +148,7 @@ class EmailRequestProcessor:
                 data.update({'exp':timestamp})
             return data
         except Exception as e:
-            cronjob_email_log.error(f"customer id : {self.email_request.customer_id}. error while open domain : {e}")
+            cronjob_error_log.error(f"requested id: {self.email_request.id} customer id : {self.email_request.customer_id}. error while open domain : {str(e)}")
             return False
     def is_domain_or_full_url(self,input_str):
         try:
@@ -167,6 +171,7 @@ class EmailRequestProcessor:
                 keys = res.json()["tagValue"]["tags"].keys()
                 categories_list = list(map(int, keys))
             except Exception as e:
+                cronjob_error_log.error(f"requested id: {self.email_request.id} error {str(e)}")
                 categories_list = []
         categories_obj = Categories.objects.filter(
                 categories_id__in=[int(i) for i in categories_list]
@@ -244,7 +249,7 @@ class EmailRequestProcessor:
                 if self.send_mail(label.split("Send email template")[-1].strip()):
                     self.actions_done.append(label)
             elif action == 'Open URL':
-                url_without_www = re.sub(r'^(https?://)?www\.', 'http://', self.email_request.requested_website)
+                url_without_www = self.email_request.requested_website
                 if self.email_request.requested_website.startswith("https://"):
                     url_without_www = url_without_www.replace("https://", "http://", 1)
                 open_url_data = self.email_request.open_url("Open URL",url_without_www,current_datetime)
@@ -253,7 +258,7 @@ class EmailRequestProcessor:
                     self.actions_done.append(label)
 
             elif action == 'Open URL for':
-                url_without_www = re.sub(r'^(https?://)?www\.', 'http://', self.email_request.requested_website)
+                url_without_www = self.email_request.requested_website
                 if self.email_request.requested_website.startswith("https://"):
                     url_without_www = url_without_www.replace("https://", "http://", 1)
                 data = {"url":url_without_www,

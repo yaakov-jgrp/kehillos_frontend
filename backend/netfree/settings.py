@@ -243,6 +243,13 @@ LOGGING = {
             'formatter': 'default',
             'filename': 'logs/cronjob_requests.log',
             'encoding': 'utf-8' 
+        },
+        'cronjob-error': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.WatchedFileHandler',
+            'formatter': 'default',
+            'filename': 'logs/cronjob_error.log',
+            'encoding': 'utf-8' 
         }
     },
     'loggers': {
@@ -259,6 +266,11 @@ LOGGING = {
         'cronjob-email': {
             'level': 'DEBUG',
             'handlers': ['cronjob-email'],
+            'propagate': False,
+        },
+        'cronjob-error': {
+            'level': 'DEBUG',
+            'handlers': ['cronjob-error'],
             'propagate': False,
         }
     }
