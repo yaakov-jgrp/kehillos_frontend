@@ -161,7 +161,7 @@ const Request = () => {
                     </td>
                     <td>{el.request_type}</td>
                     <td>
-                      <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold'>{el.requested_website}</a>
+                      <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold'>{el.requested_website.length > 70 ? el.requested_website.substring(0, 70) + "..." : el.requested_website }</a>
                       <br />
                       {el.text}
                         {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />                  */}
