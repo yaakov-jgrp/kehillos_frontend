@@ -10,7 +10,7 @@ import {
   // MdBarChart,
   // MdPerson,
   // MdLock,
-  MdSpaceDashboard
+  MdOutlineSettings
 } from "react-icons/md";
 import NetFree from "./views/NetFree";
 
@@ -32,27 +32,27 @@ const routes = [
   {
     name: 'settings',
     type: 'top-menu',
-    icon: <MdSpaceDashboard className="h-6 w-6" />,
+    icon: <MdOutlineSettings className="h-6 w-6" />,
     children: [
       {
         name: "netfree",
         path: "settings/netfree",
         type: "menu",
-        icon: <MdSpaceDashboard className="h-6 w-6" />,
+        icon: <MdOutlineSettings className="h-6 w-6" />,
         component: <NetFree />,
       },
       {
         name: "emails",
         path: "settings/emails",
         type: "menu",
-        icon: <MdSpaceDashboard className="h-6 w-6" />,
+        icon: <MdOutlineSettings className="h-6 w-6" />,
         component: <Emails />,
       },
       {
         name: "goto",
         path: "settings/goto",
         type: "menu",
-        icon: <MdSpaceDashboard className="h-6 w-6" />,
+        icon: <MdOutlineSettings className="h-6 w-6" />,
         component: <Emails />,
       },
     ]

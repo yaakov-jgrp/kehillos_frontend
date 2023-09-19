@@ -17,7 +17,7 @@ import {
   MdPerson,
   // MdLock,
   MdLogout,
-  MdSpaceDashboard
+  MdOutlineSettings
 } from "react-icons/md";
 import NetFree from "../../views/NetFree";
 
@@ -41,20 +41,20 @@ const Sidebar = ({ open, onClose }) => {
     {
       name: t('sidebar.settings'),
       type: 'top-menu',
-      icon: <MdSpaceDashboard className="h-6 w-6" />,
+      icon: <MdOutlineSettings className="h-6 w-6" />,
       children: [
         {
           name: t('sidebar.netfree'),
           path: "settings/netfree",
           type: "menu",
-          icon: <MdSpaceDashboard className="h-6 w-6" />,
+          icon: <MdOutlineSettings className="h-6 w-6" />,
           component: <NetFree />,
         },
         {
           name: t('sidebar.emails'),
           path: "settings/emails",
           type: "menu",
-          icon: <MdSpaceDashboard className="h-6 w-6" />,
+          icon: <MdOutlineSettings className="h-6 w-6" />,
           component: <Emails />,
         },
       ]
