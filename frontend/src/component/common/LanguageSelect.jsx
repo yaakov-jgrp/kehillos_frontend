@@ -17,6 +17,7 @@ const LanguageSelect = ({customClass}) => {
       setSelectedLanguage(defaultLanguageValue);
     } else {
       setSelectedLanguage('he');
+      localStorage.setItem(DEFAULT_LANGUAGE, 'he');
     }
   },[])
   return (
