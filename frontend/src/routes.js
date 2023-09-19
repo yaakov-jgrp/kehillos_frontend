@@ -6,7 +6,7 @@ import Request from "./views/Request";
 import Emails from "./views/Emails";
 import {
   MdHome,
-  MdOutlineShoppingCart,
+  MdOutlineContactSupport,
   // MdBarChart,
   // MdPerson,
   // MdLock,
@@ -26,7 +26,7 @@ const routes = [
     name: "requests",
     path: "requests",
     type: "menu",
-    icon: <MdOutlineShoppingCart className="h-6 w-6" />,
+    icon: <MdOutlineContactSupport className="h-6 w-6" />,
     component: <Request />,
   },
   {

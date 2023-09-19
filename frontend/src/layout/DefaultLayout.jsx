@@ -10,7 +10,7 @@ import Emails from '../views/Emails';
 import AlertPopup from '../component/common/AlertPopup';
 import {
   MdHome,
-  MdOutlineShoppingCart,
+  MdOutlineContactSupport,
   MdPerson,
   MdSpaceDashboard
 } from "react-icons/md";
@@ -41,7 +41,7 @@ const DefaultLayout = () => {
     {
       name: t('sidebar.request'),
       path: "request",
-      icon: <MdOutlineShoppingCart className="h-6 w-6" />,
+      icon: <MdOutlineContactSupport className="h-6 w-6" />,
       component: <Request />,
     },
     {

@@ -12,7 +12,7 @@ import Profile from "../../views/Profile";
 import Emails from "../../views/Emails";
 import {
   MdHome,
-  MdOutlineShoppingCart,
+  MdOutlineContactSupport,
   // MdBarChart,
   MdPerson,
   // MdLock,
@@ -35,7 +35,7 @@ const Sidebar = ({ open, onClose }) => {
       name: t('sidebar.request'),
       path: "request",
       type: 'menu',
-      icon: <MdOutlineShoppingCart className="h-6 w-6" />,
+      icon: <MdOutlineContactSupport className="h-6 w-6" />,
       component: <Request />,
     },
     {
