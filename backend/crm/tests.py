@@ -1,7 +1,7 @@
 import imaplib
 
 # Replace these with your actual email credentials and server settings
-FROM_EMAIL = "s0733835200@gmail.com"
+FROM_EMAIL = "ועד שמרם"
 FROM_PWD = "exnjimfxvjejnugi"
 SMTP_SERVER = "imap.gmail.com"
 

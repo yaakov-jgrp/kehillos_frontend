@@ -113,6 +113,7 @@ class Actions(models.Model):
     label = models.CharField(max_length=200)
     is_default = models.BooleanField(default=False)
     template = models.BooleanField(default=False)
+    email_template = models.ForeignKey('crm.EmailTemplate',on_delete=models.CASCADE,null=True,blank=True)
     category = models.ForeignKey(
         Categories,
         on_delete=models.SET_NULL,
@@ -121,6 +122,15 @@ class Actions(models.Model):
         blank=True,
         default=None,
     )
+
+    @property
+    def get_label(self):
+        if "Send email template" in self.label:
+            try:
+                return self.label+" "+self.email_template.name
+            except Exception:
+                return self.label
+        return self.label
 
 
 # @receiver(post_save, sender=Categories)
@@ -227,7 +237,7 @@ def email_request_created_or_updated(sender, instance,created, **kwargs):
             if obj.process():
                 cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
             else:
-                cronjob_email_log.info(f"email request created for customer id : {instance.customer_id}")
+                cronjob_email_log.info(f"email request created failed for customer id : {instance.customer_id}")
             if hasattr(instance, '_processing'):
                 del instance._processing
 

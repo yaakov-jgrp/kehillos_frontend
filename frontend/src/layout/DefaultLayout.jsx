@@ -10,10 +10,10 @@ import Emails from '../views/Emails';
 import AlertPopup from '../component/common/AlertPopup';
 import {
   MdHome,
-  MdOutlineShoppingCart,
+  MdOutlineContactSupport,
   MdPerson,
-  MdSpaceDashboard
-} from "react-icons/md";
+  MdOutlineSettings,
+  } from "react-icons/md";
 import NetFree from '../views/NetFree';
 
 const DefaultLayout = () => {
@@ -41,21 +41,21 @@ const DefaultLayout = () => {
     {
       name: t('sidebar.request'),
       path: "request",
-      icon: <MdOutlineShoppingCart className="h-6 w-6" />,
+      icon: <MdOutlineContactSupport className="h-6 w-6" />,
       component: <Request />,
     },
     {
       name: t('sidebar.netfree'),
       path: "settings/netfree",
       type: "menu",
-      icon: <MdSpaceDashboard className="h-6 w-6" />,
+      icon: <MdOutlineSettings className="h-6 w-6" />,
       component: <NetFree />,
     },
     {
       name: t('sidebar.emails'),
       path: "settings/emails",
       type: "menu",
-      icon: <MdSpaceDashboard className="h-6 w-6" />,
+      icon: <MdOutlineSettings className="h-6 w-6" />,
       component: <Emails />,
     },
     // {

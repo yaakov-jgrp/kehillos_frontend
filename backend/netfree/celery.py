@@ -20,6 +20,6 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'my-celery-task': {
         'task': 'crm.tasks.read_emails',  # Path to your Celery task
-        'schedule': 15.0,  # Run every 15 seconds
+        'schedule': 5.0,  # Run every 15 seconds
     },
 }

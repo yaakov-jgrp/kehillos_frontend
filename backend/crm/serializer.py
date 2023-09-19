@@ -22,9 +22,13 @@ class EmailrequestSerializer(serializers.ModelSerializer):
 
 
 class ActionsSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
     class Meta:
         model = models.Actions
-        fields = ("label",)
+        fields = ("id","label")
+
+    def get_label(self,obj):
+        return obj.get_label
 
 
 class EmailTemplateSerializer(serializers.ModelSerializer):
@@ -59,7 +63,8 @@ class CategoriesSerializer(serializers.ModelSerializer):
             return {
                 "id": item["id"],
                 "label": item["label"].format("https://kehillos.com/", "5")} if '{}' in item["label"] else item
-        data = instance.action_category.all().values("id", "label")
+        data = instance.action_category.filter(template=False)
+        data = ActionsSerializer(data,many=True).data
         data_filled = list(map(fill_label, data))
         return data_filled
 

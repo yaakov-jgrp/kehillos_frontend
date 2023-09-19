@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 from utils.helper import NetfreeAPI,replace_placeholders,send_email_with_template
 from django.conf import settings
 import logging
-
+import re
 cronjob_email_log = logging.getLogger('cronjob-email')
 
 class EmailRequestProcessor:
@@ -33,6 +33,7 @@ class EmailRequestProcessor:
                 client_email = data[0].get("email","")
                 self.email_request.username = client_name
                 self.email_request.sender_email = client_email
+                self.email_request.requested_website = re.sub(r'^(https?://)www\.', r'\1', self.email_request.requested_website)
                 self.email_request.save()
                 cronjob_email_log.info(f"user data id  name: {client_name} {client_email}.{user_detail} customer data : {str(data)}")
 
@@ -126,6 +127,9 @@ class EmailRequestProcessor:
                 domain, path = domain_and_path.split("/", 1)
             else:
                 domain, path = parts[0].split("/", 1)
+            
+            if domain.startswith("www."):
+                domain = domain[4:]
 
             # Concatenate the protocol and domain
             full_domain = f"{protocol}://{domain}"
@@ -174,7 +178,7 @@ class EmailRequestProcessor:
                 empty = False
                 for action in actions:
                     if "Send email template" in action.label:
-                        data.get(i.id).append({"url":action.label,"rule":"Send email template","exp":action.label.split("Send email template")[-1].strip(),'label':action.label})
+                        data.get(i.id).append({"url":action.label,"rule":"Send email template","exp":action.get_label.split("Send email template")[-1].strip(),'label':action.get_label})
                     if "Open URL" in action.label:
                         data2 = {"url":action.label,"rule":"Open URL",'label':action.label}
                         if len(action.label.split("Open URL for"))==2:
@@ -198,21 +202,21 @@ class EmailRequestProcessor:
                 empty = False
                 for action in actions:
                     if "Send email template" in action.label:
-                        data.get(i.id).append({"url":action.label,"rule":"Send email template","exp":action.label.split("Send email template")[-1].strip(),'label':action.label})
+                        data.get('default').append({"url":action.label,"rule":"Send email template","exp":action.get_label.split("Send email template")[-1].strip(),'label':action.get_label})
                     if "Open URL" in action.label:
                         data2 = {"url":action.label,"rule":"Open URL",'label':action.label}
                         if len(action.label.split("Open URL for"))==2:
                             amount_time = action.label.split("Open URL for")[1].strip().split(" ")
                             timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
                             data2.update({"rule":"Open URL for",'exp':timestamp})
-                        data.get(i.id).append(data2)
+                        data.get('default').append(data2)
                     if "Open Domain" in action.label:
                         data2 = {"url":action.label,"rule":"Open Domain",'label':action.label}
                         if len(action.label.split("Open Domain for"))==2:
                             amount_time = action.label.split("Open Domain for")[1].strip().split(" ")
                             timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
                             data2.update({"rule":"Open Domain for",'exp':timestamp})
-                        data.get(i.id).append(data2)
+                        data.get('default').append(data2)
         categories_data.update(data)
         return categories_data
     def has_data_in_single_key(self,d):
@@ -237,13 +241,15 @@ class EmailRequestProcessor:
                 if self.send_mail(label.split("Send email template")[-1].strip()):
                     self.actions_done.append(label)
             elif action == 'Open URL':
-                open_url_data = self.email_request.open_url("Open URL",self.email_request.requested_website,current_datetime)
+                url_without_www = re.sub(r'^(https?://)www\.', r'\1', self.email_request.requested_website)
+                open_url_data = self.email_request.open_url("Open URL",url_without_www,current_datetime)
                 if open_url_data:
                     self.all_urls.append(open_url_data)
                     self.actions_done.append(label)
 
             elif action == 'Open URL for':
-                data = {"url":self.email_request.requested_website,
+                url_without_www = re.sub(r'^(https?://)www\.', r'\1', self.email_request.requested_website)
+                data = {"url":url_without_www,
                             "rule":"open"}
                 timestamp = self.calculate_future_timestamp(duration,"Minutes",current_datetime)
                 data.update({'exp':timestamp})
@@ -328,14 +334,18 @@ class EmailRequestProcessor:
                 return list(corresponding_key)[0] 
         return False
     def process(self):
+        cronjob_email_log.debug(f"Requested id : {str(self.email_request.id)}")
         self.update_usernmae_or_email()
         # Use find_categories_by_url_or_domain to get all actions and durations associated with the URL or domain
         categories_data = self.find_categories_by_url_or_domain(self.email_request.requested_website)
         single,cate_key = self.has_data_in_single_key(categories_data)
+        cronjob_email_log.debug(f"customer id : {self.email_request.customer_id}. categories_data : {str(categories_data)}")
+        cronjob_email_log.debug(f"customer id : {self.email_request.customer_id}. signle categories key  :{single} {str(cate_key)}")
         if single:
             if self.cate_process(categories_data.get(cate_key)):
                 if self.all_urls:
                     if not self.sync_data_with_netfree(self.all_urls):
+                        cronjob_email_log.debug(f"customer id : {self.email_request.customer_id}. data sync faild  requested id : {str(self.email_request.id)}")
                         return False
                 if self.actions_done:
                     self.email_request.action_done = " ,".join(self.actions_done)
@@ -350,6 +360,7 @@ class EmailRequestProcessor:
             if lowest_rank_key and self.cate_process(categories_data.get(lowest_rank_key)):
                 if self.all_urls:
                     if not self.sync_data_with_netfree(self.all_urls):
+                        cronjob_email_log.debug(f"customer id : {self.email_request.customer_id}. data sync faild  requested id : {str(self.email_request.id)}")
                         return False
                 if self.actions_done:
                     self.email_request.action_done = " ,".join(self.actions_done)

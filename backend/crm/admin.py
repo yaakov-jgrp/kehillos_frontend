@@ -10,4 +10,4 @@ admin.site.register(models.SMTPEmail)
 
 @admin.register(models.Actions)
 class AdminActions(admin.ModelAdmin):
-    list_display = ("id", "label", "template", "is_default",)
+    list_display = ("id", "label", "template", "is_default",'email_template','category','get_label')
