@@ -11,6 +11,7 @@ import {
   // MdPerson,
   // MdLock,
   MdOutlineSettings
+  MdOutlineEmail
 } from "react-icons/md";
 import NetFree from "./views/NetFree";
 
@@ -45,14 +46,14 @@ const routes = [
         name: "emails",
         path: "settings/emails",
         type: "menu",
-        icon: <dOutlineContactSupport className="h-6 w-6" />,
+        icon: <MdOutlineEmail className="h-6 w-6" />,
         component: <Emails />,
       },
       {
         name: "goto",
         path: "settings/goto",
         type: "menu",
-        icon: <dOutlineContactSupport className="h-6 w-6" />,
+        icon: <MdOutlineEmail className="h-6 w-6" />,
         component: <Emails />,
       },
     ]

@@ -18,6 +18,7 @@ import {
   // MdLock,
   MdLogout,
   MdOutlineSettings
+  MdOutlineEmail
 } from "react-icons/md";
 import NetFree from "../../views/NetFree";
 
@@ -54,7 +55,7 @@ const Sidebar = ({ open, onClose }) => {
           name: t('sidebar.emails'),
           path: "settings/emails",
           type: "menu",
-          icon: <dOutlineContactSupport className="h-6 w-6" />,
+          icon: <dMdOutlineEmail className="h-6 w-6" />,
           component: <Emails />,
         },
       ]
