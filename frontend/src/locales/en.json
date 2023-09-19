@@ -30,7 +30,7 @@
     },
     "emails": {
         "templates": "Templates",
-        "smtp": "SMTP",
+        "smtp": "Connect Email Account",
         "subject": "Subject",
         "newTemplate": "New Template",
         "save": "SAVE",
