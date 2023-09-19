@@ -12,7 +12,7 @@ import {
   MdHome,
   MdOutlineContactSupport,
   MdPerson,
-  MdOutlineSettings
+  MdOutlineSettings,
   MdOutlineEmail
 } from "react-icons/md";
 import NetFree from '../views/NetFree';

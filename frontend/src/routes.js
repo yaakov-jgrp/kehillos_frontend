@@ -10,7 +10,7 @@ import {
   // MdBarChart,
   // MdPerson,
   // MdLock,
-  MdOutlineSettings
+  MdOutlineSettings,
   MdOutlineEmail
 } from "react-icons/md";
 import NetFree from "./views/NetFree";
