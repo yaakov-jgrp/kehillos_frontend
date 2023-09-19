@@ -236,9 +236,9 @@ def email_request_created_or_updated(sender, instance, created, **kwargs):
         try:  
             obj = EmailRequestProcessor(instance)
             if obj.process():
-                cronjob_email_log.info(f"Email request created for customer id: {instance.customer_id}")
+                cronjob_email_log.debug(f"Email request created for customer id: {instance.customer_id}")
             else:
-                cronjob_email_log.info(f"Email request created failed for customer id: {instance.customer_id}")
+                cronjob_email_log.debug(f"Email request created failed for customer id: {instance.customer_id}")
         except IntegrityError as e:
             # Handle the specific database integrity error, if necessary
             cronjob_error_log.error(f"requested id: {instance.id} IntegrityError occurred: {str(e)}")

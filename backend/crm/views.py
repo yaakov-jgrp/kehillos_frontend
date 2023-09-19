@@ -27,6 +27,7 @@ import sys
 from django.core.cache import cache
 from django.db import transaction
 cronjob_log = logging.getLogger('cronjob-log')
+cronjob_error_log = logging.getLogger('cronjob-error')
 
 class CategoriesView(APIView):
 
@@ -825,13 +826,13 @@ class ReadEmail():
                                 }
                             )
                             if created:
-                                cronjob_log.info(f"Cronjob email request created {object.id} at {datetime.now()}")
+                                cronjob_log.debug(f"Cronjob email request created {object.id} at {datetime.now()}")
                             else:
-                                cronjob_log.info(f"Cronjob  email request updated {object.id} at {datetime.now()}")
+                                cronjob_log.debug(f"Cronjob  email request updated {object.id} at {datetime.now()}")
                         if not mail_read:
                             imap_server.store(message_id, '-FLAGS', '\Seen')
                     except Exception as e:
-                        cronjob_log.error(f"Cronjob error exception: {capture_error(sys.exc_info())}")
+                        cronjob_error_log.error(f"Cronjob error exception: {capture_error(sys.exc_info())}")
 
                 # Close the connection
                 if is_delete:
@@ -852,8 +853,8 @@ class ReadEmail():
             traceback.print_exc()
             print("Error!!!")
             print(str(e))
-            cronjob_log.error(f"Cronjob error : {str(e)}")
-            cronjob_log.error(f"Cronjob error exception: {capture_error(sys.exc_info())}")
+            cronjob_error_log.error(f"Cronjob error : {str(e)}")
+            cronjob_error_log.error(f"Cronjob error exception: {capture_error(sys.exc_info())}")
 
     def decode_header(self, value):
         try:

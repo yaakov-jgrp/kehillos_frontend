@@ -80,7 +80,7 @@ class EmailRequestProcessor:
                 cronjob_email_log.info(f"customer id : {self.email_request.customer_id}. email send to : {to_email}. domain_requested : {self.email_request.requested_website}. template id and name : {template.id}/{template.name}")
                 return True
         except Exception as e:
-            cronjob_email_log.error(f"customer id : {self.email_request.customer_id}. error while sending mail : {e}")
+            cronjob_error_log.error(f"requested id: {instance.id} customer id : {self.email_request.customer_id}. error while sending mail : {e}")
             pass
         return False
     def calculate_future_timestamp(self,amount, condition,current_datetime):
