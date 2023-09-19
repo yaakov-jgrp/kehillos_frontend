@@ -45,14 +45,14 @@ const routes = [
         name: "emails",
         path: "settings/emails",
         type: "menu",
-        icon: <MdOutlineEmail className="h-6 w-6" />,
+        icon: <dOutlineContactSupport className="h-6 w-6" />,
         component: <Emails />,
       },
       {
         name: "goto",
         path: "settings/goto",
         type: "menu",
-        icon: <MdOutlineEmail className="h-6 w-6" />,
+        icon: <dOutlineContactSupport className="h-6 w-6" />,
         component: <Emails />,
       },
     ]

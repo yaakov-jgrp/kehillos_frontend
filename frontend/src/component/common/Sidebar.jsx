@@ -54,7 +54,7 @@ const Sidebar = ({ open, onClose }) => {
           name: t('sidebar.emails'),
           path: "settings/emails",
           type: "menu",
-          icon: <MdOutlineEmail className="h-6 w-6" />,
+          icon: <dOutlineContactSupport className="h-6 w-6" />,
           component: <Emails />,
         },
       ]
