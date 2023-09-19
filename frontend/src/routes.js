@@ -8,8 +8,7 @@ import {
   MdHome,
   MdOutlineContactSupport,
   MdOutlineSettings,
-  MdOutlineSettings,
-  // MdBarChart,
+    // MdBarChart,
   // MdPerson,
   // MdLock,
 } from "react-icons/md";

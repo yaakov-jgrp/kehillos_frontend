@@ -18,8 +18,7 @@ import {
   // MdLock,
   MdLogout,
   MdOutlineSettings,
-  MdOutlineSettings,
-} from "react-icons/md";
+ } from "react-icons/md";
 import NetFree from "../../views/NetFree";
 
 const Sidebar = ({ open, onClose }) => {

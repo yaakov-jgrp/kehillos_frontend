@@ -13,8 +13,7 @@ import {
   MdOutlineContactSupport,
   MdPerson,
   MdOutlineSettings,
-  MdOutlineSettings,
-} from "react-icons/md";
+  } from "react-icons/md";
 import NetFree from '../views/NetFree';
 
 const DefaultLayout = () => {
