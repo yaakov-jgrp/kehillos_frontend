@@ -38,7 +38,7 @@ const routes = [
         name: "netfree",
         path: "settings/netfree",
         type: "menu",
-        icon: <GiSpiderWeb className="h-6 w-6" />,
+        icon: <MdOutlinePendingActions className="h-6 w-6" />,
         component: <NetFree />,
       },
       {
