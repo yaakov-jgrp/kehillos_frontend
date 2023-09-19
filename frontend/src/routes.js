@@ -11,7 +11,7 @@ import {
   // MdPerson,
   // MdLock,
   MdOutlineSettings,
-  MdOutlineEmail
+  MdOutlineEmail,
 } from "react-icons/md";
 import NetFree from "./views/NetFree";
 
