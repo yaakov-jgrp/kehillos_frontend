@@ -11,6 +11,7 @@ import logging
 from django.db.utils import IntegrityError 
 cronjob_email_log = logging.getLogger('cronjob-email')
 cronjob_error_log = logging.getLogger('cronjob-error')
+netfree_obj = NetfreeAPI()
 def calculate_future_timestamp(amount, condition,current_datetime):
     if condition == "Minutes":
         future_datetime = current_datetime + datetime.timedelta(minutes=amount)
@@ -25,7 +26,6 @@ def calculate_future_timestamp(amount, condition,current_datetime):
 
     future_timestamp = int(future_datetime.timestamp() * 1000)
     return future_timestamp
-
 class Categories(models.Model):
     description = models.CharField(max_length=2000)
     categories_id = models.IntegerField()
@@ -151,6 +151,21 @@ class Emailrequest(models.Model):
     ticket_id = models.CharField(max_length=100, null=True, default=None)
     requested_website = models.CharField(max_length=500)
     created_at = models.DateTimeField()
+    def save(self,*args,**kwargs):
+        user_detail = netfree_obj.get_user(self.customer_id)
+        if user_detail.status_code == 200:
+            data = user_detail.json()
+            data = data.get('users',[])
+            if len(data)>0:
+                client_name = data[0].get('full_name',"")
+                client_email = data[0].get("email","")
+                self.username = client_name
+                self.sender_email = client_email
+                url_without_www = self.requested_website
+                if self.requested_website.startswith("https://"):
+                    url_without_www = url_without_www.replace("https://", "http://", 1)
+                self.requested_website = url_without_www
+        super(Emailrequest,self).save(*args,**kwargs)
 
     def send_mail(self, template_name):
         try:
@@ -233,12 +248,13 @@ def email_request_created_or_updated(sender, instance, created, **kwargs):
             return
         instance._processing = True
         
-        try:  
-            obj = EmailRequestProcessor(instance)
-            if obj.process():
-                cronjob_email_log.debug(f"Email request created for customer id: {instance.customer_id}")
-            else:
-                cronjob_email_log.debug(f"Email request created failed for customer id: {instance.customer_id}")
+        try:
+            with transaction.atomic():
+                obj = EmailRequestProcessor(instance)
+                if obj.process():
+                    cronjob_email_log.debug(f"Email request created for customer id: {instance.customer_id}")
+                else:
+                    cronjob_email_log.debug(f"Email request created failed for customer id: {instance.customer_id}")
         except IntegrityError as e:
             # Handle the specific database integrity error, if necessary
             cronjob_error_log.error(f"requested id: {instance.id} IntegrityError occurred: {str(e)}")

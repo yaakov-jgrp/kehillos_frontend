@@ -39,7 +39,6 @@ class EmailRequestProcessor:
             if self.email_request.requested_website.startswith("https://"):
                 url_without_www = url_without_www.replace("https://", "http://", 1)
             self.email_request.requested_website = url_without_www
-            self.email_request.save()
             cronjob_email_log.info(f"user data id  name: {client_name} {client_email}.{user_detail} customer data : {str(data)}")
 
     def send_mail(self, template_name):
@@ -250,8 +249,6 @@ class EmailRequestProcessor:
                     self.actions_done.append(label)
             elif action == 'Open URL':
                 url_without_www = self.email_request.requested_website
-                if self.email_request.requested_website.startswith("https://"):
-                    url_without_www = url_without_www.replace("https://", "http://", 1)
                 open_url_data = self.email_request.open_url("Open URL",url_without_www,current_datetime)
                 if open_url_data:
                     self.all_urls.append(open_url_data)
@@ -259,8 +256,6 @@ class EmailRequestProcessor:
 
             elif action == 'Open URL for':
                 url_without_www = self.email_request.requested_website
-                if self.email_request.requested_website.startswith("https://"):
-                    url_without_www = url_without_www.replace("https://", "http://", 1)
                 data = {"url":url_without_www,
                             "rule":"open"}
                 timestamp = self.calculate_future_timestamp(duration,"Minutes",current_datetime)
@@ -347,7 +342,6 @@ class EmailRequestProcessor:
         return False
     def process(self):
         cronjob_email_log.debug(f"Requested id : {str(self.email_request.id)}")
-        self.update_usernmae_or_email()
         # Use find_categories_by_url_or_domain to get all actions and durations associated with the URL or domain
         categories_data = self.find_categories_by_url_or_domain(self.email_request.requested_website)
         single,cate_key = self.has_data_in_single_key(categories_data)
@@ -356,6 +350,7 @@ class EmailRequestProcessor:
         if single:
             if self.cate_process(categories_data.get(cate_key)):
                 if self.all_urls:
+                    cronjob_email_log.info(f"customer id : {self.email_request.customer_id}. total urls : {str(self.all_urls)}")
                     if not self.sync_data_with_netfree(self.all_urls):
                         cronjob_email_log.debug(f"customer id : {self.email_request.customer_id}. data sync faild  requested id : {str(self.email_request.id)}")
                         return False
