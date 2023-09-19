@@ -7,11 +7,11 @@ import Emails from "./views/Emails";
 import {
   MdHome,
   MdOutlineContactSupport,
+  MdOutlineSettings,
+  MdOutlineEmail,
   // MdBarChart,
   // MdPerson,
   // MdLock,
-  MdOutlineSettings,
-  MdOutlineEmail,
 } from "react-icons/md";
 import NetFree from "./views/NetFree";
 
@@ -39,7 +39,7 @@ const routes = [
         name: "netfree",
         path: "settings/netfree",
         type: "menu",
-        icon: <MdOutlineContactSupport className="h-6 w-6" />,
+        icon: <MdOutlineSettings className="h-6 w-6" />,
         component: <NetFree />,
       },
       {
