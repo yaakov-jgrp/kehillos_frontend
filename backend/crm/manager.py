@@ -138,7 +138,7 @@ class EmailRequestProcessor:
                 domain = domain[4:]
 
             # Concatenate the protocol and domain
-            full_domain = f"{protocol}://{domain}"
+            full_domain = f"{protocol}://{domain}/"
             data = {"url":full_domain,
                     "rule":"open"}
 
