@@ -327,7 +327,6 @@ class EmailRequestProcessor:
             corresponding_keys = corresponding_key.copy()
         elif len(corresponding_key) == 1:
             return list(corresponding_key)[0] 
-
         if len(corresponding_keys) > 1 or len(corresponding_keys) ==0:
             result_set = corresponding_keys.copy()
             corresponding_key = set({}) 
@@ -339,6 +338,18 @@ class EmailRequestProcessor:
                 return list(corresponding_key)[0] 
             elif len(corresponding_key) == 1:
                 return list(corresponding_key)[0] 
+        if len(corresponding_keys) > 1 or len(corresponding_keys) ==0:
+            result_set = corresponding_keys.copy()
+            corresponding_key = set({}) 
+            for i in result_set if len(corresponding_keys) > 1 else data_list:
+                for item_list in data_list.get(i):
+                    if item_list['rule'] == "Send email template":
+                        corresponding_key.add(i)  # Add the current key to the set
+            if len(corresponding_key) > 1:
+                return list(corresponding_key)[0] 
+            elif len(corresponding_key) == 1:
+                return list(corresponding_key)[0] 
+
         return False
     def process(self):
         cronjob_email_log.debug(f"Requested id : {str(self.email_request.id)}")
