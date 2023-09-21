@@ -13,6 +13,7 @@ import Emails from "../../views/Emails";
 import {
   MdHome,
   MdOutlineContactSupport,
+  MdOutlineEmail,
   // MdBarChart,
   MdPerson,
   // MdLock,
@@ -47,14 +48,14 @@ const Sidebar = ({ open, onClose }) => {
           name: t('sidebar.netfree'),
           path: "settings/netfree",
           type: "menu",
-          icon: <MdOutlineSettings className="h-6 w-6" />,
+          icon: <img src="/src/assets/netfree.svg" className="h-6 w-6" alt="Netfree" />,
           component: <NetFree />,
         },
         {
           name: t('sidebar.emails'),
           path: "settings/emails",
           type: "menu",
-          icon: <dMdOutlineSettings className="h-6 w-6" />,
+          icon: <MdOutlineEmail className="h-6 w-6" />,
           component: <Emails />,
         },
       ]

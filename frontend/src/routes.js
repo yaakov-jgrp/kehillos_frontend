@@ -8,6 +8,7 @@ import {
   MdHome,
   MdOutlineContactSupport,
   MdOutlineSettings,
+  MdOutlineEmail
   // MdBarChart,
   // MdPerson,
   // MdLock,
@@ -45,7 +46,7 @@ const routes = [
         name: "emails",
         path: "settings/emails",
         type: "menu",
-        icon: <MdOutlineSettings className="h-6 w-6" />,
+        icon: <img src="/src/assets/netfree.svg" className="h-6 w-6" alt="Netfree" />,
         component: <Emails />,
       },
       {
