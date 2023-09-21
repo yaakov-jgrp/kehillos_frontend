@@ -10,6 +10,7 @@ import Dashboard from "../../views/Dashboard";
 import Request from "../../views/Request";
 import Profile from "../../views/Profile";
 import Emails from "../../views/Emails";
+import NetfreeIcon from '../../assets/netfree.svg';
 import {
   MdHome,
   MdOutlineContactSupport,
@@ -48,7 +49,7 @@ const Sidebar = ({ open, onClose }) => {
           name: t('sidebar.netfree'),
           path: "settings/netfree",
           type: "menu",
-          icon: <img src="/src/assets/netfree.svg" className="h-6 w-6" alt="Netfree" />,
+          icon: <img src={NetfreeIcon} className="h-6 w-6" alt="Netfree" />,
           component: <NetFree />,
         },
         {

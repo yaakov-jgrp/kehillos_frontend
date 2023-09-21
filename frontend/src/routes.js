@@ -4,6 +4,7 @@ import React from "react";
 import Dashboard from "./views/Dashboard";
 import Request from "./views/Request";
 import Emails from "./views/Emails";
+import NetfreeIcon from '../../assets/netfree.svg';
 import {
   MdHome,
   MdOutlineContactSupport,
@@ -46,7 +47,7 @@ const routes = [
         name: "emails",
         path: "settings/emails",
         type: "menu",
-        icon: <img src="/src/assets/netfree.svg" className="h-6 w-6" alt="Netfree" />,
+        icon: <img src={NetfreeIcon} className="h-6 w-6" alt="Netfree" />,
         component: <Emails />,
       },
       {
