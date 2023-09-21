@@ -135,6 +135,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
 
   const option = {
     locale: 'en-US',
+    textDirection: 'rtl',
     translations: {
       'en-US': emailEditorHe 
     },
@@ -142,6 +143,20 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
       text: {
         properties: {
           text: { value: '<p style="line-height: 140%;">זהו בלוק טקסט חדש. שנה את הטקסט.</p>' }
+          ,
+          textAlign: {
+            value: 'right'
+          }
+        }
+      },
+      heading: {
+        properties: {
+          text: {
+            value: 'כּוֹתֶרֶת'
+          },
+          textAlign: {
+            value: 'right'
+          }
         }
       },
       button : {
