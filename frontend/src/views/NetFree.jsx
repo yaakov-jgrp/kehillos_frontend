@@ -22,7 +22,8 @@ const NetFree = () => {
     const { t, i18n } = useTranslation();
     const [showActionModal, setShowActionModal] = useState(false);
     const [currentSelectedCategoryId, setCurrentSelectedCategoryId] = useState(0);
-    ;
+    const [currentSearchTerm, setCurrentSearchTerm] = useState('')
+    const [siteSearch, setSiteSearch] = useState('')
     const setResponseDataToState = (res) => {
         const response = res.data.data.map(el => {
             el.isActionUpdateEnabled = false;
@@ -33,6 +34,12 @@ const NetFree = () => {
         })
         setCategoriesData(response);
         setCategoriesDataCopy(response);
+        if (siteSearch) {
+            searchCategories(siteSearch, response)
+        } else {
+            searchCategories(currentSearchTerm, response)
+        }
+
     }
 
     const getCategoryData = async () => {
@@ -81,7 +88,12 @@ const NetFree = () => {
     const updateAction = async (data) => {
         setIsLoading(true);
         await categoryService.updateActionInCategory(data);
-        getCategoryData();
+        if (siteSearch) {
+            searchSetting(siteSearch)
+        } else {
+            getCategoryData();
+        }
+
         setIsLoading(false);
     }
 
@@ -105,16 +117,27 @@ const NetFree = () => {
         setShowActionModal(true);
     }
 
-    const searchCategories = (searchTerm) => {
-        if (searchTerm.trim().length) {
-            setCategoriesData(categoriesData.filter((el) => el.name.toLowerCase().includes(searchTerm.toLowerCase())));
-        } else {
-            setCategoriesData(categoriesDataCopy);
+    const searchCategories = (searchTerm, response) => {
+        setCurrentSearchTerm(searchTerm);
+        if (siteSearch) {
+            setCategoriesData(response);
         }
+        else if (currentSearchTerm) {
+            const filteredData = response?.filter((el) =>
+                el.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            setCategoriesData(filteredData);
+        } else {
+            setCategoriesData(response);
+        }
+
+
     }
 
     const searchSetting = async (query) => {
+
         setIsLoading(true);
+        setSiteSearch(query)
         const response = await categoryService.searchSiteSetting(query);
         if (query.length) {
             setSearchResult(response.data.data);
@@ -199,7 +222,7 @@ const NetFree = () => {
                                         variant="auth"
                                         type="text"
                                         placeholder={t('searchbox.placeHolder')}
-                                        onChange={(e) => searchCategories(e.target.value)}
+                                        onChange={(e) => searchCategories(e.target.value, categoriesDataCopy)}
                                         name="name"
                                     />
                                 </th>
