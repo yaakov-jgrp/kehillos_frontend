@@ -72,7 +72,6 @@ class EmailRequestProcessor:
                     if client_email=="":
                         to_email = admin_email
 
-
                 subject = replace_placeholders(template.subject, format_variables)
 
                 send_email_with_template(subject, to_email, template_name, context)
@@ -82,6 +81,7 @@ class EmailRequestProcessor:
             cronjob_error_log.error(f"requested id: {instance.id} customer id : {self.email_request.customer_id}. error while sending mail : {e}")
             pass
         return False
+    
     def calculate_future_timestamp(self,amount, condition,current_datetime):
         if condition == "Minutes":
             future_datetime = current_datetime + datetime.timedelta(minutes=amount)
@@ -112,6 +112,7 @@ class EmailRequestProcessor:
         else:
             cronjob_error_log.error(f"requested id: {self.email_request.id} user_deatils {str(user_detail.status_code)}")
             return False
+        
     def convert_condition_to_minutes(self,amount,condition):
         if condition == "Minutes":
             return amount
@@ -123,6 +124,8 @@ class EmailRequestProcessor:
             return amount * 60 * 24 * 7
         else:
             raise ValueError("Invalid condition. Use 'Minutes', 'Hours', 'Days', or 'Weeks'.")
+        
+        
     def open_domain(self,label,url,amount,current_datetime):
         try:
             parts = url.split("://")
@@ -149,6 +152,8 @@ class EmailRequestProcessor:
         except Exception as e:
             cronjob_error_log.error(f"requested id: {self.email_request.id} customer id : {self.email_request.customer_id}. error while open domain : {str(e)}")
             return False
+        
+        
     def is_domain_or_full_url(self,input_str):
         try:
             parsed_url = urlparse(input_str)
@@ -160,6 +165,8 @@ class EmailRequestProcessor:
                 return "Invalid Input"
         except ValueError:
             return "Invalid Input"
+        
+        
     def find_categories_by_url_or_domain(self, url_or_domain: str):
         from crm.models import Actions,Categories
         res = self.netfree_api.search_category(url_or_domain)
@@ -226,6 +233,8 @@ class EmailRequestProcessor:
                         data.get('default').append(data2)
         categories_data.update(data)
         return categories_data
+    
+    
     def has_data_in_single_key(self,d):
         data_count = 0
         categories_key = False
@@ -238,6 +247,8 @@ class EmailRequestProcessor:
                     return False,False # Data in more than one key
 
         return data_count == 1,categories_key
+    
+    
     def cate_process(self,categories):
         current_datetime = datetime.datetime.now()
         for action_data in categories:
@@ -351,6 +362,8 @@ class EmailRequestProcessor:
                 return list(corresponding_key)[0] 
 
         return False
+    
+    
     def process(self):
         cronjob_email_log.debug(f"Requested id : {str(self.email_request.id)}")
         # Use find_categories_by_url_or_domain to get all actions and durations associated with the URL or domain

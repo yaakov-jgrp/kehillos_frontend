@@ -13,13 +13,12 @@ import os
 def send_email_with_template(subject, to_email, template_name, context):
     # Render the HTML template to a string
     html_content = render_to_string(template_name, context)
-
     # Create the email message
     send_mail(
-        subject,
-        strip_tags(html_content),
-        settings.EMAIL_HOST_USER,
-        [to_email],
+        subject=subject,
+        message=strip_tags(html_content),
+        from_email=f'ועד שמרם - ראחמיסטריווקא <{settings.EMAIL_HOST_USER}>',
+        recipient_list=[to_email],
         html_message=context.get("your_string"),
         fail_silently=True
     )
