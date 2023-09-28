@@ -137,8 +137,8 @@ class EmailRequestProcessor:
             else:
                 domain, path = parts[0].split("/", 1)
             
-            if domain.startswith("www."):
-                domain = domain[4:]
+            # if domain.startswith("www."):
+            #     domain = domain[4:]
 
             # Concatenate the protocol and domain
             full_domain = f"{protocol}://{domain}/"
