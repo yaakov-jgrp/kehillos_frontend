@@ -28,8 +28,9 @@ class ActionsSerializer(serializers.ModelSerializer):
         fields = ("id","label")
 
     def get_label(self,obj):
-        return obj.get_label
-
+        lang = self.context.get("lang")
+        data = obj.localized_label(lang)
+        return data
 
 class EmailTemplateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,12 +60,14 @@ class CategoriesSerializer(serializers.ModelSerializer):
         )
 
     def get_actions(self, instance):
+        lang = self.context.get("lang")
         def fill_label(item):
             return {
                 "id": item["id"],
                 "label": item["label"].format("https://kehillos.com/", "5")} if '{}' in item["label"] else item
         data = instance.action_category.filter(template=False)
-        data = ActionsSerializer(data,many=True).data
+        
+        data = ActionsSerializer(data, many=True, context = {"lang":lang}).data
         data_filled = list(map(fill_label, data))
         return data_filled
 

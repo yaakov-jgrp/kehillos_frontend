@@ -32,8 +32,11 @@ cronjob_error_log = logging.getLogger('cronjob-error')
 class CategoriesView(APIView):
 
     def get(self, request):
-
         params = self.request.query_params
+        lang = params.get("lang")
+        if lang is None:
+            return Response({"error":"lang query param is missing."})
+        
         if params.get("search", None):
             response = self.search_category(params.get("search"))
             if response.status_code == 200:
@@ -43,12 +46,12 @@ class CategoriesView(APIView):
                     instance = models.Categories.objects.filter(
                         categories_id__in=categories
                     )
-                    serializer = CategoriesSerializer(instance, many=True).data
+                    serializer = CategoriesSerializer(instance, many=True, context = {"lang":lang}).data
                 except Exception:
                     serializer = []
         else:
             instance = models.Categories.objects.all().order_by("-id")
-            serializer = CategoriesSerializer(instance, many=True).data
+            serializer = CategoriesSerializer(instance, many=True, context = {"lang":lang}).data
         return Response(
             {
                 "success": True,
@@ -312,16 +315,21 @@ class ActionsView(APIView):
 
     def get(self, *args, **options):
         params = self.request.query_params
+        lang = params.get("lang")
+        if lang is None:
+            return Response({"error":"lang query param is missing."})
+        
         queryset = models.Actions.objects.filter(template=1)
         if params.get("default", 0):
             values_list = queryset.filter(is_default=True)
-            values_list = ActionsSerializer(values_list,many=True).data
+            values_list = ActionsSerializer(values_list,many=True, context = {"lang":lang}).data
         else:
-            values_list = queryset.values("id", "label")
+            values_list = queryset
+            values_list = ActionsSerializer(values_list,many=True, context = {"lang":lang}).data
 
         if params.get('get_default',None):
             values_list = models.Actions.objects.filter(is_default=True)
-            values_list = ActionsSerializer(values_list,many=True).data
+            values_list = ActionsSerializer(values_list,many=True, context = {"lang":lang}).data
 
         return Response(
             {

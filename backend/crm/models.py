@@ -123,10 +123,54 @@ class Actions(models.Model):
         blank=True,
         default=None,
     )
+    
+    def save(self, *args, **kwargs):
+        actions_hebrew_name = {
+            "Open URL": "פתח כתובת אתר",
+            "Open URL for": "פתח כתובת אתר עבור",
+            "Open Domain": "פתח דומיין",
+            "Open Domain for": "פתח דומיין עבור",
+            "Send email template": "שלח תבנית אימייל"
+        }
+        actions_no = {
+            "Send email template": 1,
+            "Open Domain": 2,
+            "Open URL": 3,
+            "Open URL for": 4,
+            "Open Domain for": 5
+        }
 
+        super().save(*args, **kwargs)
+    
     @property
     def get_label(self):
         if "Send email template" in self.label:
+            try:
+                return self.label+" "+self.email_template.name
+            except Exception:
+                return self.label
+        return self.label
+        
+            
+    def localized_label(self, lang = 'he'):
+        actions_hebrew_name = {
+            "Open URL": "פתח כתובת אתר",
+            "Open URL for X X": "X X פתח כתובת אתר עבור",
+            "Open URL for  ": "פתח כתובת אתר עבור",
+            "Open Domain": "פתח דומיין",
+            "Open Domain for X X": "X X פתח דומיין עבור",
+            "Open Domain for  ": "פתח דומיין עבור",
+            "Send email template": "שלח תבנית אימייל"
+        }
+        if lang == "he":
+            if self.label.strip() == "Open URL for":
+                self.label ="פתח כתובת אתר עבור"
+            hebrew_name = actions_hebrew_name.get(self.label, None)
+            if hebrew_name:
+                self.label = hebrew_name
+        
+        
+        if "Send email template" in self.label or "שלח תבנית אימייל" in self.label:
             try:
                 return self.label+" "+self.email_template.name
             except Exception:
