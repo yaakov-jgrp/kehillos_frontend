@@ -11,10 +11,11 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   const [timePeriod, setTimePeriod] = useState("Hours");
   const [selectedTemplate, setSelectedTemplate] = useState('selectTemplate');
   const [actionNeedsOtherFields, setActionNeedsOtherFields] = useState([]);
+  const [templateActions, setTemplateActions] = useState([])
   const { t } = useTranslation();
 
   const periods = [t('netfree.minutes'), t('netfree.hours'), t('netfree.days'), t('netfree.weeks')];
-
+  const templateActionsData = [t('netfree.adminEmail'), t('netfree.clientEmail'), t('netfree.customEmail')];
   const getActionsList = async () => {
     const response = await categoryService.getActions();
     setActionsList(response.data.data);
@@ -57,6 +58,8 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
     getActionsList();
     getTemplates();
   }, [])
+
+  console.log(templateActions)
 
   return (
     <>
@@ -128,7 +131,21 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                               );
                             })
                           }
-                        </select></>
+                        </select>
+                        <label className="block text-black text-sm font-bold mb-1">
+                          {t('netfree.templateActions')}
+                        </label>
+                        <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={(e) => setTemplateActions(Array.from(e.target.selectedOptions, option => option.value))} value={templateActions} placeholder="Select Action">
+                          <option value={'selectAction'} disabled>{t('netfree.selectAction')}</option>
+                          {
+                            templateActionsData?.map((el, i) => {
+                              return (
+                                el ? <option key={i} value={el}>{el}</option> : null
+                              );
+                            })
+                          }
+                        </select>
+                      </>
                     }
                   </div>
                 </div>
