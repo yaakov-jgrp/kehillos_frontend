@@ -123,6 +123,9 @@ class Actions(models.Model):
         blank=True,
         default=None,
     )
+    email_to_admin = models.BooleanField(default=False)
+    email_to_client = models.BooleanField(default=False)
+    custom_email = models.CharField(max_length=2000,blank=True,null=True)
     
     def save(self, *args, **kwargs):
         actions_hebrew_name = {

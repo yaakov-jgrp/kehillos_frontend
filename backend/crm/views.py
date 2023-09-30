@@ -117,7 +117,12 @@ class CategoriesView(APIView):
                     template = models.EmailTemplate.objects.get(
                         id=template_id
                     )
-                    action_instance, _ = models.Actions.objects.filter(template=False).get_or_create(label = "Send email template",email_template=template,category=instance)
+                    email_to_admin = inputs.get('email_to_admin')
+                    email_to_client = inputs.get('email_to_client')
+                    custom_email = inputs.get('custom_email',"")
+                    if custom_email:
+                        custom_email = custom_email
+                    action_instance, _ = models.Actions.objects.filter(template=False).get_or_create(label = "Send email template",email_template=template,category=instance,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email)
                 else:
                     action, _ = models.Actions.objects.get_or_create(
                     label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),
@@ -369,8 +374,11 @@ class ActionsView(APIView):
                     template = models.EmailTemplate.objects.get(
                         id=template_id
                     )
+                    email_to_admin = inputs.get('email_to_admin')
+                    email_to_client = inputs.get('email_to_client')
+                    custom_email = inputs.get('custom_email',"")
                     if "Send email template" in action.label:
-                        instance, _ = models.Actions.objects.filter(template=False).get_or_create(label = "Send email template",category=None,email_template=template)
+                        instance, _ = models.Actions.objects.filter(template=False).get_or_create(label = "Send email template",category=None,email_template=template,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email)
                 else:
                     instance, _ = models.Actions.objects.filter(template=False).get_or_create(
                     label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),category=None

@@ -41,7 +41,7 @@ class EmailRequestProcessor:
             self.email_request.requested_website = url_without_www
             cronjob_email_log.info(f"user data id  name: {client_name} {client_email}.{user_detail} customer data : {str(data)}")
 
-    def send_mail(self, template_name):
+    def send_mail(self, template_name,email_to,custom_email=None):
         from crm.models import EmailTemplate,SMTPEmail
         try:
             template = EmailTemplate.objects.filter(name=template_name).first()
@@ -65,12 +65,14 @@ class EmailRequestProcessor:
                 context = {
                     "your_string": replace_placeholders(template.html, format_variables)
                 }
-                if template.email_to == "admin_email":
+                if email_to == "admin_email":
                     to_email = admin_email
-                if template.email_to == "client_email":
+                if email_to == "client_email":
                     to_email = client_email
                     if client_email=="":
                         to_email = admin_email
+                if email_to == "custom":
+                    to_email = custom_email
 
                 subject = replace_placeholders(template.subject, format_variables)
 
@@ -192,7 +194,7 @@ class EmailRequestProcessor:
                 empty = False
                 for action in actions:
                     if "Send email template" in action.label:
-                        data.get(i.id).append({"url":action.label,"rule":"Send email template","exp":action.get_label.split("Send email template")[-1].strip(),'label':action.get_label})
+                        data.get(i.id).append({"url":action.label,"rule":"Send email template","exp":action.get_label.split("Send email template")[-1].strip(),'label':action.get_label,"email_to_admin":action.email_to_admin,"email_to_client":action.email_to_client,"custom_email":action.custom_email})
                     if "Open URL" in action.label:
                         data2 = {"url":action.label,"rule":"Open URL",'label':action.label}
                         if len(action.label.split("Open URL for"))==2:
@@ -216,7 +218,7 @@ class EmailRequestProcessor:
                 empty = False
                 for action in actions:
                     if "Send email template" in action.label:
-                        data.get('default').append({"url":action.label,"rule":"Send email template","exp":action.get_label.split("Send email template")[-1].strip(),'label':action.get_label})
+                        data.get('default').append({"url":action.label,"rule":"Send email template","exp":action.get_label.split("Send email template")[-1].strip(),'label':action.get_label,"email_to_admin":action.email_to_admin,"email_to_client":action.email_to_client,"custom_email":action.custom_email})
                     if "Open URL" in action.label:
                         data2 = {"url":action.label,"rule":"Open URL",'label':action.label}
                         if len(action.label.split("Open URL for"))==2:
@@ -256,8 +258,24 @@ class EmailRequestProcessor:
             duration = action_data.get('exp', None)  # Extract the duration from the dictionary
             label = action_data.get('label', None)
             if action == 'Send email template':
-                if self.send_mail(label.split("Send email template")[-1].strip()):
-                    self.actions_done.append(label)
+                action_done = None
+                email_to_admin = action_data.get('email_to_admin')
+                if email_to_admin:
+                    if self.send_mail(label.split("Send email template")[-1].strip(),'admin_email'): 
+                        action_done = label
+                        
+                email_to_client = action_data.get('email_to_client')
+                if email_to_client:
+                    if self.send_mail(label.split("Send email template")[-1].strip(),'client_email'): 
+                        action_done = label
+                custom_email = action_data.get('custom_email')
+                if custom_email:
+                    custom_email_list = custom_email.split(',')
+                    for i in custom_email_list:
+                        if self.send_mail(label.split("Send email template")[-1].strip(),'custom',i):
+                            action_done = label
+                if action_done:
+                    self.actions_done.append(action_done)
             elif action == 'Open URL':
                 url_without_www = self.email_request.requested_website
                 open_url_data = self.email_request.open_url("Open URL",url_without_www,current_datetime)

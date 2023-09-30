@@ -1,16 +1,19 @@
 import api from "./api";
 
-const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+
 
 const getCategories = () => {
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   return api.get(`/api/crm/category/?lang=${lang}`);
 };
 
 const searchSiteSetting = (query) => {
-  return api.get(`/api/crm/category/?search=${query}`);
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  return api.get(`/api/crm/category/?search=${query}&lang=${lang}`);
 };
 
 const getActions = () => {
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   return api.get(`/api/crm/actions/?lang=${lang}`);
 };
 
@@ -19,6 +22,7 @@ const setDefaultAction = (data) => {
 };
 
 const getDefaultAction = () => {
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   return api.get(`/api/crm/actions/?get_default=true&lang=${lang}`);
 };
 
