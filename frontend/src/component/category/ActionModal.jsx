@@ -5,6 +5,12 @@ import { useTranslation } from "react-i18next";
 import {
   AiTwotoneDelete,
 } from "react-icons/ai";
+
+const initialSatte = {
+  Admin: false,
+  Client: false,
+  Custom: false,
+}
 const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDefaultAction, isDefault }) => {
   const [actionsList, setActionsList] = useState([]);
   const { t } = useTranslation();
@@ -15,7 +21,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   const [selectedTemplate, setSelectedTemplate] = useState('selectTemplate');
   const [actionNeedsOtherFields, setActionNeedsOtherFields] = useState([]);
   const [templateActions, setTemplateActions] = useState([])
-  const [sendEmailType, setSendEmailType] = useState("Admin")
+  const [sendEmailTypes, setSendEmailTypes] = useState(initialSatte);
   const [inputValues, setInputValues] = useState(['']);
   const [deleteButtonsVisible, setDeleteButtonsVisible] = useState([false]);
 
@@ -24,20 +30,13 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
     setDeleteButtonsVisible([...deleteButtonsVisible, true]);
   };
 
+  console.log(sendEmailTypes)
+
   const handleInputChange = (index, newValue) => {
     const updatedInputValues = [...inputValues];
     updatedInputValues[index] = newValue;
     setInputValues(updatedInputValues);
   };
-
-  const getCustomValues = () => {
-    const nonEmptyValues = inputValues.filter((value) => value.trim() !== ''); // Filter out empty strings
-    const customEmailValue = sendEmailType === "Custom" ? nonEmptyValues.join(', ') : '';
-    return customEmailValue
-  };
-
-
-  console.log(inputValues)
 
   const handleDeleteInput = (index) => {
     if (inputValues.length > 1) {
@@ -51,9 +50,28 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
     }
   };
 
-  const onOptionChange = e => {
-    setSendEmailType(e.target.value)
-  }
+  const handleCheckboxChange = (event, type) => {
+
+    setSendEmailTypes({
+      ...sendEmailTypes,
+      [type]: event.target.checked,
+    });
+  };
+
+  const getCustomValues = () => {
+    const nonEmptyValues = inputValues.filter((value) => value.trim() !== '');
+    const customEmailValue = sendEmailTypes.Custom ? nonEmptyValues.join(', ') : '';
+    return customEmailValue;
+  };
+
+
+  const onOptionChange = (e) => {
+    setSendEmailTypes({
+      Admin: e.target.value === 'Admin',
+      Client: e.target.value === 'Client',
+      Custom: e.target.value === 'Custom',
+    });
+  };
 
 
   const periods = [t('netfree.minutes'), t('netfree.hours'), t('netfree.days'), t('netfree.weeks')];
@@ -84,9 +102,9 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
         id: categoryId,
         to_add: selectedAction,
         inputs: {
-          email_to_admin: sendEmailType === "Admin",
-          email_to_client: sendEmailType === "Client",
-          custom_email: sendEmailType === "Custom" ? getCustomValues() : ''
+          email_to_admin: sendEmailTypes?.Admin,
+          email_to_client: sendEmailTypes?.Client,
+          custom_email: getCustomValues()
         },
         template_id: selectedTemplate
       };
@@ -103,6 +121,9 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
     setActionNeedsOtherFields([]);
     setTimeAmount('');
     setTimePeriod('Hours');
+    setSendEmailTypes(initialSatte)
+    setInputValues([''])
+    setDeleteButtonsVisible([false])
     setShowModal(false);
   }
 
@@ -189,39 +210,33 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                             <div className="" style={{ display: 'grid' }}>
                               <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                                 <input
-                                  type="radio"
-                                  name="sendEmailType"
-                                  value="Admin"
-                                  id="Admin"
-                                  checked={sendEmailType === "Admin"}
-                                  onChange={onOptionChange}
+                                  type="checkbox"
+                                  name="sendEmailTypeAdmin"
+                                  checked={sendEmailTypes.Admin}
+                                  onChange={(e) => handleCheckboxChange(e, 'Admin')}
                                 />
                                 <label htmlFor="Admin">Send to Admin</label>
                               </div>
                               <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                                 <input
-                                  type="radio"
-                                  name="sendEmailType"
-                                  value="Client"
-                                  id="Client"
-                                  checked={sendEmailType === "Client"}
-                                  onChange={onOptionChange}
+                                  type="checkbox"
+                                  name="sendEmailTypeClient"
+                                  checked={sendEmailTypes.Client}
+                                  onChange={(e) => handleCheckboxChange(e, 'Client')}
                                 />
                                 <label htmlFor="Client">Send to Client</label>
                               </div>
                               <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                                 <input
-                                  type="radio"
-                                  name="sendEmailType"
-                                  value="Custom"
-                                  id="Custom"
-                                  checked={sendEmailType === "Custom"}
-                                  onChange={onOptionChange}
+                                  type="checkbox"
+                                  name="sendEmailTypeCustom"
+                                  checked={sendEmailTypes.Custom}
+                                  onChange={(e) => handleCheckboxChange(e, 'Custom')}
                                 />
                                 <label htmlFor="Custom">Custom Email</label>
                               </div>
                             </div>
-                            {sendEmailType === "Custom" &&
+                            {sendEmailTypes.Custom &&
                               <div style={{ marginTop: '10px', display: 'grid', gap: '10px', justifyContent: 'center' }}>
                                 {inputValues.map((value, index) => (
                                   <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -250,6 +265,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                             }
                           </>
                         }
+
                         {/* <label className="block text-black text-sm font-bold mb-1">
                           {t('netfree.templateActions')}
                         </label>
