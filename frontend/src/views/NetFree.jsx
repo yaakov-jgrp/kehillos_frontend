@@ -79,6 +79,7 @@ const NetFree = () => {
     }
 
     const enableActionUpdate = (element) => {
+
         if (element) {
             setCurrentSelectedCategoryId(element.categories_id);
         }

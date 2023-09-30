@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import categoryService from "../../services/category";
 import emailService from "../../services/email";
 import { useTranslation } from "react-i18next";
-
+import {
+  AiTwotoneDelete,
+} from "react-icons/ai";
 const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDefaultAction, isDefault }) => {
   const [actionsList, setActionsList] = useState([]);
+  const { t } = useTranslation();
   const [templateList, setTemplateList] = useState([]);
   const [selectedAction, setSelectedAction] = useState("selectAction");
   const [timeAmount, setTimeAmount] = useState("");
@@ -12,7 +15,46 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   const [selectedTemplate, setSelectedTemplate] = useState('selectTemplate');
   const [actionNeedsOtherFields, setActionNeedsOtherFields] = useState([]);
   const [templateActions, setTemplateActions] = useState([])
-  const { t } = useTranslation();
+  const [sendEmailType, setSendEmailType] = useState("Admin")
+  const [inputValues, setInputValues] = useState(['']);
+  const [deleteButtonsVisible, setDeleteButtonsVisible] = useState([false]);
+
+  const handleAddInput = () => {
+    setInputValues([...inputValues, '']);
+    setDeleteButtonsVisible([...deleteButtonsVisible, true]);
+  };
+
+  const handleInputChange = (index, newValue) => {
+    const updatedInputValues = [...inputValues];
+    updatedInputValues[index] = newValue;
+    setInputValues(updatedInputValues);
+  };
+
+  const getCustomValues = () => {
+    const nonEmptyValues = inputValues.filter((value) => value.trim() !== ''); // Filter out empty strings
+    const customEmailValue = sendEmailType === "Custom" ? nonEmptyValues.join(', ') : '';
+    return customEmailValue
+  };
+
+
+  console.log(inputValues)
+
+  const handleDeleteInput = (index) => {
+    if (inputValues.length > 1) {
+      const updatedInputValues = [...inputValues];
+      updatedInputValues.splice(index, 1);
+      setInputValues(updatedInputValues);
+
+      const updatedDeleteButtonsVisible = [...deleteButtonsVisible];
+      updatedDeleteButtonsVisible.splice(index, 1);
+      setDeleteButtonsVisible(updatedDeleteButtonsVisible);
+    }
+  };
+
+  const onOptionChange = e => {
+    setSendEmailType(e.target.value)
+  }
+
 
   const periods = [t('netfree.minutes'), t('netfree.hours'), t('netfree.days'), t('netfree.weeks')];
   const templateActionsData = [t('netfree.adminEmail'), t('netfree.clientEmail'), t('netfree.customEmail')];
@@ -37,7 +79,17 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   const submitForm = async () => {
     let data;
     if (selectedAction == 1) {
-      data = { id: categoryId, to_add: selectedAction, inputs: {}, template_id: selectedTemplate };
+
+      data = {
+        id: categoryId,
+        to_add: selectedAction,
+        inputs: {
+          email_to_admin: sendEmailType === "Admin",
+          email_to_client: sendEmailType === "Client",
+          custom_email: sendEmailType === "Custom" ? getCustomValues() : ''
+        },
+        template_id: selectedTemplate
+      };
     } else {
       data = { id: categoryId, to_add: selectedAction, inputs: selectedAction == 4 || selectedAction == 5 ? { amount: timeAmount === "" ? "1" : timeAmount, openfor: timePeriod } : {} }
     }
@@ -132,6 +184,72 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                             })
                           }
                         </select>
+                        {selectedTemplate !== 'selectTemplate' &&
+                          <>
+                            <div className="" style={{ display: 'grid' }}>
+                              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                                <input
+                                  type="radio"
+                                  name="sendEmailType"
+                                  value="Admin"
+                                  id="Admin"
+                                  checked={sendEmailType === "Admin"}
+                                  onChange={onOptionChange}
+                                />
+                                <label htmlFor="Admin">Send to Admin</label>
+                              </div>
+                              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                                <input
+                                  type="radio"
+                                  name="sendEmailType"
+                                  value="Client"
+                                  id="Client"
+                                  checked={sendEmailType === "Client"}
+                                  onChange={onOptionChange}
+                                />
+                                <label htmlFor="Client">Send to Client</label>
+                              </div>
+                              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                                <input
+                                  type="radio"
+                                  name="sendEmailType"
+                                  value="Custom"
+                                  id="Custom"
+                                  checked={sendEmailType === "Custom"}
+                                  onChange={onOptionChange}
+                                />
+                                <label htmlFor="Custom">Custom Email</label>
+                              </div>
+                            </div>
+                            {sendEmailType === "Custom" &&
+                              <div style={{ marginTop: '10px', display: 'grid', gap: '10px', justifyContent: 'center' }}>
+                                {inputValues.map((value, index) => (
+                                  <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <input
+                                      className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
+                                      required
+                                      value={value}
+                                      onChange={(e) => handleInputChange(index, e.target.value)}
+                                      placeholder={`Enter email`}
+                                    />
+                                    {deleteButtonsVisible[index] &&
+                                      <div onClick={() => handleDeleteInput(index)}>
+                                        <AiTwotoneDelete style={{ width: '20px', height: '20px' }} />
+                                      </div>
+                                    }
+                                  </div>
+                                ))}
+                                <button
+                                  className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                                  type="button"
+                                  onClick={handleAddInput}
+                                >
+                                  Add More
+                                </button>
+                              </div>
+                            }
+                          </>
+                        }
                         {/* <label className="block text-black text-sm font-bold mb-1">
                           {t('netfree.templateActions')}
                         </label>
