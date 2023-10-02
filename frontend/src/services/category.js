@@ -30,8 +30,13 @@ const updateCategories = () => {
   return api.post("/api/crm/category/");
 };
 
-const updateActionInCategory = (data) => {
-  return api.put("/api/crm/category/", data);
+const updateActionInCategory = (data, id) => {
+  if (id) {
+    return api.put(`/api/crm/category/?status=update&id=${id}`, data);
+  } else {
+    return api.put("/api/crm/category/", data);
+  }
+
 };
 
 const categoryService = {

@@ -21,9 +21,11 @@ const NetFree = () => {
     const [isDefaultActionSelectOpen, setIsDefaultActionSelectOpen] = useState(false);
     const { t, i18n } = useTranslation();
     const [showActionModal, setShowActionModal] = useState(false);
+    const [clickedAction, setClickedAction] = useState(null);
     const [currentSelectedCategoryId, setCurrentSelectedCategoryId] = useState(0);
     const [currentSearchTerm, setCurrentSearchTerm] = useState('')
     const [siteSearch, setSiteSearch] = useState('')
+    const [editActionID, setEditActionId] = useState(null)
     const setResponseDataToState = (res) => {
         const response = res.data.data.map(el => {
             el.isActionUpdateEnabled = false;
@@ -81,33 +83,35 @@ const NetFree = () => {
     const enableActionUpdate = (element) => {
 
         if (element) {
-            setCurrentSelectedCategoryId(element.categories_id);
+            setCurrentSelectedCategoryId(element);
         }
         setShowActionModal(true);
     }
 
-    const updateAction = async (data) => {
+    const updateAction = async (data, id) => {
         setIsLoading(true);
-        await categoryService.updateActionInCategory(data);
+        await categoryService.updateActionInCategory(data, id);
         if (siteSearch) {
             searchSetting(siteSearch)
         } else {
             getCategoryData();
         }
-
+        setEditActionId(null)
         setIsLoading(false);
     }
 
     const deleteAction = (categoryId, actionToRemove) => {
         setIsLoading(true);
-        updateAction({ id: categoryId, to_remove: actionToRemove });
+        updateAction({ id: categoryId, to_remove: actionToRemove }, null);
         setIsLoading(false);
     }
+
+
 
     // update/edit action value
     const editAction = (categoryId, currentActions, actionToRemove, newValue) => {
         setIsLoading(true);
-        updateAction({ id: categoryId, to_add: newValue })
+        updateAction({ id: categoryId, to_add: newValue }, null)
         setIsLoading(false);
     }
 
@@ -161,6 +165,7 @@ const NetFree = () => {
                 })
             }
         })
+
         setCategoriesData(updatedCategoryData);
     }
 
@@ -182,7 +187,7 @@ const NetFree = () => {
     const ActionSelectBox = ({ options, categoryName, categoryId, currentActions, operationType, previousValue }) => {
         return (
             <div className="w-auto mx-3 mt-1">
-                <select onChange={(e) => operationType === 'edit' ? editAction(categoryId, currentActions, previousValue, e.target.value) : updateAction({ id: categoryId, to_add: Number(e.target.value) })} placeholder="Select Action" value={'selectAction'} className="bg-white border-[1px] py-1 px-2 outline-none rounded-md" onBlur={() => editSelectedAction(categoryId, { label: 'close edit options' })}>
+                <select onChange={(e) => operationType === 'edit' ? editAction(categoryId, currentActions, previousValue, e.target.value) : updateAction({ id: categoryId, to_add: Number(e.target.value) }, null)} placeholder="Select Action" value={'selectAction'} className="bg-white border-[1px] py-1 px-2 outline-none rounded-md" onBlur={() => editSelectedAction(categoryId, { label: 'close edit options' })}>
                     <option value={'selectAction'} disabled>Select Action</option>
                     {
                         options?.map(el => {
@@ -204,6 +209,7 @@ const NetFree = () => {
                 categoryId={currentSelectedCategoryId}
                 setDefaultAction={setDefaultAction}
                 isDefault={isDefaultActionSelectOpen}
+                editActionID={editActionID}
             />
             <div className="bg-white rounded-3xl w-full md:w-[calc(100%-260px)]">
                 <h3 className='py-4 px-7 font-bold text-[#2B3674]'>{t('netfree.categories')}</h3>
@@ -243,6 +249,7 @@ const NetFree = () => {
                                             <td className='pl-5 pr-5 flex gap-2 py-[6px]'>
                                                 {
                                                     el.actions.map((action, index) => {
+                                                        console.log(action)
                                                         return (
                                                             action.label.length ?
                                                                 action.isActionEditOn ?
@@ -256,18 +263,15 @@ const NetFree = () => {
                                                                     />
                                                                     :
                                                                     <div key={action + index} className="px-3 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap">{action.label}
-                                                                        <span onClick={() => openActionOptions(currentIndex, action)}>
+                                                                        <span onClick={() => { openActionOptions(currentIndex, action); setClickedAction(action?.id) }}>
                                                                             <MdExpandMore className="h-5 w-5 text-blueSecondary cursor-pointer" />
                                                                         </span>
-                                                                        {
-                                                                            action.isClicked &&
+                                                                        {clickedAction == action?.id &&
                                                                             <div
                                                                                 className={`absolute top-[20px] z-10 drop-shadow-md bg-white cursor-pointer ${i18n.dir() === 'rtl' ? 'left-[-15px]' : 'right-[-15px]'}`}
-
                                                                             >
-                                                                                {/* <div className="py-1 px-3 border-b-[1px] hover:bg-[#f2f3f5]" onClick={() => editSelectedAction(el.categories_id, action)}>{t('netfree.edit')}</div> */}
+                                                                                {action.label.includes('Send email template') && <div className="py-1 px-3 border-b-[1px] hover:bg-[#f2f3f5]" onClick={() => editSelectedAction(el, action)}>{t('netfree.edit')}</div>}
                                                                                 <div className="py-1 px-3 hover:bg-[#f2f3f5]" onClick={() => deleteAction(el.categories_id, action.id)}>{t('netfree.remove')}</div>
-
                                                                             </div>
                                                                         }
                                                                     </div>

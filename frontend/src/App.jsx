@@ -15,15 +15,17 @@ import { DEFAULT_LANGUAGE } from "./constants";
 import DefaultLayout from "./layout/DefaultLayout";
 // import authService from "./services/auth";
 import { ACCESS_TOKEN_KEY } from "./constants";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const { t, i18n } = useTranslation();
   document.body.dir = i18n.dir();
 
-  useEffect(()=> {
-    if(localStorage.getItem(DEFAULT_LANGUAGE)){
+  useEffect(() => {
+    if (localStorage.getItem(DEFAULT_LANGUAGE)) {
       const defaultLanguageValue = localStorage.getItem(DEFAULT_LANGUAGE);
-      if(defaultLanguageValue === 'he') {
+      if (defaultLanguageValue === 'he') {
         document.body.dir = 'rtl'
         i18next.changeLanguage('he');
       } else {
@@ -34,7 +36,7 @@ function App() {
       document.body.dir = 'rtl'
       i18next.changeLanguage('he');
     }
-  },[])
+  }, [])
 
   const Guard = ({ token, routeRedirect }) => {
     const location = useLocation();
@@ -59,6 +61,9 @@ function App() {
             </Route>
           </Routes>
         </Router>
+        <ToastContainer
+          autoClose={2000}
+        />
       </div>
     </>
   );

@@ -5,13 +5,13 @@ import { useTranslation } from "react-i18next";
 import {
   AiTwotoneDelete,
 } from "react-icons/ai";
-
+import { toast } from 'react-toastify';
 const initialSatte = {
   Admin: false,
   Client: false,
   Custom: false,
 }
-const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDefaultAction, isDefault }) => {
+const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDefaultAction, isDefault, editActionID }) => {
   const [actionsList, setActionsList] = useState([]);
   const { t } = useTranslation();
   const [templateList, setTemplateList] = useState([]);
@@ -24,13 +24,12 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   const [sendEmailTypes, setSendEmailTypes] = useState(initialSatte);
   const [inputValues, setInputValues] = useState(['']);
   const [deleteButtonsVisible, setDeleteButtonsVisible] = useState([false]);
-
+  // const [error, setError] = useState('')
+  const notify = (error) => toast.error(error);
   const handleAddInput = () => {
     setInputValues([...inputValues, '']);
     setDeleteButtonsVisible([...deleteButtonsVisible, true]);
   };
-
-  console.log(sendEmailTypes)
 
   const handleInputChange = (index, newValue) => {
     const updatedInputValues = [...inputValues];
@@ -96,10 +95,31 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
 
   const submitForm = async () => {
     let data;
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    const areEmailsValid = inputValues.every((value) => emailRegex.test(value));
+    if (selectedAction === 'selectAction') {
+      notify('Please select action!!')
+      return;
+    }
     if (selectedAction == 1) {
-
+      if (selectedTemplate === 'selectTemplate') {
+        notify('Please select template!!')
+        return;
+      }
+      if (!sendEmailTypes.Admin && !sendEmailTypes.Client && !sendEmailTypes.Custom) {
+        notify('Please select at least one action!!');
+        return;
+      }
+      if (sendEmailTypes.Custom && inputValues[0] === '') {
+        notify('Please enter email address!!')
+        return
+      }
+      if (sendEmailTypes.Custom && !areEmailsValid) {
+        notify("Invalid email detected.");
+        return;
+      }
       data = {
-        id: categoryId,
+        id: categoryId?.categories_id,
         to_add: selectedAction,
         inputs: {
           email_to_admin: sendEmailTypes?.Admin,
@@ -109,13 +129,19 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
         template_id: selectedTemplate
       };
     } else {
-      data = { id: categoryId, to_add: selectedAction, inputs: selectedAction == 4 || selectedAction == 5 ? { amount: timeAmount === "" ? "1" : timeAmount, openfor: timePeriod } : {} }
+      data = { id: categoryId?.categories_id, to_add: selectedAction, inputs: selectedAction == 4 || selectedAction == 5 ? { amount: timeAmount === "" ? "1" : timeAmount, openfor: timePeriod } : {} }
     }
+
     if (isDefault) {
       await setDefaultAction(selectedAction, data);
     } else {
-      await updateAction(data);
+      if (editActionID) {
+        await updateAction(data, editActionID);
+      } else {
+        await updateAction(data, null);
+      }
     }
+
     setSelectedAction("selectAction");
     setSelectedTemplate("selectTemplate");
     setActionNeedsOtherFields([]);
@@ -132,7 +158,38 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
     getTemplates();
   }, [])
 
-  console.log(templateActions)
+  const getActionUpdateValue = () => {
+    let obj = categoryId?.actions?.find(val => val.id === editActionID)
+    if (obj?.label.includes('Send email template')) {
+
+      const emailArray = obj?.custom_email?.split(',').map((email) => email.trim());
+      setInputValues(emailArray)
+      const updatedState = {
+        ...initialSatte,
+        Admin: obj.email_to_admin,
+        Client: obj.email_to_client,
+        Custom: obj.custom_email !== "",
+      };
+      setSendEmailTypes(updatedState)
+      const newactionList = actionsList.find(el => el.label == 'Send email template');
+      setSelectedAction(newactionList.id)
+      console.log(templateList)
+      const updateTemplate = templateList.find(el => el.name.includes(obj.label))
+      setSelectedTemplate(updateTemplate?.id)
+    }
+
+
+  }
+
+  useEffect(() => {
+    getActionUpdateValue()
+  }, [categoryId])
+
+  useEffect(() => {
+    if (!sendEmailTypes.Custom) {
+      setInputValues([''])
+    }
+  }, [sendEmailTypes])
 
   return (
     <>
@@ -283,6 +340,9 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                     }
                   </div>
                 </div>
+                {/* <div style={{ textAlign: 'center', color: 'red' }} >
+                  {error}
+                </div> */}
                 <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                   <button
                     className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
