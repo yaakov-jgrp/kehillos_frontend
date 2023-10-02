@@ -96,7 +96,7 @@ const NetFree = () => {
         } else {
             getCategoryData();
         }
-        setEditActionId(null)
+
         setIsLoading(false);
     }
 
@@ -210,6 +210,7 @@ const NetFree = () => {
                 setDefaultAction={setDefaultAction}
                 isDefault={isDefaultActionSelectOpen}
                 editActionID={editActionID}
+                setEditActionId={setEditActionId}
             />
             <div className="bg-white rounded-3xl w-full md:w-[calc(100%-260px)]">
                 <h3 className='py-4 px-7 font-bold text-[#2B3674]'>{t('netfree.categories')}</h3>

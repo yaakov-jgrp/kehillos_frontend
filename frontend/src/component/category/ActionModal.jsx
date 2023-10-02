@@ -11,7 +11,7 @@ const initialSatte = {
   Client: false,
   Custom: false,
 }
-const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDefaultAction, isDefault, editActionID }) => {
+const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDefaultAction, isDefault, editActionID, setEditActionId }) => {
   const [actionsList, setActionsList] = useState([]);
   const { t } = useTranslation();
   const [templateList, setTemplateList] = useState([]);
@@ -150,6 +150,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
     setSendEmailTypes(initialSatte)
     setInputValues([''])
     setDeleteButtonsVisible([false])
+    setEditActionId(null)
     setShowModal(false);
   }
 
@@ -158,10 +159,25 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
     getTemplates();
   }, [])
 
+
+  function findPartialMatch(searchString, arr, text) {
+    for (const item of arr) {
+      if (text === 'label') {
+        if (searchString.includes(item.label)) {
+          return item.id;
+        }
+      } else {
+        if (searchString.includes(item.name)) {
+          return item.id;
+        }
+      }
+    }
+    return null;
+  }
+
   const getActionUpdateValue = () => {
     let obj = categoryId?.actions?.find(val => val.id === editActionID)
     if (obj?.label.includes('Send email template')) {
-
       const emailArray = obj?.custom_email?.split(',').map((email) => email.trim());
       setInputValues(emailArray)
       const updatedState = {
@@ -171,14 +187,18 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
         Custom: obj.custom_email !== "",
       };
       setSendEmailTypes(updatedState)
-      const newactionList = actionsList.find(el => el.label == 'Send email template');
-      setSelectedAction(newactionList.id)
-      console.log(templateList)
-      const updateTemplate = templateList.find(el => el.name.includes(obj.label))
-      setSelectedTemplate(updateTemplate?.id)
+      const matchedId = findPartialMatch(obj?.label, actionsList, 'label');
+      const matchedIdTemplate = findPartialMatch(obj?.label, templateList, 'name');
+      setSelectedAction(matchedId)
+      setSelectedTemplate(matchedIdTemplate)
+      setDeleteButtonsVisible([...deleteButtonsVisible, true]);
+    } else {
+      setInputValues([''])
+      setSendEmailTypes(initialSatte)
+      setSelectedAction("selectAction");
+      setSelectedTemplate('selectTemplate')
+      setDeleteButtonsVisible([false]);
     }
-
-
   }
 
   useEffect(() => {
@@ -202,7 +222,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                   <h3 className="text-2xl font-semibold">{t('netfree.addAction')}</h3>
                   <button
                     className="bg-transparent border-0 text-black float-right"
-                    onClick={() => setShowModal(false)}
+                    onClick={() => { setShowModal(false); setEditActionId(null) }}
                   >
                     <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
                       x
@@ -272,7 +292,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                                   checked={sendEmailTypes.Admin}
                                   onChange={(e) => handleCheckboxChange(e, 'Admin')}
                                 />
-                                <label htmlFor="Admin">Send to Admin</label>
+                                <label htmlFor="Admin">{t('netfree.SendtoAdmin')}</label>
                               </div>
                               <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                                 <input
@@ -281,7 +301,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                                   checked={sendEmailTypes.Client}
                                   onChange={(e) => handleCheckboxChange(e, 'Client')}
                                 />
-                                <label htmlFor="Client">Send to Client</label>
+                                <label htmlFor="Client">{t('netfree.SendtoClien')}</label>
                               </div>
                               <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                                 <input
@@ -290,7 +310,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                                   checked={sendEmailTypes.Custom}
                                   onChange={(e) => handleCheckboxChange(e, 'Custom')}
                                 />
-                                <label htmlFor="Custom">Custom Email</label>
+                                <label htmlFor="Custom">{t('netfree.CustomEmail')}</label>
                               </div>
                             </div>
                             {sendEmailTypes.Custom &&
@@ -302,7 +322,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                                       required
                                       value={value}
                                       onChange={(e) => handleInputChange(index, e.target.value)}
-                                      placeholder={`Enter email`}
+                                      placeholder={t('netfree.Enteremail')}
                                     />
                                     {deleteButtonsVisible[index] &&
                                       <div onClick={() => handleDeleteInput(index)}>
@@ -316,7 +336,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                                   type="button"
                                   onClick={handleAddInput}
                                 >
-                                  Add More
+                                  {t('netfree.Addmore')}
                                 </button>
                               </div>
                             }
@@ -347,7 +367,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                   <button
                     className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
                     type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={() => { setShowModal(false); setEditActionId(null) }}
                   >
                     {t('netfree.close')}
                   </button>

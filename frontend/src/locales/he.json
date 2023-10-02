@@ -74,7 +74,12 @@
     "minutes": "דקות",
     "hours": "שעה (ות",
     "days": "ימים",
-    "weeks": "שבועות"
+    "weeks": "שבועות",
+    "SendtoAdmin": "שלח למנהל",
+    "SendtoClien": "שלח ללקוח",
+    "CustomEmail": "אימייל מותאם אישית",
+    "Enteremail": "הזן אימייל",
+    "Addmore": "הוסף עוד"
   },
   "searchbox": {
     "placeHolder": "חיפוש",

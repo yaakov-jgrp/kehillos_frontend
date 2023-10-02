@@ -74,7 +74,12 @@
     "minutes": "Minutes",
     "hours": "Hours",
     "days": "Days",
-    "weeks": "Weeks"
+    "weeks": "Weeks",
+    "SendtoAdmin": "Send to Admin",
+    "SendtoClien": "Send to Clien",
+    "CustomEmail": "Custom Email",
+    "Enteremail": "Enter email",
+    "Addmore": "Add More"
   },
   "searchbox": {
     "placeHolder": "Search",
