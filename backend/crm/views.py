@@ -120,9 +120,37 @@ class CategoriesView(APIView):
                     email_to_admin = inputs.get('email_to_admin')
                     email_to_client = inputs.get('email_to_client')
                     custom_email = inputs.get('custom_email',"")
+                    if not email_to_admin and not email_to_client and custom_email == "":
+                        return Response(
+                                    {
+                                        "success": False,
+                                        "message": "Select min one options"
+
+                                    }, status=400
+                                )
                     if custom_email:
                         custom_email = custom_email
-                    action_instance, _ = models.Actions.objects.filter(template=False).get_or_create(label = "Send email template",email_template=template,category=instance,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email)
+                    if request.GET.get('status','') == 'update':
+                        if not request.GET.get('id'):
+                            return Response({
+                                "success": False,
+                                "message": "Invalid action id"
+                            }, status=400)
+
+                        action_obj = models.Actions.objects.filter(id=request.GET.get('id','')).first()
+                        if not action_obj:
+                            return Response({
+                                "success": False,
+                                "message": "Invalid action id"
+                            }, status=400)
+                        action_obj.email_template = template
+                        action_obj.email_to_admin = email_to_admin
+                        action_obj.email_to_client = email_to_client
+                        action_obj.custom_email = custom_email
+                        action_obj.save()
+
+                    else:
+                        action_instance, _ = models.Actions.objects.filter(template=False).get_or_create(label = "Send email template",email_template=template,category=instance,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email)
                 else:
                     action, _ = models.Actions.objects.get_or_create(
                     label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),
@@ -377,8 +405,36 @@ class ActionsView(APIView):
                     email_to_admin = inputs.get('email_to_admin')
                     email_to_client = inputs.get('email_to_client')
                     custom_email = inputs.get('custom_email',"")
+                    if not email_to_admin and not email_to_client and custom_email == "":
+                        return Response(
+                                    {
+                                        "success": False,
+                                        "message": "Select min one options"
+
+                                    }, status=400
+                                )
+
                     if "Send email template" in action.label:
-                        instance, _ = models.Actions.objects.filter(template=False).get_or_create(label = "Send email template",category=None,email_template=template,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email)
+                        if request.GET.get('status','') == 'update':
+                            if not request.GET.get('id'):
+                                return Response({
+                                    "success": False,
+                                    "message": "Invalid action id"
+                                }, status=400)
+
+                            instance = models.Actions.objects.filter(id=request.GET.get('id','')).first()
+                            if not instance:
+                                return Response({
+                                    "success": False,
+                                    "message": "Invalid action id"
+                                }, status=400)
+                            instance.email_template = template
+                            instance.email_to_admin = email_to_admin
+                            instance.email_to_client = email_to_client
+                            instance.custom_email = custom_email
+                            instance.save()
+                        else:
+                            instance, _ = models.Actions.objects.filter(template=False).get_or_create(label = "Send email template",category=None,email_template=template,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email)
                 else:
                     instance, _ = models.Actions.objects.filter(template=False).get_or_create(
                     label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),category=None

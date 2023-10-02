@@ -159,15 +159,19 @@ class Actions(models.Model):
         actions_hebrew_name = {
             "Open URL": "פתח כתובת אתר",
             "Open URL for X X": "X X פתח כתובת אתר עבור",
-            "Open URL for  ": "פתח כתובת אתר עבור",
+            "Open URL for": "פתח כתובת אתר עבור",
             "Open Domain": "פתח דומיין",
             "Open Domain for X X": "X X פתח דומיין עבור",
-            "Open Domain for  ": "פתח דומיין עבור",
+            "Open Domain for": "פתח דומיין עבור",
             "Send email template": "שלח תבנית אימייל"
         }
         if lang == "he":
             if self.label.strip() == "Open URL for":
                 self.label ="פתח כתובת אתר עבור"
+            if "Open URL for" in self.label and "Open URL for X X" not in self.label:
+                self.label = self.label.replace("Open URL for","פתח כתובת אתר עבור").replace('Hours','שעה (ות').replace('Minutes','דקות').replace('Days','ימים').replace('Weeks','שבועות')
+            if "Open Domain for" in self.label and "Open Domain for X X" not in self.label:
+                self.label = self.label.replace("Open Domain for","פתח דומיין עבור").replace('Hours','שעה (ות').replace('Minutes','דקות').replace('Days','ימים').replace('Weeks','שבועות')
             hebrew_name = actions_hebrew_name.get(self.label, None)
             if hebrew_name:
                 self.label = hebrew_name

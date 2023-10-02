@@ -25,7 +25,7 @@ class ActionsSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField()
     class Meta:
         model = models.Actions
-        fields = ("id","label")
+        fields = ("id","label",'email_to_admin','email_to_client','custom_email')
 
     def get_label(self,obj):
         lang = self.context.get("lang")
