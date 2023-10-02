@@ -74,8 +74,9 @@
     "minutes": "דקות",
     "hours": "שעה (ות",
     "days": "ימים",
-    "weeks": "שבועות"
-  },
+    "weeks": "שבועות",
+    "Send to Admin": "שלח למנהל"
+    },
   "searchbox": {
     "placeHolder": "חיפוש",
     "requestId": "מספר פניה",
