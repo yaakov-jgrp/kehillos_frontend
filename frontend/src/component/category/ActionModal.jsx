@@ -341,21 +341,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                               </div>
                             }
                           </>
-                        }
-
-                        {/* <label className="block text-black text-sm font-bold mb-1">
-                          {t('netfree.templateActions')}
-                        </label>
-                        <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={(e) => setTemplateActions(Array.from(e.target.selectedOptions, option => option.value))} value={templateActions} placeholder="Select Action">
-                          <option value={'selectAction'} disabled>{t('netfree.selectAction')}</option>
-                          {
-                            templateActionsData?.map((el, i) => {
-                              return (
-                                el ? <option key={i} value={el}>{el}</option> : null
-                              );
-                            })
-                          }
-                        </select> */}
+                        }-
                       </>
                     }
                   </div>

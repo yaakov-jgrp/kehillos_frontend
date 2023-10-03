@@ -155,6 +155,14 @@ const NetFree = () => {
 
     const handleSiteSearch = debounce((e) => searchSetting(e.target.value), 500);
 
+    const handleClickedAction = (id) => {
+        if (clickedAction && clickedAction === id) {
+            setClickedAction(null);
+        } else {
+            setClickedAction(id);
+        }
+    };
+
     const openActionOptions = (categoyIndex, action) => {
         let updatedCategoryData = JSON.parse(JSON.stringify(categoriesData));
         updatedCategoryData.forEach((el, ind) => {
@@ -234,7 +242,10 @@ const NetFree = () => {
                                         name="name"
                                     />
                                 </th>
-                                <th className='flex px-5'>
+                                <th className='pl-5 w-[8rem]'>
+                                    <h5 className='text-start text-[10px] md:text-[14px] font-bold text-[#2B3674]'>{t('netfree.trafficRecord')}</h5>
+                                </th>
+                                <th className='pl-5'>
                                     <h5 className='text-start text-[10px] md:text-[14px] font-bold text-[#2B3674]'>{t('netfree.actions')}</h5>
                                 </th>
                             </tr>
@@ -244,8 +255,11 @@ const NetFree = () => {
                                 categoriesData.map((el, currentIndex) => {
                                     return (
                                         <tr className='h-[20px] border-t bottom-b border-sky-500 w-[100%]' key={el.categories_id}>
-                                            <td className="">
+                                            <td>
                                                 <h5 className="font-bold text-[#2B3674] break-words w-[15rem]">{el.name}</h5>
+                                            </td>
+                                            <td>
+                                                <div className="flex items-center justify-center w-[8rem]"><ToggleSwitch selected={true} /></div>
                                             </td>
                                             <td className='pl-5 pr-5 flex gap-2 py-[6px]'>
                                                 {
@@ -264,14 +278,14 @@ const NetFree = () => {
                                                                     />
                                                                     :
                                                                     <div key={action + index} className="px-3 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap">{action.label}
-                                                                        <span onClick={() => { openActionOptions(currentIndex, action); setClickedAction(action?.id) }}>
+                                                                        <span onClick={() => { openActionOptions(currentIndex, action); handleClickedAction(action?.id) }}>
                                                                             <MdExpandMore className="h-5 w-5 text-blueSecondary cursor-pointer" />
                                                                         </span>
                                                                         {clickedAction == action?.id &&
                                                                             <div
                                                                                 className={`absolute top-[20px] z-10 drop-shadow-md bg-white cursor-pointer ${i18n.dir() === 'rtl' ? 'left-[-15px]' : 'right-[-15px]'}`}
                                                                             >
-                                                                                {action.label.includes('Send email template') && <div className="py-1 px-3 border-b-[1px] hover:bg-[#f2f3f5]" onClick={() => editSelectedAction(el, action)}>{t('netfree.edit')}</div>}
+                                                                                {(action.label.includes('Send email template') || action.label.includes('שלח תבנית אימייל')) && <div className="py-1 px-3 border-b-[1px] hover:bg-[#f2f3f5]" onClick={() => editSelectedAction(el, action)}>{t('netfree.edit')}</div>}
                                                                                 <div className="py-1 px-3 hover:bg-[#f2f3f5]" onClick={() => deleteAction(el.categories_id, action.id)}>{t('netfree.remove')}</div>
                                                                             </div>
                                                                         }
@@ -293,7 +307,7 @@ const NetFree = () => {
                     </table>
                 </div>
             </div>
-            <div className="flex flex-col gap-4 h-full w-full md:!min-w-[250px] md:!w-[250px]">
+            <div className="flex flex-col gap-3 h-full w-full md:!min-w-[250px] md:!w-[250px]">
                 <div className="bg-white h-[30%] rounded-3xl text-center text-[#2B3674]">
                     <h3 className="p-3 text-[22px] font-bold">{t('netfree.searchSiteSetting')}</h3>
                     <SearchField
@@ -317,10 +331,10 @@ const NetFree = () => {
                         }
                     </div>
                 </div>
-                <div className="flex justify-center items-center bg-white h-[10%] rounded-3xl text-center text-[#2B3674]">
+                <div className="flex justify-center items-center rounded-3xl text-center text-[#2B3674]">
                     <button
                         onClick={handleUpdateCategory}
-                        className={`linear m-1 p-2 w-[90%] rounded-full py-[9px] text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
+                        className={`linear p-1 w-[90%] rounded-full py-[4px] text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
                     >
                         {t('netfree.updateCategoryButton')}
                     </button>
@@ -340,6 +354,10 @@ const NetFree = () => {
                         setIsDefaultActionSelectOpen(true);
                         enableActionUpdate();
                     }} />
+                </div>
+                <div className="flex justify-around items-center py-1 px-2 overflow-hidden items-start bg-white rounded-3xl text-center text-[#2B3674]">
+                    <h5 className="font-bold ml-2 text-[16px]">{t('netfree.trafficRecord')}</h5>
+                    <ToggleSwitch selected={true} />
                 </div>
                 <div className="py-3 bg-white h-[23%] rounded-3xl text-center text-[#2B3674]">
                     <div className="flex items-center justify-center">

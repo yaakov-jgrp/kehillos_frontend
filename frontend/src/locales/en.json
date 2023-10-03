@@ -59,6 +59,7 @@
     "searchSiteSetting": "Search Site Setting",
     "updateCategoryButton": "Click to update categories",
     "defaultAction": "Default Actions",
+    "trafficRecord": "Traffic Record",
     "remove": "Remove",
     "edit": "Edit",
     "addAction": "Add Action",
@@ -76,7 +77,7 @@
     "days": "Days",
     "weeks": "Weeks",
     "SendtoAdmin": "Send to Admin",
-    "SendtoClien": "Send to Clien",
+    "SendtoClien": "Send to Client",
     "CustomEmail": "Custom Email",
     "Enteremail": "Enter email",
     "Addmore": "Add More"
