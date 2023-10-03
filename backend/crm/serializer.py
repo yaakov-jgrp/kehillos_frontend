@@ -91,7 +91,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Categories
         fields = (
-            "categories_id", "name", "actions", "request_type","netfree_traffic"
+            "id","categories_id", "name", "actions", "request_type","netfree_traffic"
         )
 
     def get_actions(self, instance):

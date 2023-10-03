@@ -59,7 +59,7 @@ class NetfreeTrafficView(APIView):
         category = data.get('category')
         status = True if data.get('status') else False
         default_id = data.get('default_id')
-        instance = models.Categories.objects.filter(categories_id=category).first()
+        instance = models.Categories.objects.filter(id=category).first()
         if not instance and not default_id:
             return Response({
                 "success": False,
