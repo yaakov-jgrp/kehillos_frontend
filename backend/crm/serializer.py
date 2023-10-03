@@ -21,9 +21,36 @@ class EmailrequestSerializer(serializers.ModelSerializer):
             return obj.text
     def get_action_done(self,obj):
         lang = self.context.get("lang",'en')
+        actions_hebrew_name = {
+            "Open URL": "פתח כתובת אתר",
+            "Open URL for X X": "X X פתח כתובת אתר עבור",
+            "Open URL for": "פתח כתובת אתר עבור",
+            "Open Domain": "פתח דומיין",
+            "Open Domain for X X": "X X פתח דומיין עבור",
+            "Open Domain for": "פתח דומיין עבור",
+            "Send email template": "שלח תבנית אימייל"
+        }
         if lang == 'he':
-            obj.action_done = obj.action_done.replace("Send email template","שלח תבנית אימייל").replace("Open Domain for","פתח דומיין עבור").replace("Open Domain","פתח דומיין").replace("Open URL for","פתח כתובת אתר עבור").replace("Open URL","פתח כתובת אתר").replace('Hours','שעה (ות').replace('Minutes','דקות').replace('Days','ימים').replace('Weeks','שבועות')
-
+            actions = obj.action_done.split(",")
+            for index,item in enumerate(actions):
+                item = item
+                if "Open URL for" in item:
+                    item = item.replace("Open URL for","פתח כתובת אתר עבור").replace('Hours','שעה (ות').replace('Minutes','דקות').replace('Days','ימים').replace('Weeks','שבועות')
+                if "Open Domain for" in item :
+                    item = item.replace("Open Domain for","פתח דומיין עבור").replace('Hours','שעה (ות').replace('Minutes','דקות').replace('Days','ימים').replace('Weeks','שבועות')
+                if "Send email template" in item:
+                    try:
+                        print(item)
+                        templete = str(item).split("Send email template")
+                        if len(templete)==2:
+                            item =  actions_hebrew_name.get("Send email template", "Send email template")+" "+templete[1]
+                    except Exception:
+                        item = item
+                hebrew_name = actions_hebrew_name.get(item.strip(), None)
+                if hebrew_name:
+                    item = hebrew_name
+                actions[index] = item
+            return ", ".join(actions)
         return obj.action_done
 
 
