@@ -172,6 +172,10 @@ class Actions(models.Model):
                 self.label = self.label.replace("Open URL for","פתח כתובת אתר עבור").replace('Hours','שעה (ות').replace('Minutes','דקות').replace('Days','ימים').replace('Weeks','שבועות')
             if "Open Domain for" in self.label and "Open Domain for X X" not in self.label:
                 self.label = self.label.replace("Open Domain for","פתח דומיין עבור").replace('Hours','שעה (ות').replace('Minutes','דקות').replace('Days','ימים').replace('Weeks','שבועות')
+            if self.label == "Open Domain for X X":
+                self.label = actions_hebrew_name.get("Open Domain for", None) + " " + "X X"
+            if self.label == "Open URL for X X":
+                self.label = actions_hebrew_name.get("Open URL for", None) + " " + "X X"
             hebrew_name = actions_hebrew_name.get(self.label, None)
             if hebrew_name:
                 self.label = hebrew_name

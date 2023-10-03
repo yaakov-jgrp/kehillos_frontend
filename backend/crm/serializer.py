@@ -8,6 +8,7 @@ class EmailrequestSerializer(serializers.ModelSerializer):
         default="פתיחת אתר - נטפרי"
     )
     text = serializers.SerializerMethodField()
+    action_done = serializers.SerializerMethodField()
     class Meta:
         model = models.Emailrequest
         fields = ["id","email_id","sender_email","username","request_type","text","action_done","customer_id","ticket_id","requested_website","created_at"]
@@ -18,6 +19,12 @@ class EmailrequestSerializer(serializers.ModelSerializer):
             return paragraphs[-3]
         except Exception as e:
             return obj.text
+    def get_action_done(self,obj):
+        lang = self.context.get("lang",'en')
+        if lang == 'he':
+            obj.action_done = obj.action_done.replace("Send email template","שלח תבנית אימייל").replace("Open Domain for","פתח דומיין עבור").replace("Open Domain","פתח דומיין").replace("Open URL for","פתח כתובת אתר עבור").replace("Open URL","פתח כתובת אתר").replace('Hours','שעה (ות').replace('Minutes','דקות').replace('Days','ימים').replace('Weeks','שבועות')
+
+        return obj.action_done
 
 
 

@@ -331,9 +331,11 @@ class FetchUserSettingsView(APIView):
 class EmailRequestView(APIView):
 
     def get(self, *args, **options):
+        params = self.request.query_params
+        lang = params.get("lang")
         queryset = models.Emailrequest.objects.all().order_by("-id")
         serializer = EmailrequestSerializer(
-            queryset, many=True
+            queryset, many=True,context = {"lang":lang}
         )
         return Response(
             {
