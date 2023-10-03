@@ -109,7 +109,17 @@ class Categories(models.Model):
         response = session.post(url, headers=headers, data=payload)
         return response
 
-
+class NetfreeTraffic(models.Model):
+    is_default = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
+    category = models.ForeignKey(
+        Categories,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="netfree_traffic",
+        blank=True,
+        default=None,
+    )
 class Actions(models.Model):
     label = models.CharField(max_length=200)
     is_default = models.BooleanField(default=False)

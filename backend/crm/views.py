@@ -1,5 +1,5 @@
 import time
-from crm.serializer import ActionsSerializer
+from crm.serializer import ActionsSerializer, NetfreeTrafficSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from crm.serializer import (
@@ -28,6 +28,58 @@ from django.core.cache import cache
 from django.db import transaction
 cronjob_log = logging.getLogger('cronjob-log')
 cronjob_error_log = logging.getLogger('cronjob-error')
+
+
+class NetfreeTrafficView(APIView):
+
+    def get(self, request):
+        params = self.request.query_params
+        default = params.get("default")
+        if default:
+            netfree_traffic,created = models.NetfreeTraffic.objects.get_or_create(is_default=True)
+            data = NetfreeTrafficSerializer(netfree_traffic).data
+            return Response(
+                {
+                    "success": True,
+                    "data": data
+                }
+            )
+        
+        if params.get("search", None):
+            netfree_traffic = models.NetfreeTraffic.objects.filter(id=params.get("search", None))
+            data = NetfreeTrafficSerializer(netfree_traffic,many=True).data
+            return Response(
+                {
+                    "success": True,
+                    "data": data
+                }
+            )
+    def post(self, request):
+        data = request.data
+        category = data.get('category')
+        status = True if data.get('status') else False
+        default_id = data.get('default_id')
+        instance = models.Categories.objects.filter(id=category).first()
+        if not instance and not default_id:
+            return Response({
+                "success": False,
+                "message": "Category not found"
+            }, status=400)
+        if default_id:
+            netfree_traffic,created = models.NetfreeTraffic.objects.get_or_create(is_default=True)
+        else:
+            netfree_traffic,created = models.NetfreeTraffic.objects.get_or_create(is_default=False,category=instance)
+        netfree_traffic.is_active = status
+        netfree_traffic.save()
+        data = NetfreeTrafficSerializer(netfree_traffic).data
+        return Response(
+                {
+                    "success": True,
+                    "data": data
+                }
+            )
+        
+
 
 class CategoriesView(APIView):
 

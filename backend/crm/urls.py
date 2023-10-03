@@ -4,6 +4,7 @@ from crm import views
 
 urlpatterns = [
      path("category/", views.CategoriesView.as_view()),
+     path("netfree-traffic/", views.NetfreeTrafficView.as_view()),
      path("settings/", views.FetchUserSettingsView.as_view()),
      path("requests/", views.EmailRequestView.as_view()),
      path("actions/", views.ActionsView.as_view()),

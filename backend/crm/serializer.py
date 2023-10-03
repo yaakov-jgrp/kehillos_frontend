@@ -86,11 +86,12 @@ class CategoriesSerializer(serializers.ModelSerializer):
         source="description", default="פתיחת אתר - נטפרי"
     )
     actions = serializers.SerializerMethodField()
+    netfree_traffic = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Categories
         fields = (
-            "categories_id", "name", "actions", "request_type",
+            "categories_id", "name", "actions", "request_type","netfree_traffic"
         )
 
     def get_actions(self, instance):
@@ -104,6 +105,11 @@ class CategoriesSerializer(serializers.ModelSerializer):
         data = ActionsSerializer(data, many=True, context = {"lang":lang}).data
         data_filled = list(map(fill_label, data))
         return data_filled
+    def get_netfree_traffic(self,obj):
+        obj = models.NetfreeTraffic.objects.filter(category=obj).first()
+        if obj:
+            return True
+        return False
 
 
 class EmailTemplateSchema(serializers.Serializer):
@@ -111,3 +117,8 @@ class EmailTemplateSchema(serializers.Serializer):
     email_to = serializers.CharField()
     subject = serializers.CharField()
     body = serializers.JSONField()
+
+class NetfreeTrafficSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.NetfreeTraffic
+        fields = '__all__'
