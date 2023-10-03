@@ -176,8 +176,9 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   }
 
   const getActionUpdateValue = () => {
+
     let obj = categoryId?.actions?.find(val => val.id === editActionID)
-    if (obj?.label.includes('Send email template')) {
+    if (obj?.label.includes('Send email template') || obj?.label.includes('שלח תבנית אימייל')) {
       const emailArray = obj?.custom_email?.split(',').map((email) => email.trim());
       setInputValues(emailArray)
       const updatedState = {
