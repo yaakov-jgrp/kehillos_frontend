@@ -73,7 +73,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   };
 
 
-  const periods = [t('netfree.minutes'), t('netfree.hours'), t('netfree.days'), t('netfree.weeks')];
+  const periods = [{label:t('netfree.minutes'),value:"Minutes"} ,{label:t('netfree.hours'),value:"Hours"},{label:t('netfree.days'),value:"Days"},{label:t('netfree.weeks'),value:"Weeks"} ];
   const templateActionsData = [t('netfree.adminEmail'), t('netfree.clientEmail'), t('netfree.customEmail')];
   const getActionsList = async () => {
     const response = await categoryService.getActions();
@@ -259,7 +259,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                             {
                               periods?.map((el, i) => {
                                 return (
-                                  el ? <option key={i} value={el}>{el}</option> : null
+                                  el ? <option key={i} value={el.value}>{el.label}</option> : null
                                 );
                               })
                             }
