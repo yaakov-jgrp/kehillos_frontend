@@ -107,7 +107,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
         return data_filled
     def get_netfree_traffic(self,obj):
         obj = models.NetfreeTraffic.objects.filter(category=obj).first()
-        if obj:
+        if obj and obj.is_active:
             return True
         return False
 
