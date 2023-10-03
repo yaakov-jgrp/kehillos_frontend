@@ -80,7 +80,12 @@
     "SendtoClien": "שלח ללקוח",
     "CustomEmail": "אימייל מותאם אישית",
     "Enteremail": "הזן אימייל",
-    "Addmore": "הוסף עוד"
+    "Addmore": "הוסף עוד",
+    "open_url":"פתח כתובת אתר",
+    "open_url_for":"פתח כתובת אתר עבור",
+    "open_domain":"פתח דומיין",
+    "open_domain_for":"פתח דומיין עבור",
+    "send_email_template":"שלח תבנית אימייל"
   },
   "searchbox": {
     "placeHolder": "חיפוש",

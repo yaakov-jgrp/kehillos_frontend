@@ -166,22 +166,21 @@ class Actions(models.Model):
         
             
     def localized_label(self, lang = 'he'):
+        with open("../frontend/src/locales/he.json", 'r', encoding='utf-8') as json_file:
+            data = json.load(json_file)
+            data = data.get('netfree',{})
         actions_hebrew_name = {
-            "Open URL": "פתח כתובת אתר",
-            "Open URL for X X": "X X פתח כתובת אתר עבור",
-            "Open URL for": "פתח כתובת אתר עבור",
-            "Open Domain": "פתח דומיין",
-            "Open Domain for X X": "X X פתח דומיין עבור",
-            "Open Domain for": "פתח דומיין עבור",
-            "Send email template": "שלח תבנית אימייל"
+            "Open URL": data.get("open_url","Open URL"),
+            "Open URL for": data.get("open_url_for","Open URL for"),
+            "Open Domain":data.get("open_domain","Open Domain"),
+            "Open Domain for": data.get("open_domain_for","Open Domain for"),
+            "Send email template": data.get("send_email_template",'Send email template')
         }
         if lang == "he":
-            if self.label.strip() == "Open URL for":
-                self.label ="פתח כתובת אתר עבור"
             if "Open URL for" in self.label and "Open URL for X X" not in self.label:
-                self.label = self.label.replace("Open URL for","פתח כתובת אתר עבור").replace('Hours','שעה (ות').replace('Minutes','דקות').replace('Days','ימים').replace('Weeks','שבועות')
+                self.label = self.label.replace("Open URL for",actions_hebrew_name.get("Open URL for")).replace('Hours',data.get('hours')).replace('Minutes',data.get('minutes')).replace('Days',data.get('days')).replace('Weeks',data.get('weeks'))
             if "Open Domain for" in self.label and "Open Domain for X X" not in self.label:
-                self.label = self.label.replace("Open Domain for","פתח דומיין עבור").replace('Hours','שעה (ות').replace('Minutes','דקות').replace('Days','ימים').replace('Weeks','שבועות')
+                self.label = self.label.replace("Open Domain for",actions_hebrew_name.get("Open Domain for")).replace('Hours',data.get('hours')).replace('Minutes',data.get('minutes')).replace('Days',data.get('days')).replace('Weeks',data.get('weeks'))
             if self.label == "Open Domain for X X":
                 self.label = actions_hebrew_name.get("Open Domain for", None) + " " + "X X"
             if self.label == "Open URL for X X":
