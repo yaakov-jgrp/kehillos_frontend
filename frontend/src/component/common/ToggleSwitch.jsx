@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ToggleSwitch = (props) => {
-    const { selected } = props
+    const { selected, clickHandler } = props
     const [checked, setChecked] = useState(selected || false);
     const handleChange = () => {
+        if (clickHandler) {
+            clickHandler();
+        }
         setChecked(!checked);
     };
 

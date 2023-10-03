@@ -341,7 +341,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                               </div>
                             }
                           </>
-                        }-
+                        }
                       </>
                     }
                   </div>

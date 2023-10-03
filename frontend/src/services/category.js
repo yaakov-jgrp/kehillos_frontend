@@ -1,7 +1,5 @@
 import api from "./api";
 
-
-
 const getCategories = () => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   return api.get(`/api/crm/category/?lang=${lang}`);
@@ -26,6 +24,14 @@ const getDefaultAction = () => {
   return api.get(`/api/crm/actions/?get_default=true&lang=${lang}`);
 };
 
+const getDefaultTraffic = () => {
+  return api.get("/api/crm/netfree-traffic/?default=true");
+};
+
+const updateNetfreeTraffic = (data) => {
+  return api.post("/api/crm/netfree-traffic/", data);
+};
+
 const updateCategories = () => {
   return api.post("/api/crm/category/");
 };
@@ -36,7 +42,6 @@ const updateActionInCategory = (data, id) => {
   } else {
     return api.put("/api/crm/category/", data);
   }
-
 };
 
 const categoryService = {
@@ -44,7 +49,9 @@ const categoryService = {
   getActions,
   setDefaultAction,
   getDefaultAction,
+  getDefaultTraffic,
   updateCategories,
+  updateNetfreeTraffic,
   updateActionInCategory,
   searchSiteSetting,
 };

@@ -23,9 +23,10 @@ const NetFree = () => {
     const [showActionModal, setShowActionModal] = useState(false);
     const [clickedAction, setClickedAction] = useState(null);
     const [currentSelectedCategoryId, setCurrentSelectedCategoryId] = useState(0);
-    const [currentSearchTerm, setCurrentSearchTerm] = useState('')
-    const [siteSearch, setSiteSearch] = useState('')
-    const [editActionID, setEditActionId] = useState(null)
+    const [currentSearchTerm, setCurrentSearchTerm] = useState('');
+    const [siteSearch, setSiteSearch] = useState('');
+    const [editActionID, setEditActionId] = useState(null);
+    const [defaultTraffic, setDefaultTraffic] = useState(null);
     const setResponseDataToState = (res) => {
         const response = res.data.data.map(el => {
             el.isActionUpdateEnabled = false;
@@ -54,6 +55,27 @@ const NetFree = () => {
     const getDefaultActions = async () => {
         const response = await categoryService.getDefaultAction();
         setDefaultActionList(response.data.data);
+    }
+    const getDefaultTraffic = async () => {
+        const response = await categoryService.getDefaultTraffic();
+        setDefaultTraffic(response.data.data.is_active);
+    }
+
+    const updateDefaultTrafficHandler = async () => {
+        const data = {
+            default_id: true,
+            status: !defaultTraffic
+        };
+        const response = await categoryService.updateNetfreeTraffic(data);
+        setDefaultTraffic(response.data.data.is_active);
+    }
+
+    const updateCategoryTrafficHandler = async (category) => {
+        const data = {
+            category: category.id,
+            status: !category.netfree_traffic
+        };
+        const response = await categoryService.updateNetfreeTraffic(data)
     }
 
     const deleteDefaultAction = async (actionId) => {
@@ -190,6 +212,7 @@ const NetFree = () => {
     useEffect(() => {
         getCategoryData();
         getActionsList();
+        getDefaultTraffic();
     }, []);
 
     const ActionSelectBox = ({ options, categoryName, categoryId, currentActions, operationType, previousValue }) => {
@@ -259,12 +282,11 @@ const NetFree = () => {
                                                 <h5 className="font-bold text-[#2B3674] break-words w-[15rem]">{el.name}</h5>
                                             </td>
                                             <td>
-                                                <div className="flex items-center justify-center w-[8rem]"><ToggleSwitch selected={true} /></div>
+                                                <div className="flex items-center justify-center w-[8rem]"><ToggleSwitch clickHandler={() => updateCategoryTrafficHandler(el)} selected={el.netfree_traffic} /></div>
                                             </td>
                                             <td className='pl-5 pr-5 flex gap-2 py-[6px]'>
                                                 {
                                                     el.actions.map((action, index) => {
-                                                        console.log(action)
                                                         return (
                                                             action.label.length ?
                                                                 action.isActionEditOn ?
@@ -355,10 +377,12 @@ const NetFree = () => {
                         enableActionUpdate();
                     }} />
                 </div>
-                <div className="flex justify-around items-center py-1 px-2 overflow-hidden items-start bg-white rounded-3xl text-center text-[#2B3674]">
-                    <h5 className="font-bold ml-2 text-[16px]">{t('netfree.trafficRecord')}</h5>
-                    <ToggleSwitch selected={true} />
-                </div>
+                {defaultTraffic !== null &&
+                    <div className="flex justify-around items-center py-1 px-2 overflow-hidden items-start bg-white rounded-3xl text-center text-[#2B3674]">
+                        <h5 className="font-bold ml-2 text-[16px]">{t('netfree.trafficRecord')}</h5>
+                        <ToggleSwitch clickHandler={updateDefaultTrafficHandler} selected={defaultTraffic} />
+                    </div>
+                }
                 <div className="py-3 bg-white h-[23%] rounded-3xl text-center text-[#2B3674]">
                     <div className="flex items-center justify-center">
                         <p className="p-2 text-xs">Buyer Review Notifications</p>
