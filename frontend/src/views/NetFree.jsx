@@ -265,9 +265,6 @@ const NetFree = () => {
                                         name="name"
                                     />
                                 </th>
-                                <th className='pl-5 w-[8rem]'>
-                                    <h5 className='text-start text-[10px] md:text-[14px] font-bold text-[#2B3674]'>{t('netfree.trafficRecord')}</h5>
-                                </th>
                                 <th className='pl-5'>
                                     <h5 className='text-start text-[10px] md:text-[14px] font-bold text-[#2B3674]'>{t('netfree.actions')}</h5>
                                 </th>
@@ -280,9 +277,6 @@ const NetFree = () => {
                                         <tr className='h-[20px] border-t bottom-b border-sky-500 w-[100%]' key={el.categories_id}>
                                             <td>
                                                 <h5 className="font-bold text-[#2B3674] break-words w-[15rem]">{el.name}</h5>
-                                            </td>
-                                            <td>
-                                                <div className="flex items-center justify-center w-[8rem]"><ToggleSwitch clickHandler={() => updateCategoryTrafficHandler(el)} selected={el.netfree_traffic} /></div>
                                             </td>
                                             <td className='pl-5 pr-5 flex gap-2 py-[6px]'>
                                                 {
@@ -379,7 +373,7 @@ const NetFree = () => {
                 </div>
                 {defaultTraffic !== null &&
                     <div className="flex justify-around items-center py-1 px-2 overflow-hidden items-start bg-white rounded-3xl text-center text-[#2B3674]">
-                        <h5 className="font-bold ml-2 text-[16px]">{t('netfree.trafficRecord')}</h5>
+                        <h5 className="font-bold ml-2 text-[14px]">{t('netfree.trafficRecord')}</h5>
                         <ToggleSwitch clickHandler={updateDefaultTrafficHandler} selected={defaultTraffic} />
                     </div>
                 }

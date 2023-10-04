@@ -166,7 +166,7 @@ class Actions(models.Model):
         
             
     def localized_label(self, lang = 'he'):
-        with open("../frontend/src/locales/he.json", 'r', encoding='utf-8') as json_file:
+        with open(f"../frontend/src/locales/{lang}.json", 'r', encoding='utf-8') as json_file:
             data = json.load(json_file)
             data = data.get('netfree',{})
         actions_hebrew_name = {
@@ -192,7 +192,21 @@ class Actions(models.Model):
         
         if "Send email template" in self.label or "שלח תבנית אימייל" in self.label:
             try:
-                return self.label+" "+self.email_template.name
+                label = self.label+" "+self.email_template.name 
+                
+                if self.email_to_admin or self.email_to_client or self.custom_email:
+                    label = label + f" {data.get('to')}"
+                if self.email_to_admin:
+                    label = label  + f" {data.get('admin')}"
+                if self.email_to_client:
+                    if self.email_to_admin:
+                        label = label+" /"
+                    label = label  + f" {data.get('client')}"
+                if self.custom_email:
+                    if self.email_to_admin or self.email_to_client:
+                        label = label+" /"
+                    label = label + f" {data.get('customEmail')}"
+                return label
             except Exception:
                 return self.label
         return self.label

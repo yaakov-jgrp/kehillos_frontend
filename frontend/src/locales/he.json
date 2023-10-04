@@ -59,7 +59,7 @@
     "searchSiteSetting": "מצא הגדרות אתר",
     "updateCategoryButton": "לחץ לעדכן רשימת הקטגוריות",
     "defaultAction": "פעולות ברירת מחדל",
-    "trafficRecord": "שיא תנועה",
+    "trafficRecord": "טיפול בהקלטות תעבורה",
     "remove": "הסרה",
     "edit": "עריכה",
     "addAction": "הוסף פעולה",
@@ -85,7 +85,10 @@
     "open_url_for":"פתח כתובת אתר עבור",
     "open_domain":"פתח דומיין",
     "open_domain_for":"פתח דומיין עבור",
-    "send_email_template":"שלח תבנית אימייל"
+    "send_email_template":"שלח תבנית אימייל",
+    "to":"ל",
+    "admin":"מנהל מערכת",
+    "client":"לָקוּחַ"
   },
   "searchbox": {
     "placeHolder": "חיפוש",

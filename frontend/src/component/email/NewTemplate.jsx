@@ -193,10 +193,6 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
                 </tbody>
               </table>
               <div className="flex my-2 w-full gap-4">
-                <select name="to" id="emailTo" onChange={handleInput} value={formdata.to} className='text-[13px] outline-none bg-white border-[1px]'>
-                  <option value="$admin_email" className={`p-2`}>{t('requests.$adminEmail')}</option>
-                  <option value="$client_email" className={`p-2`}>{t('requests.$clientEmail')}</option>
-                </select>
                 <input
                   className="text-[13px]"
                   id="emailSubject"

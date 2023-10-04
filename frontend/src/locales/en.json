@@ -59,7 +59,7 @@
     "searchSiteSetting": "Search Site Setting",
     "updateCategoryButton": "Click to update categories",
     "defaultAction": "Default Actions",
-    "trafficRecord": "Traffic Record",
+    "trafficRecord": "Process Traffic Recordings",
     "remove": "Remove",
     "edit": "Edit",
     "addAction": "Add Action",
@@ -80,7 +80,10 @@
     "SendtoClien": "Send to Client",
     "CustomEmail": "Custom Email",
     "Enteremail": "Enter email",
-    "Addmore": "Add More"
+    "Addmore": "Add More",
+    "to":"to",
+    "admin":"Admin",
+    "client":"Client"
   },
   "searchbox": {
     "placeHolder": "Search",
