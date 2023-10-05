@@ -175,24 +175,19 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
         <form onSubmit={saveTemplate}>
           <div className="px-7 flex gap-4 font-semibold text-[#2B3674] [&_input]:border-[1px] [&_textarea]:border-[1px] [&_input]:outline-none [&_textarea]:outline-0 [&_input]:w-full [&_textarea]:w-full [&_input]:!px-4 [&_textarea]:!px-4 [&_input]:!py-1 [&_textarea]:!py-1">
             <div className="w-[100%] [&_tr]:h-10">
-              <table className="w-full [&_tr]:h-10 text-[14px]">
-                <tbody>
-                  <tr>
-                    <td>{t('emails.templateName')}</td>
-                    <td>
-                      <input
-                        className="text-[13px]"
-                        id="templateName"
-                        type="text"
-                        value={formdata.name}
-                        onChange={handleInput}
-                        name="name"
-                      />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="flex my-2 w-full gap-4">
+                <td className="w-1/2 md:w-1/5">{t('emails.templateName')}</td>
+                <input
+                  className="text-[13px]"
+                  id="templateName"
+                  type="text"
+                  value={formdata.name}
+                  onChange={handleInput}
+                  name="name"
+                />
+              </div>
               <div className="flex my-2 w-full gap-4">
+                <td className="w-1/2 md:w-1/5">{t('emails.subject')}</td>
                 <input
                   className="text-[13px]"
                   id="emailSubject"
