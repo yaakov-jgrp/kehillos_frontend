@@ -15,12 +15,12 @@ class EmailRequestProcessor:
         self.default = False
         self.all_urls = []
         self.actions_done = []
-        self.base_ranks = {
-            'Open URL for':2,
-            'Open URL': 3,
-            'Open Domain for':4,
-            'Open Domain': 5,
-
+        self.weights = {
+            'Send_email_template': 1,
+            'Open_URL_for': 50,
+            'Open_URL': 5000,
+            'Open_Domain_for': 20000,
+            'Open_Domain': 50000,
         }
 
     def update_usernmae_or_email(self):
@@ -302,85 +302,36 @@ class EmailRequestProcessor:
         return True
 
     def calculate_min_rank(self,data_list):
-        def custom_sort(item):
-            rule_value = item['rule']
-            exp_value = item.get('exp', 0)
-            base_rank = self.base_ranks.get(rule_value, 0)
-            return (base_rank, exp_value)
-        for key, value_list in data_list.items():
-            value_list.sort(key=custom_sort)
-        min_exp_value = float('inf')  # Set to positive infinity initially
-        min_exp_value_domain = float('inf')
-        corresponding_keys = set({})  # Use a set to store keys with the same minimum 'exp' value
 
-        # Iterate through the dictionaries to find the minimum 'exp' value and corresponding keys
-        for key, item_list in data_list.items():
-            for item in item_list:
-                if item['rule'] == "Open URL for" and item['exp'] < min_exp_value:
-                    min_exp_value = item['exp']
-                    corresponding_keys.clear()
-                    corresponding_keys.add(key) # Start a new set with the current key
-                elif item['rule'] == "Open URL for" and item['exp'] == min_exp_value:
-                    corresponding_keys.add(key)  # Add the current key to the set
-        # Only keep the corresponding_keys set if it contains more than one key
-        if len(corresponding_keys) == 1:
-                return list(corresponding_keys)[0]
+        all_process_cat_list = []
+        for key, value in data_list.items():
+            point = 0.0
+            for item_list in value:
+                if item_list['rule'] == "Send email template":
+                    point += self.weights.get('Send_email_template')
+                if item_list['rule'] == "Open URL for":
+                    point += self.weights.get('Open_URL_for')
+                    point += item_list['exp']/60*10
+                if item_list['rule'] == "Open URL":
+                    point += self.weights.get('Open_URL')
+                if item_list['rule'] == "Open Domain for":
+                    point += self.weights.get('Open_Domain_for')
+                    point += item_list['exp']/60*10
+                if item_list['rule'] == "Open Domain":
+                    point += self.weights.get('Open_Domain')
+            all_process_cat_list.append({key:point})
+        min_key = None
+        min_value = float('inf')
 
-        if len(corresponding_keys) > 1 or len(corresponding_keys) ==0 :
-            result_set = corresponding_keys.copy()
-            corresponding_key = set({}) 
-            for i in result_set if len(corresponding_keys) > 1 else data_list :
-                for item_list in data_list.get(i):
-                    if item_list['rule'] == "Open URL":
-                        corresponding_key.add(i)
-            if len(corresponding_key) > 1:
-                corresponding_keys = corresponding_key.copy()
-            elif len(corresponding_key) == 1:
-                return list(corresponding_key)[0] 
-        elif len(corresponding_keys) == 1:
-                return list(corresponding_keys)[0]
-
-        result_set = corresponding_keys.copy()
-        corresponding_key = set({})
-
-        for i in result_set if len(corresponding_keys) > 1 else data_list:
-            for item in data_list.get(i):
-                if item['rule'] == "Open Domain for" and item['exp'] < min_exp_value_domain:
-                    min_exp_value_domain = item['exp']
-                    corresponding_key.clear()
-                    corresponding_key.add(i)
-                elif item['rule'] == "Open Domain for" and item['exp'] == min_exp_value_domain:
-                    corresponding_key.add(i)
-
-        if len(corresponding_key) > 1:
-            corresponding_keys = corresponding_key.copy()
-        elif len(corresponding_key) == 1:
-            return list(corresponding_key)[0] 
-        if len(corresponding_keys) > 1 or len(corresponding_keys) ==0:
-            result_set = corresponding_keys.copy()
-            corresponding_key = set({}) 
-            for i in result_set if len(corresponding_keys) > 1 else data_list:
-                for item_list in data_list.get(i):
-                    if item_list['rule'] == "Open Domain":
-                        corresponding_key.add(i)  # Add the current key to the set
-            if len(corresponding_key) > 1:
-                return list(corresponding_key)[0] 
-            elif len(corresponding_key) == 1:
-                return list(corresponding_key)[0] 
-        if len(corresponding_keys) > 1 or len(corresponding_keys) ==0:
-            result_set = corresponding_keys.copy()
-            corresponding_key = set({}) 
-            for i in result_set if len(corresponding_keys) > 1 else data_list:
-                for item_list in data_list.get(i):
-                    if item_list['rule'] == "Send email template":
-                        corresponding_key.add(i)  # Add the current key to the set
-            if len(corresponding_key) > 1:
-                return list(corresponding_key)[0] 
-            elif len(corresponding_key) == 1:
-                return list(corresponding_key)[0] 
+        for item in all_process_cat_list:
+            for key, value in item.items():
+                if value != 0.0 and value < min_value:
+                    min_key = key
+                    min_value = value
+        if min_key:
+            return min_key  
 
         return False
-    
     
     def process(self):
         cronjob_email_log.debug(f"Requested id : {str(self.email_request.id)}")
