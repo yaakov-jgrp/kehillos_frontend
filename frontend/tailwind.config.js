@@ -15,6 +15,9 @@ module.exports = {
           }
         }
       },
+       minWidth: {
+      '300px': '300px',
+      },
       width: {
         "1p": "1%",
         "2p": "2%",

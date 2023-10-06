@@ -73,7 +73,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   };
 
 
-  const periods = [{label:t('netfree.minutes'),value:"Minutes"} ,{label:t('netfree.hours'),value:"Hours"},{label:t('netfree.days'),value:"Days"},{label:t('netfree.weeks'),value:"Weeks"} ];
+  const periods = [{ label: t('netfree.minutes'), value: "Minutes" }, { label: t('netfree.hours'), value: "Hours" }, { label: t('netfree.days'), value: "Days" }, { label: t('netfree.weeks'), value: "Weeks" }];
   const templateActionsData = [t('netfree.adminEmail'), t('netfree.clientEmail'), t('netfree.customEmail')];
   const getActionsList = async () => {
     const response = await categoryService.getActions();
@@ -218,7 +218,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
         <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
           <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
-              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+              <div className="min-w-300px border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
                   <h3 className="text-2xl font-semibold">{t('netfree.addAction')}</h3>
                   <button
