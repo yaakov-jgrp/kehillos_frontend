@@ -1,3 +1,5 @@
+from crm.models import Emailrequest
+from crm.manager import EmailRequestProcessor
 from crm.views import ReadEmail
 
 from celery import shared_task
@@ -11,5 +13,9 @@ def read_emails():
 
 
 @shared_task
-def task_two():
-    return "success"
+def netfree_traffic_record(email_request_id):
+    email_request = Emailrequest.objects.get(id=email_request_id)
+    obj = EmailRequestProcessor(email_request)
+    if obj.process():
+        return f"email request {str(email_request.id)} success"
+    return f"False email request {str(email_request.id)}"

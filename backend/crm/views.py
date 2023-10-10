@@ -8,14 +8,14 @@ from crm.serializer import (
     EmailTemplateSchema
 )
 from utils.helper import (
-    send_email_with_template, generate_unique_string,
+    get_netfree_traffic_data, generate_unique_string,
     gmail_checker,capture_error
 )
 from django.conf import settings
 from datetime import datetime,timedelta
 from django.utils import timezone
 import requests
-from crm import models
+from crm.models import Emailrequest,NetfreeTraffic,Categories,Actions,EmailTemplate,SMTPEmail
 import imaplib
 import email
 import traceback
@@ -36,7 +36,7 @@ class NetfreeTrafficView(APIView):
         params = self.request.query_params
         default = params.get("default")
         if default:
-            netfree_traffic,created = models.NetfreeTraffic.objects.get_or_create(is_default=True)
+            netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True)
             data = NetfreeTrafficSerializer(netfree_traffic).data
             return Response(
                 {
@@ -46,7 +46,7 @@ class NetfreeTrafficView(APIView):
             )
         
         if params.get("search", None):
-            netfree_traffic = models.NetfreeTraffic.objects.filter(id=params.get("search", None))
+            netfree_traffic = NetfreeTraffic.objects.filter(id=params.get("search", None))
             data = NetfreeTrafficSerializer(netfree_traffic,many=True).data
             return Response(
                 {
@@ -59,16 +59,16 @@ class NetfreeTrafficView(APIView):
         category = data.get('category')
         status = True if data.get('status') else False
         default_id = data.get('default_id')
-        instance = models.Categories.objects.filter(id=category).first()
+        instance = Categories.objects.filter(id=category).first()
         if not instance and not default_id:
             return Response({
                 "success": False,
                 "message": "Category not found"
             }, status=400)
         if default_id:
-            netfree_traffic,created = models.NetfreeTraffic.objects.get_or_create(is_default=True)
+            netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True)
         else:
-            netfree_traffic,created = models.NetfreeTraffic.objects.get_or_create(is_default=False,category=instance)
+            netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=False,category=instance)
         netfree_traffic.is_active = status
         netfree_traffic.save()
         data = NetfreeTrafficSerializer(netfree_traffic).data
@@ -95,14 +95,14 @@ class CategoriesView(APIView):
                 try:
                     keys = response.json()["tagValue"]["tags"].keys()
                     categories = list(map(int, keys))
-                    instance = models.Categories.objects.filter(
+                    instance = Categories.objects.filter(
                         categories_id__in=categories
                     )
                     serializer = CategoriesSerializer(instance, many=True, context = {"lang":lang}).data
                 except Exception:
                     serializer = []
         else:
-            instance = models.Categories.objects.all().order_by("-id")
+            instance = Categories.objects.all().order_by("-id")
             serializer = CategoriesSerializer(instance, many=True, context = {"lang":lang}).data
         return Response(
             {
@@ -151,11 +151,11 @@ class CategoriesView(APIView):
                 }, status=400)
             
         try:
-            instance = models.Categories.objects.get(
+            instance = Categories.objects.get(
                 categories_id=param.get("id")
             )
             if to_add:
-                action = models.Actions.objects.get(
+                action = Actions.objects.get(
                     id=to_add
                 )
 
@@ -166,7 +166,7 @@ class CategoriesView(APIView):
                     }, status=400)
             
                 if template_id:
-                    template = models.EmailTemplate.objects.get(
+                    template = EmailTemplate.objects.get(
                         id=template_id
                     )
                     email_to_admin = inputs.get('email_to_admin')
@@ -189,7 +189,7 @@ class CategoriesView(APIView):
                                 "message": "Invalid action id"
                             }, status=400)
 
-                        action_obj = models.Actions.objects.filter(id=request.GET.get('id','')).first()
+                        action_obj = Actions.objects.filter(id=request.GET.get('id','')).first()
                         if not action_obj:
                             return Response({
                                 "success": False,
@@ -202,15 +202,15 @@ class CategoriesView(APIView):
                         action_obj.save()
 
                     else:
-                        action_instance, _ = models.Actions.objects.filter(template=False).get_or_create(label = "Send email template",email_template=template,category=instance,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email)
+                        action_instance, _ = Actions.objects.filter(template=False).get_or_create(label = "Send email template",email_template=template,category=instance,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email)
                 else:
-                    action, _ = models.Actions.objects.get_or_create(
+                    action, _ = Actions.objects.get_or_create(
                     label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),
                     category=instance
                 )
 
             if to_remove:
-                action = models.Actions.objects.get(
+                action = Actions.objects.get(
                     category=instance,
                     id=to_remove,
                 ).delete()
@@ -218,13 +218,13 @@ class CategoriesView(APIView):
                 "success": True,
                 "message": "Action updated"
             }, status=200)
-        except models.Categories.DoesNotExist:
+        except Categories.DoesNotExist:
             return Response({
                 "success": False,
                 "message": "Invalid category id"
             }, status=400)
 
-        except models.Actions.DoesNotExist:
+        except Actions.DoesNotExist:
             return Response({
                 "success": False,
                 "message": "Invalid action id"
@@ -245,7 +245,7 @@ class CategoriesView(APIView):
             for category in categories:
                 category_id = category['id']
                 category_description = category['description']
-                models.Categories.objects.update_or_create(
+                Categories.objects.update_or_create(
                     categories_id=category_id,
                     defaults={
                         "description": category_description
@@ -385,7 +385,7 @@ class EmailRequestView(APIView):
     def get(self, *args, **options):
         params = self.request.query_params
         lang = params.get("lang")
-        queryset = models.Emailrequest.objects.all().order_by("-id")
+        queryset = Emailrequest.objects.all().order_by("-id")
         serializer = EmailrequestSerializer(
             queryset, many=True,context = {"lang":lang}
         )
@@ -406,7 +406,7 @@ class ActionsView(APIView):
         if lang is None:
             return Response({"error":"lang query param is missing."})
         
-        queryset = models.Actions.objects.filter(template=1)
+        queryset = Actions.objects.filter(template=1)
         if params.get("default", 0):
             values_list = queryset.filter(is_default=True)
             values_list = ActionsSerializer(values_list,many=True, context = {"lang":lang}).data
@@ -415,7 +415,7 @@ class ActionsView(APIView):
             values_list = ActionsSerializer(values_list,many=True, context = {"lang":lang}).data
 
         if params.get('get_default',None):
-            values_list = models.Actions.objects.filter(is_default=True)
+            values_list = Actions.objects.filter(is_default=True)
             values_list = ActionsSerializer(values_list,many=True, context = {"lang":lang}).data
 
         return Response(
@@ -439,8 +439,8 @@ class ActionsView(APIView):
 
         inputs = request.data.get("inputs", None)
         template_id = request.data.get("template_id", None)
-        ids = models.Actions.objects.filter(template=1).values_list("id",flat=True)
-        all_actions = models.Actions.objects.all()
+        ids = Actions.objects.filter(template=1).values_list("id",flat=True)
+        all_actions = Actions.objects.all()
         updated_list = []
         queryset = all_actions.filter(id__in=actions)
 
@@ -453,7 +453,7 @@ class ActionsView(APIView):
                         }, status=400)
                 
                 if str(template_id).isdigit():
-                    template = models.EmailTemplate.objects.get(
+                    template = EmailTemplate.objects.get(
                         id=template_id
                     )
                     email_to_admin = inputs.get('email_to_admin')
@@ -476,7 +476,7 @@ class ActionsView(APIView):
                                     "message": "Invalid action id"
                                 }, status=400)
 
-                            instance = models.Actions.objects.filter(id=request.GET.get('id','')).first()
+                            instance = Actions.objects.filter(id=request.GET.get('id','')).first()
                             if not instance:
                                 return Response({
                                     "success": False,
@@ -488,9 +488,9 @@ class ActionsView(APIView):
                             instance.custom_email = custom_email
                             instance.save()
                         else:
-                            instance, _ = models.Actions.objects.filter(template=False).get_or_create(label = "Send email template",category=None,email_template=template,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email)
+                            instance, _ = Actions.objects.filter(template=False).get_or_create(label = "Send email template",category=None,email_template=template,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email)
                 else:
-                    instance, _ = models.Actions.objects.filter(template=False).get_or_create(
+                    instance, _ = Actions.objects.filter(template=False).get_or_create(
                     label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),category=None
                     )
                 updated_list.append(instance.id)
@@ -517,7 +517,7 @@ class ActionsView(APIView):
         label = request.data.get("label")
 
         try:
-            instance = models.Actions.objects.get(id=action)
+            instance = Actions.objects.get(id=action)
             instance.label = label
             instance.save()
             return Response(
@@ -527,7 +527,7 @@ class ActionsView(APIView):
 
                 }, status=200
             )
-        except models.Actions.DoesNotExist:
+        except Actions.DoesNotExist:
             return Response(
                 {
                     "success": False,
@@ -541,7 +541,7 @@ class EmailTemplatesView(APIView):
 
     def get(self, request):
         params = self.request.query_params
-        queryset = models.EmailTemplate.objects.all()
+        queryset = EmailTemplate.objects.all()
         serializer = None
         if params.get("id"):
             email_template = queryset.filter(id=params.get("id")).last()
@@ -570,7 +570,7 @@ class EmailTemplatesView(APIView):
         serializer.is_valid(raise_exception=True)
         payload = serializer.validated_data
         body = payload.get("body", {})
-        models.EmailTemplate.objects.create(
+        EmailTemplate.objects.create(
             name=payload.get("name", ""),
             email_to=payload.get("email_to", ""),
             subject=payload.get("subject", ""),
@@ -587,10 +587,10 @@ class EmailTemplatesView(APIView):
 
     def patch(self, request):
         try:
-            instance = models.EmailTemplate.objects.get(
+            instance = EmailTemplate.objects.get(
                 id=request.data.get("id")
             )
-        except models.EmailTemplate.DoesNotExist:
+        except EmailTemplate.DoesNotExist:
             return Response(
                 {
                     "success": False,
@@ -621,7 +621,7 @@ class EmailTemplatesView(APIView):
     def delete(self, request):
         params = self.request.query_params
         try:
-            instance = models.EmailTemplate.objects.get(
+            instance = EmailTemplate.objects.get(
                 id=params.get("id")
             )
             instance.delete()
@@ -632,7 +632,7 @@ class EmailTemplatesView(APIView):
 
                 }
             )
-        except models.EmailTemplate.DoesNotExist:
+        except EmailTemplate.DoesNotExist:
             return Response(
                 {
                     "success": False,
@@ -646,7 +646,7 @@ class EmailTemplatesCloneView(APIView):
 
     def post(self, request):
         try:
-            email_template = models.EmailTemplate.objects.get(
+            email_template = EmailTemplate.objects.get(
                 pk=request.data.get("id")
             )
             name = ""
@@ -654,7 +654,7 @@ class EmailTemplatesCloneView(APIView):
 
             name = email_template.name + unique_string
 
-            models.EmailTemplate.objects.create(
+            EmailTemplate.objects.create(
                 name=name,
                 email_to=email_template.email_to,
                 subject=email_template.subject,
@@ -668,7 +668,7 @@ class EmailTemplatesCloneView(APIView):
 
                 }
             )
-        except models.EmailTemplate.DoesNotExist:
+        except EmailTemplate.DoesNotExist:
             return Response(
                 {
                     "success": False,
@@ -688,13 +688,13 @@ class SendEmailView(APIView):
             "request_id", None
         )
         try:
-            template = models.EmailTemplate.objects.get(
+            template = EmailTemplate.objects.get(
                 id=template_id
             )
-            email_request = models.Emailrequest.objects.get(
+            email_request = Emailrequest.objects.get(
                 id=request_id
             )
-        except models.EmailTemplate.DoesNotExist:
+        except EmailTemplate.DoesNotExist:
             return Response(
                 {
                     "success": False,
@@ -702,7 +702,7 @@ class SendEmailView(APIView):
 
                 }, status=400
             )
-        except models.Emailrequest.DoesNotExist:
+        except Emailrequest.DoesNotExist:
             return Response(
                 {
                     "success": False,
@@ -739,7 +739,7 @@ class SMTPEmailView(APIView):
     def get(self, request):
         try:
             params = self.request.query_params
-            smtp_email = models.SMTPEmail.objects.last()
+            smtp_email = SMTPEmail.objects.last()
             return Response(
                 {
                     "success": True,
@@ -763,7 +763,7 @@ class SMTPEmailView(APIView):
         try:
             response = gmail_checker(email, password)
             if gmail_checker(email, password):
-                models.SMTPEmail.objects.get_or_create(
+                SMTPEmail.objects.get_or_create(
                     email=email,
                     password=password
                 )
@@ -781,7 +781,7 @@ class SMTPEmailView(APIView):
 
                     }, status=400
                 )
-        except models.SMTPEmail.DoesNotExist:
+        except SMTPEmail.DoesNotExist:
             return Response(
                 {
                     "success": False,
@@ -805,7 +805,7 @@ class ReadEmail():
         print("working!!")
         cronjob_log.info(f"Cronjob start at {datetime.now()}")
 
-        instance = models.SMTPEmail.objects.last()
+        instance = SMTPEmail.objects.last()
         FROM_EMAIL = ""
         FROM_PWD = ""
         if instance:
@@ -900,30 +900,26 @@ class ReadEmail():
                         except:
                             target_sub = ""
                         matching_str = "שמתשמ תאמ הינפ"
-                        if len(target_sub) >0 and target_sub in " שמתשמ תאמ הינפ":
+                        if email_message.is_multipart():
+                            # If the email has multiple parts, iterate over them
+                            for part in email_message.walk():
+                                if part.get_content_type() == "text/plain":
+                                    body = part.get_payload(decode=True).decode()
+                                    break
+                        else:
+                            body = email_message.get_payload(decode=True).decode()
+                        pattern = r'(https?://\S+)'
+                        match = re.search(pattern, body)
+                        website_url = ""
+                        if match:
+                            website_url = match.group(1)
+                        if (len(target_sub) >0 and target_sub in " שמתשמ תאמ הינפ") or website_url.startswith("https://netfree.link/app/#/tools/traffic/view"):
 
-                            if email_message.is_multipart():
-                                # If the email has multiple parts, iterate over them
-                                for part in email_message.walk():
-                                    if part.get_content_type() == "text/plain":
-                                        body = part.get_payload(decode=True).decode()
-                                        break
-                            else:
-                                body = email_message.get_payload(decode=True).decode()
 
-
-                            pattern = r'(https?://\S+)'
-                            match = re.search(pattern, body)
-
-                            website_url = ""
-                            if match:
-                                website_url = match.group(1)
 
                             email_subject = subject
                             customer_id = email_subject.split("#")[-1]
                             username, sender_email = self.decode_header(email_message['From'])
-
-
                             decoded_username = email.header.decode_header(username)
                             # Combine the parts of the decoded subject into a single string
                             subject = ""
@@ -937,27 +933,47 @@ class ReadEmail():
                             received_datetime = datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
                             formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S %z")
                             created_at_datetime = timezone.datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
-                            with transaction.atomic():
-                                object,created = models.Emailrequest.objects.update_or_create(
-                                    email_id=uid,
-                                    created_at=created_at_datetime,
-                                    defaults={
-                                        "sender_email": sender_email,
-                                        "username": username,
-                                        "customer_id": customer_id,
-                                        "requested_website": website_url,
-                                        "text": body,
-                                        "created_at": created_at_datetime,
-                                        "ticket_id": 15665,
-                                    }
-                                )
-                                if created:
-                                    cronjob_log.debug(f"Cronjob email request created {object.id} at {datetime.now()}")
-                                else:
-                                    cronjob_log.debug(f"Cronjob  email request updated {object.id} at {datetime.now()}")
+                            if website_url.startswith("https://netfree.link/app/#/tools/traffic/view"):
+                                netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True)
+                                if netfree_traffic.is_active:
+                                    data,custumer_id = get_netfree_traffic_data(website_url)
+                                    objects = Emailrequest.objects.filter(
+                                            email_id=uid,
+                                            created_at=created_at_datetime
+                                        )
+                                    for url in data:
+                                        for email_request in objects:
+                                            if str(email_request.requested_website)==str(url):
+                                                cronjob_log.debug(f"Cronjob  email request updated {email_request.id} at {datetime.now()}")
+                                                break
+                                        else:
+                                            new_obj = Emailrequest.objects.create(email_id=uid,requested_website=url,created_at=created_at_datetime,sender_email=sender_email,
+                                                                                username=username,customer_id=str(custumer_id),request_type="טיפול בהקלטות תעבורה",
+                                                                                text=body,ticket_id=15665)
+                                            cronjob_log.debug(f"Cronjob email request created {new_obj.id} at {datetime.now()}")
+                            else: 
+                                with transaction.atomic():
+                                    object,created = Emailrequest.objects.update_or_create(
+                                        email_id=uid,
+                                        created_at=created_at_datetime,
+                                        defaults={
+                                            "sender_email": sender_email,
+                                            "username": username,
+                                            "customer_id": customer_id,
+                                            "requested_website": website_url,
+                                            "text": body,
+                                            "created_at": created_at_datetime,
+                                            "ticket_id": 15665,
+                                        }
+                                    )
+                                    if created:
+                                        cronjob_log.debug(f"Cronjob email request created {object.id} at {datetime.now()}")
+                                    else:
+                                        cronjob_log.debug(f"Cronjob  email request updated {object.id} at {datetime.now()}")
                         if not mail_read:
                             imap_server.store(message_id, '-FLAGS', '\Seen')
                     except Exception as e:
+                        print(e)
                         cronjob_error_log.error(f"Cronjob error exception: {capture_error(sys.exc_info())}")
 
                 # Close the connection

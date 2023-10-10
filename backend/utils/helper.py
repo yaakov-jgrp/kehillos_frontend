@@ -1,3 +1,4 @@
+import re
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -187,6 +188,11 @@ class NetfreeAPI:
         tags_response = self.session.post(url, headers=self.headers, data=payload)
         return tags_response
 
+    def send_req(self,key):
+        payload = json.dumps({"key": key})
+        self.login()
+        response = self.session.post("https://netfree.link/api/user/get-traffic-record", headers=self.headers, data=payload)
+        return response
     def find_domain(self, params):
         url = "https://netfree.link/api/tags/search-url"
         payload = json.dumps({"search": params})
@@ -219,3 +225,37 @@ class NetfreeAPI:
         self.login()
         tags_response = self.session.post(url, headers=self.headers,json=payload)
         return tags_response
+    
+
+def get_netfree_traffic_data(url):
+    netfree = NetfreeAPI()
+    key = url.split('/')[-1]
+    res = netfree.send_req(key)
+    if res.status_code == 200:
+        data = res.json()
+        results = data.get('traffic',[])
+        urls = []
+        custumer_id = None
+        for i in results:
+            url = None
+            block = None
+            for item in i:
+                if item.get('block','') == "sector":
+                    block = True
+
+                if item.get('url'):
+                    if item.get('url').startswith("https://") or item.get('url').startswith("http://"):
+                        url = item.get('url')
+                if item.get('action'):
+                    input_string = item.get('action')
+                    match = re.search(r'user::(\d+)::', input_string)
+
+                    if match:
+                        custumer_id = match.group(1)
+            if block:
+                urls.append(url)
+            if urls:
+                urls = list(set(urls))
+        return urls,custumer_id
+    return False
+

@@ -224,10 +224,11 @@ class Emailrequest(models.Model):
     sender_email = models.CharField(max_length=320)
     username = models.CharField(max_length=100, null=True, default=None)
     text = models.TextField(default="")
+    request_type = models.CharField(max_length=320,default="פתיחת אתר - נטפרי")
     action_done = models.CharField(max_length=500, null=True, default="")
     customer_id = models.CharField(max_length=100)
     ticket_id = models.CharField(max_length=100, null=True, default=None)
-    requested_website = models.CharField(max_length=500)
+    requested_website = models.CharField(max_length=2000)
     created_at = models.DateTimeField()
     def save(self,*args,**kwargs):
         user_detail = netfree_obj.get_user(self.customer_id)
@@ -322,21 +323,18 @@ class Emailrequest(models.Model):
 @receiver(post_save, sender=Emailrequest)
 def email_request_created_or_updated(sender, instance, created, **kwargs):
     if created:
+        from crm.tasks import netfree_traffic_record
         if hasattr(instance, '_processing'):
             return
         instance._processing = True
         
         try:
-            with transaction.atomic():
-                obj = EmailRequestProcessor(instance)
-                if obj.process():
-                    cronjob_email_log.debug(f"Email request created for customer id: {instance.customer_id}")
-                else:
-                    cronjob_email_log.debug(f"Email request created failed for customer id: {instance.customer_id}")
+            result = netfree_traffic_record.delay(instance.id)
         except IntegrityError as e:
             # Handle the specific database integrity error, if necessary
             cronjob_error_log.error(f"requested id: {instance.id} IntegrityError occurred: {str(e)}")
         except Exception as e:
+            print(e)
             # Handle other exceptions that may occur during processing
             cronjob_error_log.error(f"requested id: {instance.id} An error occurred during email processing: {str(e)}")
         finally:
