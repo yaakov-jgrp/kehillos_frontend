@@ -1,4 +1,5 @@
 import time
+# from crm.manager import NetfreeProcessor
 from crm.serializer import ActionsSerializer, NetfreeTrafficSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -15,6 +16,9 @@ from django.conf import settings
 from datetime import datetime,timedelta
 from django.utils import timezone
 import requests
+from rest_framework import status
+from .models import NetfreeCategoriesProfile
+from .serializer import NetfreeCategoriesProfileSerializer
 from crm.models import Emailrequest,NetfreeTraffic,Categories,Actions,EmailTemplate,SMTPEmail
 import imaplib
 import email
@@ -35,8 +39,17 @@ class NetfreeTrafficView(APIView):
     def get(self, request):
         params = self.request.query_params
         default = params.get("default")
+        profile = params.get("profile")
+        if profile is None:
+            return Response({"error":"profile query param is missing."})
+        netfree_profile = NetfreeCategoriesProfile.objects.filter(id=profile).first()
+        if not netfree_profile:
+            return Response({
+                "success": False,
+                "message": "profile id invalid"
+            }, status=404)
         if default:
-            netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True)
+            netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True,netfree_profile=netfree_profile)
             data = NetfreeTrafficSerializer(netfree_traffic).data
             return Response(
                 {
@@ -55,20 +68,30 @@ class NetfreeTrafficView(APIView):
                 }
             )
     def post(self, request):
+        params = self.request.query_params
         data = request.data
         category = data.get('category')
         status = True if data.get('status') else False
         default_id = data.get('default_id')
+        profile = params.get("profile")
+        if profile is None:
+            return Response({"error":"profile query param is missing."})
         instance = Categories.objects.filter(id=category).first()
         if not instance and not default_id:
             return Response({
                 "success": False,
                 "message": "Category not found"
             }, status=400)
+        netfree_profile = NetfreeCategoriesProfile.objects.filter(id=profile).first()
+        if not netfree_profile:
+            return Response({
+                "success": False,
+                "message": "profile id invalid"
+            }, status=400)
         if default_id:
-            netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True)
+            netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True,netfree_profile=netfree_profile)
         else:
-            netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=False,category=instance)
+            netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True,netfree_profile=netfree_profile)
         netfree_traffic.is_active = status
         netfree_traffic.save()
         data = NetfreeTrafficSerializer(netfree_traffic).data
@@ -79,16 +102,66 @@ class NetfreeTrafficView(APIView):
                 }
             )
         
+class NetfreeCategoriesProfileList(APIView):
+    def get(self, request):
+        categories = NetfreeCategoriesProfile.objects.all()
+        serializer = NetfreeCategoriesProfileSerializer(categories, many=True)
+        return Response(
+                {
+                    "success": True,
+                    "data": serializer.data
+                }
+            )
 
+    def post(self, request):
+        serializer = NetfreeCategoriesProfileSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class NetfreeCategoriesProfileDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return NetfreeCategoriesProfile.objects.get(pk=pk)
+        except NetfreeCategoriesProfile.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, pk):
+        category = self.get_object(pk)
+        serializer = NetfreeCategoriesProfileSerializer(category)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        category = self.get_object(pk)
+        serializer = NetfreeCategoriesProfileSerializer(category, data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        category = self.get_object(pk)
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CategoriesView(APIView):
 
     def get(self, request):
         params = self.request.query_params
         lang = params.get("lang")
+        profile = params.get("profile")
+        if profile is None:
+            return Response({"error":"profile query param is missing."})
         if lang is None:
             return Response({"error":"lang query param is missing."})
         
+        profile_obj = NetfreeCategoriesProfile.objects.filter(id=profile).first()
+        if not profile_obj:
+            return Response({
+                "success": False,
+                "message": "profile id invalid"
+            }, status=400)
         if params.get("search", None):
             response = self.search_category(params.get("search"))
             if response.status_code == 200:
@@ -98,12 +171,12 @@ class CategoriesView(APIView):
                     instance = Categories.objects.filter(
                         categories_id__in=categories
                     )
-                    serializer = CategoriesSerializer(instance, many=True, context = {"lang":lang}).data
+                    serializer = CategoriesSerializer(instance, many=True, context = {"lang":lang,"profile_obj":profile_obj}).data
                 except Exception:
                     serializer = []
         else:
             instance = Categories.objects.all().order_by("-id")
-            serializer = CategoriesSerializer(instance, many=True, context = {"lang":lang}).data
+            serializer = CategoriesSerializer(instance, many=True, context = {"lang":lang,"profile_obj":profile_obj}).data
         return Response(
             {
                 "success": True,
@@ -130,6 +203,9 @@ class CategoriesView(APIView):
         to_remove = param.get("to_remove", None)
         inputs = param.get("inputs", None)
         template_id = param.get("template_id", None)
+        profile = param.get("profile")
+        if profile is None:
+            return Response({"error":"profile query param is missing."})
 
         if not to_add and not to_remove:
             return Response({
@@ -151,6 +227,7 @@ class CategoriesView(APIView):
                 }, status=400)
             
         try:
+            netfree_profile = NetfreeCategoriesProfile.objects.get(id=profile)
             instance = Categories.objects.get(
                 categories_id=param.get("id")
             )
@@ -202,11 +279,11 @@ class CategoriesView(APIView):
                         action_obj.save()
 
                     else:
-                        action_instance, _ = Actions.objects.filter(template=False).get_or_create(label = "Send email template",email_template=template,category=instance,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email)
+                        action_instance, _ = Actions.objects.filter(template=False).get_or_create(label = "Send email template",email_template=template,category=instance,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email,netfree_profile=netfree_profile)
                 else:
                     action, _ = Actions.objects.get_or_create(
                     label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),
-                    category=instance
+                    category=instance,netfree_profile=netfree_profile
                 )
 
             if to_remove:
@@ -229,7 +306,11 @@ class CategoriesView(APIView):
                 "success": False,
                 "message": "Invalid action id"
             }, status=400)
-
+        except NetfreeCategoriesProfile.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "Invalid profile id"
+            }, status=400)
         except Exception as e:
             return Response({
                 "success": False,
@@ -405,6 +486,16 @@ class ActionsView(APIView):
         lang = params.get("lang")
         if lang is None:
             return Response({"error":"lang query param is missing."})
+        profile = params.get("profile")
+        if profile is None:
+            return Response({"error":"profile query param is missing."})
+    
+        netfree_profile = NetfreeCategoriesProfile.objects.filter(id=profile).first()
+        if not netfree_profile:
+            return Response({
+                "success": False,
+                "message": "profile id invalid"
+            }, status=400)
         
         queryset = Actions.objects.filter(template=1)
         if params.get("default", 0):
@@ -415,7 +506,11 @@ class ActionsView(APIView):
             values_list = ActionsSerializer(values_list,many=True, context = {"lang":lang}).data
 
         if params.get('get_default',None):
-            values_list = Actions.objects.filter(is_default=True)
+            values_list = Actions.objects.filter(is_default=True,netfree_profile=netfree_profile)
+            values_list = ActionsSerializer(values_list,many=True, context = {"lang":lang}).data
+
+        if params.get('get_netfree_traffic',None):
+            values_list = Actions.objects.filter(is_default_netfree_traffic=True,netfree_profile=netfree_profile)
             values_list = ActionsSerializer(values_list,many=True, context = {"lang":lang}).data
 
         return Response(
@@ -427,8 +522,13 @@ class ActionsView(APIView):
         )
 
     def post(self, request):
+        params = self.request.query_params
         actions = request.data.get("actions", None)
         to_add = request.data.get("to_add", None)
+        profile = params.get("profile",'1')
+        if profile is None:
+            return Response({"error":"profile query param is missing."})
+    
         if to_add:
             to_add = int(to_add)
             if not isinstance(to_add,int):
@@ -443,6 +543,12 @@ class ActionsView(APIView):
         all_actions = Actions.objects.all()
         updated_list = []
         queryset = all_actions.filter(id__in=actions)
+        netfree_profile = NetfreeCategoriesProfile.objects.filter(id=profile).first()
+        if not netfree_profile:
+            return Response({
+                "success": False,
+                "message": "profile id invalid"
+            }, status=400)
 
         for action in queryset:
             if to_add and to_add in ids and to_add == action.id:
@@ -488,10 +594,19 @@ class ActionsView(APIView):
                             instance.custom_email = custom_email
                             instance.save()
                         else:
-                            instance, _ = Actions.objects.filter(template=False).get_or_create(label = "Send email template",category=None,email_template=template,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email)
+                            if request.GET.get('is_netfree_traffic'):
+                                instance, _ = Actions.objects.filter(template=False).get_or_create(label = "Send email template",category=None,is_default_netfree_traffic=True,email_template=template,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email,netfree_profile=netfree_profile)
+                                return Response(
+                                    {
+                                        "success": True,
+                                        "message": "Netfree traffic Default actions set successfully"
+
+                                    }
+                                )
+                            instance, _ = Actions.objects.filter(template=False).get_or_create(label = "Send email template",category=None,email_template=template,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email,netfree_profile=netfree_profile)
                 else:
                     instance, _ = Actions.objects.filter(template=False).get_or_create(
-                    label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),category=None
+                    label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),category=None,netfree_profile=netfree_profile
                     )
                 updated_list.append(instance.id)
             else:
@@ -533,6 +648,25 @@ class ActionsView(APIView):
                     "success": False,
                     "message": "Invalid action id"
 
+                }, status=400
+            )
+    
+    def delete(self, request):
+        action = request.GET.get('action')
+        try:
+            instance = Actions.objects.get(id=action)
+            instance.delete()
+            return Response(
+                {
+                    "success": True,
+                    "message": "Action deleted"
+                }, status=200
+            )
+        except Actions.DoesNotExist:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid action id"
                 }, status=400
             )
 
@@ -937,6 +1071,8 @@ class ReadEmail():
                                 netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True)
                                 if netfree_traffic.is_active:
                                     data,custumer_id = get_netfree_traffic_data(website_url)
+                                    # obj = NetfreeProcessor(data,custumer_id)
+                                    # obj.process()
                                     objects = Emailrequest.objects.filter(
                                             email_id=uid,
                                             created_at=created_at_datetime

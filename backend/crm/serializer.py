@@ -60,7 +60,7 @@ class ActionsSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField()
     class Meta:
         model = models.Actions
-        fields = ("id","label",'email_to_admin','email_to_client','custom_email')
+        fields = ("id","label",'email_to_admin','email_to_client','custom_email','is_default_netfree_traffic','netfree_profile')
 
     def get_label(self,obj):
         lang = self.context.get("lang")
@@ -87,30 +87,24 @@ class CategoriesSerializer(serializers.ModelSerializer):
         source="description", default="פתיחת אתר - נטפרי"
     )
     actions = serializers.SerializerMethodField()
-    netfree_traffic = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Categories
         fields = (
-            "id","categories_id", "name", "actions", "request_type","netfree_traffic"
+            "id","categories_id", "name", "actions", "request_type"
         )
 
     def get_actions(self, instance):
         lang = self.context.get("lang")
+        netfree_profile = self.context.get("profile_obj")
         def fill_label(item):
             return {
                 "id": item["id"],
                 "label": item["label"].format("https://kehillos.com/", "5")} if '{}' in item["label"] else item
-        data = instance.action_category.filter(template=False)
-        
+        data = instance.action_category.filter(template=False,netfree_profile=netfree_profile)
         data = ActionsSerializer(data, many=True, context = {"lang":lang}).data
         data_filled = list(map(fill_label, data))
         return data_filled
-    def get_netfree_traffic(self,obj):
-        obj = models.NetfreeTraffic.objects.filter(category=obj).first()
-        if obj and obj.is_active:
-            return True
-        return False
 
 
 class EmailTemplateSchema(serializers.Serializer):
@@ -122,4 +116,10 @@ class EmailTemplateSchema(serializers.Serializer):
 class NetfreeTrafficSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.NetfreeTraffic
+        fields = '__all__'
+
+
+class NetfreeCategoriesProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.NetfreeCategoriesProfile
         fields = '__all__'

@@ -12,6 +12,17 @@ from django.db.utils import IntegrityError
 cronjob_email_log = logging.getLogger('cronjob-email')
 cronjob_error_log = logging.getLogger('cronjob-error')
 netfree_obj = NetfreeAPI()
+def get_or_create_default_netfree_categories():
+    default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
+    return default_netfree_categories
+class NetfreeCategoriesProfile(models.Model):
+    name = models.CharField(max_length=100, null=True, blank=True,default="deafult")
+    decription = models.CharField(max_length=100, null=True, blank=True,default="")
+    is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 def calculate_future_timestamp(amount, condition,current_datetime):
     if condition == "Minutes":
         future_datetime = current_datetime + datetime.timedelta(minutes=amount)
@@ -120,9 +131,11 @@ class NetfreeTraffic(models.Model):
         blank=True,
         default=None,
     )
+    netfree_profile = models.ForeignKey(NetfreeCategoriesProfile,default=get_or_create_default_netfree_categories().pk,on_delete=models.CASCADE,blank=True,null=True)
 class Actions(models.Model):
     label = models.CharField(max_length=200)
     is_default = models.BooleanField(default=False)
+    is_default_netfree_traffic = models.BooleanField(default=False)
     template = models.BooleanField(default=False)
     email_template = models.ForeignKey('crm.EmailTemplate',on_delete=models.CASCADE,null=True,blank=True)
     category = models.ForeignKey(
@@ -136,6 +149,7 @@ class Actions(models.Model):
     email_to_admin = models.BooleanField(default=False)
     email_to_client = models.BooleanField(default=False)
     custom_email = models.CharField(max_length=2000,blank=True,null=True)
+    netfree_profile = models.ForeignKey(NetfreeCategoriesProfile,default=get_or_create_default_netfree_categories().pk,on_delete=models.CASCADE,blank=True,null=True)
     
     def save(self, *args, **kwargs):
         actions_hebrew_name = {

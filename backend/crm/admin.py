@@ -6,6 +6,7 @@ admin.site.register(models.Categories)
 admin.site.register(models.Emailrequest)
 admin.site.register(models.EmailTemplate)
 admin.site.register(models.SMTPEmail)
+admin.site.register(models.NetfreeCategoriesProfile)
 
 
 @admin.register(models.Actions)
