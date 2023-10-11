@@ -16,6 +16,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
 
   // const heTranslations = { 'ar-AE' : emailEditorHe }
   const [formdata, setFormData] = useState(formObject);
+  const [loadingTemplate, setLoadingTemplate] = useState(false);
   const { t } = useTranslation();
   const { setAlert } = useAlert();
   const emailEditorRef = useRef(null);
@@ -108,6 +109,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   }
 
   const fetchEditableTemplateData = async () => {
+    setLoadingTemplate(true);
     let response = await emailService.getSingleTemplate(editableTemplateId);
     response = response.data.data;
     // parse back the response data to form data with dynamic token
@@ -122,8 +124,9 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
       name: response.name,
       to: response.email_to,
       subject: response.subject,
-      message: response.design
+      message: response.design,
     });
+    setLoadingTemplate(false);
   }
 
   useEffect(() => {
@@ -137,7 +140,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
     locale: 'en-US',
     textDirection: 'rtl',
     translations: {
-      'en-US': emailEditorHe 
+      'en-US': emailEditorHe
     },
     tools: {
       text: {
@@ -159,14 +162,14 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
           }
         }
       },
-      button : {
+      button: {
         properties: {
           text: { value: 'טקסט לחצן' }
         }
       }
     }
   }
-                
+
 
   return (
     <div className="h-full w-full flex flex-col-reverse md:flex-row gap-4">
@@ -175,7 +178,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
         <form onSubmit={saveTemplate}>
           <div className="px-7 flex gap-4 font-semibold text-[#2B3674] [&_input]:border-[1px] [&_textarea]:border-[1px] [&_input]:outline-none [&_textarea]:outline-0 [&_input]:w-full [&_textarea]:w-full [&_input]:!px-4 [&_textarea]:!px-4 [&_input]:!py-1 [&_textarea]:!py-1">
             <div className="w-[100%] [&_tr]:h-10">
-            <div className="flex my-2 w-full gap-4">
+              <div className="flex my-2 w-full gap-4">
                 <td className="w-1/2 md:w-1/5">{t('emails.templateName')}</td>
                 <input
                   className="text-[13px]"
@@ -199,11 +202,11 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
                 />
               </div>
               <div className="w-full my-5 h-[calc(100vh-330px)] [&_iframe]:!min-w-[100%] [&_iframe]:!h-[calc(100vh-330px)] [&_div]:!max-h-[calc(100vh-330px)]">
-                <EmailEditor ref={emailEditorRef} onReady={onReady}
+                {!loadingTemplate ? <EmailEditor ref={emailEditorRef} onReady={onReady}
                   options={
                     defaultLanguageValue === 'he' ? option : null
                   }
-                />
+                /> : null}
               </div>
               <button className={`linear mb-2 px-[30px] rounded-lg py-2 text-base font-medium transition duration-200 ${formValidate() ? 'bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white' : 'bg-gray-300'}`}>{t('emails.save')}</button>
             </div>
