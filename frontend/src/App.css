@@ -32,3 +32,8 @@
   color: white;
   background-color: #EF4444;
 }
+
+.addFilterProfile {
+  position: absolute;
+  right: 0;
+}
