@@ -8,7 +8,7 @@ import re
 cronjob_email_log = logging.getLogger('cronjob-email')
 cronjob_error_log = logging.getLogger('cronjob-error')
 class EmailRequestProcessor:
-    def __init__(self,email_request):
+    def __init__(self,email_request=None):
         self.email_request = email_request
         self.netfree_api = NetfreeAPI()
         self.category_count = 0
@@ -170,7 +170,7 @@ class EmailRequestProcessor:
         
         
     def find_categories_by_url_or_domain(self, url_or_domain: str):
-        from crm.models import Actions,Categories
+        from crm.models import Actions,Categories,NetfreeCategoriesProfile
         res = self.netfree_api.search_category(url_or_domain)
         categories_list = []
         categories_data = {}
@@ -189,7 +189,8 @@ class EmailRequestProcessor:
         data = {}
         for i in categories_obj:
             data.update({i.id:[]})
-            actions = Actions.objects.filter(category=i)
+            default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
+            actions = Actions.objects.filter(category=i,netfree_profile=default_netfree_categories)
             if actions.exists():
                 empty = False
                 for action in actions:
@@ -211,7 +212,7 @@ class EmailRequestProcessor:
                             data2.update({"rule":"Open Domain for",'exp':timestamp})
                         data.get(i.id).append(data2)
         if empty:
-            actions = Actions.objects.filter(is_default=True,category=None)
+            actions = Actions.objects.filter(is_default=True,category=None,netfree_profile=default_netfree_categories)
             self.default = True
             if actions.exists():
                 data.update({"default":[]})
@@ -369,3 +370,109 @@ class EmailRequestProcessor:
                     cronjob_email_log.info(f"email request saving process end for customer id : {self.email_request.customer_id} ")
                     return True
         return False
+
+
+class NetfreeProcessor:
+    def __init__(self,urls,customer_id):
+        self.customer_id = customer_id
+        self.urls = urls
+        self.category_count = 0
+        self.default = False
+        self.all_urls = []
+        self.actions_done = []
+
+    def open_domain(self,label,url,amount,current_datetime):
+        try:
+            parts = url.split("://")
+            protocol = parts[0] if len(parts) > 1 else None
+
+            if protocol:
+                domain_and_path = parts[1]
+                domain, path = domain_and_path.split("/", 1)
+            else:
+                domain, path = parts[0].split("/", 1)
+            
+            # if domain.startswith("www."):
+            #     domain = domain[4:]
+
+            # Concatenate the protocol and domain
+            full_domain = f"{protocol}://{domain}/"
+            data = {"url":full_domain,
+                    "rule":"open"}
+
+            if label == "Open Domain for":
+                timestamp = self.calculate_future_timestamp(amount,"Minutes",current_datetime)
+                data.update({'exp':timestamp})
+            return data
+        except Exception as e:
+            cronjob_error_log.error(f"customer id : {self.customer_id}. error while open domain : {str(e)}")
+            return False
+    def open_url(self,label,url,current_datetime=False):
+        try:
+            data = {"url":url,
+                    "rule":"open"}
+            if len(label.split("Open URL for"))==2:
+                amount_time = label.split("Open URL for")[1].strip().split(" ")
+                timestamp = self.calculate_future_timestamp(int(amount_time[0]),amount_time[1],current_datetime)
+                data.update({'exp':timestamp})
+            return data
+        except Exception as e:
+            print(e)
+            cronjob_error_log.error(f"customer id : {self.customer_id}. error while open url : {e}")
+            return False
+    def calculate_future_timestamp(self,amount, condition,current_datetime):
+        if condition == "Minutes":
+            future_datetime = current_datetime + datetime.timedelta(minutes=amount)
+        elif condition == "Hours":
+            future_datetime = current_datetime + datetime.timedelta(hours=amount)
+        elif condition == "Days":
+            future_datetime = current_datetime + datetime.timedelta(days=amount)
+        elif condition == "Weeks":
+            future_datetime = current_datetime + datetime.timedelta(weeks=amount)
+        else:
+            raise ValueError("Invalid condition. Use 'minute', 'hour', 'day', or 'week'.")
+
+        future_timestamp = int(future_datetime.timestamp() * 1000)
+        return future_timestamp
+    def cate_process(self,categories,url):
+        current_datetime = datetime.datetime.now()
+        for action_data in categories:
+            action = action_data.get('rule', '')  # Extract the action from the dictionary
+            duration = action_data.get('exp', None)  # Extract the duration from the dictionary
+            label = action_data.get('label', None)
+
+            if action == 'Open URL':
+                url_without_www = url
+                open_url_data = self.open_url("Open URL",url_without_www,current_datetime)
+                if open_url_data:
+                    self.all_urls.append(open_url_data)
+                    self.actions_done.append(label)
+
+            elif action == 'Open URL for':
+                url_without_www = url
+                data = {"url":url_without_www,
+                            "rule":"open"}
+                timestamp = self.calculate_future_timestamp(duration,"Minutes",current_datetime)
+                data.update({'exp':timestamp})
+                self.all_urls.append(data)
+                self.actions_done.append(label)
+            elif action == 'Open Domain for':
+                data = self.open_domain('Open Domain for',url,duration,current_datetime)
+                self.all_urls.append(data)
+                self.actions_done.append(label)
+            elif action == 'Open Domain':
+                data = self.open_domain('Open Domain',url,duration,current_datetime)
+                self.all_urls.append(data)
+                self.actions_done.append(label)
+        return True
+    def process(self):
+        if self.urls:
+            for i in self.urls:
+                email = EmailRequestProcessor()
+                categories_data = email.find_categories_by_url_or_domain(i)
+                single,cate_key = email.has_data_in_single_key(categories_data)
+
+                if single:
+                    if self.cate_process(categories_data.get(cate_key),i):
+                        print(self.all_urls)
+                        print(self.actions_done)

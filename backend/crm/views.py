@@ -203,7 +203,7 @@ class CategoriesView(APIView):
         to_remove = param.get("to_remove", None)
         inputs = param.get("inputs", None)
         template_id = param.get("template_id", None)
-        profile = param.get("profile")
+        profile = self.request.query_params.get("profile")
         if profile is None:
             return Response({"error":"profile query param is missing."})
 
@@ -603,21 +603,15 @@ class ActionsView(APIView):
 
                                     }
                                 )
-                            instance, _ = Actions.objects.filter(template=False).get_or_create(label = "Send email template",category=None,email_template=template,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email,netfree_profile=netfree_profile)
+                            instance, _ = Actions.objects.filter(template=False).get_or_create(label = "Send email template",category=None,email_template=template,email_to_admin=email_to_admin,email_to_client=email_to_client,custom_email=custom_email,netfree_profile=netfree_profile,is_default=1)
                 else:
                     instance, _ = Actions.objects.filter(template=False).get_or_create(
-                    label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),category=None,netfree_profile=netfree_profile
+                    label=action.label.replace('X', inputs.get("amount",""), 1).replace('X', inputs.get("openfor",""), 1),category=None,netfree_profile=netfree_profile,is_default=1
                     )
                 updated_list.append(instance.id)
             else:
                 updated_list.append(action.id)
 
-        non_deafult_actions =  all_actions.exclude(pk__in=updated_list)
-        non_deafult_actions.update(is_default=0)
-        queryset = all_actions.filter(
-                    id__in=updated_list
-                )
-        queryset.update(is_default=1)
 
         return Response(
             {
@@ -652,7 +646,7 @@ class ActionsView(APIView):
             )
     
     def delete(self, request):
-        action = request.GET.get('action')
+        action = request.GET.get('action_id')
         try:
             instance = Actions.objects.get(id=action)
             instance.delete()
@@ -1068,7 +1062,8 @@ class ReadEmail():
                             formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S %z")
                             created_at_datetime = timezone.datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
                             if website_url.startswith("https://netfree.link/app/#/tools/traffic/view"):
-                                netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True)
+                                default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
+                                netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True,netfree_profile=default_netfree_categories)
                                 if netfree_traffic.is_active:
                                     data,custumer_id = get_netfree_traffic_data(website_url)
                                     # obj = NetfreeProcessor(data,custumer_id)

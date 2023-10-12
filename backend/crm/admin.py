@@ -7,6 +7,7 @@ admin.site.register(models.Emailrequest)
 admin.site.register(models.EmailTemplate)
 admin.site.register(models.SMTPEmail)
 admin.site.register(models.NetfreeCategoriesProfile)
+admin.site.register(models.NetfreeTraffic)
 
 
 @admin.register(models.Actions)
