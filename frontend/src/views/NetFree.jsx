@@ -301,19 +301,19 @@ const NetFree = () => {
                 profilesList={profilesList}
                 onClick={getAllProfilesListHandler}
             />}
-            <div className="bg-white rounded-3xl overflow-x-auto overflow-y-hidden w-full md:w-[calc(100%-260px)]">
+            <div className="bg-white rounded-3xl overflow-x-auto overflow-y-hidden relative w-full md:w-[calc(100%-260px)]">
                 <div className="m-5 px-2">
-                    <ul className={`${defaultLanguageValue === "he" ? "pl-[150px]" : "pr-[150px]"} relative flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400`}>
+                    <ul className={`${defaultLanguageValue === "he" ? "pl-[150px]" : "pr-[150px]"} overflow-x-auto flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400`}>
                         {
                             profilesList && profilesList.length > 0 && profilesList.map((profile, index) => {
                                 return (
                                     <li key={index}>
-                                        <a onClick={() => profileClickHandler(index)} className={`mr-1 inline-block cursor-pointer capitalize p-2 text-[#2B3674] rounded-t-sm ${profileActiveIndex === index ? "dark:bg-gray-800 bg-gray-100 dark:text-blue-500" : "hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"}`}>{profile.name}</a>
+                                        <a onClick={() => profileClickHandler(index)} className={`mr-1 w-max inline-block cursor-pointer capitalize p-2 text-[#2B3674] rounded-t-sm ${profileActiveIndex === index ? "dark:bg-gray-800 bg-gray-100 dark:text-blue-500" : "hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"}`}>{profile.name}</a>
                                     </li>
                                 )
                             })
                         }
-                        <li className={`absolute ${defaultLanguageValue === "he" ? "left-0" : "right-0"}`}>
+                        <li className={`absolute ${defaultLanguageValue === "he" ? "left-0" : "right-0"} mr-7`}>
                             <a onClick={() => {
                                 setShowProfileModal(!showProfileModal);
                                 setNewProfile(true);
@@ -335,7 +335,7 @@ const NetFree = () => {
                         <Loader />
                     </div>
                 }
-                <div className='h-[calc(100%-172px)] max-w-[100%] overflow-x-auto overflow-y-auto mx-5 px-2'>
+                <div className='h-[calc(100%-190px)] max-w-[100%] overflow-x-auto overflow-y-auto mx-5 px-2'>
                     <table className='!table text-[12px] overflow-y-auto w-full'>
                         <thead className="sticky top-0 z-10">
                             <tr className=' pr-3 bg-lightPrimary rounded-lg'>
