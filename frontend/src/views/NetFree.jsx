@@ -301,7 +301,7 @@ const NetFree = () => {
                 profilesList={profilesList}
                 onClick={getAllProfilesListHandler}
             />}
-            <div className="bg-white rounded-3xl overflow-y-clip w-full md:w-[calc(100%-260px)]">
+            <div className="bg-white rounded-3xl overflow-x-auto overflow-y-hidden w-full md:w-[calc(100%-260px)]">
                 <div className="m-5 px-2">
                     <ul className={`${defaultLanguageValue === "he" ? "pl-[150px]" : "pr-[150px]"} relative flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400`}>
                         {
@@ -335,7 +335,7 @@ const NetFree = () => {
                         <Loader />
                     </div>
                 }
-                <div className='h-[calc(100%-72px)] max-w-[100%] overflow-x-auto overflow-y-auto mx-5 px-2'>
+                <div className='h-[calc(100%-172px)] max-w-[100%] overflow-x-auto overflow-y-auto mx-5 px-2'>
                     <table className='!table text-[12px] overflow-y-auto w-full'>
                         <thead className="sticky top-0 z-10">
                             <tr className=' pr-3 bg-lightPrimary rounded-lg'>
@@ -452,6 +452,7 @@ const NetFree = () => {
                     </div>
                     <AddButtonIcon extra={''} onClick={() => {
                         setIsDefaultActionSelectOpen(true);
+                        setTrafficAction(false);
                         enableActionUpdate();
                     }} />
                 </div>
