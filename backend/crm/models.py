@@ -17,7 +17,7 @@ def get_or_create_default_netfree_categories():
     return default_netfree_categories
 class NetfreeCategoriesProfile(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True,default="deafult")
-    decription = models.CharField(max_length=100, null=True, blank=True,default="")
+    description = models.CharField(max_length=100, null=True, blank=True,default="")
     is_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

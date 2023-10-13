@@ -70,18 +70,11 @@ class NetfreeTrafficView(APIView):
     def post(self, request):
         params = self.request.query_params
         data = request.data
-        category = data.get('category')
-        status = True if data.get('status') else False
+        status = True if data.get('status','')=='true' else False
         default_id = data.get('default_id')
         profile = params.get("profile")
         if profile is None:
             return Response({"error":"profile query param is missing."})
-        instance = Categories.objects.filter(id=category).first()
-        if not instance and not default_id:
-            return Response({
-                "success": False,
-                "message": "Category not found"
-            }, status=400)
         netfree_profile = NetfreeCategoriesProfile.objects.filter(id=profile).first()
         if not netfree_profile:
             return Response({
