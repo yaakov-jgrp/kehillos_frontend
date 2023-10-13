@@ -83,7 +83,11 @@
     "Addmore": "Add More",
     "to":"to",
     "admin":"Admin",
-    "client":"Client"
+    "client":"Client",
+    "addFilterProfile":"+ Add Filter Profile",
+    "description":"Description",
+    "filterProfile":"Filter Profile",
+    "lastUpdatedAt":"Last Updated at"
   },
   "searchbox": {
     "placeHolder": "Search",

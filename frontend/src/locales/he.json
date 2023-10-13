@@ -88,7 +88,11 @@
     "send_email_template":"שלח תבנית אימייל",
     "to":"ל",
     "admin":"מנהל מערכת",
-    "client":"לָקוּחַ"
+    "client":"לָקוּחַ",
+    "addFilterProfile":"+ הוסף פרופיל מסנן",
+    "description":"תיאור",
+    "filterProfile":"פרופיל סינון",
+    "lastUpdatedAt":"עודכן לאחרונה ב"
   },
   "searchbox": {
     "placeHolder": "חיפוש",
