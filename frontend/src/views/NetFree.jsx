@@ -396,7 +396,10 @@ const NetFree = () => {
                                                     })
                                                 }
                                                 {
-                                                    <AddButtonIcon extra={''} onClick={() => enableActionUpdate(el)} />
+                                                    <AddButtonIcon extra={''} onClick={() => {
+                                                        setTrafficAction(false);
+                                                        enableActionUpdate(el);
+                                                    }} />
                                                 }
                                             </td>
                                         </tr>
