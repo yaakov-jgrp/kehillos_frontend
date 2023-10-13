@@ -18,15 +18,21 @@ const getActions = () => {
   return api.get(`/api/crm/actions/?lang=${lang}&profile=${filterProfileID ? filterProfileID : "1"}`);
 };
 
-const setDefaultAction = (data) => {
+const setDefaultAction = (data, params) => {
   const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
-  return api.post(`/api/crm/actions/?profile=${filterProfileID ? filterProfileID : "1"}`, data);
+  return api.post(`/api/crm/actions/?profile=${filterProfileID ? filterProfileID : "1"}${params}`, data);
 };
 
 const getDefaultAction = () => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
   return api.get(`/api/crm/actions/?get_default=true&lang=${lang}&profile=${filterProfileID ? filterProfileID : "1"}`);
+};
+
+const getDefaultTrafficActions = () => {
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
+  return api.get(`/api/crm/actions/?get_netfree_traffic=true&lang=${lang}&profile=${filterProfileID ? filterProfileID : "1"}`);
 };
 
 const getDefaultTraffic = () => {
@@ -53,16 +59,20 @@ const updateActionInCategory = (data, id) => {
 };
 
 const getProfilesList = (params) => {
-  return api.get(`/api/crm/netfree-categories-profile/${params}`)
-}
+  return api.get(`/api/crm/netfree-categories-profile/${params}`);
+};
 
 const createFilterProfile = (data) => {
-  return api.post(`/api/crm/netfree-categories-profile/`, data)
-}
+  return api.post(`/api/crm/netfree-categories-profile/`, data);
+};
 
 const updateFilterProfile = (data, params) => {
-  return api.put(`/api/crm/netfree-categories-profile/${params}`, data)
-}
+  return api.put(`/api/crm/netfree-categories-profile/${params}`, data);
+};
+
+const deleteDefaultAction = (actionID) => {
+  return api.delete(`/api/crm/actions/?action_id=${actionID}`);
+};
 
 const categoryService = {
   getCategories,
@@ -76,6 +86,8 @@ const categoryService = {
   searchSiteSetting,
   getProfilesList,
   createFilterProfile,
-  updateFilterProfile
+  updateFilterProfile,
+  getDefaultTrafficActions,
+  deleteDefaultAction
 };
 export default categoryService;

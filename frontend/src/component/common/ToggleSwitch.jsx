@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 
 const ToggleSwitch = (props) => {
     const { selected, clickHandler } = props
-    const [checked, setChecked] = useState(selected || false);
+    const [checked, setChecked] = useState(false);
     const handleChange = () => {
         if (clickHandler) {
             clickHandler();
         }
         setChecked(!checked);
     };
+
+    useEffect(() => {
+        setChecked(selected);
+    }, [selected])
 
     return (
         <label className="flex items-center cursor-pointer">

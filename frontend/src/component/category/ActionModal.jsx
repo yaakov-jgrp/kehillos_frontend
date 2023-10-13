@@ -11,7 +11,7 @@ const initialSatte = {
   Client: false,
   Custom: false,
 }
-const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDefaultAction, isDefault, editActionID, setEditActionId }) => {
+const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDefaultAction, isDefault, editActionID, setEditActionId, trafficAction, setTrafficAction }) => {
   const [actionsList, setActionsList] = useState([]);
   const { t } = useTranslation();
   const [templateList, setTemplateList] = useState([]);
@@ -77,7 +77,12 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   const templateActionsData = [t('netfree.adminEmail'), t('netfree.clientEmail'), t('netfree.customEmail')];
   const getActionsList = async () => {
     const response = await categoryService.getActions();
-    setActionsList(response.data.data);
+    if (trafficAction) {
+      const trafficActions = response.data.data.filter((action) => action.id === 1);
+      setActionsList(trafficActions);
+    } else {
+      setActionsList(response.data.data);
+    }
   }
 
   const getTemplates = async () => {
@@ -157,7 +162,7 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   useEffect(() => {
     getActionsList();
     getTemplates();
-  }, [])
+  }, [trafficAction])
 
 
   function findPartialMatch(searchString, arr, text) {

@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import categoryService from "../../services/category";
 
-const ProfileModal = ({ showModal, setShowModal, profile, newProfile, onClick }) => {
+const ProfileModal = ({ showModal, setShowModal, profile, newProfile, onClick, profilesList }) => {
     const { t } = useTranslation();
     const defaultValues = {
-        name: !newProfile ? profile.name : "",
-        description: !newProfile ? profile.description : ""
+        name: "",
+        description: ""
     };
     const schema = yup.object().shape({
         name: yup
@@ -42,15 +42,26 @@ const ProfileModal = ({ showModal, setShowModal, profile, newProfile, onClick })
         formData.append("description", data.description);
         if (newProfile) {
             const res = await categoryService.createFilterProfile(formData);
-            console.log("new", res);
         } else {
             const res = await categoryService.updateFilterProfile(formData, `${profile ? profile?.id + "/" : ""}`);
-            console.log("update", res);
         }
         reset();
         setShowModal(!showModal);
         onClick();
     }
+
+
+    useEffect(() => {
+        if (profilesList && profile) {
+            if (!newProfile) {
+                setValue("name", profile?.name);
+                setValue("description", profile?.description);
+            } else {
+                setValue("name", `Profile ${profilesList.length + 1}`);
+                setValue("description", "");
+            }
+        }
+    }, [JSON.stringify(profile), newProfile]);
 
     return (
         <>
@@ -128,4 +139,4 @@ const ProfileModal = ({ showModal, setShowModal, profile, newProfile, onClick })
     );
 };
 
-export default ProfileModal;
+export default React.memo(ProfileModal);

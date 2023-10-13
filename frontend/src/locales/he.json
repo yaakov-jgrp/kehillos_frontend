@@ -89,8 +89,10 @@
     "to":"ל",
     "admin":"מנהל מערכת",
     "client":"לָקוּחַ",
-    "addFilterProfile":"הוסף פרופיל מסנן",
-    "description":"תיאור"
+    "addFilterProfile":"+ הוסף פרופיל מסנן",
+    "description":"תיאור",
+    "filterProfile":"פרופיל סינון",
+    "lastUpdatedAt":"עודכן לאחרונה ב"
   },
   "searchbox": {
     "placeHolder": "חיפוש",

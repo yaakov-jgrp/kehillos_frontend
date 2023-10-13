@@ -13,6 +13,8 @@ import ActionModal from "../component/category/ActionModal";
 import EditButtonIcon from "../component/common/EditButton";
 import moment from 'moment';
 import ProfileModal from "../component/category/ProfileModal";
+import 'moment/locale/he';
+import TooltipButtonIcon from "../component/common/TootltipButton";
 
 const NetFree = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -35,6 +37,12 @@ const NetFree = () => {
     const [activeProfile, setActiveprofile] = useState(null);
     const [showProfileModal, setShowProfileModal] = useState(false);
     const [newProfile, setNewProfile] = useState(true);
+    const [trafficAction, setTrafficAction] = useState(false);
+    const [defaultTrafficActions, setDefaultTrafficActions] = useState([]);
+    const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
+    moment().locale(defaultLanguageValue);
+
+
     const setResponseDataToState = (res) => {
         const response = res.data.data.map(el => {
             el.isActionUpdateEnabled = false;
@@ -69,32 +77,26 @@ const NetFree = () => {
         setDefaultTraffic(response.data.data.is_active);
     }
 
+    const getDefaultTrafficActions = async () => {
+        const response = await categoryService.getDefaultTrafficActions();
+        setDefaultTrafficActions(response.data.data);
+    }
+
     const updateDefaultTrafficHandler = async () => {
         const data = {
-            default_id: true,
             status: !defaultTraffic
         };
         const response = await categoryService.updateNetfreeTraffic(data);
         setDefaultTraffic(response.data.data.is_active);
     }
 
-    const updateCategoryTrafficHandler = async (category) => {
-        const data = {
-            category: category.id,
-            status: !category.netfree_traffic
-        };
-        const response = await categoryService.updateNetfreeTraffic(data)
-    }
+
 
     const deleteDefaultAction = async (actionId) => {
         setIsLoading(true);
-        const actionsPayload = defaultActionList.map(el => {
-            if (el.id != actionId) {
-                return el.id
-            }
-        })
-        await categoryService.setDefaultAction({ actions: actionsPayload });
+        await categoryService.deleteDefaultAction(actionId);
         await getActionsList();
+        await getDefaultTrafficActions();
         getCategoryData();
         setIsLoading(false);
     }
@@ -210,17 +212,28 @@ const NetFree = () => {
     const setDefaultAction = async (actionId, data) => {
         setIsLoading(true);
         const actionsPayload = defaultActionList.map(el => el.id);
-        await categoryService.setDefaultAction({ actions: [...actionsPayload, actionId], ...data });
+        let params;
+        if (trafficAction) {
+            params = "&is_netfree_traffic=true";
+        } else {
+            params = "";
+        }
+        await categoryService.setDefaultAction({ actions: [...actionsPayload, actionId], ...data }, params);
         await getActionsList();
+        await getDefaultTrafficActions();
         getCategoryData();
         setIsDefaultActionSelectOpen(false);
         setIsLoading(false);
     }
 
     const getAllProfilesListHandler = async () => {
+        localStorage.setItem("FILTER_PROFILE_ID", 1);
         const profilesListData = await categoryService.getProfilesList("");
-        setProfilesList(profilesListData.data.data);
-        setActiveprofile(profilesListData.data.data[0]);
+        const defaultProfile = profilesListData.data.data.filter((profile) => profile.is_default);
+        const nonDefaultProfiles = profilesListData.data.data.filter((profile) => !profile.is_default);
+        const listsData = [...defaultProfile, ...nonDefaultProfiles];
+        setProfilesList(listsData);
+        setActiveprofile(defaultProfile[0]);
     }
 
     const profileClickHandler = (index) => {
@@ -232,13 +245,20 @@ const NetFree = () => {
         getCategoryData();
         getActionsList();
         getDefaultTraffic();
+        getDefaultTrafficActions();
     }
 
+    const editProfileHandler = () => {
+        setNewProfile(false);
+        setShowProfileModal(!showProfileModal);
+    };
+
     useEffect(() => {
+        getAllProfilesListHandler();
         getCategoryData();
         getActionsList();
+        getDefaultTrafficActions();
         getDefaultTraffic();
-        getAllProfilesListHandler();
     }, []);
 
     const ActionSelectBox = ({ options, categoryName, categoryId, currentActions, operationType, previousValue }) => {
@@ -258,6 +278,7 @@ const NetFree = () => {
         );
     }
 
+
     return (
         <div className="md:h-full w-full flex-col-reverse md:flex-row flex gap-4">
             <ActionModal
@@ -269,40 +290,43 @@ const NetFree = () => {
                 isDefault={isDefaultActionSelectOpen}
                 editActionID={editActionID}
                 setEditActionId={setEditActionId}
+                trafficAction={trafficAction}
+                setTrafficAction={setTrafficAction}
             />
-            <ProfileModal
+            {profilesList && activeProfile && <ProfileModal
                 showModal={showProfileModal}
                 setShowModal={() => setShowProfileModal(!showProfileModal)}
                 profile={activeProfile}
                 newProfile={newProfile}
+                profilesList={profilesList}
                 onClick={getAllProfilesListHandler}
-            />
+            />}
             <div className="bg-white rounded-3xl overflow-y-clip w-full md:w-[calc(100%-260px)]">
                 <div className="m-5 px-2">
-                    <ul className="relative pr-[150px] flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+                    <ul className={`${defaultLanguageValue === "he" ? "pl-[150px]" : "pr-[150px]"} relative flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400`}>
                         {
                             profilesList && profilesList.length > 0 && profilesList.map((profile, index) => {
                                 return (
-                                    <li>
+                                    <li key={index}>
                                         <a onClick={() => profileClickHandler(index)} className={`mr-1 inline-block cursor-pointer capitalize p-2 text-[#2B3674] rounded-t-sm ${profileActiveIndex === index ? "dark:bg-gray-800 bg-gray-100 dark:text-blue-500" : "hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"}`}>{profile.name}</a>
                                     </li>
                                 )
                             })
                         }
-                        <li className="addFilterProfile">
+                        <li className={`absolute ${defaultLanguageValue === "he" ? "left-0" : "right-0"}`}>
                             <a onClick={() => {
                                 setShowProfileModal(!showProfileModal);
                                 setNewProfile(true);
-                            }} className={`inline-block cursor-pointer capitalize p-2 text-cyan-600 bg-gray-100 rounded-t-sm active dark:bg-gray-800 dark:text-blue-500`}>+ Add Filter Profile</a>
+                            }} className={`inline-block cursor-pointer capitalize p-2 text-cyan-600 bg-gray-100 rounded-t-sm active dark:bg-gray-800 dark:text-blue-500`}>{t("netfree.addFilterProfile")}</a>
                         </li>
                     </ul>
                 </div>
                 {
                     activeProfile &&
                     <div className="bg-gray-100 p-2 rounded-md min-w-[50%] min-h-[50px] max-h-[150px] overflow-y-auto max-w-[50%] mx-6 my-4">
-                        <div className="flex"><p className="text-xl capitalize">{activeProfile.name} Filter Profile</p><EditButtonIcon extra="mx-2" onClick={() => { setNewProfile(false); setShowProfileModal(!showProfileModal); }} /></div>
-                        <p className="text-xs">{activeProfile.description}</p>
-                        <p className="text-xs text-gray-600">Last updated at {moment(activeProfile.updated_at).format('MMM Do YYYY, h:mm A')}</p>
+                        <div className="flex"><p className="text-xl capitalize">{activeProfile.name + " " + t("netfree.filterProfile")}</p><TooltipButtonIcon extra="mx-2" /></div>
+                        <div className="flex"><p className="text-xs">{activeProfile.description}</p><EditButtonIcon extra="mx-2" onClick={editProfileHandler} /></div>
+                        <p className="text-xs text-gray-600">{t("netfree.lastUpdatedAt") + " " + moment(activeProfile.updated_at).format('lll')}</p>
                     </div>
                 }
                 {
@@ -433,12 +457,23 @@ const NetFree = () => {
                 </div>
                 {defaultTraffic !== null &&
                     <div className="max-h-[150px] min-h-[150px] flex flex-col items-start py-1 px-2 overflow-hidden bg-white rounded-3xl text-center text-[#2B3674]">
-                        <div className="flex justify-around items-center w-full">
+                        <div className="flex justify-around items-center w-full mb-2">
                             <h5 className="font-bold ml-2 text-[14px]">{t('netfree.trafficRecord')}</h5>
                             <ToggleSwitch clickHandler={updateDefaultTrafficHandler} selected={defaultTraffic} />
                         </div>
+                        <div className="max-h-[calc(100%-30px)] w-full overflow-y-auto mb-2">
+                            {
+                                defaultTrafficActions.map(el => {
+                                    return (
+                                        <div key={el.id} className="px-3 w-full w-fit whitespace-break-spaces text-left text-[13px] mb-2 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap">{el.label} <div className="text-[13px] text-[#fc3232] cursor-pointer" onClick={() => deleteDefaultAction(el.id)}>x</div></div>
+                                    );
+                                })
+                            }
+                        </div>
                         <div className="pl-2">
                             <AddButtonIcon extra={''} onClick={() => {
+                                setIsDefaultActionSelectOpen(true);
+                                setTrafficAction(true);
                                 enableActionUpdate();
                             }} />
                         </div>

@@ -84,8 +84,10 @@
     "to":"to",
     "admin":"Admin",
     "client":"Client",
-    "addFilterProfile":"Add Filter Profile",
-    "description":"Description"
+    "addFilterProfile":"+ Add Filter Profile",
+    "description":"Description",
+    "filterProfile":"Filter Profile",
+    "lastUpdatedAt":"Last Updated at"
   },
   "searchbox": {
     "placeHolder": "Search",
