@@ -131,7 +131,7 @@ class NetfreeTraffic(models.Model):
         blank=True,
         default=None,
     )
-    netfree_profile = models.ForeignKey(NetfreeCategoriesProfile,default=get_or_create_default_netfree_categories().pk,on_delete=models.CASCADE,blank=True,null=True)
+    netfree_profile = models.ForeignKey(NetfreeCategoriesProfile,default=1,on_delete=models.CASCADE,blank=True,null=True)
 class Actions(models.Model):
     label = models.CharField(max_length=200)
     is_default = models.BooleanField(default=False)
@@ -149,7 +149,7 @@ class Actions(models.Model):
     email_to_admin = models.BooleanField(default=False)
     email_to_client = models.BooleanField(default=False)
     custom_email = models.CharField(max_length=2000,blank=True,null=True)
-    netfree_profile = models.ForeignKey(NetfreeCategoriesProfile,default=get_or_create_default_netfree_categories().pk,on_delete=models.CASCADE,blank=True,null=True)
+    netfree_profile = models.ForeignKey(NetfreeCategoriesProfile,default=1,on_delete=models.CASCADE,blank=True,null=True)
     
     def save(self, *args, **kwargs):
         actions_hebrew_name = {

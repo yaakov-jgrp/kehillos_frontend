@@ -212,6 +212,7 @@ class EmailRequestProcessor:
                             data2.update({"rule":"Open Domain for",'exp':timestamp})
                         data.get(i.id).append(data2)
         if empty:
+            default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
             actions = Actions.objects.filter(is_default=True,category=None,netfree_profile=default_netfree_categories)
             self.default = True
             if actions.exists():
@@ -380,6 +381,7 @@ class NetfreeProcessor:
         self.default = False
         self.all_urls = []
         self.actions_done = []
+        self.process_actions_urls = {}
 
     def open_domain(self,label,url,amount,current_datetime):
         try:
@@ -447,6 +449,10 @@ class NetfreeProcessor:
                 if open_url_data:
                     self.all_urls.append(open_url_data)
                     self.actions_done.append(label)
+                    if self.process_actions_urls.get(label):
+                        self.process_actions_urls.get(label).append(url)
+                    else:
+                        self.process_actions_urls[label] = [url]
 
             elif action == 'Open URL for':
                 url_without_www = url
@@ -456,14 +462,26 @@ class NetfreeProcessor:
                 data.update({'exp':timestamp})
                 self.all_urls.append(data)
                 self.actions_done.append(label)
+                if self.process_actions_urls.get(label):
+                    self.process_actions_urls.get(label).append(url)
+                else:
+                    self.process_actions_urls[label] = [url]
             elif action == 'Open Domain for':
                 data = self.open_domain('Open Domain for',url,duration,current_datetime)
                 self.all_urls.append(data)
                 self.actions_done.append(label)
+                if self.process_actions_urls.get(label):
+                    self.process_actions_urls.get(label).append(url)
+                else:
+                    self.process_actions_urls[label] = [url]
             elif action == 'Open Domain':
                 data = self.open_domain('Open Domain',url,duration,current_datetime)
                 self.all_urls.append(data)
                 self.actions_done.append(label)
+                if self.process_actions_urls.get(label):
+                    self.process_actions_urls.get(label).append(url)
+                else:
+                    self.process_actions_urls[label] = [url]
         return True
     def process(self):
         if self.urls:
@@ -474,5 +492,8 @@ class NetfreeProcessor:
 
                 if single:
                     if self.cate_process(categories_data.get(cate_key),i):
-                        print(self.all_urls)
-                        print(self.actions_done)
+                        pass
+                        # print(self.all_urls)
+                        # print(self.actions_done)
+        print("start here\n")
+        print(self.process_actions_urls)
