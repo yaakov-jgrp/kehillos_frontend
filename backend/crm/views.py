@@ -70,7 +70,7 @@ class NetfreeTrafficView(APIView):
     def post(self, request):
         params = self.request.query_params
         data = request.data
-        status = True if data.get('status','')=='true' else False
+        status = True if data.get('status') else False
         default_id = data.get('default_id')
         profile = params.get("profile")
         if profile is None:
