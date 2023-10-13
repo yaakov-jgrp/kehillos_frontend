@@ -97,7 +97,7 @@ class NetfreeTrafficView(APIView):
         
 class NetfreeCategoriesProfileList(APIView):
     def get(self, request):
-        categories = NetfreeCategoriesProfile.objects.all()
+        categories = NetfreeCategoriesProfile.objects.all().order_by('id')
         serializer = NetfreeCategoriesProfileSerializer(categories, many=True)
         return Response(
                 {
