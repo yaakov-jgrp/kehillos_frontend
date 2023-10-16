@@ -1,5 +1,5 @@
 import time
-# from crm.manager import NetfreeProcessor
+from crm.manager import NetfreeProcessor
 from crm.serializer import ActionsSerializer, NetfreeTrafficSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -113,6 +113,62 @@ class NetfreeCategoriesProfileList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class NetfreeCategoriesProfileViewSet(APIView):
+    queryset = NetfreeCategoriesProfile.objects.all()
+    serializer_class = NetfreeCategoriesProfileSerializer
+
+    def post(self, request, *args, **kwargs):
+        data = request.data.copy()
+        if not data.get('id'):
+            return Response({"error":"id param is missing."})
+        if not data.get('name'):
+            return Response({"error":"name param is missing."})
+
+        data['name'] = data['name'] + "_clone"
+        # Get a list of category IDs from the request data
+        actions = Actions.objects.filter(netfree_profile__id=data.get('id'))
+
+        clone_profile = NetfreeCategoriesProfile.objects.create(name=data.get('name'),description=data.get('description',''))
+        obj = NetfreeTraffic.objects.filter(netfree_profile__id=data.get('id')).first()
+        if obj:
+            NetfreeTraffic.objects.create(is_default=True,is_active=obj.is_active,netfree_profile=clone_profile)
+        else:
+            NetfreeTraffic.objects.create(is_default=True,netfree_profile=clone_profile)
+        
+        # Ensure the IDs exist in the database and create a list of category objects
+        for action in actions:
+            try:
+                new_action = Actions(
+                    label=action.label,
+                    is_default=action.is_default,
+                    is_default_netfree_traffic=action.is_default_netfree_traffic,
+                    template=action.template,
+                    email_template=action.email_template,  # Replace with an actual EmailTemplate instance
+                    category=action.category,  # Replace with an actual Categories instance
+                    email_to_admin=action.email_to_admin,
+                    email_to_client=action.email_to_client,
+                    custom_email=action.custom_email,
+                    netfree_profile=clone_profile,  # Replace with an actual NetfreeCategoriesProfile instance
+                )
+                new_action.save()
+            except Exception as e:
+                # Handle the case where a specified category ID does not exist
+                return Response(
+                {
+                    "success": True,
+                    "message": "Something went wrong"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = NetfreeCategoriesProfileSerializer(clone_profile)
+        return Response(
+                {
+                    "success": True,
+                    "data": serializer.data
+                },
+                status=status.HTTP_201_CREATED
+            )
 class NetfreeCategoriesProfileDetail(APIView):
     def get_object(self, pk):
         try:
@@ -135,6 +191,21 @@ class NetfreeCategoriesProfileDetail(APIView):
 
     def delete(self, request, pk):
         category = self.get_object(pk)
+        try:
+            category = NetfreeCategoriesProfile.objects.get(pk=pk)
+        except NetfreeCategoriesProfile.DoesNotExist:
+            return Response({
+                    "success": False,
+                    "message": "Profile not found"
+                },status=status.HTTP_404_NOT_FOUND)
+        if category.is_default:
+            return Response(
+                {
+                    "success": False,
+                    "message": "You can't delete default profile"
+                }
+                ,status=status.HTTP_400_BAD_REQUEST
+            )
         category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

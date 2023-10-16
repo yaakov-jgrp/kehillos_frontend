@@ -13,5 +13,6 @@ urlpatterns = [
      path("template-clone/", views.EmailTemplatesCloneView.as_view()),
      path("smtp-email/", views.SMTPEmailView.as_view()),
      path('netfree-categories-profile/', views.NetfreeCategoriesProfileList.as_view(), name='netfree-categories-profile-list'),
+     path("netfree-categories-profile-clone/", views.NetfreeCategoriesProfileViewSet.as_view()),
      path('netfree-categories-profile/<int:pk>/', views.NetfreeCategoriesProfileDetail.as_view(), name='netfree-categories-profile-detail')
 ]
