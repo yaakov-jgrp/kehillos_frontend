@@ -74,6 +74,14 @@ const deleteDefaultAction = (actionID) => {
   return api.delete(`/api/crm/actions/?action_id=${actionID}`);
 };
 
+const deleteProfile = (profileID) => {
+  return api.delete(`/api/crm/netfree-categories-profile/${profileID}/`);
+}
+
+const duplicateProfile = (data) => {
+  return api.post("/api/crm/netfree-categories-profile-clone/", data);
+}
+
 const categoryService = {
   getCategories,
   getActions,
@@ -88,6 +96,8 @@ const categoryService = {
   createFilterProfile,
   updateFilterProfile,
   getDefaultTrafficActions,
-  deleteDefaultAction
+  deleteDefaultAction,
+  deleteProfile,
+  duplicateProfile
 };
 export default categoryService;

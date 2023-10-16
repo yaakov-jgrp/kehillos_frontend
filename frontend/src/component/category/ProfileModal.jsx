@@ -23,12 +23,8 @@ const ProfileModal = ({ showModal, setShowModal, profile, newProfile, onClick, p
     const {
         control,
         setValue,
-        getValues,
-        setError,
         reset,
         handleSubmit,
-        watch,
-        formState: { errors, isValid, dirtyFields, isDirty },
     } = useForm({
         defaultValues,
         mode: "onBlur",
@@ -100,7 +96,7 @@ const ProfileModal = ({ showModal, setShowModal, profile, newProfile, onClick, p
                                             control={control}
                                             rules={{ required: true }}
                                             render={({ field: { value, onChange, onBlur } }) => (
-                                                <input value={value} disabled={!newProfile} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" required onChange={onChange} onBlur={onBlur} />
+                                                <input value={value} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" required onChange={onChange} onBlur={onBlur} />
                                             )}
                                         />
                                         <label className="block text-black text-sm font-bold mb-1">

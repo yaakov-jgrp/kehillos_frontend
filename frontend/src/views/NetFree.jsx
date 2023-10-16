@@ -15,6 +15,10 @@ import moment from 'moment';
 import ProfileModal from "../component/category/ProfileModal";
 import 'moment/locale/he';
 import TooltipButtonIcon from "../component/common/TootltipButton";
+import {
+    MdDelete,
+} from "react-icons/md";
+import { HiDuplicate } from "react-icons/hi"
 
 const NetFree = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -253,6 +257,21 @@ const NetFree = () => {
         setShowProfileModal(!showProfileModal);
     };
 
+    const deleteProfileHandler = async () => {
+        const res = await categoryService.deleteProfile(activeProfile.id);
+        const updatedProfiles = profilesList.filter((profile) => profile.id !== activeProfile.id);
+        const activeIndex = profilesList.findIndex((profile) => profile.id === activeProfile.id);
+        setProfilesList(updatedProfiles);
+        setProfileActiveIndex(activeIndex - 1);
+        setActiveprofile(updatedProfiles[activeIndex - 1]);
+    }
+
+    const duplicateProfileHandler = async () => {
+        const res = await categoryService.duplicateProfile(activeProfile);
+        console.log(res);
+        getAllProfilesListHandler();
+    }
+
     useEffect(() => {
         getAllProfilesListHandler();
         getCategoryData();
@@ -317,16 +336,22 @@ const NetFree = () => {
                             <a onClick={() => {
                                 setShowProfileModal(!showProfileModal);
                                 setNewProfile(true);
-                            }} className={`inline-block cursor-pointer capitalize p-2 text-cyan-600 bg-gray-100 rounded-t-sm active dark:bg-gray-800 dark:text-blue-500`}>{t("netfree.addFilterProfile")}</a>
+                            }} className={`inline-block cursor-pointer capitalize p-2 text-[#2B3674] bg-gray-100 rounded-t-sm active dark:bg-gray-800 dark:text-blue-500`}>{t("netfree.addFilterProfile")}</a>
                         </li>
                     </ul>
                 </div>
                 {
                     activeProfile &&
-                    <div className="bg-gray-100 p-2 rounded-md min-w-[50%] min-h-[50px] max-h-[150px] overflow-y-auto max-w-[50%] mx-6 my-4">
-                        <div className="flex"><p className="text-xl capitalize">{activeProfile.name + " " + t("netfree.filterProfile")}</p><TooltipButtonIcon extra="mx-2" /></div>
-                        <div className="flex"><p className="text-xs">{activeProfile.description}</p><EditButtonIcon extra="mx-2" onClick={editProfileHandler} /></div>
-                        <p className="text-xs text-gray-600">{t("netfree.lastUpdatedAt") + " " + moment(activeProfile.updated_at).format('lll')}</p>
+                    <div className="bg-[#F4F7FE] flex justify-between p-2 rounded-md min-w-[50%] min-h-[50px] max-h-[150px] overflow-y-auto max-w-[50%] mx-6 my-4">
+                        <div>
+                            <div className="flex"><p className="text-xl text-[#2B3674] capitalize">{activeProfile.name + " " + t("netfree.filterProfile")}</p><TooltipButtonIcon extra="mx-2" /></div>
+                            <div className="flex"><p className="text-xs text-[#2B3674]">{activeProfile.description}</p><EditButtonIcon extra="mx-2" onClick={editProfileHandler} /></div>
+                            <p className="text-xs text-gray-600">{t("netfree.lastUpdatedAt") + " " + moment(activeProfile.updated_at).format('lll')}</p>
+                        </div>
+                        <div className="h-auto flex flex-col justify-between">
+                            <HiDuplicate className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={duplicateProfileHandler} />
+                            {activeProfile.id != "1" && <MdDelete className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={deleteProfileHandler} />}
+                        </div>
                     </div>
                 }
                 {
