@@ -322,21 +322,28 @@ const NetFree = () => {
             />}
             <div className="bg-white rounded-3xl overflow-x-auto overflow-y-hidden relative w-full md:w-[calc(100%-260px)]">
                 <div className="m-5 px-2">
-                    <ul className={`${defaultLanguageValue === "he" ? "pl-[150px]" : "pr-[150px]"} overflow-x-auto flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400`}>
+                    <ul className={`${defaultLanguageValue === "he" ? "pl-[150px]" : "pr-[150px]"} pb-1 overflow-x-auto flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400`}>
                         {
                             profilesList && profilesList.length > 0 && profilesList.map((profile, index) => {
                                 return (
                                     <li key={index}>
-                                        <a onClick={() => profileClickHandler(index)} className={`mr-1 w-max inline-block cursor-pointer capitalize p-2 text-[#2B3674] rounded-t-sm ${profileActiveIndex === index ? "dark:bg-gray-800 bg-gray-100 dark:text-blue-500" : "hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"}`}>{profile.name}</a>
+                                        <a onClick={() => profileClickHandler(index)} className={`mr-1 w-max inline-block cursor-pointer capitalize p-1 px-2 text-[#2B3674] rounded-t-sm ${profileActiveIndex === index ? "dark:bg-gray-800 bg-gray-100 dark:text-blue-500" : "hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"}`}>{profile.name}</a>
                                     </li>
                                 )
                             })
                         }
                         <li className={`absolute ${defaultLanguageValue === "he" ? "left-0" : "right-0"} mr-7`}>
-                            <a onClick={() => {
+                            {/* <a onClick={() => {
                                 setShowProfileModal(!showProfileModal);
                                 setNewProfile(true);
-                            }} className={`inline-block cursor-pointer capitalize p-2 text-[#2B3674] bg-gray-100 rounded-t-sm active dark:bg-gray-800 dark:text-blue-500`}>{t("netfree.addFilterProfile")}</a>
+                            }} className={`inline-block cursor-pointer capitalize p-2 text-[#2B3674] bg-gray-100 rounded-t-sm active dark:bg-gray-800 dark:text-blue-500`}>{t("netfree.addFilterProfile")}</a> */}
+                            <button className={`w-full rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
+                                onClick={() => {
+                                    setShowProfileModal(!showProfileModal);
+                                    setNewProfile(true);
+                                }}>
+                                {t("netfree.addFilterProfile")}
+                            </button>
                         </li>
                     </ul>
                 </div>

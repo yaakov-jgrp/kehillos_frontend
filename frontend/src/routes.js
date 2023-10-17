@@ -14,7 +14,9 @@ import {
   // MdPerson,
   // MdLock,
 } from "react-icons/md";
+import { HiOutlineUserGroup } from "react-icons/hi2"
 import NetFree from "./views/NetFree";
+import Clients from "./views/Clients";
 
 const routes = [
   {
@@ -49,6 +51,13 @@ const routes = [
         type: "menu",
         icon: <img src={NetfreeIcon} className="h-6 w-6" alt="Netfree" />,
         component: <Emails />,
+      },
+      {
+        name: "clients",
+        path: "settings/clients",
+        type: "menu",
+        icon: <HiOutlineUserGroup className="h-6 w-6" />,
+        component: <Clients />,
       },
       {
         name: "goto",

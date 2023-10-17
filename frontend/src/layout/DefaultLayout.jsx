@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Routes,Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Sidebar from '../component/common/Sidebar';
 // import Dashboard from '../views/Dashboard';
 import { useTranslation } from "react-i18next";
@@ -13,8 +13,10 @@ import {
   MdOutlineContactSupport,
   MdPerson,
   MdOutlineSettings,
-  } from "react-icons/md";
+} from "react-icons/md";
 import NetFree from '../views/NetFree';
+import Clients from '../views/Clients';
+import { HiOutlineUserGroup } from "react-icons/hi2"
 
 const DefaultLayout = () => {
 
@@ -58,6 +60,13 @@ const DefaultLayout = () => {
       icon: <MdOutlineSettings className="h-6 w-6" />,
       component: <Emails />,
     },
+    {
+      name: t('sidebar.clients'),
+      path: "settings/clients",
+      type: "menu",
+      icon: <HiOutlineUserGroup className="h-6 w-6" />,
+      component: <Clients />,
+    },
     // {
     //   name: t('sidebar.profile'),
     //   path: "profile",
@@ -96,9 +105,9 @@ const DefaultLayout = () => {
 
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
-        return (
-          <Route path={`/${prop.path}`} element={prop.component} key={key} />
-        );
+      return (
+        <Route path={`/${prop.path}`} element={prop.component} key={key} />
+      );
     });
   };
 
@@ -108,7 +117,7 @@ const DefaultLayout = () => {
       <Sidebar open={open} onClose={() => setOpen(false)} />
       <div className="h-full w-full bg-lightPrimary">
         <main
-          className={`mx-[12px] h-full flex-none transition-all md:pe-2 ${ i18n.dir() === 'rtl' ? 'xl:mr-[250px]' : 'xl:ml-[250px]'}`}
+          className={`mx-[12px] h-full flex-none transition-all md:pe-2 ${i18n.dir() === 'rtl' ? 'xl:mr-[250px]' : 'xl:ml-[250px]'}`}
         >
           <div className="h-full md:h-[100vh]">
             <Navbar
@@ -118,7 +127,7 @@ const DefaultLayout = () => {
               brandName={currentRouteName}
               secondary={getActiveNavbar(routes)}
             />
-            <div className={`pt-5s mx-auto mb-auto h-[calc(100%-100px)] p-2 md:pr-2 ${ i18n.dir() === 'rtl' ? 'xl:mr-3' : 'xl:ml-3'}`}>
+            <div className={`pt-5s mx-auto mb-auto h-[calc(100%-100px)] p-2 md:pr-2 ${i18n.dir() === 'rtl' ? 'xl:mr-3' : 'xl:ml-3'}`}>
               <Routes>
                 {getRoutes(routes)}
               </Routes>
