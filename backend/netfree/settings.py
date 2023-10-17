@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'corsheaders',
     'django_apscheduler',
+    'clients',
+    'import_export'
 ]
 
 MIDDLEWARE = [
