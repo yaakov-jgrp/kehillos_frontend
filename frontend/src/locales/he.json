@@ -18,7 +18,8 @@
     "netfree": "נטפרי",
     "emails": "אימייל",
     "profile": "פרופיל",
-    "logout": "התנתק"
+    "logout": "התנתק",
+    "clients": "לקוחות"
   },
   "requests": {
     "title": "פניות",
@@ -27,6 +28,9 @@
     "$clientEmail": "אימייל לקוח",
     "$domainRequested": "אתר מבוקש",
     "$adminEmail": "אימייל מנהל"
+  },
+  "clients": {
+    "title": "לקוחות"
   },
   "emails": {
     "templates": "תבניות",
@@ -92,11 +96,26 @@
     "addFilterProfile": "+ הוסיף פרופיל",
     "description": "תיאור",
     "filterProfile": "פרופיל סינון",
-    "lastUpdatedAt": "עודכן לאחרונה ב"
+    "lastUpdatedAt": "עודכן לאחרונה ב",
+    "addClient": "הוסף לקוח",
+    "userID": "זהות המשתמש",
+    "firstName": "שם פרטי",
+    "lastName": "שם משפחה",
+    "email": "אימייל",
+    "phone": "טלפון",
+    "sector": "מִגזָר",
+    "netfreeProfile": "פרופיל",
+    "clientActions": "פעולות הלקוח"
   },
   "searchbox": {
     "placeHolder": "חיפוש",
     "requestId": "מספר פניה",
+    "clientUserID": "זהות המשתמש",
+    "name": "שם",
+    "email": "אימייל",
+    "phone": "טלפון",
+    "sector": "מִגזָר",
+    "profile": "פרופיל",
     "dateCreated": "תאריך יצירה",
     "from": "מאת",
     "requestType": "סוג פניה",

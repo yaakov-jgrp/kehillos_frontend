@@ -22,45 +22,43 @@ export function SidebarLinks(props) {
     setIsSettingsOpen(!isSettingsOpen);
   }
 
-  useEffect(()=> {
-    if(location.pathname.includes('settings')){
+  useEffect(() => {
+    if (location.pathname.includes('settings')) {
       setIsSettingsOpen(true);
     } else {
       setIsSettingsOpen(false);
     }
   }, [location.pathname])
 
-  const GenerateMenuLink = ({route, index, type}) => {
+  const GenerateMenuLink = ({ route, index, type }) => {
     return (
 
-        <div className="relative mb-3 flex hover:cursor-pointer">
-          <li
-            className={`my-[3px] flex cursor-pointer items-center ${(type === 'sub-menu') ? 'px-3' : 'px-8'}`}
-            key={route.name+index}
+      <div className="relative mb-3 flex hover:cursor-pointer">
+        <li
+          className={`my-[3px] flex cursor-pointer items-center ${(type === 'sub-menu') ? 'px-3' : 'px-8'}`}
+          key={route.name + index}
+        >
+          <span
+            className={`${activeRoute(route) === true
+              ? "font-bold text-brand-500 dark:text-white"
+              : "font-medium text-gray-600"
+              }`}
           >
-            <span
-              className={`${
-                activeRoute(route) === true
-                  ? "font-bold text-brand-500 dark:text-white"
-                  : "font-medium text-gray-600"
+            {route.icon ? route.icon : <DashIcon />}{" "}
+          </span>
+          <p
+            className={`leading-1 mx-4 flex ${activeRoute(route) === true
+              ? "font-bold text-navy-700 dark:text-white"
+              : "font-medium text-gray-600"
               }`}
-            >
-              {route.icon ? route.icon : <DashIcon />}{" "}
-            </span>
-            <p
-              className={`leading-1 mx-4 flex ${
-                activeRoute(route) === true
-                  ? "font-bold text-navy-700 dark:text-white"
-                  : "font-medium text-gray-600"
-              }`}
-            >
-              {route.name}
-            </p>
-          </li>
-          {activeRoute(route) ? (
-            <div className={`absolute bottom-px h-9 w-1 rounded-lg bg-brand-500 dark:bg-brand-400 ${ (i18n.dir() === 'rtl') ? (type === 'sub-menu') ? 'right-0 w-[1px]' : 'left-0' : (type === 'sub-menu') ? 'left-0 w-[1px]' : 'right-0'}`} />
-          ) : null}
-        </div>
+          >
+            {route.name}
+          </p>
+        </li>
+        {activeRoute(route) ? (
+          <div className={`absolute bottom-px h-9 w-1 rounded-lg bg-brand-500 dark:bg-brand-400 ${(i18n.dir() === 'rtl') ? (type === 'sub-menu') ? 'right-0 w-[1px]' : 'left-0' : (type === 'sub-menu') ? 'left-0 w-[1px]' : 'right-0'}`} />
+        ) : null}
+      </div>
     );
   }
 
@@ -71,40 +69,40 @@ export function SidebarLinks(props) {
       navigate('/signin');
     }
     return routes.map((route, index) => {
-        return (
-          route.type === 'top-menu' ?
-            <div key={route.name+index}>
-              <div onClick={toggleSettings}>
-                <GenerateMenuLink key={route.name+index} index={index} route={route} type="menu" />
-              </div>
-              <div>
-                {
-                  isSettingsOpen ?
+      return (
+        route.type === 'top-menu' ?
+          <div key={route.name + index}>
+            <div onClick={toggleSettings}>
+              <GenerateMenuLink key={route.name + index} index={index} route={route} type="menu" />
+            </div>
+            <div>
+              {
+                isSettingsOpen ?
                   route.children.map((subMenu, subIndex) => {
                     return (
-                      <div key={subMenu.name+subIndex} className="px-10">
+                      <div key={subMenu.name + subIndex} className="px-10">
                         <Link to={"/" + subMenu.path}>
                           <GenerateMenuLink index={subIndex} route={subMenu} type="sub-menu" />
                         </Link>
                       </div>
                     );
-                  }) 
+                  })
                   :
                   null
-                }
-              </div>
+              }
             </div>
-           :
-           route.type === 'button' ?
-           <div key={route.name+index} onClick={logout}>
-             <GenerateMenuLink index={route.name+index} route={route} type="menu" />
-           </div>
-           :
-           <Link key={route.name+index} to={"/" + route.path}>
-              <GenerateMenuLink index={route.name+index} route={route} type="menu" />
+          </div>
+          :
+          route.type === 'button' ?
+            <div key={route.name + index} onClick={logout}>
+              <GenerateMenuLink index={route.name + index} route={route} type="menu" />
+            </div>
+            :
+            <Link key={route.name + index} to={"/" + route.path}>
+              <GenerateMenuLink index={route.name + index} route={route} type="menu" />
             </Link>
 
-        );
+      );
     });
   };
   // BRAND

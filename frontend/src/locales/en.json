@@ -18,7 +18,8 @@
     "netfree": "NetFree",
     "emails": "Emails",
     "profile": "Profile",
-    "logout": "Logout"
+    "logout": "Logout",
+    "clients": "Clients"
   },
   "requests": {
     "title": "Requests",
@@ -27,6 +28,9 @@
     "$clientEmail": "$client_email",
     "$domainRequested": "$domain_requested",
     "$adminEmail": "$admin_email"
+  },
+  "clients": {
+    "title": "Clients"
   },
   "emails": {
     "templates": "Templates",
@@ -87,11 +91,26 @@
     "addFilterProfile": "+ Add Profile",
     "description": "Description",
     "filterProfile": "Filter Profile",
-    "lastUpdatedAt": "Last Updated at"
+    "lastUpdatedAt": "Last Updated at",
+    "addClient": "Add Client",
+    "userID": "User ID",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "sector": "Sector",
+    "netfreeProfile": "Netfree Profile",
+    "clientActions": "Client Actions"
   },
   "searchbox": {
     "placeHolder": "Search",
     "requestId": "Request ID",
+    "clientUserID": "User ID",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "sector": "Sector",
+    "profile": "Profile",
     "dateCreated": "Date Created",
     "from": "From",
     "requestType": "Request Type",
