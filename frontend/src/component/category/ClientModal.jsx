@@ -30,11 +30,10 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
             .required("Please enter valid first name"),
         last_name: yup
             .string()
-            .min(3, "Name must contain least 3 characters")
-            .required("Please enter valid last name"),
+            .notRequired("Please enter valid last name"),
         email: yup.string().email().required("Please enter valid email"),
-        phone: yup.number().required("Please enter valid phone"),
-        sector: yup.number().required("Please enter valid sector"),
+        phone: yup.number().notRequired("Please enter valid phone"),
+        sector: yup.number().notRequired("Please enter valid sector"),
         netfree_profile: yup.string().required("Please select valid profile"),
     });
 
@@ -73,6 +72,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
 
 
     useEffect(() => {
+        reset();
         setLoading(true);
         if (clientLists && netfreeProfiles && client) {
             let data;
