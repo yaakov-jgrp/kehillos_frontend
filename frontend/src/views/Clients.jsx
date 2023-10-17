@@ -197,7 +197,7 @@ const Clients = () => {
                                         </td>
                                         <td className='text-center'>{el.phone}</td>
                                         <td className='text-center'>{el.sector}</td>
-                                        <td className='text-center'>{el.netfree_profile}</td>
+                                        <td className='text-center'>{netfreeprofiles.filter((profile) => profile.id == el.netfree_profile)[0].name}</td>
                                         <td>
                                             <div className="h-auto flex flex-col items-center justify-between">
                                                 <MdEdit className="text-blueSecondary mb-2 w-5 h-5 hover:cursor-pointer" onClick={() => editClientHandler(el)} />
