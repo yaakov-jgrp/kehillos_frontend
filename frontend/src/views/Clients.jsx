@@ -190,14 +190,15 @@ const Clients = () => {
                             allClients.map((el) => {
                                 return (
                                     <tr className='h-[75px]' key={el.id}>
-                                        <td>#{el.user_id}</td>
+                                        <td><a href={`https://netfree.link/app/#/sectors/user-filter-settings/${el.user_id}`} target='_blank' rel="noreferrer"className='text-[#2B3674] hover:text-[#2B3674] font-bold'
+                      >#{el.user_id}</a></td>
                                         <td>{el.full_name}</td>
                                         <td>
                                             <a href={`mailto:${el.email}`} className='text-[#2B3674] hover:text-[#2B3674] font-bold' >{el.email}</a>
                                         </td>
                                         <td className='text-center'>{el.phone}</td>
                                         <td className='text-center'>{el.sector}</td>
-                                        <td className='text-center'>{netfreeprofiles.filter((profile) => profile.id == el.netfree_profile)[0].name}</td>
+                                        <td className='text-center'>{netfreeprofiles&&netfreeprofiles.filter((profile) => profile.id == el.netfree_profile)[0].name}</td>
                                         <td>
                                             <div className="h-auto flex flex-col items-center justify-between">
                                                 <MdEdit className="text-blueSecondary mb-2 w-5 h-5 hover:cursor-pointer" onClick={() => editClientHandler(el)} />

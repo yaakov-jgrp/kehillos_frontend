@@ -247,19 +247,26 @@ class Emailrequest(models.Model):
     requested_website = models.CharField(max_length=2000)
     created_at = models.DateTimeField()
     def save(self,*args,**kwargs):
-        user_detail = netfree_obj.get_user(self.customer_id)
-        if user_detail.status_code == 200:
-            data = user_detail.json()
-            data = data.get('users',[])
-            if len(data)>0:
-                client_name = data[0].get('full_name',"")
-                client_email = data[0].get("email","")
-                self.username = client_name
-                self.sender_email = client_email
-                url_without_www = self.requested_website
-                if self.requested_website.startswith("https://"):
-                    url_without_www = url_without_www.replace("https://", "http://", 1)
-                self.requested_website = url_without_www
+        from clients.models import NetfreeUser
+        client = NetfreeUser.objects.filter(user_id=self.customer_id).first()
+        url_without_www = self.requested_website
+        if self.requested_website.startswith("https://"):
+            url_without_www = url_without_www.replace("https://", "http://", 1)
+            self.requested_website = url_without_www
+        if client:
+            self.username = client.full_name
+            self.sender_email = client.email
+        else:
+            user_detail = netfree_obj.get_user(self.customer_id)
+            if user_detail.status_code == 200:
+                data = user_detail.json()
+                data = data.get('users',[])
+                if len(data)>0:
+                    client_name = data[0].get('full_name',"")
+                    client_email = data[0].get("email","")
+                    self.username = client_name
+                    self.sender_email = client_email
+                
         super(Emailrequest,self).save(*args,**kwargs)
 
     def send_mail(self, template_name):

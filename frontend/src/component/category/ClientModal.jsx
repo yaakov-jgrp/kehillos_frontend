@@ -32,8 +32,8 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
             .string()
             .notRequired("Please enter valid last name"),
         email: yup.string().email().required("Please enter valid email"),
-        phone: yup.number().notRequired("Please enter valid phone"),
-        sector: yup.number().notRequired("Please enter valid sector"),
+        phone: yup.string().notRequired("Please enter valid phone"),
+        sector: yup.string().notRequired("Please enter valid sector"),
         netfree_profile: yup.string().required("Please select valid profile"),
     });
 
@@ -78,11 +78,15 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
             let data;
             if (!newClient) {
                 data = client;
+                setValue("netfree_profile", client.netfree_profile);
             } else {
                 data = intialValues;
+                setValue("netfree_profile", netfreeProfiles[0].id);
             }
             for (let value in data) {
-                setValue(value, data[value]);
+                if (value !== "netfree_profile") {
+                    setValue(value, data[value]);
+                }
             }
             setLoading(false);
         }
@@ -190,7 +194,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                             name="netfree_profile"
                                             control={control}
                                             render={({ field: { value, onChange, onBlur } }) => (
-                                                <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={onChange} onBlur={onBlur} value={value} placeholder="Select Profile">
+                                                <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={onChange} value={value} placeholder="Select Profile">
                                                     {
                                                         netfreeProfiles?.map(el => {
                                                             return (
