@@ -236,13 +236,20 @@ const NetFree = () => {
         const defaultProfile = profilesListData.data.data.filter((profile) => profile.is_default);
         const nonDefaultProfiles = profilesListData.data.data.filter((profile) => !profile.is_default);
         const listsData = [...defaultProfile, ...nonDefaultProfiles];
+        const profileIndex = localStorage.getItem("PROFILE_INDEX");
         setProfilesList(listsData);
-        setActiveprofile(defaultProfile[0]);
+        if (profileIndex && profileIndex < listsData.length) {
+            setProfileActiveIndex(profileIndex);
+            setActiveprofile(listsData[profileIndex]);
+        } else {
+            setActiveprofile(listsData[0]);
+        }
     }
 
     const profileClickHandler = (index) => {
         const newActiveProfile = profilesList?.filter((profile, i) => i === index);
         localStorage.setItem("FILTER_PROFILE_ID", newActiveProfile[0].id);
+        localStorage.setItem("PROFILE_INDEX", index);
         setActiveprofile(newActiveProfile[0]);
         setProfileActiveIndex(index);
         setNewProfile(false);
@@ -327,16 +334,12 @@ const NetFree = () => {
                             profilesList && profilesList.length > 0 && profilesList.map((profile, index) => {
                                 return (
                                     <li key={index}>
-                                        <a onClick={() => profileClickHandler(index)} className={`mr-1 w-max inline-block cursor-pointer capitalize p-1 px-2 text-[#2B3674] rounded-t-sm ${profileActiveIndex === index ? "dark:bg-gray-800 bg-gray-100 dark:text-blue-500" : "hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"}`}>{profile.name}</a>
+                                        <a onClick={() => profileClickHandler(index)} className={`mr-1 w-max inline-block cursor-pointer capitalize p-1 px-2 text-[#2B3674] rounded-t-sm ${profileActiveIndex == index ? "dark:bg-gray-800 bg-gray-100 dark:text-blue-500" : "hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"}`}>{profile.name}</a>
                                     </li>
                                 )
                             })
                         }
                         <li className={`absolute ${defaultLanguageValue === "he" ? "left-0" : "right-0"} mr-7`}>
-                            {/* <a onClick={() => {
-                                setShowProfileModal(!showProfileModal);
-                                setNewProfile(true);
-                            }} className={`inline-block cursor-pointer capitalize p-2 text-[#2B3674] bg-gray-100 rounded-t-sm active dark:bg-gray-800 dark:text-blue-500`}>{t("netfree.addFilterProfile")}</a> */}
                             <button className={`w-full rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
                                 onClick={() => {
                                     setShowProfileModal(!showProfileModal);

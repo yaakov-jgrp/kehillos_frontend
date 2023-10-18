@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import clientsService from "../../services/clients";
 import ErrorMessage from "../common/ErrorMessage";
+import { errorsToastHandler } from "../../lib/CommonFunctions";
 
 const intialValues = {
     user_id: "",
@@ -61,13 +62,26 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
         formData.append("full_name", `${data.first_name} ${data.last_name}`);
         formData.append("name", data.first_name);
         if (newClient) {
-            const res = await clientsService.saveClient(formData);
+            clientsService.saveClient(formData).then((res) => {
+                reset();
+                setShowModal(!showModal);
+                onClick();
+            }).catch((err) => {
+                if (err.response.data.error.length > 0) {
+                    errorsToastHandler(err.response.data.error);
+                }
+            });
         } else {
-            const res = await clientsService.updateClient(formData, data.id);
+            clientsService.updateClient(formData, data.id).then((res) => {
+                reset();
+                setShowModal(!showModal);
+                onClick();
+            }).catch((err) => {
+                if (err.response.data.error.length > 0) {
+                    errorsToastHandler(err.response.data.error);
+                }
+            });
         }
-        reset();
-        setShowModal(!showModal);
-        onClick();
     }
 
 
