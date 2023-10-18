@@ -8,11 +8,15 @@ class NetfreeUserSerializer(serializers.ModelSerializer):
         model = NetfreeUser
         fields = '__all__'
     def validate_user_id(self, value):
-        if NetfreeUser.objects.filter(user_id=value).exists():
+        if self.instance is None and NetfreeUser.objects.filter(user_id=value).exists():
+            raise serializers.ValidationError(f"This Client with user id {str(value)} already in use.")
+        if self.instance and self.instance.user_id != value and NetfreeUser.objects.filter(user_id=value).exists():
             raise serializers.ValidationError(f"This Client with user id {str(value)} already in use.")
         return value
 
     def validate_email(self, value):
-        if NetfreeUser.objects.filter(email=value).exists():
+        if self.instance is None and NetfreeUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError(f"This Client with email {str(value)} already in use.")
+        if self.instance and self.instance.email != value and NetfreeUser.objects.filter(email=value).exists():
             raise serializers.ValidationError(f"This Client with email {str(value)} already in use.")
         return value

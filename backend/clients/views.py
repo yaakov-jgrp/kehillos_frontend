@@ -95,10 +95,10 @@ class ClientsImportData(APIView):
                 count+=1
             else:
                 errors = {}
-            for field, value in serializer.errors.items():
-                errors[field] = value[0] if isinstance(value, list) else value
-                break
-            error_details.append({'row': row_number, 'data': row, 'error': [errors]})
+                for field, value in serializer.errors.items():
+                    errors[field] = value[0] if isinstance(value, list) else value
+                    break
+                error_details.append({'row': row_number, 'data': row, 'error': [errors]})
 
         if error_details:
             return Response({'errors': error_details, "Total saved":count}, status=status.HTTP_400_BAD_REQUEST)

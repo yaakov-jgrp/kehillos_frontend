@@ -11,6 +11,7 @@ import {
     MdEdit
 } from "react-icons/md";
 import ErrorsModal from '../component/common/ErrorsModal';
+import { toast } from 'react-toastify';
 
 
 let filterFields = {
@@ -83,6 +84,8 @@ const Clients = () => {
         const formData = new FormData();
         formData.append("file", e.target.files[0]);
         clientsService.importClients(formData).then((res) => {
+            toast.success("Import successfully done");
+            fetchClientsData();
         }).catch((err) => {
             const errors = err.response.data.errors;
             if (errors.length > 0) {
