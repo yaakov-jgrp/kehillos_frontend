@@ -1126,10 +1126,15 @@ class ReadEmail():
                             formatted_received_date = received_datetime.strftime("%Y-%m-%d %H:%M:%S %z")
                             created_at_datetime = timezone.datetime.strptime(received_date, "%a, %d %b %Y %H:%M:%S %z")
                             if website_url.startswith("https://netfree.link/app/#/tools/traffic/view"):
-                                default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
-                                netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True,netfree_profile=default_netfree_categories)
+                                from clients.models import NetfreeUser
+                                data,custumer_id = get_netfree_traffic_data(website_url)
+                                client = NetfreeUser.objects.filter(user_id=custumer_id).first()
+                                if client:
+                                    netfree_traffic= NetfreeTraffic.objects.get(is_default=True,netfree_profile=client.netfree_profile)
+                                else:
+                                    default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
+                                    netfree_traffic,created = NetfreeTraffic.objects.get_or_create(is_default=True,netfree_profile=default_netfree_categories)
                                 if netfree_traffic.is_active:
-                                    data,custumer_id = get_netfree_traffic_data(website_url)
                                     # obj = NetfreeProcessor(data,custumer_id)
                                     # obj.process()
                                     objects = Emailrequest.objects.filter(

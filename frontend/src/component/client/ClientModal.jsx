@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import clientsService from "../../services/clients";
 import ErrorMessage from "../common/ErrorMessage";
+import { errorsToastHandler } from "../../lib/CommonFunctions";
 
 const intialValues = {
     user_id: "",
@@ -32,8 +33,8 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
             .string()
             .notRequired("Please enter valid last name"),
         email: yup.string().email().required("Please enter valid email"),
-        phone: yup.number().notRequired("Please enter valid phone"),
-        sector: yup.number().notRequired("Please enter valid sector"),
+        phone: yup.string().notRequired("Please enter valid phone"),
+        sector: yup.string().notRequired("Please enter valid sector"),
         netfree_profile: yup.string().required("Please select valid profile"),
     });
 
@@ -61,13 +62,26 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
         formData.append("full_name", `${data.first_name} ${data.last_name}`);
         formData.append("name", data.first_name);
         if (newClient) {
-            const res = await clientsService.saveClient(formData);
+            clientsService.saveClient(formData).then((res) => {
+                reset();
+                setShowModal(!showModal);
+                onClick();
+            }).catch((err) => {
+                if (err.response.data.error.length > 0) {
+                    errorsToastHandler(err.response.data.error);
+                }
+            });
         } else {
-            const res = await clientsService.updateClient(formData, data.id);
+            clientsService.updateClient(formData, data.id).then((res) => {
+                reset();
+                setShowModal(!showModal);
+                onClick();
+            }).catch((err) => {
+                if (err.response.data.error.length > 0) {
+                    errorsToastHandler(err.response.data.error);
+                }
+            });
         }
-        reset();
-        setShowModal(!showModal);
-        onClick();
     }
 
 
@@ -78,11 +92,15 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
             let data;
             if (!newClient) {
                 data = client;
+                setValue("netfree_profile", client.netfree_profile);
             } else {
                 data = intialValues;
+                setValue("netfree_profile", netfreeProfiles[0].id);
             }
             for (let value in data) {
-                setValue(value, data[value]);
+                if (value !== "netfree_profile") {
+                    setValue(value, data[value]);
+                }
             }
             setLoading(false);
         }
@@ -190,7 +208,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                             name="netfree_profile"
                                             control={control}
                                             render={({ field: { value, onChange, onBlur } }) => (
-                                                <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={onChange} onBlur={onBlur} value={value} placeholder="Select Profile">
+                                                <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={onChange} value={value} placeholder="Select Profile">
                                                     {
                                                         netfreeProfiles?.map(el => {
                                                             return (

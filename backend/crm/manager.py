@@ -1,10 +1,8 @@
 import datetime
-from typing import Union, Tuple
 from urllib.parse import urlparse
 from utils.helper import NetfreeAPI,replace_placeholders,send_email_with_template
 from django.conf import settings
 import logging
-import re
 cronjob_email_log = logging.getLogger('cronjob-email')
 cronjob_error_log = logging.getLogger('cronjob-error')
 class EmailRequestProcessor:
@@ -171,6 +169,7 @@ class EmailRequestProcessor:
         
     def find_categories_by_url_or_domain(self, url_or_domain: str):
         from crm.models import Actions,Categories,NetfreeCategoriesProfile
+        from clients.models import NetfreeUser
         res = self.netfree_api.search_category(url_or_domain)
         categories_list = []
         categories_data = {}
@@ -187,9 +186,14 @@ class EmailRequestProcessor:
         self.category_count = categories_obj.count()
         empty = True
         data = {}
+        client = NetfreeUser.objects.filter(user_id=self.email_request.customer_id).first()
+        if client and client.netfree_profile:
+            default_netfree_categories = client.netfree_profile
+        else:
+            default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
         for i in categories_obj:
             data.update({i.id:[]})
-            default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
+
             actions = Actions.objects.filter(category=i,netfree_profile=default_netfree_categories)
             if actions.exists():
                 empty = False
@@ -212,7 +216,6 @@ class EmailRequestProcessor:
                             data2.update({"rule":"Open Domain for",'exp':timestamp})
                         data.get(i.id).append(data2)
         if empty:
-            default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
             actions = Actions.objects.filter(is_default=True,category=None,netfree_profile=default_netfree_categories)
             self.default = True
             if actions.exists():
@@ -379,10 +382,22 @@ class NetfreeProcessor:
         self.urls = urls
         self.category_count = 0
         self.default = False
+        self.netfree_api = NetfreeAPI()
         self.all_urls = []
         self.actions_done = []
         self.process_actions_urls = {}
+    def has_data_in_single_key(self,d):
+        data_count = 0
+        categories_key = False
 
+        for key, value in d.items():
+            if isinstance(value, list) and len(value) > 0:
+                categories_key = key
+                data_count += 1
+                if data_count > 1:
+                    return False,False # Data in more than one key
+
+        return data_count == 1,categories_key
     def open_domain(self,label,url,amount,current_datetime):
         try:
             parts = url.split("://")
@@ -436,6 +451,86 @@ class NetfreeProcessor:
 
         future_timestamp = int(future_datetime.timestamp() * 1000)
         return future_timestamp
+    def convert_condition_to_minutes(self,amount,condition):
+        if condition == "Minutes":
+            return amount
+        elif condition == "Hours":
+            return amount * 60
+        elif condition == "Days":
+            return amount * 60 * 24
+        elif condition == "Weeks":
+            return amount * 60 * 24 * 7
+        else:
+            raise ValueError("Invalid condition. Use 'Minutes', 'Hours', 'Days', or 'Weeks'.")
+    def find_categories_by_url_or_domain(self, url_or_domain: str):
+            from crm.models import Actions,Categories,NetfreeCategoriesProfile
+            res = self.netfree_api.search_category(url_or_domain)
+            categories_list = []
+            categories_data = {}
+            if res.status_code == 200:
+                try:
+                    keys = res.json()["tagValue"]["tags"].keys()
+                    categories_list = list(map(int, keys))
+                except Exception as e:
+                    print(e)
+                    # cronjob_error_log.error(f"requested id: {self.email_request.id} error {str(e)}")
+                    categories_list = []
+            categories_obj = Categories.objects.filter(
+                    categories_id__in=[int(i) for i in categories_list]
+                )
+            self.category_count = categories_obj.count()
+            empty = True
+            data = {}
+            for i in categories_obj:
+                data.update({i.id:[]})
+                default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
+                actions = Actions.objects.filter(category=i,netfree_profile=default_netfree_categories)
+                if actions.exists():
+                    empty = False
+                    for action in actions:
+                        if "Send email template" in action.label:
+                            data.get(i.id).append({"url":action.label,"rule":"Send email template","exp":action.get_label.split("Send email template")[-1].strip(),'label':action.get_label,"email_to_admin":action.email_to_admin,"email_to_client":action.email_to_client,"custom_email":action.custom_email})
+                        if "Open URL" in action.label:
+                            data2 = {"url":action.label,"rule":"Open URL",'label':action.label}
+                            if len(action.label.split("Open URL for"))==2:
+                                amount_time = action.label.split("Open URL for")[1].strip().split(" ")
+                                timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
+                                data2.update({"rule":"Open URL for",'exp':timestamp})
+                            data.get(i.id).append(data2)
+
+                        if "Open Domain" in action.label:
+                            data2 = {"url":action.label,"rule":"Open Domain",'label':action.label}
+                            if len(action.label.split("Open Domain for"))==2:
+                                amount_time = action.label.split("Open Domain for")[1].strip().split(" ")
+                                timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
+                                data2.update({"rule":"Open Domain for",'exp':timestamp})
+                            data.get(i.id).append(data2)
+            if empty:
+                default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
+                actions = Actions.objects.filter(is_default=True,category=None,netfree_profile=default_netfree_categories)
+                self.default = True
+                if actions.exists():
+                    data.update({"default":[]})
+                    empty = False
+                    for action in actions:
+                        if "Send email template" in action.label:
+                            data.get('default').append({"url":action.label,"rule":"Send email template","exp":action.get_label.split("Send email template")[-1].strip(),'label':action.get_label,"email_to_admin":action.email_to_admin,"email_to_client":action.email_to_client,"custom_email":action.custom_email})
+                        if "Open URL" in action.label:
+                            data2 = {"url":action.label,"rule":"Open URL",'label':action.label}
+                            if len(action.label.split("Open URL for"))==2:
+                                amount_time = action.label.split("Open URL for")[1].strip().split(" ")
+                                timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
+                                data2.update({"rule":"Open URL for",'exp':timestamp})
+                            data.get('default').append(data2)
+                        if "Open Domain" in action.label:
+                            data2 = {"url":action.label,"rule":"Open Domain",'label':action.label}
+                            if len(action.label.split("Open Domain for"))==2:
+                                amount_time = action.label.split("Open Domain for")[1].strip().split(" ")
+                                timestamp = self.convert_condition_to_minutes(int(amount_time[0]),amount_time[1])
+                                data2.update({"rule":"Open Domain for",'exp':timestamp})
+                            data.get('default').append(data2)
+            categories_data.update(data)
+            return categories_data
     def cate_process(self,categories,url):
         current_datetime = datetime.datetime.now()
         for action_data in categories:
@@ -481,19 +576,32 @@ class NetfreeProcessor:
                 if self.process_actions_urls.get(label):
                     self.process_actions_urls.get(label).append(url)
                 else:
-                    self.process_actions_urls[label] = [url]
+                    self.process_actions_urls[label] = [url] 
         return True
     def process(self):
         if self.urls:
-            for i in self.urls:
-                email = EmailRequestProcessor()
-                categories_data = email.find_categories_by_url_or_domain(i)
-                single,cate_key = email.has_data_in_single_key(categories_data)
+            for url in self.urls:
+                if url.startswith("https://"):
+                    url = url.replace("https://", "http://", 1)
+                categories_data = self.find_categories_by_url_or_domain(url)
+                single,cate_key = self.has_data_in_single_key(categories_data)
 
                 if single:
-                    if self.cate_process(categories_data.get(cate_key),i):
+                    if self.cate_process(categories_data.get(cate_key),url):
                         pass
                         # print(self.all_urls)
                         # print(self.actions_done)
         print("start here\n")
-        print(self.process_actions_urls)
+        # print(self.process_actions_urls)
+
+        for key,item in self.process_actions_urls.items():
+            print(key)
+            for i in item:
+                print(i)
+
+        print(self.all_urls)
+
+
+
+
+

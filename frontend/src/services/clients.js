@@ -18,10 +18,24 @@ const deleteClient = (id) => {
     return api.delete(`/api/client/${id}/`);
 }
 
+const importClients = (fileData) => {
+    return api.post(`/api/client/import/`, fileData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        }
+    });
+}
+
+const exportClients = () => {
+    return api.get("/api/client/export/");
+}
+
 const clientsService = {
     getClients,
     saveClient,
     updateClient,
-    deleteClient
+    deleteClient,
+    importClients,
+    exportClients
 }
 export default clientsService;

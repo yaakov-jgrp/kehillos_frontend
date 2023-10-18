@@ -30,7 +30,10 @@
     "$adminEmail": "אימייל מנהל"
   },
   "clients": {
-    "title": "לקוחות"
+    "title": "לקוחות",
+    "import": "יְבוּא",
+    "export": "יְצוּא",
+    "errors": "שגיאות"
   },
   "emails": {
     "templates": "תבניות",

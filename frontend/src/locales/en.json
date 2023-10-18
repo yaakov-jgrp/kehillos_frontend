@@ -30,7 +30,10 @@
     "$adminEmail": "$admin_email"
   },
   "clients": {
-    "title": "Clients"
+    "title": "Clients",
+    "import": "Import",
+    "export": "Export",
+    "errors": "Errors"
   },
   "emails": {
     "templates": "Templates",

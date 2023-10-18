@@ -5,11 +5,13 @@ import Loader from '../component/common/Loader';
 import clientsService from '../services/clients';
 import AddButtonIcon from '../component/common/AddButton';
 import categoryService from '../services/category';
-import ClientModal from '../component/category/ClientModal';
+import ClientModal from '../component/client/ClientModal';
 import {
     MdDelete,
     MdEdit
 } from "react-icons/md";
+import ErrorsModal from '../component/common/ErrorsModal';
+import { toast } from 'react-toastify';
 
 
 let filterFields = {
@@ -30,6 +32,8 @@ const Clients = () => {
     const [newClient, setNewClient] = useState(true);
     const [editClient, setEditClient] = useState({});
     const [netfreeprofiles, setNetfreeProfiles] = useState(null);
+    const [importErrors, setImportErrors] = useState([]);
+    const [errorModal, setErrorModal] = useState(false);
 
     const fetchClientsData = async () => {
         setIsLoading(true);
@@ -76,27 +80,80 @@ const Clients = () => {
         fetchClientsData();
     }
 
+    const importClientsHandler = async (e) => {
+        const formData = new FormData();
+        formData.append("file", e.target.files[0]);
+        clientsService.importClients(formData).then((res) => {
+            toast.success("Import successfully done");
+            fetchClientsData();
+        }).catch((err) => {
+            const errors = err.response.data.errors;
+            if (errors.length > 0) {
+                const allErrors = errors.map((errData) => {
+                    const errorMessages = errData.error.map((errMessage) => {
+                        for (const message in errMessage) {
+                            return errMessage[message];
+                        };
+                    });
+                    return errorMessages[0];
+                });
+                setImportErrors(allErrors);
+                setErrorModal(true);
+            }
+        });
+    }
+
+    const exportClientsHandler = async () => {
+        const res = await clientsService.exportClients();
+        var url = "data:text/csv;charset=utf-8,%EF%BB%BF" + res.data;
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'Clients.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    }
+
     useEffect(() => {
         fetchClientsData();
         fetchNetfreeProfiles();
-        return () => { };
     }, [])
     return (
         <div className='w-full bg-white rounded-3xl'>
-            {allClients && netfreeprofiles && editClient && <ClientModal
-                showModal={clientModal}
-                setShowModal={setClientModal}
-                newClient={newClient}
-                client={editClient}
-                clientLists={allClients}
-                netfreeProfiles={netfreeprofiles}
-                onClick={() => { setNewClient(true); fetchClientsData(); }}
-            />}
-            <div className='flex justify-between py-4 px-7 font-bold text-[#2B3674]'>{t('clients.title')}
-                <AddButtonIcon extra={''} onClick={() => {
-                    setNewClient(true);
-                    setClientModal(!clientModal);
-                }} />
+            {allClients && netfreeprofiles && editClient &&
+                <ClientModal
+                    showModal={clientModal}
+                    setShowModal={setClientModal}
+                    newClient={newClient}
+                    client={editClient}
+                    clientLists={allClients}
+                    netfreeProfiles={netfreeprofiles}
+                    onClick={() => { setNewClient(true); fetchClientsData(); }}
+                />}
+            {importErrors.length > 0 &&
+                <ErrorsModal
+                    errors={importErrors}
+                    showModal={errorModal}
+                    setShowModal={setErrorModal}
+                />
+            }
+            <div className='flex justify-between py-4 px-7 font-bold text-[#2B3674]'>
+                {t('clients.title')}
+                <div className='flex max-w-[150px]'>
+                    <AddButtonIcon extra={''} onClick={() => {
+                        setNewClient(true);
+                        setClientModal(!clientModal);
+                    }} />
+                    <label className={`w-full rounded-full py-1 px-4 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}>
+                        {t("clients.import")}
+                        <input hidden type="file" accept=".csv" onChange={importClientsHandler} />
+
+                    </label>
+                    <button className={`w-full rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
+                        onClick={exportClientsHandler}>
+                        {t("clients.export")}
+                    </button>
+                </div>
             </div>
             {
                 isLoading &&
@@ -190,14 +247,15 @@ const Clients = () => {
                             allClients.map((el) => {
                                 return (
                                     <tr className='h-[75px]' key={el.id}>
-                                        <td>#{el.user_id}</td>
+                                        <td><a href={`https://netfree.link/app/#/sectors/user-filter-settings/${el.user_id}`} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold'
+                                        >#{el.user_id}</a></td>
                                         <td>{el.full_name}</td>
                                         <td>
                                             <a href={`mailto:${el.email}`} className='text-[#2B3674] hover:text-[#2B3674] font-bold' >{el.email}</a>
                                         </td>
                                         <td className='text-center'>{el.phone}</td>
                                         <td className='text-center'>{el.sector}</td>
-                                        <td className='text-center'>{netfreeprofiles.filter((profile) => profile.id == el.netfree_profile)[0].name}</td>
+                                        <td className='text-center'>{netfreeprofiles && netfreeprofiles.filter((profile) => profile.id == el.netfree_profile)[0].name}</td>
                                         <td>
                                             <div className="h-auto flex flex-col items-center justify-between">
                                                 <MdEdit className="text-blueSecondary mb-2 w-5 h-5 hover:cursor-pointer" onClick={() => editClientHandler(el)} />
