@@ -20,7 +20,6 @@ const intialValues = {
 const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clientLists, netfreeProfiles }) => {
     const { t } = useTranslation();
     const defaultValues = intialValues;
-    const [loading, setLoading] = useState(false);
     const schema = yup.object().shape({
         user_id: yup
             .string()
@@ -87,7 +86,6 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
 
     useEffect(() => {
         reset();
-        setLoading(true);
         if (clientLists && netfreeProfiles && client) {
             let data;
             if (!newClient) {
@@ -102,13 +100,12 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                     setValue(value, data[value]);
                 }
             }
-            setLoading(false);
         }
-    }, [JSON.stringify(client), newClient, loading]);
+    }, [JSON.stringify(client), newClient]);
 
     return (
         <>
-            {showModal && !loading ? (
+            {showModal ? (
                 <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
                     <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
                         <div className="relative w-auto my-6 mx-auto max-w-3xl">
