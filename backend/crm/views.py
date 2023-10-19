@@ -1017,7 +1017,13 @@ class ReadEmail():
 
             # __, folder_list = imap_server.list()
             # print("IGIUGUUI", folder_list)
-            mail_boxs = ['"[Gmail]/All Mail"']
+            status, mailbox_list = imap_server.list()
+            mail_box = '"[Gmail]/All Mail"'
+            if status=="OK":
+                for i in mailbox_list:
+                    if '"[Gmail]/&BdsF3A- &BdQF0wXVBdAF6A-"' in str(i):
+                        mail_box = '"[Gmail]/&BdsF3A- &BdQF0wXVBdAF6A-"'
+            mail_boxs = [mail_box]
             for folder in mail_boxs:
                 imap_server.select(folder)
 
