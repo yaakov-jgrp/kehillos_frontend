@@ -27,6 +27,13 @@ const routes = [
     component: <Dashboard />,
   },
   {
+    name: "clients",
+    path: "clients",
+    type: "menu",
+    icon: <HiOutlineUserGroup className="h-6 w-6" />,
+    component: <Clients />,
+  },
+  {
     name: "requests",
     path: "requests",
     type: "menu",
@@ -51,13 +58,6 @@ const routes = [
         type: "menu",
         icon: <img src={NetfreeIcon} className="h-6 w-6" alt="Netfree" />,
         component: <Emails />,
-      },
-      {
-        name: "clients",
-        path: "settings/clients",
-        type: "menu",
-        icon: <HiOutlineUserGroup className="h-6 w-6" />,
-        component: <Clients />,
       },
       {
         name: "goto",

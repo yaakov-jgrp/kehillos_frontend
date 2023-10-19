@@ -37,6 +37,13 @@ const Sidebar = ({ open, onClose }) => {
     //   component: <Dashboard />,
     // },
     {
+      name: t('sidebar.clients'),
+      path: "clients",
+      type: "menu",
+      icon: <HiOutlineUserGroup className="h-6 w-6" />,
+      component: <Clients />,
+    },
+    {
       name: t('sidebar.request'),
       path: "request",
       type: 'menu',
@@ -61,13 +68,6 @@ const Sidebar = ({ open, onClose }) => {
           type: "menu",
           icon: <MdOutlineEmail className="h-6 w-6" />,
           component: <Emails />,
-        },
-        {
-          name: t('sidebar.clients'),
-          path: "settings/clients",
-          type: "menu",
-          icon: <HiOutlineUserGroup className="h-6 w-6" />,
-          component: <Clients />,
         },
       ]
     },

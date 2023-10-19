@@ -41,6 +41,13 @@ const DefaultLayout = () => {
     //   component: <Dashboard />,
     // },
     {
+      name: t('sidebar.clients'),
+      path: "clients",
+      type: "menu",
+      icon: <HiOutlineUserGroup className="h-6 w-6" />,
+      component: <Clients />,
+    },
+    {
       name: t('sidebar.request'),
       path: "request",
       icon: <MdOutlineContactSupport className="h-6 w-6" />,
@@ -59,13 +66,6 @@ const DefaultLayout = () => {
       type: "menu",
       icon: <MdOutlineSettings className="h-6 w-6" />,
       component: <Emails />,
-    },
-    {
-      name: t('sidebar.clients'),
-      path: "settings/clients",
-      type: "menu",
-      icon: <HiOutlineUserGroup className="h-6 w-6" />,
-      component: <Clients />,
     },
     // {
     //   name: t('sidebar.profile'),
