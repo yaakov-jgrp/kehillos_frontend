@@ -2,7 +2,7 @@ import csv
 
 from clients.models import Block, BlockField, Client, NetfreeUser
 from clients.resources import NetfreeUserExportResource
-from clients.serializer import ClientAttributeSerializer, NetfreeUserSerializer,ClientAttributeSerializerCustom
+from clients.serializer import ClientAttributeSerializer, NetfreeUserSerializer,ClientAttributeSerializerCustom,ClientListSerializer, get_blocks
 from django.http import HttpResponse
 from eav.models import Attribute
 from rest_framework import status
@@ -17,32 +17,8 @@ class ClientsList(APIView):
         data = []
 
         for client in clients:
-            client_data = []
-            blocks = Block.objects.all()
-
-            for block in blocks:
-                block_info = BlockField.objects.filter(block=block).order_by('display_order')
-                attr = []
-
-                for block_field in block_info:
-                    client_data = ClientAttributeSerializerCustom(block_field).data
-                    attr.append(client_data)
-
-                for client_eav in client.eav_values.all():
-                    for field in attr:
-                        if field.get('field_name') == client_eav.attribute.name:
-                            field.update({'value': client_eav._get_value()})
-
-                data.append({
-                    'client_id': client.id,
-                    'blocks': [
-                        {
-                            'block_id': block.id,
-                            'block': block.name,
-                            'field': attr,
-                        }
-                    ],
-                })
+            serializer = ClientListSerializer(client)
+            data.append(serializer.data)
 
         return Response({
             "success": True,
@@ -50,49 +26,71 @@ class ClientsList(APIView):
         })
 
     def post(self, request):
-        serializer = NetfreeUserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({
+        data = self.request.data
+        fields = data.get('fields',[])
+        aa = {}
+        client = Client()
+        seleizer_data = get_blocks()
+        for field in fields:
+            for key, item in field.items():
+                key_data = seleizer_data.get(key)
+                print(key_data)
+                if not key_data:
+                    return Response({"error": "fields are invaild"}, status=status.HTTP_400_BAD_REQUEST)
+                if key_data.get('required') and not key_data.get('defaultvalue'):
+                    if item == "" or not item:
+                        return Response({"error": "Field is required"}, status=status.HTTP_400_BAD_REQUEST)
+                if key_data.get('unique'):
+                    dicts = {f'eav__{key}':item}
+                    obj = Client.objects.filter(**dicts).first()
+                    if obj:
+                        return Response({"error": f"{key} is already exist"}, status=status.HTTP_400_BAD_REQUEST)
+                if key_data.get('defaultvalue'):
+                    if item == "" or not item:
+                        item = key_data.get('defaultvalue')
+
+                attr_name = f'{key}'
+                aa[attr_name]=item
+                setattr(client.eav,attr_name,item)
+        client.save()
+        return Response({
                     "success": True,
-                    "data": serializer.data
+                    "data": data
                 }, status=status.HTTP_201_CREATED)
-        errors = {}
-        for field, value in serializer.errors.items():
-            errors[field] = value[0] if isinstance(value, list) else value
-            break
-        return Response({'error': [errors]}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ClientsDetail(APIView):
     def get_object(self, pk):
         try:
-            return NetfreeUser.objects.get(pk=pk)
-        except NetfreeUser.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Client.objects.get(pk=pk)
+        except Client.DoesNotExist:
+            return Client(status=status.HTTP_404_NOT_FOUND)
 
     def get(self, request, pk):
         client = self.get_object(pk)
         serializer = NetfreeUserSerializer(client)
         return Response(serializer.data)
+    def put(self, request,pk):
+        data = self.request.data
+        fields = data.get('fields',[])
+        id = pk
+        client = Client.objects.filter(id=id).first()
+        for field in fields:
+            for key, item in field.items():
+                attr_name = f'{key}'
+                setattr(client.eav,attr_name,item)
+        client.save()
 
-    def put(self, request, pk):
-        client = self.get_object(pk)
-        serializer = NetfreeUserSerializer(client, data=request.data,partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        errors = {}
-        for field, value in serializer.errors.items():
-            errors[field] = value[0] if isinstance(value, list) else value
-            break
-        return Response({'error': [errors]}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+                    "success": True,
+                    "data": data
+                }, status=status.HTTP_206_PARTIAL_CONTENT)
 
     def delete(self, request, pk):
         client = self.get_object(pk)
         try:
-            client = NetfreeUser.objects.get(pk=pk)
-        except NetfreeUser.DoesNotExist:
+            client = Client.objects.get(pk=pk)
+        except Client.DoesNotExist:
             return Response({
                     "success": False,
                     "message": "Client not found"

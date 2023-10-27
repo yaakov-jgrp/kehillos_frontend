@@ -1,4 +1,4 @@
-from clients.models import BlockField, Client, NetfreeUser
+from clients.models import BlockField, Client, NetfreeUser,Block
 from rest_framework import serializers
 
 
@@ -38,7 +38,7 @@ class ClientAttributeSerializer(serializers.ModelSerializer):
     def get_field_slug(self,obj):
         return obj.attribute.slug
     def get_required(self,obj):
-        return obj.attribute.required
+        return obj.required
     def get_data_type(self,obj):
         return obj.attribute.datatype
     def get_enum_values(self,obj):
@@ -52,6 +52,45 @@ class ClientAttributeSerializerCustom(ClientAttributeSerializer):
     value = serializers.SerializerMethodField()
     class Meta:
         model = BlockField
-        fields = ['id','field_name','data_type','enum_values','required','value']
+        fields = ['id','field_name','field_slug','data_type','enum_values','required','defaultvalue','unique','is_delete','display_order','display','value']
     def get_value(self,obj):
         return ''
+    
+    
+
+def get_blocks():
+    blocks = Block.objects.all()
+    block_data = {}
+    for block in blocks:
+        block_info = BlockField.objects.filter(block=block).order_by('display_order')
+        for block_field in block_info:
+            client_data = ClientAttributeSerializerCustom(block_field).data
+            block_data[client_data['field_slug']]=client_data
+    return block_data
+class ClientListSerializer(serializers.Serializer):
+    client_id = serializers.IntegerField(source='id')
+    blocks = serializers.SerializerMethodField()
+
+    def get_blocks(self, client):
+        blocks = Block.objects.all()
+        block_data = []
+        for block in blocks:
+            block_info = BlockField.objects.filter(block=block).order_by('display_order')
+            attr = []
+
+            for block_field in block_info:
+                client_data = ClientAttributeSerializerCustom(block_field).data
+                attr.append(client_data)
+
+            for client_eav in client.eav_values.all():
+                for field in attr:
+                    if field['field_name'] == client_eav.attribute.name:
+                        field['value'] = client_eav._get_value()
+
+            block_data.append({
+                'block_id': block.id,
+                'block': block.name,
+                'field': attr,
+            })
+
+        return block_data

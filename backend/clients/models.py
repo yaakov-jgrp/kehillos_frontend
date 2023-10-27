@@ -35,6 +35,7 @@ class Block(models.Model):
 
 class BlockField(models.Model):
     block = models.ForeignKey(Block,on_delete=models.CASCADE,blank=True,null=True)
+    datatype = models.CharField(max_length=100, null=True, blank=True,default=None)
     attribute = models.ForeignKey(Attribute,on_delete=models.CASCADE,blank=True,null=True)
     required = models.BooleanField(default=False)
     defaultvalue = models.CharField(max_length=100, null=True, blank=True,default=None)
