@@ -10,10 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
-from datetime import timedelta
 import os
+from datetime import timedelta
+from pathlib import Path
+
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
@@ -58,7 +60,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_apscheduler',
     'clients',
-    'import_export'
+    'import_export',
+    'eav',
 ]
 
 MIDDLEWARE = [

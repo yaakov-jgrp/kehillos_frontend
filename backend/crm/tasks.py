@@ -1,8 +1,8 @@
-from crm.models import Emailrequest
+from celery import shared_task
 from crm.manager import EmailRequestProcessor
+from crm.models import Emailrequest
 from crm.views import ReadEmail
 
-from celery import shared_task
 
 @shared_task
 def read_emails():

@@ -1,8 +1,10 @@
-import os
-from rest_framework import serializers
-import re
-from crm import models
 import json
+import os
+import re
+
+from crm import models
+from rest_framework import serializers
+
 
 class EmailrequestSerializer(serializers.ModelSerializer):
     request_type = serializers.CharField(

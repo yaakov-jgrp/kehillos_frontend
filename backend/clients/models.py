@@ -1,5 +1,9 @@
-from django.db import models
+import eav
 from crm.models import NetfreeCategoriesProfile
+from django.db import models
+from eav.decorators import register_eav
+from eav.models import Attribute
+
 def get_or_create_default_netfree_categories():
     default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
     return default_netfree_categories
@@ -13,9 +17,35 @@ class NetfreeUser(models.Model):
     first_name = models.CharField(max_length=100, null=True, blank=True,default="")
     last_name = models.CharField(max_length=100, null=True, blank=True,default="")
     phone = models.CharField(max_length=100, null=True, blank=True,default="")
-    sector = models.CharField(max_length=100, null=True, blank=True,default="")
     netfree_profile = models.ForeignKey(NetfreeCategoriesProfile,default=1,on_delete=models.SET_DEFAULT,blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
         return f"{self.user_id} - {str(self.email)}"
+
+class Client(models.Model):
+    netfree_profile = models.ForeignKey(NetfreeCategoriesProfile,default=1,on_delete=models.SET_DEFAULT,blank=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class Block(models.Model):
+    name = models.CharField(max_length=100, null=True, blank=True,default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class BlockField(models.Model):
+    block = models.ForeignKey(Block,on_delete=models.CASCADE,blank=True,null=True)
+    attribute = models.ForeignKey(Attribute,on_delete=models.CASCADE,blank=True,null=True)
+    required = models.BooleanField(default=False)
+    defaultvalue = models.CharField(max_length=100, null=True, blank=True,default=None)
+    unique = models.BooleanField(default=False)
+    is_delete = models.BooleanField(default=False)
+    display = models.BooleanField(default=False)
+    display_order = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.display_order) + " " + self.attribute.name
+
+eav.register(Client)

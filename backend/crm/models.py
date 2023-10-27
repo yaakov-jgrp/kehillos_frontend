@@ -1,14 +1,17 @@
-from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-import requests, json
 import datetime
-from django.conf import settings
-from crm.manager import EmailRequestProcessor
-from django.db import transaction
-from utils.helper import send_email_with_template, replace_placeholders,NetfreeAPI
+import json
 import logging
-from django.db.utils import IntegrityError 
+
+import requests
+from crm.manager import EmailRequestProcessor
+from django.conf import settings
+from django.db import models, transaction
+from django.db.models.signals import post_save
+from django.db.utils import IntegrityError
+from django.dispatch import receiver
+from utils.helper import (NetfreeAPI, replace_placeholders,
+                          send_email_with_template)
+
 cronjob_email_log = logging.getLogger('cronjob-email')
 cronjob_error_log = logging.getLogger('cronjob-error')
 netfree_obj = NetfreeAPI()
