@@ -156,6 +156,10 @@ class ClientsFields(APIView):
     def post(self, request):
         data = self.request.data
         is_block_created = data.get('is_block_created')
+        required = True if data.get('required') else False
+        defaultvalue = data.get('defaultvalue')
+        unique = True if data.get('unique') else False
+        display = True if data.get('display') else False
         if is_block_created:
             block = Block.objects.create(name=data.get('name'))
             return Response({'data': data}, status=status.HTTP_201_CREATED)
@@ -169,7 +173,7 @@ class ClientsFields(APIView):
         attr_check = Attribute.objects.filter(name=data.get('name').capitalize(), datatype=datatype).first()
         if not attr_check:
             att,created = Attribute.objects.get_or_create(name=data.get('name'), datatype=datatype)
-            BlockField.objects.create(block=block,attribute=att,datatype=data.get('data_type'))
+            BlockField.objects.create(block=block,attribute=att,datatype=data.get('data_type'),required=required,defaultvalue=defaultvalue,unique=unique,display=display)
             return Response({'data': "created"}, status=status.HTTP_201_CREATED)
         return Response({'data': 'already exist'}, status=status.HTTP_400_BAD_REQUEST)
 
