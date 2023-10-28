@@ -15,13 +15,27 @@ class ClientsList(APIView):
     def get(self, request):
         clients = Client.objects.all().order_by('id')
         data = []
+        blocks = Block.objects.all()
+        fields = []
+        for block in blocks:
+            block_info = BlockField.objects.filter(block=block,display=True).order_by('display_order')
+            for block_field in block_info:
+                fields.append(block_field.attribute.name)
 
+        client_data1 = {}
+        for field in fields:
+            client_data1[field]=''
         for client in clients:
-            serializer = ClientListSerializer(client)
-            data.append(serializer.data)
+            client_data = client_data1.copy()
+            client_data['id']=client.id
+            for client_eav in client.eav_values.all():
+                if client_eav.attribute.name in fields:
+                    client_data[client_eav.attribute.name] = client_eav._get_value()
+            data.append(client_data)
 
         return Response({
             "success": True,
+            'field':fields,
             "data": data
         })
 
@@ -68,7 +82,7 @@ class ClientsDetail(APIView):
 
     def get(self, request, pk):
         client = self.get_object(pk)
-        serializer = NetfreeUserSerializer(client)
+        serializer = ClientListSerializer(client)
         return Response(serializer.data)
     def put(self, request,pk):
         data = self.request.data
@@ -102,7 +116,6 @@ class ClientsDetail(APIView):
 class ClientsExportData(APIView):
     def get(self, request):
         dataset = NetfreeUserExportResource().export()
-
         response = HttpResponse(dataset.csv, content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="clients.csv"'
         return response
@@ -111,10 +124,13 @@ class ClientsFields(APIView):
     def check_datatype(self,option):
         type_dict = {
                 'text' : "TYPE_TEXT" ,
+                'email' : "TYPE_TEXT" ,
                 'float': 'TYPE_FLOAT',
+                'number': 'TYPE_INT',
                 'int': 'TYPE_INT',
+                'phone': 'TYPE_INT',
                 'date': 'TYPE_DATE',
-                'bool': 'TYPE_BOOLEAN',
+                'checkbox': 'TYPE_BOOLEAN',
                 'object': 'TYPE_OBJECT',
                 'enum': 'TYPE_ENUM',
                 'json': 'TYPE_JSON',
@@ -150,29 +166,13 @@ class ClientsFields(APIView):
             return Response({'errors': [{'block':"block not valid"}]}, status=status.HTTP_400_BAD_REQUEST)
         
         datatype = getattr(Attribute,self.check_datatype(data.get('data_type'))) 
-        attr_check = Attribute.objects.filter(name=data.get('name'), datatype=datatype).first()
-
+        attr_check = Attribute.objects.filter(name=data.get('name').capitalize(), datatype=datatype).first()
         if not attr_check:
             att,created = Attribute.objects.get_or_create(name=data.get('name'), datatype=datatype)
-            ovh = BlockField.objects.create(block=block,attribute=att)
-            return Response({'data': "ho gaya"}, status=status.HTTP_200_OK)
-        return Response({'data': "phele se hai"}, status=status.HTTP_200_OK)
+            BlockField.objects.create(block=block,attribute=att,datatype=data.get('data_type'))
+            return Response({'data': "created"}, status=status.HTTP_201_CREATED)
+        return Response({'data': 'already exist'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # print(attr_check)
-        # if attr_check:
-        #     obj = BlockField.objects.filter(block=block,attribute=attr_check)
-        #     print(obj)
-        # att,created = Attribute.objects.get_or_create(name=data.get('name'), datatype=Attribute.TYPE_TEXT)
-        # print(att.slug)
-        # data_dict = {
-        #     f"eav__{data.get('name')}":data.get('name')
-        # }
-        # print(data_dict)
-        # ClientUser = Client.objects.create(**data_dict)
-        # # ClientUser.eav.firstname = data.get('name')
-        # # ClientUser.save()
-
-        return Response({'data': data}, status=status.HTTP_200_OK)
 
 
 class ClientsImportData(APIView):

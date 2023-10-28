@@ -40,7 +40,7 @@ class ClientAttributeSerializer(serializers.ModelSerializer):
     def get_required(self,obj):
         return obj.required
     def get_data_type(self,obj):
-        return obj.attribute.datatype
+        return obj.datatype
     def get_enum_values(self,obj):
         if obj.attribute.datatype == "enum":
             values = obj.attribute.get_choices().values_list('id', 'value')

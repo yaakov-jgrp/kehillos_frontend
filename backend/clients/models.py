@@ -3,6 +3,8 @@ from crm.models import NetfreeCategoriesProfile
 from django.db import models
 from eav.decorators import register_eav
 from eav.models import Attribute
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 def get_or_create_default_netfree_categories():
     default_netfree_categories, _ = NetfreeCategoriesProfile.objects.get_or_create(is_default=True)
@@ -40,7 +42,7 @@ class BlockField(models.Model):
     required = models.BooleanField(default=False)
     defaultvalue = models.CharField(max_length=100, null=True, blank=True,default=None)
     unique = models.BooleanField(default=False)
-    is_delete = models.BooleanField(default=False)
+    is_delete = models.BooleanField(default=True)
     display = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -48,5 +50,8 @@ class BlockField(models.Model):
 
     def __str__(self):
         return str(self.display_order) + " " + self.attribute.name
-
+@receiver(pre_save, sender=Attribute)
+def my_pre_save_receiver(sender, instance, **kwargs):
+    instance.name = instance.name.capitalize()
+    instance.slug = instance.name.lower().replace(" ", "_")
 eav.register(Client)
