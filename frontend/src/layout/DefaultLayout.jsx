@@ -17,6 +17,7 @@ import {
 import NetFree from '../views/NetFree';
 import Clients from '../views/Clients';
 import { HiOutlineUserGroup } from "react-icons/hi2"
+import ClientsForm from '../views/ClientsForm';
 
 const DefaultLayout = () => {
 
@@ -46,6 +47,11 @@ const DefaultLayout = () => {
       type: "menu",
       icon: <HiOutlineUserGroup className="h-6 w-6" />,
       component: <Clients />,
+    },
+    {
+      name: t('clients.clientFormSettings'),
+      path: "clients/formSettings",
+      component: <ClientsForm />,
     },
     {
       name: t('sidebar.request'),

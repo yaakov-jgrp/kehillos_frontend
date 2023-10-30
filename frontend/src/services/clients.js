@@ -30,12 +30,17 @@ const exportClients = () => {
     return api.get("/api/client/export/");
 }
 
+const getFullformData = () => {
+    return api.get("/api/client/field/");
+}
+
 const clientsService = {
     getClients,
     saveClient,
     updateClient,
     deleteClient,
     importClients,
-    exportClients
+    exportClients,
+    getFullformData
 }
 export default clientsService;
