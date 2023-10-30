@@ -31,7 +31,7 @@ class ClientAttributeSerializer(serializers.ModelSerializer):
     enum_values = serializers.SerializerMethodField()
     class Meta:
         model = BlockField
-        fields = ['id','field_name','field_slug','data_type','enum_values','required','defaultvalue','unique','is_delete','display_order','display']
+        fields = ['id','field_name','field_slug','data_type','enum_values','required','defaultvalue','unique','is_delete','is_editable','display_order','display']
 
     def get_field_name(self,obj):
         return obj.attribute.name
@@ -52,7 +52,7 @@ class ClientAttributeSerializerCustom(ClientAttributeSerializer):
     value = serializers.SerializerMethodField()
     class Meta:
         model = BlockField
-        fields = ['id','field_name','field_slug','data_type','enum_values','required','defaultvalue','unique','is_delete','display_order','display','value']
+        fields = ['id','field_name','field_slug','data_type','enum_values','required','defaultvalue','unique','is_delete','is_editable','display_order','display','value']
     def get_value(self,obj):
         return ''
     
@@ -85,7 +85,10 @@ class ClientListSerializer(serializers.Serializer):
             for client_eav in client.eav_values.all():
                 for field in attr:
                     if field['field_name'] == client_eav.attribute.name:
-                        field['value'] = client_eav._get_value()
+                        if client_eav.attribute.datatype == 'enum':
+                            field['value'] = [client_eav._get_value().id,client_eav._get_value().value]
+                        else:
+                            field['value'] = client_eav._get_value()
 
             block_data.append({
                 'block_id': block.id,

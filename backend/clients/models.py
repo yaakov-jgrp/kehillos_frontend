@@ -43,6 +43,7 @@ class BlockField(models.Model):
     defaultvalue = models.CharField(max_length=100, null=True, blank=True,default=None)
     unique = models.BooleanField(default=False)
     is_delete = models.BooleanField(default=True)
+    is_editable = models.BooleanField(default=True)
     display = models.BooleanField(default=False)
     display_order = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -53,5 +54,14 @@ class BlockField(models.Model):
 @receiver(pre_save, sender=Attribute)
 def my_pre_save_receiver(sender, instance, **kwargs):
     instance.name = instance.name.capitalize()
-    instance.slug = instance.name.lower().replace(" ", "_")
+    base_slug = instance.name.lower().replace(" ", "_")
+    unique_slug = base_slug
+    count = 1
+
+    while Attribute.objects.filter(slug=unique_slug).exclude(pk=instance.pk).exists():
+        unique_slug = f"{base_slug}_{count}"
+        count += 1
+
+    instance.slug = unique_slug
+
 eav.register(Client)

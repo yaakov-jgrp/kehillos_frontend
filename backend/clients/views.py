@@ -1,10 +1,10 @@
 import csv
-
+from django.db import transaction
 from clients.models import Block, BlockField, Client, NetfreeUser
 from clients.resources import NetfreeUserExportResource
 from clients.serializer import ClientAttributeSerializer, NetfreeUserSerializer,ClientAttributeSerializerCustom,ClientListSerializer, get_blocks
 from django.http import HttpResponse
-from eav.models import Attribute
+from eav.models import Attribute,EnumGroup,EnumValue
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -30,9 +30,11 @@ class ClientsList(APIView):
             client_data['id']=client.id
             for client_eav in client.eav_values.all():
                 if client_eav.attribute.name in fields:
-                    client_data[client_eav.attribute.name] = client_eav._get_value()
+                    if client_eav.attribute.datatype == 'enum':
+                        client_data[client_eav.attribute.name] = client_eav._get_value().value
+                    else:
+                        client_data[client_eav.attribute.name] = client_eav._get_value()
             data.append(client_data)
-
         return Response({
             "success": True,
             'field':fields,
@@ -41,76 +43,87 @@ class ClientsList(APIView):
 
     def post(self, request):
         data = self.request.data
-        fields = data.get('fields',[])
-        aa = {}
+        fields = data.get('fields', [])
         client = Client()
-        seleizer_data = get_blocks()
+
         for field in fields:
             for key, item in field.items():
-                key_data = seleizer_data.get(key)
-                print(key_data)
+                key_data = get_blocks().get(key)
                 if not key_data:
-                    return Response({"error": "fields are invaild"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"error": "Fields are invalid"}, status=status.HTTP_400_BAD_REQUEST)
+
                 if key_data.get('required') and not key_data.get('defaultvalue'):
-                    if item == "" or not item:
+                    if not item:
                         return Response({"error": "Field is required"}, status=status.HTTP_400_BAD_REQUEST)
+
                 if key_data.get('unique'):
-                    dicts = {f'eav__{key}':item}
+                    dicts = {f'eav__{key}': item}
                     obj = Client.objects.filter(**dicts).first()
                     if obj:
                         return Response({"error": f"{key} is already exist"}, status=status.HTTP_400_BAD_REQUEST)
+
                 if key_data.get('defaultvalue'):
-                    if item == "" or not item:
-                        item = key_data.get('defaultvalue')
+                    item = item or key_data.get('defaultvalue')
 
-                attr_name = f'{key}'
-                aa[attr_name]=item
-                setattr(client.eav,attr_name,item)
-        client.save()
-        return Response({
-                    "success": True,
-                    "data": data
-                }, status=status.HTTP_201_CREATED)
+                attr_name = key
 
+                if key_data.get('data_type') == 'select':
+                    item = EnumValue.objects.filter(id=item).first()
+                setattr(client.eav, attr_name, item)
+
+                client.save()
+
+        # Use a serializer to return the created client
+        serializer = ClientListSerializer(client)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class ClientsDetail(APIView):
+    # Helper method to get a Client object by primary key
     def get_object(self, pk):
         try:
             return Client.objects.get(pk=pk)
         except Client.DoesNotExist:
-            return Client(status=status.HTTP_404_NOT_FOUND)
+            return None  # Return None instead of creating a new Client object
 
+    # Handle GET request to retrieve a client's details
     def get(self, request, pk):
         client = self.get_object(pk)
-        serializer = ClientListSerializer(client)
-        return Response(serializer.data)
-    def put(self, request,pk):
-        data = self.request.data
-        fields = data.get('fields',[])
-        id = pk
-        client = Client.objects.filter(id=id).first()
-        for field in fields:
-            for key, item in field.items():
-                attr_name = f'{key}'
-                setattr(client.eav,attr_name,item)
-        client.save()
+        if client is not None:
+            serializer = ClientListSerializer(client)
+            return Response(serializer.data)
+        else:
+            return Response({"success": False, "message": "Client not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response({
-                    "success": True,
-                    "data": data
-                }, status=status.HTTP_206_PARTIAL_CONTENT)
+    # Handle PUT request to update client's attributes
+    def put(self, request, pk):
+        data = request.data
+        fields = data.get('fields', [])
+        client = self.get_object(pk)
+        
+        if client is not None:
+            eav = client.eav
+            for field in fields:
+                for key, item in field.items():
+                    # Use setattr to dynamically set attributes
+                    setattr(eav, key, item)
+            client.save()
 
+            return Response({
+                "success": True,
+                "data": data
+            }, status=status.HTTP_206_PARTIAL_CONTENT)
+        else:
+            return Response({"success": False, "message": "Client not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    # Handle DELETE request to delete a client
     def delete(self, request, pk):
         client = self.get_object(pk)
-        try:
-            client = Client.objects.get(pk=pk)
-        except Client.DoesNotExist:
-            return Response({
-                    "success": False,
-                    "message": "Client not found"
-                },status=status.HTTP_404_NOT_FOUND)
-        client.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        if client is not None:
+            client.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({"success": False, "message": "Client not found"}, status=status.HTTP_404_NOT_FOUND)
     
 
 class ClientsExportData(APIView):
@@ -121,61 +134,176 @@ class ClientsExportData(APIView):
         return response
     
 class ClientsFields(APIView):
-    def check_datatype(self,option):
+    def check_datatype(self, option):
         type_dict = {
-                'text' : "TYPE_TEXT" ,
-                'email' : "TYPE_TEXT" ,
-                'float': 'TYPE_FLOAT',
-                'number': 'TYPE_INT',
-                'int': 'TYPE_INT',
-                'phone': 'TYPE_INT',
-                'date': 'TYPE_DATE',
-                'checkbox': 'TYPE_BOOLEAN',
-                'object': 'TYPE_OBJECT',
-                'enum': 'TYPE_ENUM',
-                'json': 'TYPE_JSON',
-                'csv': 'TYPE_CSV',
-            }
+            'text': 'TYPE_TEXT',
+            'number': 'TYPE_INT',
+            'decimal': 'TYPE_FLOAT',
+            'phone': 'TYPE_INT',
+            'email': 'TYPE_TEXT',
+            'select': 'TYPE_ENUM',
+            'date': 'TYPE_DATE',
+            'checkbox': 'TYPE_BOOLEAN',
+            'int': 'TYPE_INT',
+            'object': 'TYPE_OBJECT',
+            'enum': 'TYPE_ENUM',
+            'json': 'TYPE_JSON',
+            'csv': 'TYPE_CSV',
+        }
         return type_dict.get(option)
+
+    def get_block_fields_data(self, block):
+        attr = []
+        block_info = BlockField.objects.filter(block=block).order_by('display_order')
+        for info in block_info:
+            client_data = ClientAttributeSerializer(info).data
+            attr.append(client_data)
+        return {
+            'block_id': block.id,
+            'block': block.name,
+            'field': attr,
+        }
+
     def get(self, request):
         data = []
         blocks = Block.objects.all()
-        for i in blocks:
-            bb = {}
-            attr = []
-            block_info = BlockField.objects.filter(block=i)
-            for i1 in block_info:
-                client_data = ClientAttributeSerializer(i1).data
-                attr.append(client_data)
-            bb['block_id'] = i.id
-            bb['block'] = i.name
-            bb['field'] = attr
-            data.append(bb)
+        for block in blocks:
+            block_fields_data = self.get_block_fields_data(block)
+            data.append(block_fields_data)
         return Response({'result': data}, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = self.request.data
         is_block_created = data.get('is_block_created')
-        required = True if data.get('required') else False
+        required = bool(data.get('required'))
         defaultvalue = data.get('defaultvalue')
-        unique = True if data.get('unique') else False
-        display = True if data.get('display') else False
+        value = data.get('value')
+        unique = bool(data.get('unique'))
+        display = bool(data.get('display'))
+
         if is_block_created:
             block = Block.objects.create(name=data.get('name'))
             return Response({'data': data}, status=status.HTTP_201_CREATED)
-        if not self.check_datatype(data.get('data_type')):
-            return Response({'errors': [{'data_type':"Data Type not valid"}]}, status=status.HTTP_400_BAD_REQUEST)
+
+        data_type = self.check_datatype(data.get('data_type'))
+        if not data_type:
+            return Response({'errors': [{'data_type': "Data Type not valid"}]},status=status.HTTP_400_BAD_REQUEST)
+
         block = Block.objects.filter(id=data.get('block_id')).first()
         if not block:
-            return Response({'errors': [{'block':"block not valid"}]}, status=status.HTTP_400_BAD_REQUEST)
-        
-        datatype = getattr(Attribute,self.check_datatype(data.get('data_type'))) 
-        attr_check = Attribute.objects.filter(name=data.get('name').capitalize(), datatype=datatype).first()
-        if not attr_check:
-            att,created = Attribute.objects.get_or_create(name=data.get('name'), datatype=datatype)
-            BlockField.objects.create(block=block,attribute=att,datatype=data.get('data_type'),required=required,defaultvalue=defaultvalue,unique=unique,display=display)
+            return Response({'errors': [{'block': "block not valid"}]}, status=status.HTTP_400_BAD_REQUEST)
+
+        datatype = getattr(Attribute, data_type)
+        if datatype == "enum":
+            values = value.split(',')
+            en_group, _ = EnumGroup.objects.get_or_create(name=data.get('name').capitalize())
+            for i in values:
+                enum_value, _ = EnumValue.objects.get_or_create(value=i)
+                en_group.values.add(enum_value)
+            attribute = Attribute.objects.create(name=data.get('name'), datatype=datatype, enum_group=en_group)
+            BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display)
             return Response({'data': "created"}, status=status.HTTP_201_CREATED)
-        return Response({'data': 'already exist'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            attr_check = Attribute.objects.filter(name=data.get('name').capitalize(), datatype=datatype).first()
+            if not attr_check:
+                attribute, created = Attribute.objects.get_or_create(name=data.get('name'), datatype=datatype)
+                BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display)
+                return Response({'data': "created"}, status=status.HTTP_201_CREATED)
+            return Response({'data': 'already exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        data = self.request.data
+        is_block = data.get('is_block')
+
+        if is_block:
+            # If it's a block update, call the update_block method
+            return self.update_block(data)
+        else:
+            # If it's a field update, call the update_fields method
+            return self.update_fields(data)
+
+    def update_block(self, data):
+        # Fetch the Block object by ID
+        block = Block.objects.filter(id=data.get('id')).first()
+        if not block:
+            # If the block doesn't exist, return a 404 Not Found response
+            return Response({'error': 'Block not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Update the block's name and save it
+        block.name = data.get('name')
+        block.save()
+        # Return a success response
+        return Response({'data': 'Block updated'}, status=status.HTTP_200_OK)
+
+    def update_fields(self, data):
+        # Extract the 'fields' data from the request
+        fields = data.get('fields', [])
+
+        if not isinstance(fields, list):
+            # If 'fields' is not a list, return a bad request response
+            return Response({'error': 'Invalid data format'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        with transaction.atomic():
+            for field_data in fields:
+                # Call the update_field method for each field
+                response = self.update_field(field_data)
+                if response.status_code != status.HTTP_200_OK:
+                    # If the update_field method returns an error, return that error response
+                    return response
+            # If all fields are updated successfully, return a success response
+            return Response({'data': 'Fields updated'}, status=status.HTTP_200_OK)
+
+    def update_field(self, field_data):
+        # Fetch the BlockField object by ID
+        obj = BlockField.objects.filter(id=field_data.get('id')).first()
+        if not obj:
+            # If the field doesn't exist, return a 404 Not Found response
+            return Response({'error': 'Field not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        required = field_data.get('required')
+        unique = field_data.get('unique')
+        defaultvalue = field_data.get('defaultvalue')
+        display = field_data.get('display')
+        display_order = field_data.get('display_order')
+        field_name = field_data.get('field_name')
+
+        if required is not None:
+            # Update the 'required' attribute of the field if provided
+            obj.required = required
+
+        if defaultvalue is not None and obj.unique:
+            # If 'defaultvalue' is provided and the field is set as unique, return a bad request response
+            return Response({'error': "You didn't assign field are unique"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if defaultvalue is not None:
+            # Update the 'defaultvalue' attribute of the field if provided
+            obj.defaultvalue = defaultvalue
+
+        if obj.unique and not unique:
+            # If the field is unique but 'unique' is set to False, update 'unique' to False
+            obj.unique = False
+
+        if not obj.unique and unique:
+            # If the field is not unique but 'unique' is set to True, update 'unique' to True and clear 'defaultvalue'
+            obj.unique = True
+            obj.defaultvalue = None
+
+        if display is not None:
+            # Update the 'display' attribute of the field if provided
+            obj.display = display
+
+        if display_order is not None:
+            # Update the 'display_order' attribute of the field if provided
+            obj.display_order = display_order
+
+        if field_name:
+            # Update the 'name' attribute of the related attribute if 'field_name' is provided
+            obj.attribute.name = field_name
+
+        # Save the updated field object
+        obj.save()
+        # Return a success response
+        return Response({'data': 'Field updated'}, status=status.HTTP_200_OK)
 
 
 
