@@ -36,7 +36,10 @@
     "errors": "Errors",
     "clientFormSettings": "Client Form Settings",
     "sections": "Sections",
-    "fields": "Fields"
+    "fields": "Fields",
+    "addBlock": "Add Block",
+    "addField": "Add Field",
+    "dataType": "Data Type"
   },
   "emails": {
     "templates": "Templates",

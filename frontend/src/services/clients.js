@@ -34,6 +34,10 @@ const getFullformData = () => {
     return api.get("/api/client/field/");
 }
 
+const createBlockField = (formData) => {
+    return api.post("/api/client/field/", formData)
+}
+
 const clientsService = {
     getClients,
     saveClient,
@@ -41,6 +45,7 @@ const clientsService = {
     deleteClient,
     importClients,
     exportClients,
-    getFullformData
+    getFullformData,
+    createBlockField
 }
 export default clientsService;
