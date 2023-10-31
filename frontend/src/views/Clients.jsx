@@ -12,6 +12,9 @@ import {
 } from "react-icons/md";
 import ErrorsModal from '../component/common/ErrorsModal';
 import { toast } from 'react-toastify';
+import CsvImporter from '../component/client/CsvImporter';
+import SettingButtonIcon from '../component/common/SettingButton';
+import { useNavigate } from 'react-router-dom';
 
 
 let filterFields = {
@@ -25,6 +28,7 @@ let filterFields = {
 
 const Clients = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [allClients, setAllClients] = useState([]);
     const [allClientsCopy, setAllClientsCopy] = useState([]);
@@ -139,16 +143,15 @@ const Clients = () => {
             }
             <div className='flex justify-between py-4 px-7 font-bold text-[#2B3674]'>
                 {t('clients.title')}
-                <div className='flex max-w-[150px]'>
+                <div className='flex max-w-[200px]'>
+                    <SettingButtonIcon extra={''} onClick={() => {
+                        navigate("formSettings");
+                    }} />
                     <AddButtonIcon extra={''} onClick={() => {
                         setNewClient(true);
                         setClientModal(!clientModal);
                     }} />
-                    <label className={`w-full rounded-full py-1 px-4 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}>
-                        {t("clients.import")}
-                        <input hidden type="file" accept=".csv" onChange={importClientsHandler} />
-
-                    </label>
+                    <CsvImporter />
                     <button className={`w-full rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
                         onClick={exportClientsHandler}>
                         {t("clients.export")}

@@ -33,7 +33,10 @@
     "title": "Clients",
     "import": "Import",
     "export": "Export",
-    "errors": "Errors"
+    "errors": "Errors",
+    "clientFormSettings": "Client Form Settings",
+    "sections": "Sections",
+    "fields": "Fields"
   },
   "emails": {
     "templates": "Templates",

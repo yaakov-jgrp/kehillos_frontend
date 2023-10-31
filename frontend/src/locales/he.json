@@ -33,7 +33,10 @@
     "title": "לקוחות",
     "import": "יְבוּא",
     "export": "יְצוּא",
-    "errors": "שגיאות"
+    "errors": "שגיאות",
+    "clientFormSettings": "הגדרות טופס לקוח",
+    "sections": "מקטעים",
+    "fields": "שדות"
   },
   "emails": {
     "templates": "תבניות",
