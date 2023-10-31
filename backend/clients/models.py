@@ -32,8 +32,13 @@ class Client(models.Model):
 
 class Block(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True,default="")
+    is_delete = models.BooleanField(default=True)
+    is_editable = models.BooleanField(default=True)
+    display_order = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return str(self.display_order) + " " + self.name
 
 class BlockField(models.Model):
     block = models.ForeignKey(Block,on_delete=models.CASCADE,blank=True,null=True)

@@ -71,7 +71,7 @@ class ClientsList(APIView):
                     item = EnumValue.objects.filter(id=item).first()
                 setattr(client.eav, attr_name, item)
 
-                client.save()
+        client.save()
 
         # Use a serializer to return the created client
         serializer = ClientListSerializer(client)
@@ -128,9 +128,43 @@ class ClientsDetail(APIView):
 
 class ClientsExportData(APIView):
     def get(self, request):
-        dataset = NetfreeUserExportResource().export()
-        response = HttpResponse(dataset.csv, content_type='text/csv')
+        clients = Client.objects.all().order_by('id')
+        data = []
+        blocks = Block.objects.all().order_by('display_order')
+        fields = []
+        for block in blocks:
+            block_info = BlockField.objects.filter(block=block,display=True).order_by('display_order')
+            for block_field in block_info:
+                fields.append(block_field.attribute.name)
+
+        client_data1 = {}
+        for field in fields:
+            client_data1[field]=''
+        for client in clients:
+            client_data = client_data1.copy()
+            client_data['id'] = client.id
+            for client_eav in client.eav_values.all():
+                if client_eav.attribute.name in fields:
+                    if client_eav.attribute.datatype == 'enum':
+                        client_data[client_eav.attribute.name] = client_eav._get_value().value
+                    else:
+                        client_data[client_eav.attribute.name] = client_eav._get_value()
+            data.append(client_data)
+
+        response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="clients.csv"'
+        # Create a CSV writer and write the header
+        fieldnames = list(data[0].keys())
+
+        # Reverse the fieldnames
+        fieldnames.reverse()
+        csv_writer = csv.DictWriter(response, fieldnames=fieldnames)
+        csv_writer.writeheader()
+
+        # Write the data rows
+        for row in data:
+            csv_writer.writerow(row)
+
         return response
     
 class ClientsFields(APIView):
@@ -304,6 +338,33 @@ class ClientsFields(APIView):
         obj.save()
         # Return a success response
         return Response({'data': 'Field updated'}, status=status.HTTP_200_OK)
+
+    def delete_block(self,data):
+        block = Block.objects.filter(id=data.get('id')).first()
+        if not block:
+            # If the block doesn't exist, return a 404 Not Found response
+            return Response({'error': 'Block not found'}, status=status.HTTP_404_NOT_FOUND)
+        if not block.is_delete:
+            return Response({'error': "You can't delete this section"}, status=status.HTTP_404_NOT_FOUND)
+        block.delete()
+        return Response({'data': 'Block Deleted'}, status=status.HTTP_200_OK)
+    def delete_field(self,data):
+        field = BlockField.objects.filter(id=data.get('id')).first()
+        if not field:
+            # If the block doesn't exist, return a 404 Not Found response
+            return Response({'error': 'Fields not found'}, status=status.HTTP_404_NOT_FOUND)
+        if not field.is_delete:
+            return Response({'error': "You can't delete this field"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        field.delete()
+        return Response({'data': 'Field Deleted'}, status=status.HTTP_200_OK)
+    def delete(self, request):
+        data = request.data
+        is_block = data.get('is_block')
+
+        if is_block:
+            return self.delete_block(data)
+        else:
+            return Response({"success": False, "message": "Client not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 
