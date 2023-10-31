@@ -193,6 +193,9 @@ class ClientsFields(APIView):
             client_data = ClientAttributeSerializer(info).data
             attr.append(client_data)
         return {
+            "is_delete":block.is_delete,
+            "is_editable":block.is_editable,
+            "display_order":block.display_order,
             'block_id': block.id,
             'block': block.name,
             'field': attr,
