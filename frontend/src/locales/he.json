@@ -36,7 +36,10 @@
     "errors": "שגיאות",
     "clientFormSettings": "הגדרות טופס לקוח",
     "sections": "מקטעים",
-    "fields": "שדות"
+    "fields": "שדות",
+    "addBlock": "הוסף בלוק",
+    "addField": "הוסף שדה",
+    "dataType": "סוג מידע"
   },
   "emails": {
     "templates": "תבניות",
