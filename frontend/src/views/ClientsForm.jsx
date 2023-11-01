@@ -7,6 +7,8 @@ import { Accordion } from '@chakra-ui/react';
 import CustomAccordion from '../component/common/Accordion';
 import BlockFieldModal from '../component/client/BlockFieldModal';
 import AddButtonIcon from '../component/common/AddButton';
+import CustomField from '../component/fields/CustomField';
+import { checkBoxConstants } from '../lib/FieldConstants';
 
 const ClientsForm = () => {
     const { t } = useTranslation();
@@ -20,7 +22,6 @@ const ClientsForm = () => {
         setIsLoading(true);
         const res = await clientsService.getFullformData();
         setFullFormData(res.data.result)
-        // console.log(res.data.result)
         setTimeout(() => {
             setIsLoading(false);
         }, 500)
@@ -30,9 +31,10 @@ const ClientsForm = () => {
         setShowModal(!showModal);
     }
 
-    const addBlockFieldModalHandler = (value) => {
+    const addBlockFieldModalHandler = (value, id) => {
         setIsAddBlock(value);
         showModalHandler();
+        activeBlockHandler(id);
     }
 
     const activeBlockHandler = useCallback((value) => {
@@ -66,7 +68,24 @@ const ClientsForm = () => {
                 <div className='flex-2 w-3/4 p-2'>
                     <h5 className='text-start text-[12px] py-2 md:text-[16px] font-bold text-[#2B3674] w-[100%]'>{t('clients.fields')}</h5>
                     <Accordion defaultIndex={[0]} allowMultiple>
-                        {fullFormData && fullFormData.map((blockData, index) => <CustomAccordion key={index} data={blockData} onClick={() => addBlockFieldModalHandler(false)} />)}
+                        {fullFormData && fullFormData.map((blockData, index) => <CustomAccordion key={index} title={blockData.block} onClick={() => addBlockFieldModalHandler(false, blockData.block_id)} >
+                            {blockData.field.length > 0 ?
+                                <>
+                                    {
+                                        blockData.field.map((field, index) => {
+                                            const isCheckBox = checkBoxConstants.includes(field.data_type);
+                                            return (
+                                                <div className={isCheckBox && "flex items-center justify-end flex-row-reverse"}>
+                                                    <label className={`block text-black text-sm font-bold ${isCheckBox ? "ml-2" : "mb-1"}`}>
+                                                        {field?.field_name}
+                                                    </label>
+                                                    <CustomField field={field} />
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </> : "No fields"}
+                        </CustomAccordion>)}
                     </Accordion>
                 </div>
                 {

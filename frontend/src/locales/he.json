@@ -39,7 +39,13 @@
     "fields": "שדות",
     "addBlock": "הוסף בלוק",
     "addField": "הוסף שדה",
-    "dataType": "סוג מידע"
+    "dataType": "סוג מידע",
+    "value": "ערך",
+    "add": "לְהוֹסִיף",
+    "defaultValue": "ערך ברירת מחדל",
+    "required": "נדרש",
+    "unique": "ייחודי",
+    "display": "לְהַצִיג"
   },
   "emails": {
     "templates": "תבניות",
