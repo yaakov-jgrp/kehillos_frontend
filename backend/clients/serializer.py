@@ -41,11 +41,12 @@ class ClientAttributeSerializer(serializers.ModelSerializer):
         return obj.required
     def get_data_type(self,obj):
         return obj.datatype
-    def get_enum_values(self,obj):
+    def get_enum_values(self, obj):
         if obj.attribute.datatype == "enum":
             values = obj.attribute.get_choices().values_list('id', 'value')
-            choices = [('', '-----')] + list(values)
-            return {'choices': choices}
+            result_dict = dict(values)
+            result_list = [{"id":key,"value": value} for key, value in result_dict.items()]
+            return {'choices': result_list}
         return {}
     
 class ClientAttributeSerializerCustom(ClientAttributeSerializer):

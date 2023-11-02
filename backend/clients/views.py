@@ -17,23 +17,25 @@ class ClientsList(APIView):
         data = []
         blocks = Block.objects.all()
         fields = []
+        check_fields = []
         for block in blocks:
             block_info = BlockField.objects.filter(block=block,display=True).order_by('display_order')
             for block_field in block_info:
-                fields.append(block_field.attribute.name)
+                fields.append({block_field.attribute.slug:block_field.attribute.name})
+                check_fields.append(block_field.attribute.slug)
 
         client_data1 = {}
         for field in fields:
-            client_data1[field]=''
+            client_data1[list(field.keys())[0]]=''
         for client in clients:
             client_data = client_data1.copy()
             client_data['id']=client.id
             for client_eav in client.eav_values.all():
-                if client_eav.attribute.name in fields:
+                if client_eav.attribute.slug in check_fields:
                     if client_eav.attribute.datatype == 'enum':
-                        client_data[client_eav.attribute.name] = client_eav._get_value().value
+                        client_data[client_eav.attribute.slug] = client_eav._get_value().value
                     else:
-                        client_data[client_eav.attribute.name] = client_eav._get_value()
+                        client_data[client_eav.attribute.slug] = client_eav._get_value()
             data.append(client_data)
         return Response({
             "success": True,
@@ -128,7 +130,14 @@ class ClientsDetail(APIView):
 
 class ClientsExportData(APIView):
     def get(self, request):
-        clients = Client.objects.all().order_by('id')
+        data = request.data
+        client_ids = data.get('clients_ids',[])
+        if client_ids:
+            clients = Client.objects.filter(id__in=client_ids).order_by('id')
+        else:
+            clients = Client.objects.all().order_by('id')
+        if not clients.exists():
+            return Response({"error":"no data"})
         data = []
         blocks = Block.objects.all().order_by('display_order')
         fields = []
@@ -154,6 +163,8 @@ class ClientsExportData(APIView):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="clients.csv"'
         # Create a CSV writer and write the header
+        if not data:
+            return Response({"error":"no fields for display"})
         fieldnames = list(data[0].keys())
 
         # Reverse the fieldnames
@@ -246,7 +257,7 @@ class ClientsFields(APIView):
                 attribute, created = Attribute.objects.get_or_create(name=data.get('name'), datatype=datatype)
                 BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display)
                 return Response({'data': "created"}, status=status.HTTP_201_CREATED)
-            return Response({'data': 'already exist'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'already exist'}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
         data = self.request.data
@@ -304,6 +315,15 @@ class ClientsFields(APIView):
         display_order = field_data.get('display_order')
         field_name = field_data.get('field_name')
 
+        if obj.unique and not unique:
+            # If the field is unique but 'unique' is set to False, update 'unique' to False
+            obj.unique = False
+
+        if not obj.unique and unique:
+            # If the field is not unique but 'unique' is set to True, update 'unique' to True and clear 'defaultvalue'
+            obj.unique = True
+            obj.defaultvalue = None
+
         if required is not None:
             # Update the 'required' attribute of the field if provided
             obj.required = required
@@ -316,14 +336,6 @@ class ClientsFields(APIView):
             # Update the 'defaultvalue' attribute of the field if provided
             obj.defaultvalue = defaultvalue
 
-        if obj.unique and not unique:
-            # If the field is unique but 'unique' is set to False, update 'unique' to False
-            obj.unique = False
-
-        if not obj.unique and unique:
-            # If the field is not unique but 'unique' is set to True, update 'unique' to True and clear 'defaultvalue'
-            obj.unique = True
-            obj.defaultvalue = None
 
         if display is not None:
             # Update the 'display' attribute of the field if provided
@@ -367,7 +379,7 @@ class ClientsFields(APIView):
         if is_block:
             return self.delete_block(data)
         else:
-            return Response({"success": False, "message": "Client not found"}, status=status.HTTP_404_NOT_FOUND)
+            return self.delete_field(data)
 
 
 
