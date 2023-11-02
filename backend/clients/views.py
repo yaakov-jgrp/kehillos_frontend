@@ -47,6 +47,13 @@ class ClientsList(APIView):
         data = self.request.data
         fields = data.get('fields', [])
         client = Client()
+        block_data = get_blocks()
+        missing_keys = [key for key, value in block_data.items() if value['required'] and key not in [list(d.keys())[0] for d in fields]]
+
+        if missing_keys:
+            for i in missing_keys:
+                return Response({"error": f"{i} Field is required"}, status=status.HTTP_400_BAD_REQUEST) 
+
 
         for field in fields:
             for key, item in field.items():
@@ -106,8 +113,19 @@ class ClientsDetail(APIView):
             eav = client.eav
             for field in fields:
                 for key, item in field.items():
-                    # Use setattr to dynamically set attributes
-                    setattr(eav, key, item)
+                    block_data = get_blocks()
+                    field_data = block_data.get(key)
+                    if not field_data:
+                        return Response({"error": "Fields are invalid"}, status=status.HTTP_400_BAD_REQUEST)
+                    if field_data.get('data_type') == 'select':
+                        ob = BlockField.objects.get(id=field_data.get('id'))
+                        values = ob.attribute.enum_group.values.all()
+                        for value in values:
+                            if value.id == item:
+                                setattr(eav, key, value)
+
+                    else:
+                        setattr(eav, key, item)
             client.save()
 
             return Response({
@@ -313,13 +331,14 @@ class ClientsFields(APIView):
         defaultvalue = field_data.get('defaultvalue')
         display = field_data.get('display')
         display_order = field_data.get('display_order')
-        field_name = field_data.get('field_name')
+        field_name = field_data.get('name')
+        value = field_data.get('value')
 
-        if obj.unique and not unique:
+        if obj.unique and not unique and obj.is_editable:
             # If the field is unique but 'unique' is set to False, update 'unique' to False
             obj.unique = False
 
-        if not obj.unique and unique:
+        if not obj.unique and unique and obj.is_editable:
             # If the field is not unique but 'unique' is set to True, update 'unique' to True and clear 'defaultvalue'
             obj.unique = True
             obj.defaultvalue = None
@@ -327,10 +346,6 @@ class ClientsFields(APIView):
         if required is not None:
             # Update the 'required' attribute of the field if provided
             obj.required = required
-
-        if defaultvalue is not None and obj.unique:
-            # If 'defaultvalue' is provided and the field is set as unique, return a bad request response
-            return Response({'error': "You didn't assign field are unique"}, status=status.HTTP_400_BAD_REQUEST)
 
         if defaultvalue is not None:
             # Update the 'defaultvalue' attribute of the field if provided
@@ -344,12 +359,30 @@ class ClientsFields(APIView):
         if display_order is not None:
             # Update the 'display_order' attribute of the field if provided
             obj.display_order = display_order
-
-        if field_name:
+        if field_name and obj.is_editable:
             # Update the 'name' attribute of the related attribute if 'field_name' is provided
             obj.attribute.name = field_name
+            obj.attribute.save()
+        
+        if obj.datatype == "select":
+            if not value:
+                return Response({'error': 'Invalid data format'}, status=status.HTTP_400_BAD_REQUEST)
+            values = value.split(',')
+            # Get the existing EnumGroup associated with the attribute
+            enum_group = obj.attribute.enum_group
+            
+            # Create a set of the values to make it easier to check for membership
+            enum_value_set = set(values)
+            for i in values:
+                # Use get_or_create to ensure EnumValue objects exist
+                enum_value, created = EnumValue.objects.get_or_create(value=i)
+                # Add the EnumValue to the EnumGroup
+                enum_group.values.add(enum_value)
 
-        # Save the updated field object
+            # Remove EnumValue objects from the EnumGroup that are not in the values list
+            for enum_value in enum_group.values.all():
+                if enum_value.value not in enum_value_set:
+                    enum_group.values.remove(enum_value)
         obj.save()
         # Return a success response
         return Response({'data': 'Field updated'}, status=status.HTTP_200_OK)
