@@ -38,6 +38,14 @@ const createBlockField = (formData) => {
     return api.post("/api/client/field/", formData)
 }
 
+const deleteBlockField = (formData) => {
+    return api.delete("/api/client/field/", { data: formData });
+}
+
+const updateBlockField = (formData) => {
+    return api.put("/api/client/field/", formData);
+}
+
 const clientsService = {
     getClients,
     saveClient,
@@ -46,6 +54,8 @@ const clientsService = {
     importClients,
     exportClients,
     getFullformData,
-    createBlockField
+    createBlockField,
+    deleteBlockField,
+    updateBlockField
 }
 export default clientsService;

@@ -32,3 +32,7 @@
   color: white;
   background-color: #EF4444;
 }
+
+.custom-word-break {
+  word-break: break-word;
+}

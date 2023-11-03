@@ -275,7 +275,6 @@ const NetFree = () => {
 
     const duplicateProfileHandler = async () => {
         const res = await categoryService.duplicateProfile(activeProfile);
-        console.log(res);
         getAllProfilesListHandler();
     }
 

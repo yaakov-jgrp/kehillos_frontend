@@ -40,12 +40,15 @@
     "addBlock": "הוסף בלוק",
     "addField": "הוסף שדה",
     "dataType": "סוג מידע",
+    "editBlock": "ערוך בלוק",
+    "editField": "ערוך שדה",
     "value": "ערך",
     "add": "לְהוֹסִיף",
     "defaultValue": "ערך ברירת מחדל",
     "required": "נדרש",
     "unique": "ייחודי",
-    "display": "לְהַצִיג"
+    "display": "לְהַצִיג",
+    "displayOrder": "הצג סדר"
   },
   "emails": {
     "templates": "תבניות",

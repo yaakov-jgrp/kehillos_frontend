@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 const ToggleSwitch = (props) => {
     const { selected, clickHandler } = props
     const [checked, setChecked] = useState(false);
-    const handleChange = () => {
+    const handleChange = (e) => {
         if (clickHandler) {
-            clickHandler();
+            clickHandler(e);
         }
         setChecked(!checked);
     };

@@ -39,13 +39,16 @@
     "fields": "Fields",
     "addBlock": "Add Block",
     "addField": "Add Field",
+    "editBlock": "Edit Block",
+    "editField": "Edit Field",
     "dataType": "Data Type",
     "value": "Value",
     "add": "Add",
     "defaultValue": "Default Value",
     "required": "Required",
     "unique": "Unique",
-    "display": "Display"
+    "display": "Display",
+    "displayOrder": "Display Order"
   },
   "emails": {
     "templates": "Templates",

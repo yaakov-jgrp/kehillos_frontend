@@ -1,7 +1,10 @@
 import { Checkbox } from "@chakra-ui/react";
+import { useState } from "react";
 
 const CustomCheckBox = (props) => {
   const { extra, ...rest } = props;
+
+
   return (
     <Checkbox
       {...rest}

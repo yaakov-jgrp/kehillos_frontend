@@ -1,34 +1,35 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import ErrorMessage from "../common/ErrorMessage";
 import clientsService from '../../services/clients';
-import { checkBoxValues, dataTypes } from '../../lib/FieldConstants';
+import { BlockFieldCheckValues, checkBoxValues, dataTypes } from '../../lib/FieldConstants';
 import {
     MdCancel,
 } from "react-icons/md";
 import CustomCheckBox from '../fields/checkbox';
+import Loader from '../common/Loader';
 
 
 
-function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
+function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     const { t } = useTranslation();
     const [selectValue, setSelectValue] = useState("");
     const [selectedValues, setSelectedValues] = useState([]);
+    const [defaultValues, setDefaultValues] = useState(block ? { name: "", is_block_created: true } : {
+        name: "",
+        block_id: blockId,
+        value: "",
+        data_type: dataTypes[0],
+        required: false,
+        defaultvalue: "",
+        unique: false,
+        display: false
+    });
+    const [formLoading, setFormLoading] = useState(false);
 
-    const defaultValues = block ? { name: "", is_block_created: true } :
-        {
-            name: "",
-            block_id: blockId,
-            value: "",
-            data_type: dataTypes[0],
-            required: true,
-            defaultvalue: "",
-            unique: false,
-            display: true
-        };
     const schema = block ? yup.object().shape({
         name: yup.string().min(3, "Name must contain atleast 3 characters").required(),
     }) : yup.object().shape({
@@ -45,12 +46,14 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
         unique: yup.boolean().required(),
         display: yup.boolean().required(),
     });
+
+
     const {
         control,
         setValue,
         reset,
         watch,
-        formState: { errors },
+        formState: { errors, dirtyFields },
         handleSubmit,
     } = useForm({
         defaultValues,
@@ -58,6 +61,29 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
         resolver: yupResolver(schema),
     });
 
+    const initModal = () => {
+        setFormLoading(true);
+        if (editData) {
+            if (block) {
+                setValue("name", editData?.block);
+            } else {
+                if (editData?.data_type === "select") {
+                    const choices = editData?.enum_values?.choices?.map((item) => item.value);
+                    setValue("value", choices.join(","));
+                    setSelectedValues(choices);
+                }
+                setValue("name", editData?.field_name);
+                setValue("data_type", editData?.data_type);
+                setValue("defaultvalue", editData?.defaultvalue || "");
+                setValue("required", editData?.required);
+                setValue("unique", editData?.unique);
+                setValue("display", editData?.display);
+            }
+        }
+        setTimeout(() => {
+            setFormLoading(false);
+        }, 500)
+    }
 
     const selectValueHandler = () => {
         const values = [selectValue, ...selectedValues].join(",")
@@ -68,21 +94,70 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
 
     const deleteSelectedValuesHandler = (index) => {
         const values = selectedValues.filter((item, itemIndex) => index !== itemIndex);
-        setSelectedValues(values)
-        setValue("value", values, { shouldValidate: true, shouldDirty: true });
+        setSelectedValues(values);
+        setValue("value", values.join(","), { shouldValidate: true, shouldDirty: true });
     }
 
     const submitForm = async (data, e) => {
         e.preventDefault();
-        const formData = new FormData()
-        for (const formValue in data) {
-            formData.append(formValue, data[formValue])
+        const formData = new FormData();
+        let updatedData;
+        if (editData) {
+            if (block) {
+                formData.append("id", editData.block_id);
+                formData.append("name", data.name);
+                formData.append("is_block", true);
+                updatedData = formData;
+            } else {
+                const updateArray = [];
+                for (const dirtyField in dirtyFields) {
+                    if (!BlockFieldCheckValues.includes(dirtyField)) {
+                        updateArray.push({
+                            [dirtyField]: data[dirtyField],
+                        })
+                    }
+                }
+                for (const value of BlockFieldCheckValues) {
+                    updateArray.push({
+                        [value]: data[value],
+                    })
+                }
+                const updateValues = updateArray.reduce((acc, curr) => Object.assign(acc, curr), {});
+                updatedData = {
+                    fields: [
+                        {
+                            id: editData.id,
+                            ...updateValues
+                        }
+                    ]
+                };
+            }
+
+            clientsService.updateBlockField(updatedData).then((res) => {
+                reset();
+                setShowModal(false);
+                onClick();
+            }).catch((err) => console.log(err));
+        } else {
+            let newDataValues = []
+            for (const newValue in data) {
+                newDataValues.push({
+                    [newValue]: data[newValue]
+                })
+            }
+            const newValues = newDataValues.reduce((acc, curr) => Object.assign(acc, curr), {});
+            clientsService.createBlockField(newValues).then((res) => {
+                reset();
+                setShowModal(false);
+                onClick();
+            }).catch((err) => console.log(err));
         }
-        const res = await clientsService.createBlockField(formData);
-        reset();
-        setShowModal(false);
-        onClick();
+
     }
+
+    useEffect(() => {
+        initModal();
+    }, [])
 
     return (
         <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
@@ -100,7 +175,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
                             onSubmit={handleSubmit((data, e) => submitForm(data, e))}
                         >
                             <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                                <h3 className="text-2xl font-semibold">{t(block ? 'clients.addBlock' : 'clients.addField')}</h3>
+                                <h3 className="text-2xl font-semibold">{editData ? t(block ? 'clients.editBlock' : 'clients.editField') : t(block ? 'clients.addBlock' : 'clients.addField')}</h3>
                                 <button
                                     className="bg-transparent border-0 text-black float-right"
                                     onClick={() => setShowModal(false)}
@@ -110,7 +185,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
                                     </span>
                                 </button>
                             </div>
-                            <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
+                            {!formLoading ? <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
                                 <label className="block text-black text-sm font-bold mb-1">
                                     {t('netfree.name')}
                                 </label>
@@ -118,7 +193,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
                                     name="name"
                                     control={control}
                                     render={({ field: { value, onChange, onBlur } }) => (
-                                        <input value={value} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" required onChange={onChange} onBlur={onBlur} />
+                                        <input value={value} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" onChange={onChange} onBlur={onBlur} />
                                     )}
                                 />
                                 {errors.name && <ErrorMessage message={errors.name.message} />}
@@ -155,7 +230,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
                                                             {t("clients.add")}
                                                         </button>
                                                     </div>
-                                                    {errors.data_type && <ErrorMessage message={errors.data_type.message} />}
+                                                    {errors.value && <ErrorMessage message={errors.value.message} />}
                                                     <div className='flex flex-wrap'>
                                                         {selectedValues.map((value, index) => <p className='bg-[#ffffff] shadow-md rounded-md w-fit p-1 px-2 m-1 flex items-center' key={index}>{value}<MdCancel className="text-red-500 ml-1 w-4 h-4 hover:cursor-pointer" onClick={() => deleteSelectedValuesHandler(index)} /></p>)}
                                                     </div>
@@ -197,13 +272,14 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
                                                                             {
                                                                                 checkBoxValues.map(el => {
                                                                                     return (
-                                                                                        el ? <option key={el} value={el}>{el}</option> : null
+                                                                                        el !== "" ? <option key={el} value={el}>{JSON.stringify(el)}</option> : null
                                                                                     );
                                                                                 })
                                                                             }
                                                                         </select>
                                                                     )}
-                                                                /></>
+                                                                />
+                                                            </>
                                                             : <>
                                                                 <label className="block text-black text-sm font-bold mb-1">
                                                                     {t('clients.defaultValue')}
@@ -212,9 +288,10 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
                                                                     name="defaultvalue"
                                                                     control={control}
                                                                     render={({ field: { value, onChange, onBlur } }) => (
-                                                                        <input value={value} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" required onChange={onChange} onBlur={onBlur} />
+                                                                        <input value={value} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" onChange={onChange} onBlur={onBlur} />
                                                                     )}
-                                                                /></>
+                                                                />
+                                                            </>
                                                     }
 
                                                 </>
@@ -223,13 +300,16 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
                                             <Controller
                                                 name="required"
                                                 control={control}
-                                                render={({ field: { value, onChange } }) => (
-                                                    <CustomCheckBox
-                                                        className='mr-2'
-                                                        checked={value}
-                                                        onChange={onChange}
-                                                    />
-                                                )}
+                                                render={({ field: { value, onChange, name } }) => {
+                                                    return (
+                                                        <CustomCheckBox
+                                                            className='mr-2'
+                                                            checked={value}
+                                                            defaultChecked={value}
+                                                            onChange={onChange}
+                                                        />
+                                                    )
+                                                }}
                                             />
                                             <label className="block text-black text-sm font-bold">
                                                 {t('clients.required')}
@@ -243,6 +323,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
                                                     <CustomCheckBox
                                                         className='mr-2'
                                                         checked={value}
+                                                        defaultChecked={value}
                                                         onChange={onChange}
                                                     />
                                                 )}
@@ -258,6 +339,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
                                                 render={({ field: { value, onChange } }) => (
                                                     <CustomCheckBox
                                                         className='mr-2'
+                                                        defaultChecked={value}
                                                         checked={value}
                                                         onChange={onChange}
                                                     />
@@ -269,7 +351,11 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick }) {
                                         </div>
                                     </>
                                 }
-                            </div>
+                            </div> :
+                                <div className='h-[50vh] w-full flex justify-center items-center'>
+                                    <Loader />
+                                </div>
+                            }
                             <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                                 <button
                                     className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
