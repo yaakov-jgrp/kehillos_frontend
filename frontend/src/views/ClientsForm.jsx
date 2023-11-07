@@ -117,7 +117,6 @@ const ClientsForm = () => {
     const getChangedFieldsPos = async (currentPos, newPos, isBlock, blockId) => {
         let updatedData;
         if (isBlock) {
-            console.log("ds")
             const blocksData = JSON.parse(JSON.stringify(fullFormData));
             delete blocksData.field;
             const updateFields = orderChangeHandler(currentPos, newPos, blocksData, true)
