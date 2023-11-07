@@ -54,11 +54,11 @@ class ClientsList(APIView):
             client_data['id']=client.id
             client_data['netfree_profile']=client.netfree_profile.id
             for client_eav in client.eav_values.all():
-                if client_eav.attribute.slug in check_fields:
-                    if client_eav.attribute.datatype == 'enum':
-                        client_data[client_eav.attribute.slug] = {"id": client_eav._get_value().id,"value":  client_eav._get_value().value}
-                    else:
-                        client_data[client_eav.attribute.slug] = client_eav._get_value()
+                # if client_eav.attribute.slug in check_fields:
+                if client_eav.attribute.datatype == 'enum':
+                    client_data[client_eav.attribute.slug] = {"id": client_eav._get_value().id,"value":  client_eav._get_value().value}
+                else:
+                    client_data[client_eav.attribute.slug] = client_eav._get_value()
             data.append(client_data)
         response_data = {
             "success": True,
@@ -67,7 +67,8 @@ class ClientsList(APIView):
             "page": clients_page.number, 
             "num_pages": paginator.num_pages,
             "next":None,
-            "previous":None
+            "previous":None,
+            "count":paginator.count
         }
         if clients_page.has_next():
             response_data["next"] = request.build_absolute_uri(f"?page={clients_page.next_page_number()}")

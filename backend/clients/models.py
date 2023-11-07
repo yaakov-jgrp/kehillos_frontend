@@ -44,7 +44,7 @@ class Block(models.Model):
             if max_display_order is not None:
                 self.display_order = max_display_order + 1
 
-        super(BlockField, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
     def __str__(self):
         return str(self.display_order) + " " + self.name
 
@@ -68,7 +68,7 @@ class BlockField(models.Model):
             if max_display_order is not None:
                 self.display_order = max_display_order + 1
 
-        super(BlockField, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return str(self.display_order) + " " + self.attribute.name
