@@ -67,7 +67,7 @@ const DisplayFieldsModal = ({ showModal, setShowModal, formValues, displayFields
                                     <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
                                         {displayFields.length > 0 && displayFields.map((fieldData, index) => {
                                             return (
-                                                <div className="flex items-center justify-between">
+                                                <div className="flex items-center justify-between" key={index}>
                                                     <label className="block text-black text-sm font-bold mb-1">
                                                         {fieldData?.name}
                                                     </label>

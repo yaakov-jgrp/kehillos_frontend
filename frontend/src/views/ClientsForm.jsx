@@ -114,9 +114,9 @@ const ClientsForm = () => {
         return updated;
     }
 
-    const getChangedFieldsPos = async (currentPos, newPos, blockId) => {
+    const getChangedFieldsPos = async (currentPos, newPos, isBlock, blockId) => {
         let updatedData;
-        if (blockId) {
+        if (isBlock) {
             const blocksData = JSON.parse(JSON.stringify(fullFormData));
             delete blocksData.field;
             const updateFields = orderChangeHandler(currentPos, newPos, blocksData, true)
@@ -154,7 +154,7 @@ const ClientsForm = () => {
                 <div className='flex-1 w-1/4 p-2'>
                     <h5 className='text-start text-[12px] py-2 md:text-[16px] font-bold text-[#2B3674] w-[100%] flex items-center justify-between'>{t('clients.sections')} <AddButtonIcon onClick={() => addBlockFieldModalHandler(true)} /></h5>
                     {
-                        fullFormData && !isLoading && <Draggable onPosChange={getChangedFieldsPos}>
+                        fullFormData && !isLoading && fullFormData.length > 0 ? <Draggable onPosChange={(currentPos, newPos,) => getChangedFieldsPos(currentPos, newPos, true)}>
                             {fullFormData.map((blockData, index) =>
                                 <BlockButton
                                     classes="flex items-center justify-between custom-word-break"
@@ -169,7 +169,7 @@ const ClientsForm = () => {
                                     </div>
                                 </BlockButton>
                             )}
-                        </Draggable>
+                        </Draggable> : <p>{t("clients.noSections")}</p>
                     }
 
                 </div>
@@ -185,12 +185,12 @@ const ClientsForm = () => {
                         {fullFormData && !isLoading && fullFormData.map((blockData, index) => <CustomAccordion key={index} title={blockData.block} onClick={() => addBlockFieldModalHandler(false, blockData.block_id)} >
                             {blockData.field.length > 0 ?
                                 <>
-                                    <Draggable onPosChange={(currentPos, newPos,) => getChangedFieldsPos(currentPos, newPos, blockData.block_id)}>
+                                    <Draggable onPosChange={(currentPos, newPos,) => getChangedFieldsPos(currentPos, newPos, false, blockData.block_id)}>
                                         {
                                             blockData.field.map((field, index) => {
                                                 const isCheckBox = checkBoxConstants.includes(field.data_type);
                                                 return (
-                                                    <div className={`mb-2 ${isCheckBox ? "flex items-center justify-end flex-row-reverse" : ""}`}>
+                                                    <div className={`mb-2 ${isCheckBox ? "flex items-center justify-end flex-row-reverse" : ""}`} key={index}>
                                                         <label className={`block text-black text-sm flex items-center justify-between font-bold ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
                                                             {field?.field_name}
                                                             <div className='flex items-center'>
@@ -205,7 +205,7 @@ const ClientsForm = () => {
                                             })
                                         }
                                     </Draggable>
-                                </> : "No fields"}
+                                </> : <p>{t("clients.noFields")}</p>}
                         </CustomAccordion>)}
                     </Accordion>
                 </div>

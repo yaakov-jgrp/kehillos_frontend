@@ -1,38 +1,48 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { DateFieldConstants, NumberFieldConstants, TextFieldConstants, checkBoxConstants } from '../../lib/FieldConstants';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomCheckBox from './checkbox';
 
-function CustomField({ field, rest }) {
-    const { data_type, required, defaultvalue, enum_values } = field
+function CustomField(props) {
+    const { data_type, required, enum_values } = props.field
+    const { onChange, onBlur, value } = props;
     return (
         <>
-            {TextFieldConstants.includes(data_type) && <input type={data_type} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" required={required} defaultValue={defaultvalue} {...rest} />}
-            {NumberFieldConstants.includes(data_type) && <input type="number" className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" required={required} defaultValue={defaultvalue} {...rest} />}
+            {TextFieldConstants.includes(data_type) && <input type={data_type} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" required={required} onChange={onChange} onBlur={onBlur} value={value} />}
+            {NumberFieldConstants.includes(data_type) && <input type="number" className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" required={required} onChange={onChange} onBlur={onBlur} value={value} />}
             {data_type === "select" &&
-                <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" required={required} defaultValue={defaultvalue} {...rest} placeholder="Select">
+                <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" required={required} onChange={onChange} onBlur={onBlur} value={value} placeholder="Select">
                     {
                         enum_values?.choices?.map(el => {
                             return (
-                                el ? <option key={el.id} value={el.id}>{el.value}</option> : null
+                                el !== "" ? <option key={el.id} value={el.id}>{el.value}</option> : null
                             );
                         })
                     }
                 </select>}
             {
-                checkBoxConstants.includes(data_type) && <CustomCheckBox />
+                checkBoxConstants.includes(data_type) && <CustomCheckBox onChange={onChange} onBlur={onBlur} value={value} />
             }
-            {/* {DateFieldConstants.includes(data_type) &&
+            {DateFieldConstants.includes(data_type) &&
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
-                        label="Basic date picker"
-                        defaultValue={dayjs('2022-04-17')}
-                        {...rest}
+                        className="shadow appearance-none outline-none border-0 rounded w-full p-0 text-black"
+                        defaultValue={dayjs(Date.now())}
+                        format="DD/MM/YYYY"
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        value={dayjs(value)}
+                        sx={{
+                            border: 0,
+                            "& .MuiInputBase-input": {
+                                padding: 1.5,
+                            }
+                        }}
                     />
-                </LocalizationProvider>} */}
+                </LocalizationProvider>}
         </>
     )
 }

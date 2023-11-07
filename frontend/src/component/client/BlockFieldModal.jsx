@@ -11,6 +11,10 @@ import {
 } from "react-icons/md";
 import CustomCheckBox from '../fields/checkbox';
 import Loader from '../common/Loader';
+import dayjs, { Dayjs } from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 
 
@@ -160,7 +164,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     }, [])
 
     return (
-        <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
+        <div className="fixed left-0 bottom-0 z-[99] h-screen w-screen bg-[#00000080] flex justify-center items-center">
             <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
                 <div className="relative w-auto my-6 mx-auto max-w-3xl">
                     <div className="min-w-[300px] max-w-[300px] md:min-w-[400px] md:max-w-[400px] overflow-y-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
@@ -186,7 +190,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                 </button>
                             </div>
                             {!formLoading ? <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
-                                <label className="block text-black text-sm font-bold mb-1">
+                                <label className="block text-black text-sm font-bold my-1">
                                     {t('netfree.name')}
                                 </label>
                                 <Controller
@@ -199,7 +203,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                 {errors.name && <ErrorMessage message={errors.name.message} />}
                                 {!block &&
                                     <>
-                                        <label className="block text-black text-sm font-bold mb-1">
+                                        <label className="block text-black text-sm font-bold my-1">
                                             {t('clients.dataType')}
                                         </label>
                                         <Controller
@@ -221,7 +225,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                         {
                                             watch("data_type") === "select" ?
                                                 <>
-                                                    <label className="block text-black text-sm font-bold mb-1">
+                                                    <label className="block text-black text-sm font-bold my-1">
                                                         {t('clients.value')}
                                                     </label>
                                                     <div className='w-full flex justify-between items-center mb-2'>
@@ -236,7 +240,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                                     </div>
                                                     {selectedValues.length > 0 &&
                                                         <>
-                                                            <label className="block text-black text-sm font-bold mb-1">
+                                                            <label className="block text-black text-sm font-bold my-1">
                                                                 {t('clients.defaultValue')}
                                                             </label>
                                                             <Controller
@@ -261,14 +265,14 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                                     {
                                                         watch("data_type") === "checkbox" ?
                                                             <>
-                                                                <label className="block text-black text-sm font-bold mb-1">
+                                                                <label className="block text-black text-sm my-1 font-bold">
                                                                     {t('clients.defaultValue')}
                                                                 </label>
                                                                 <Controller
                                                                     name="defaultvalue"
                                                                     control={control}
                                                                     render={({ field: { value, onChange, onBlur } }) => (
-                                                                        <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={onChange} onBlur={onBlur} value={value} placeholder="Select Default Value">
+                                                                        <select className="shadow appearance-none border rounded  outline-none w-full py-2 px-1 text-black bg-white" onChange={onChange} onBlur={onBlur} value={value} placeholder="Select Default Value">
                                                                             {
                                                                                 checkBoxValues.map(el => {
                                                                                     return (
@@ -281,16 +285,21 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                                                 />
                                                             </>
                                                             : <>
-                                                                <label className="block text-black text-sm font-bold mb-1">
-                                                                    {t('clients.defaultValue')}
-                                                                </label>
-                                                                <Controller
-                                                                    name="defaultvalue"
-                                                                    control={control}
-                                                                    render={({ field: { value, onChange, onBlur } }) => (
-                                                                        <input value={value} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" onChange={onChange} onBlur={onBlur} />
-                                                                    )}
-                                                                />
+                                                                {
+                                                                    watch("data_type") === "date" ? null
+                                                                        : <>
+                                                                            <label className="block text-black text-sm font-bold my-1">
+                                                                                {t('clients.defaultValue')}
+                                                                            </label>
+                                                                            <Controller
+                                                                                name="defaultvalue"
+                                                                                control={control}
+                                                                                render={({ field: { value, onChange, onBlur } }) => (
+                                                                                    <input value={value} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" onChange={onChange} onBlur={onBlur} />
+                                                                                )}
+                                                                            />
+                                                                        </>
+                                                                }
                                                             </>
                                                     }
 

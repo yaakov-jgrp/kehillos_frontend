@@ -1,15 +1,14 @@
-import { Checkbox } from "@chakra-ui/react";
+import { Checkbox } from "@mui/material";
 import { useState } from "react";
 
 const CustomCheckBox = (props) => {
   const { extra, ...rest } = props;
-
-
+  console.log(rest, "sd")
   return (
     <Checkbox
       {...rest}
-      colorScheme="custom"
-      _checked={{ bg: "#422AFB", borderColor: "#422AFB", height: "fit-content" }} />
+      className="!p-0 [&>svg]:h-5"
+    />
   );
 };
 

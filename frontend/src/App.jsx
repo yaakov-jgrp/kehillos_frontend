@@ -3,6 +3,7 @@ import "./App.css";
 import { useTranslation } from "react-i18next";
 import i18next from "i18next";
 import SignIn from "./views/auth/SignIn";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
   BrowserRouter as Router,
   Routes,
@@ -48,10 +49,21 @@ function App() {
     );
   };
 
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#3f51b5',
+      },
+      secondary: {
+        main: '#f50057',
+      },
+    },
+  });
+
 
   return (
     <>
-      <div>
+      <ThemeProvider theme={theme}>
         <Router>
           <Routes>
             <Route exact path="/signin" element={<SignIn />} />
@@ -64,7 +76,7 @@ function App() {
         <ToastContainer
           autoClose={2000}
         />
-      </div>
+      </ThemeProvider>
     </>
   );
 }

@@ -48,7 +48,9 @@
     "required": "נדרש",
     "unique": "ייחודי",
     "display": "לְהַצִיג",
-    "displayOrder": "הצג סדר"
+    "displayOrder": "הצג סדר",
+    "noSections": "אין קטעים להצגה",
+    "noFields": "אין שדות להצגה"
   },
   "emails": {
     "templates": "תבניות",

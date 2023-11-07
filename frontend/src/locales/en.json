@@ -48,7 +48,9 @@
     "required": "Required",
     "unique": "Unique",
     "display": "Display",
-    "displayOrder": "Display Order"
+    "displayOrder": "Display Order",
+    "noSections": "No Sections to show",
+    "noFields": "No Fields to show"
   },
   "emails": {
     "templates": "Templates",
