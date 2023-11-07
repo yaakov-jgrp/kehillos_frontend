@@ -60,7 +60,7 @@ class ClientAttributeSerializerCustom(ClientAttributeSerializer):
     
 
 def get_blocks():
-    blocks = Block.objects.all()
+    blocks = Block.objects.all().order_by('display_order')
     block_data = {}
     for block in blocks:
         block_info = BlockField.objects.filter(block=block).order_by('display_order')
@@ -69,6 +69,7 @@ def get_blocks():
             block_data[client_data['field_slug']]=client_data
     return block_data
 class ClientListSerializer(serializers.Serializer):
+    netfree_profile = serializers.SerializerMethodField()
     client_id = serializers.IntegerField(source='id')
     blocks = serializers.SerializerMethodField()
 
@@ -98,3 +99,5 @@ class ClientListSerializer(serializers.Serializer):
             })
 
         return block_data
+    def get_netfree_profile(self, client):
+        return client.netfree_profile.id
