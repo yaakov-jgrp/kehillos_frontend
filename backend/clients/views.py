@@ -1,6 +1,6 @@
 import csv
 from django.db import transaction
-from clients.models import Block, BlockField, Client, NetfreeUser
+from clients.models import Block, BlockField, Client, NetfreeCategoriesProfile
 from clients.resources import NetfreeUserExportResource
 from clients.serializer import ClientAttributeSerializer, NetfreeUserSerializer,ClientAttributeSerializerCustom,ClientListSerializer, get_blocks
 from django.http import HttpResponse
@@ -8,12 +8,34 @@ from eav.models import Attribute,EnumGroup,EnumValue
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+import datetime
+from rest_framework.pagination import PageNumberPagination
+from django.core.paginator import Paginator
+from django.core.paginator import EmptyPage
+from django.core.paginator import PageNotAnInteger
 
 # Create your views here.
 class ClientsList(APIView):
     def get(self, request):
         clients = Client.objects.all().order_by('id')
+        page = request.GET.get('page', 1)  # Get the requested page from the query parameters
+        page_size = 10  # Define the number of clients per page# Get the page size from the query parameters
+
+        # Calculate the start and end indices for the current page
+        start_index = (int(page) - 1) * page_size
+        end_index = int(page) * page_size
+
+        paginator = Paginator(clients, page_size)
+
+        try:
+            clients_page = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, default to the first page.
+            clients_page = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g., page 9999), return an empty page.
+            clients_page = paginator.page(paginator.num_pages)
+        clients = clients[start_index:end_index]
         data = []
         blocks = Block.objects.all()
         fields = []
@@ -30,23 +52,40 @@ class ClientsList(APIView):
         for client in clients:
             client_data = client_data1.copy()
             client_data['id']=client.id
+            client_data['netfree_profile']=client.netfree_profile.id
             for client_eav in client.eav_values.all():
                 if client_eav.attribute.slug in check_fields:
                     if client_eav.attribute.datatype == 'enum':
-                        client_data[client_eav.attribute.slug] = client_eav._get_value().value
+                        client_data[client_eav.attribute.slug] = {"id": client_eav._get_value().id,"value":  client_eav._get_value().value}
                     else:
                         client_data[client_eav.attribute.slug] = client_eav._get_value()
             data.append(client_data)
-        return Response({
+        response_data = {
             "success": True,
             'field':fields,
-            "data": data
-        })
+            "data": data,
+            "page": clients_page.number, 
+            "num_pages": paginator.num_pages,
+            "next":None,
+            "previous":None
+        }
+        if clients_page.has_next():
+            response_data["next"] = request.build_absolute_uri(f"?page={clients_page.next_page_number()}")
+        if clients_page.has_previous():
+            response_data["previous"] = request.build_absolute_uri(f"?page={clients_page.previous_page_number()}")
+
+        return Response(response_data)
 
     def post(self, request):
         data = self.request.data
         fields = data.get('fields', [])
-        client = Client()
+        netfree_profile = data.get('netfree_profile')
+        if not netfree_profile:
+            return Response({"error": "netfree_profile is required"}, status=status.HTTP_400_BAD_REQUEST)
+        net = NetfreeCategoriesProfile.objects.filter(id=netfree_profile).first()
+        if not net:
+            return Response({"error": "netfree_profile not valid"}, status=status.HTTP_400_BAD_REQUEST)
+        client = Client(netfree_profile=net)
         block_data = get_blocks()
         missing_keys = [key for key, value in block_data.items() if value['required'] and key not in [list(d.keys())[0] for d in fields]]
 
@@ -78,7 +117,10 @@ class ClientsList(APIView):
 
                 if key_data.get('data_type') == 'select':
                     item = EnumValue.objects.filter(id=item).first()
+                if key_data.get('data_type') == 'date':
+                    item = datetime.datetime.strptime(item, "%Y-%m-%dT%H:%M:%S.%fZ")
                 setattr(client.eav, attr_name, item)
+
 
         client.save()
 
@@ -108,6 +150,13 @@ class ClientsDetail(APIView):
         data = request.data
         fields = data.get('fields', [])
         client = self.get_object(pk)
+        netfree_profile = data.get('netfree_profile')
+        if netfree_profile:
+            net = NetfreeCategoriesProfile.objects.filter(id=netfree_profile).first()
+            client.netfree_profile = net
+            client.save()
+            if not net:
+                return Response({"error": "netfree_profile not valid"}, status=status.HTTP_400_BAD_REQUEST)
         
         if client is not None:
             eav = client.eav
@@ -121,11 +170,13 @@ class ClientsDetail(APIView):
                         ob = BlockField.objects.get(id=field_data.get('id'))
                         values = ob.attribute.enum_group.values.all()
                         for value in values:
-                            if value.id == item:
-                                setattr(eav, key, value)
-
+                            if str(value.id) == str(item):
+                                setattr(client.eav, key, value)
+                    elif field_data.get('data_type') == 'date':
+                        item = datetime.datetime.strptime(item, "%Y-%m-%dT%H:%M:%S.%fZ")
                     else:
-                        setattr(eav, key, item)
+                        setattr(client.eav, key, item)
+            
             client.save()
 
             return Response({
@@ -193,7 +244,6 @@ class ClientsExportData(APIView):
         # Write the data rows
         for row in data:
             csv_writer.writerow(row)
-
         return response
     
 class ClientsFields(APIView):
@@ -289,16 +339,23 @@ class ClientsFields(APIView):
             return self.update_fields(data)
 
     def update_block(self, data):
+        fields = data.get('fields', [])
+        if not isinstance(fields, list):
+            # If 'fields' is not a list, return a bad request response
+            return Response({'error': 'Invalid data format'}, status=status.HTTP_400_BAD_REQUEST)
         # Fetch the Block object by ID
-        block = Block.objects.filter(id=data.get('id')).first()
-        if not block:
-            # If the block doesn't exist, return a 404 Not Found response
-            return Response({'error': 'Block not found'}, status=status.HTTP_404_NOT_FOUND)
-        
-        # Update the block's name and save it
-        block.name = data.get('name')
-        block.save()
-        # Return a success response
+        for field_data in fields:
+            block = Block.objects.filter(id=field_data.get('id')).first()
+            if not block:
+                # If the block doesn't exist, return a 404 Not Found response
+                return Response({'error': 'Block not found'}, status=status.HTTP_404_NOT_FOUND)
+            # Update the block's name and save it
+            if field_data.get('name'):
+                block.name = field_data.get('name')
+            if field_data.get('display_order'):
+                block.display_order = field_data.get('display_order')
+            block.save()
+            # Return a success response
         return Response({'data': 'Block updated'}, status=status.HTTP_200_OK)
 
     def update_fields(self, data):
@@ -364,7 +421,7 @@ class ClientsFields(APIView):
             obj.attribute.name = field_name
             obj.attribute.save()
         
-        if obj.datatype == "select":
+        if obj.datatype == "select" and value:
             if not value:
                 return Response({'error': 'Invalid data format'}, status=status.HTTP_400_BAD_REQUEST)
             values = value.split(',')
@@ -396,6 +453,7 @@ class ClientsFields(APIView):
             return Response({'error': "You can't delete this section"}, status=status.HTTP_404_NOT_FOUND)
         block.delete()
         return Response({'data': 'Block Deleted'}, status=status.HTTP_200_OK)
+
     def delete_field(self,data):
         field = BlockField.objects.filter(id=data.get('id')).first()
         if not field:
@@ -405,6 +463,7 @@ class ClientsFields(APIView):
             return Response({'error': "You can't delete this field"}, status=status.HTTP_406_NOT_ACCEPTABLE)
         field.delete()
         return Response({'data': 'Field Deleted'}, status=status.HTTP_200_OK)
+
     def delete(self, request):
         data = request.data
         is_block = data.get('is_block')
@@ -426,6 +485,12 @@ class ClientsImportData(APIView):
         csv_reader = csv.DictReader(csv_file.splitlines())
         count = 0
         error_details = []
+        # block_data = get_blocks()
+        # missing_keys = [key for key, value in block_data.items() if value['required'] and key not in [list(d.keys())[0] for d in fields]]
+
+        # if missing_keys:
+        #     for i in missing_keys:
+        #         return Response({"error": f"{i} Field is required"}, status=status.HTTP_400_BAD_REQUEST)
         for row_number, row in enumerate(csv_reader, start=1):
             serializer = NetfreeUserSerializer(data=row)
             if serializer.is_valid():
