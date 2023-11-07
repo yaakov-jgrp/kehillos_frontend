@@ -117,27 +117,25 @@ const ClientsForm = () => {
     const getChangedFieldsPos = async (currentPos, newPos, isBlock, blockId) => {
         let updatedData;
         if (isBlock) {
-            if (isBlock) {
-                const blocksData = JSON.parse(JSON.stringify(fullFormData));
-                delete blocksData.field;
-                const updateFields = orderChangeHandler(currentPos, newPos, blocksData, true)
-                // Update the order attribute based on the new order
-                updatedData = {
-                    fields: updateFields,
-                    is_block: true
-                };
+            console.log("ds")
+            const blocksData = JSON.parse(JSON.stringify(fullFormData));
+            delete blocksData.field;
+            const updateFields = orderChangeHandler(currentPos, newPos, blocksData, true)
+            // Update the order attribute based on the new order
+            updatedData = {
+                fields: updateFields,
+                is_block: true
+            };
 
-            } else {
-                const blockData = fullFormData.filter((block) => block.block_id === blockId);
-                const updateFields = orderChangeHandler(currentPos, newPos, blockData[0].field, false)
-                // Update the order attribute based on the new order
-                updatedData = {
-                    fields: updateFields
-                };
-            }
-
-            const res = await clientsService.updateBlockField(updatedData);
+        } else {
+            const blockData = fullFormData.filter((block) => block.block_id === blockId);
+            const updateFields = orderChangeHandler(currentPos, newPos, blockData[0].field, false)
+            // Update the order attribute based on the new order
+            updatedData = {
+                fields: updateFields
+            };
         };
+        const res = await clientsService.updateBlockField(updatedData);
     }
 
     useEffect(() => {

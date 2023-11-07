@@ -210,7 +210,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                             name="data_type"
                                             control={control}
                                             render={({ field: { value, onChange, onBlur } }) => (
-                                                <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={onChange} onBlur={onBlur} value={value} placeholder="Select Data Type">
+                                                <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={onChange} onBlur={onBlur} value={value} disabled={editData ? true : false} placeholder="Select Data Type">
                                                     {
                                                         dataTypes?.map(el => {
                                                             return (

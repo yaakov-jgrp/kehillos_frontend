@@ -44,20 +44,26 @@ const Clients = () => {
     const [errorModal, setErrorModal] = useState(false);
     const [fullFormData, setFullFormData] = useState(null);
     const [columns, setColumns] = useState(null);
+    const [paginationModel, setPaginationModel] = useState({
+        page: 0,
+        pageSize: 10,
+    });
+    const [totalRows, setTotalRows] = useState(0);
 
 
     const fetchClientsData = async () => {
         setIsLoading(true);
-        const clientsData = await clientsService.getClients();
+        const clientsData = await clientsService.getClients(paginationModel.page + 1);
         const formData = await clientsService.getFullformData();
         const displayFieldValues = clientsData.data.field.map((item) => Object.keys(item).join(""));
         let formFields = [];
-        let columnsData = []
+        let columnsData = [];
         columnsData.push({
             field: "id",
             headerName: "ID",
             flex: 1
         })
+        setTotalRows(clientsData.data.count);
         clientsData.data.field.forEach((item, i) => {
             const column = {
                 field: Object.keys(item).join(""),
@@ -92,9 +98,7 @@ const Clients = () => {
         setColumns(columnsData);
         formData.data.result.forEach((block) => {
             block.field.forEach((field) => {
-                if (displayFieldValues.includes(field.field_slug)) {
-                    formFields.push(field);
-                }
+                formFields.push(field);
             })
         });
         setFullFormData(formFields);
@@ -114,7 +118,7 @@ const Clients = () => {
     const editClientHandler = (data) => {
         setEditClient(data);
         setNewClient(false);
-        setClientModal(!clientModal);
+        setClientModal(true);
     }
 
     const deleteClientHandler = async (id) => {
@@ -159,7 +163,8 @@ const Clients = () => {
     useEffect(() => {
         fetchClientsData();
         fetchNetfreeProfiles();
-    }, [])
+    }, [paginationModel.page]);
+
     return (
         <div className='w-full bg-white rounded-3xl'>
             {allClients && netfreeprofiles && editClient && clientModal &&
@@ -188,7 +193,7 @@ const Clients = () => {
                     }} />
                     <AddButtonIcon extra={''} onClick={() => {
                         setNewClient(true);
-                        setClientModal(!clientModal);
+                        setClientModal(true);
                     }} />
                     <CsvImporter />
                     <button className={`w-full rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
@@ -209,12 +214,10 @@ const Clients = () => {
                         rows={allClients}
                         columns={columns}
                         loading={isLoading}
-                        rowCount={allClients?.length}
+                        rowCount={totalRows}
                         initialState={{
                             pagination: {
-                                paginationModel: {
-                                    pageSize: 5,
-                                },
+                                paginationModel: paginationModel,
                             },
                         }}
                         sx={{
@@ -223,11 +226,11 @@ const Clients = () => {
                                 backgroundColor: "rgba(59,130, 246 , 0.1)",
                             },
                         }}
-                        checkboxSelection
-                        pageSizeOptions={[5]}
+                        onPaginationModelChange={setPaginationModel}
+                        pageSizeOptions={[10]}
                         paginationMode="server"
-                        disableSelectionOnClick
-                        disableRowSelectionOnClick
+                        disableSelectionOnClick={true}
+                        disableRowSelectionOnClick={true}
                     />
                 }
             </div>

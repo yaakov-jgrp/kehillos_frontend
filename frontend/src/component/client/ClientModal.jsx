@@ -97,9 +97,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                 setShowModal(!showModal);
                 onClick();
             }).catch((err) => {
-                if (err.response.data.error.length > 0) {
-                    errorsToastHandler(err.response.data.error);
-                }
+                errorsToastHandler(err.response.data.error);
             });
         } else {
             const updateData = {
@@ -111,9 +109,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                 setShowModal(!showModal);
                 onClick();
             }).catch((err) => {
-                if (err.response.data.error.length > 0) {
-                    errorsToastHandler(err.response.data.error);
-                }
+                errorsToastHandler(err.response.data.error);
             });
         }
     }

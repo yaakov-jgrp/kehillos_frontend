@@ -1,9 +1,9 @@
 import api from "./api";
 
-const getClients = () => {
+const getClients = (page) => {
     const lang = localStorage.getItem("DEFAULT_LANGUAGE")
     return api
-        .get(`/api/client/?lang=${lang}`);
+        .get(`/api/client/?lang=${lang}&page=${page}`);
 }
 
 const saveClient = (clientData) => {
