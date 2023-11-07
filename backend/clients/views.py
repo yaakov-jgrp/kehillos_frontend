@@ -166,6 +166,12 @@ class ClientsDetail(APIView):
                     field_data = block_data.get(key)
                     if not field_data:
                         return Response({"error": "Fields are invalid"}, status=status.HTTP_400_BAD_REQUEST)
+                    if field_data.get('unique'):
+
+                        dicts = {f'eav__{key}': item}
+                        obj = Client.objects.filter(**dicts).first()
+                        if obj and getattr(client.eav,key) != item:
+                            return Response({"error": f"{key} is already exist"}, status=status.HTTP_400_BAD_REQUEST)
                     if field_data.get('data_type') == 'select':
                         ob = BlockField.objects.get(id=field_data.get('id'))
                         values = ob.attribute.enum_group.values.all()

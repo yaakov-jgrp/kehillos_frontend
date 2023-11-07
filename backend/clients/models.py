@@ -37,6 +37,14 @@ class Block(models.Model):
     display_order = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            # This is a new instance, so get the max display_order and increment by 1
+            max_display_order = Block.objects.aggregate(models.Max('display_order'))['display_order__max']
+            if max_display_order is not None:
+                self.display_order = max_display_order + 1
+
+        super(BlockField, self).save(*args, **kwargs)
     def __str__(self):
         return str(self.display_order) + " " + self.name
 
@@ -53,6 +61,14 @@ class BlockField(models.Model):
     display_order = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            # This is a new instance, so get the max display_order and increment by 1
+            max_display_order = BlockField.objects.aggregate(models.Max('display_order'))['display_order__max']
+            if max_display_order is not None:
+                self.display_order = max_display_order + 1
+
+        super(BlockField, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(self.display_order) + " " + self.attribute.name
