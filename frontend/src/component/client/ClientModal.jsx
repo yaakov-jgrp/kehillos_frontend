@@ -7,10 +7,7 @@ import clientsService from "../../services/clients";
 import ErrorMessage from "../common/ErrorMessage";
 import { errorsToastHandler } from "../../lib/CommonFunctions";
 import CustomField from "../fields/CustomField";
-import EditButtonIcon from "../common/EditButton";
-import { MdDelete } from "react-icons/md";
-import { PiDotsSixVerticalBold } from "react-icons/pi";
-import { NumberFieldConstants, checkBoxConstants } from "../../lib/FieldConstants";
+import { DateFieldConstants, NumberFieldConstants, checkBoxConstants } from "../../lib/FieldConstants";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 
@@ -25,7 +22,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
             value = item.enum_values.choices[0].id;
         }
         if (item.data_type === "date") {
-            value = dayjs(Date.now());
+            value = dayjs(Date.now()).utc(true).toISOString();
         }
         return {
             [item.field_slug]: value
@@ -76,15 +73,9 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
         let fieldsArray = [];
         for (const field in data) {
             if (field !== "netfree_profile") {
-                if (field.includes("date")) {
-                    fieldsArray.push({
-                        [field]: dayjs(data[field]).utc(true).toISOString()
-                    })
-                } else {
-                    fieldsArray.push({
-                        [field]: data[field]
-                    })
-                }
+                fieldsArray.push({
+                    [field]: data[field]
+                })
             }
         };
         const formData = {
@@ -114,6 +105,8 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
             });
         }
     }
+
+    console.log(defaultValues)
 
 
     useEffect(() => {
@@ -152,7 +145,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                     onSubmit={handleSubmit((data, e) => submitForm(data, e))}
                                 >
                                     <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                                        <h3 className="text-2xl font-semibold">{t('netfree.addClient')}</h3>
+                                        <h3 className="text-2xl font-semibold">{newClient ? t('netfree.addClient') : t('netfree.editClient')}</h3>
                                         <button
                                             className="bg-transparent border-0 text-black float-right"
                                             onClick={() => setShowModal(false)}
@@ -185,6 +178,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                         {
                                             fullFormData.map((field, index) => {
                                                 const isCheckBox = checkBoxConstants.includes(field.data_type);
+                                                const isDate = DateFieldConstants.includes(field.data_type);
                                                 return (
                                                     <div className={`mb-2 ${isCheckBox ? "flex items-center justify-end flex-row-reverse" : ""}`} key={index}>
                                                         <label className={`block text-black text-sm flex items-center justify-between font-bold ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
@@ -194,7 +188,16 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                                             name={field.field_slug}
                                                             control={control}
                                                             render={({ field: { value, onChange, onBlur } }) => (
-                                                                <CustomField field={field} onChange={onChange} value={value} onBlur={onBlur} />
+                                                                <CustomField field={field} onChange={(e) => {
+                                                                    if (isDate) {
+                                                                        setValue(field.field_slug, dayjs(e).utc(true).toISOString(), {
+                                                                            shouldDirty: true,
+                                                                            shouldValidate: true
+                                                                        })
+                                                                    } else {
+                                                                        onChange(e);
+                                                                    }
+                                                                }} value={value} onBlur={onBlur} />
                                                             )}
                                                         />
                                                         {errors[field.field_slug] && <ErrorMessage message={errors[field.field_slug].message} />}

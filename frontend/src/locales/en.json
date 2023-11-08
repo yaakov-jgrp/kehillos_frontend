@@ -113,6 +113,7 @@
     "filterProfile": "Filter Profile",
     "lastUpdatedAt": "Last Updated at",
     "addClient": "Add Client",
+    "editClient": "Edit Client",
     "userID": "User ID",
     "firstName": "First Name",
     "lastName": "Last Name",
