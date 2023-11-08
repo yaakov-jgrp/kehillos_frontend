@@ -8,17 +8,12 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
 
-class PatientAdminForm(BaseDynamicEntityForm):
-    model = NetfreeUser
+class ClientAdminForm(BaseDynamicEntityForm):
+    model = Client
 
-class PatientAdmin(BaseEntityAdmin):
-    form = PatientAdminForm
+class ClientAdmin(BaseEntityAdmin):
+    form = ClientAdminForm
 
-admin.site.register(NetfreeUser, PatientAdmin)
+admin.site.register(Client, ClientAdmin)
 admin.site.register(Block)
 admin.site.register(BlockField)
-admin.site.register(Client)
-# class NetfreeUserAdmin(ImportExportModelAdmin):
-#     resource_classes = [NetfreeUserResource]
-
-# admin.site.register(NetfreeUser,NetfreeUserAdmin)

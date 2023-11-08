@@ -1,8 +1,12 @@
 import datetime
-from urllib.parse import urlparse
-from utils.helper import NetfreeAPI,replace_placeholders,send_email_with_template
-from django.conf import settings
 import logging
+from urllib.parse import urlparse
+
+from django.conf import settings
+from django.template import loader
+from utils.helper import (NetfreeAPI, replace_placeholders,
+                          send_email_with_template)
+
 cronjob_email_log = logging.getLogger('cronjob-email')
 cronjob_error_log = logging.getLogger('cronjob-error')
 class EmailRequestProcessor:
@@ -40,7 +44,7 @@ class EmailRequestProcessor:
             cronjob_email_log.info(f"user data id  name: {client_name} {client_email}.{user_detail} customer data : {str(data)}")
 
     def send_mail(self, template_name,email_to,custom_email=None):
-        from crm.models import EmailTemplate,SMTPEmail
+        from crm.models import EmailTemplate, SMTPEmail
         try:
             template = EmailTemplate.objects.filter(name=template_name).first()
             if template:
@@ -168,8 +172,8 @@ class EmailRequestProcessor:
         
         
     def find_categories_by_url_or_domain(self, url_or_domain: str):
-        from crm.models import Actions,Categories,NetfreeCategoriesProfile
-        from clients.models import NetfreeUser
+        from clients.models import Client
+        from crm.models import Actions, Categories, NetfreeCategoriesProfile
         res = self.netfree_api.search_category(url_or_domain)
         categories_list = []
         categories_data = {}
@@ -186,7 +190,7 @@ class EmailRequestProcessor:
         self.category_count = categories_obj.count()
         empty = True
         data = {}
-        client = NetfreeUser.objects.filter(user_id=self.email_request.customer_id).first()
+        client = Client.objects.filter(eav__email=self.email_request.sender_email).first()
         if client and client.netfree_profile:
             default_netfree_categories = client.netfree_profile
         else:
@@ -377,9 +381,10 @@ class EmailRequestProcessor:
 
 
 class NetfreeProcessor:
-    def __init__(self,urls,customer_id):
+    def __init__(self,data,customer_id):
         self.customer_id = customer_id
-        self.urls = urls
+        self.urls = data.get('sector_block')
+        self.netfree_url = data.get('netfree_url')
         self.category_count = 0
         self.default = False
         self.netfree_api = NetfreeAPI()
@@ -463,7 +468,8 @@ class NetfreeProcessor:
         else:
             raise ValueError("Invalid condition. Use 'Minutes', 'Hours', 'Days', or 'Weeks'.")
     def find_categories_by_url_or_domain(self, url_or_domain: str):
-            from crm.models import Actions,Categories,NetfreeCategoriesProfile
+            from crm.models import (Actions, Categories,
+                                    NetfreeCategoriesProfile)
             res = self.netfree_api.search_category(url_or_domain)
             categories_list = []
             categories_data = {}
@@ -578,7 +584,15 @@ class NetfreeProcessor:
                 else:
                     self.process_actions_urls[label] = [url] 
         return True
+    
+    def ren(self,template_name,url,pretext="",aftertext="",time=''):
+        templates = loader.get_template('gen.html')
+        email_html = templates.render({'urls': url,"pretext":pretext,"aftertext":aftertext,"time":time})
+        return email_html
+    
     def process(self):
+        from crm.models import EmailTemplate, SMTPEmail,Hoursvalues
+        template = EmailTemplate.objects.filter(id=4).first()
         if self.urls:
             for url in self.urls:
                 if url.startswith("https://"):
@@ -591,15 +605,62 @@ class NetfreeProcessor:
                         pass
                         # print(self.all_urls)
                         # print(self.actions_done)
-        print("start here\n")
-        # print(self.process_actions_urls)
 
+
+        instance = SMTPEmail.objects.last()
+        settings.EMAIL_HOST_USER = instance.email
+        settings.EMAIL_HOST_PASSWORD = instance.password
+        template_name = "email.html"
+        client_email = "prashant@prashantsaini.me"
+        templates = loader.get_template('open-domain.html')
+        traffic_recording_open_domain_temporary = ""
+        traffic_recording_open_url_temporary = ""
         for key,item in self.process_actions_urls.items():
-            print(key)
-            for i in item:
-                print(i)
+            if "Open Domain for" in key:
+                time = key.split("Open Domain for")[-1]
+                predeafault = Hoursvalues.objects.filter(is_default=True,text_type="pre_text",website="open_domain_temporary").first()
+                afterdeafault = Hoursvalues.objects.filter(is_default=True,text_type="after_text",website="open_domain_temporary").first()
+                pretext = Hoursvalues.objects.filter(hour=50,text_type="pre_text",website="open_domain_temporary").first() if Hoursvalues.objects.filter(hour=50,text_type="pre_text",website="open_domain_temporary").first() else predeafault
+                aftertext = Hoursvalues.objects.filter(hour=50,text_type="after_text",website="open_domain_temporary").first() if Hoursvalues.objects.filter(hour=50,text_type="after_text",website="open_domain_temporary").first() else afterdeafault
+                traffic_recording_open_domain_temporary += self.ren(template_name='gen.html',url=self.process_actions_urls.get(key),pretext=pretext.text,aftertext=aftertext.text,time=time)
+            if "Open URL for" in key:
+                time = key.split("Open URL for")[-1]
+                predeafault = Hoursvalues.objects.filter(is_default=True,text_type="pre_text",website="open_url_temporary").first()
+                afterdeafault = Hoursvalues.objects.filter(is_default=True,text_type="after_text",website="open_url_temporary").first()
+                pretext = Hoursvalues.objects.filter(hour=50,text_type="pre_text",website="open_url_temporary").first() if Hoursvalues.objects.filter(hour=50,text_type="pre_text",website="open_url_temporary").first() else predeafault
+                aftertext = Hoursvalues.objects.filter(hour=50,text_type="after_text",website="open_url_temporary").first() if Hoursvalues.objects.filter(hour=50,text_type="after_text",website="open_url_temporary").first() else afterdeafault
+                traffic_recording_open_url_temporary += self.ren(template_name='gen.html',url=self.process_actions_urls.get(key),pretext=pretext.text,aftertext=aftertext.text,time=time)
 
-        print(self.all_urls)
+
+        format_variables = {
+                "client_email": "prashant@prashantsaini.me",
+                "traffic_recording_open_domain_pre_text":Hoursvalues.objects.filter(website='open_domain',text_type='pre_text').first().text,
+                "traffic_recording_open_domain_list":self.ren('gen.html',self.process_actions_urls.get('Open Domain')),
+                "traffic_recording_open_domain_after_text":Hoursvalues.objects.filter(website='open_domain',text_type='after_text').first().text,
+                "traffic_recording_open_url_pre_text":Hoursvalues.objects.filter(website='open_url',text_type='pre_text').first().text,
+                "traffic_recording_open_url_list":self.ren('gen.html',self.process_actions_urls.get('Open URL')),
+                "traffic_recording_open_url_after_text":Hoursvalues.objects.filter(website='open_url',text_type='after_text').first().text,
+                "traffic_recording_blocked_pre_text":Hoursvalues.objects.filter(website='netfree_block',text_type='pre_text').first().text,
+                "traffic_recording_blocked_list":self.ren('gen.html',self.process_actions_urls.get('Open URL for 10 Hours')),
+                "traffic_recording_blocked_after_text":Hoursvalues.objects.filter(website='netfree_block',text_type='after_text').first().text,
+                # "traffic_recording_open_domain_temporary_pre_text":test_dict_pre.get('50 Hours'),
+                # "traffic_recording_open_domain_temporary_x_x":"Open Domain for 50 Hours".split("Open Domain for")[1].strip(),
+                # "traffic_recording_open_domain_temporary_list":self.ren(self.process_actions_urls.get('Open Domain')),
+                "traffic_recording_open_domain_temporary":traffic_recording_open_domain_temporary,
+                "traffic_recording_open_url_temporary":traffic_recording_open_url_temporary,
+                # "traffic_recording_open_domain_temporary_after_text":test_dict_after.get('50 Hours'),
+                # "traffic_recording_open_url_temporary_pre_text":test_url_dict_pre.get('50 Hours'),
+                # "traffic_recording_open_url_temporary_x_x":"Open Domain for 50 Hours".split("Open Domain for")[1].strip(),
+                # "traffic_recording_open_url_temporary_list":self.ren(self.process_actions_urls.get('Open Domain')),
+                # "traffic_recording_open_url_temporary_after_text":test_url_dict_after.get('50 Hours'),
+                }
+        context = {
+                "your_string": replace_placeholders(template.html, format_variables)
+            }
+        to_email = client_email
+        subject = replace_placeholders(template.subject, format_variables)
+        send_email_with_template(subject, to_email, template_name, context)
+        
 
 
 

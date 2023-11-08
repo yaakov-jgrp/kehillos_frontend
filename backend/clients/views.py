@@ -17,6 +17,8 @@ from django.core.paginator import PageNotAnInteger
 # Create your views here.
 class ClientsList(APIView):
     def get(self, request):
+        params = self.request.query_params
+        lang = params.get("lang")
         clients = Client.objects.all().order_by('id')
         page = request.GET.get('page', 1)  # Get the requested page from the query parameters
         page_size = 10  # Define the number of clients per page# Get the page size from the query parameters
@@ -43,7 +45,10 @@ class ClientsList(APIView):
         for block in blocks:
             block_info = BlockField.objects.filter(block=block,display=True).order_by('display_order')
             for block_field in block_info:
-                fields.append({block_field.attribute.slug:block_field.attribute.name})
+                if lang=='he':
+                    fields.append({block_field.attribute.slug:block_field.name_he})
+                else:
+                    fields.append({block_field.attribute.slug:block_field.attribute.name})
                 check_fields.append(block_field.attribute.slug)
 
         client_data1 = {}
@@ -131,6 +136,17 @@ class ClientsList(APIView):
 
 class ClientsDetail(APIView):
     # Helper method to get a Client object by primary key
+    def parse_datetime_with_milliseconds(self,item):
+        try:
+            # Try to parse with milliseconds
+            return datetime.datetime.strptime(item, "%Y-%m-%dT%H:%M:%S.%fZ")
+        except ValueError:
+            try:
+                # Try to parse without milliseconds
+                return datetime.datetime.strptime(item, "%Y-%m-%dT%H:%M:%SZ")
+            except ValueError:
+                # Handle the case where neither format matches
+                raise ValueError("Datetime string does not match the expected format")
     def get_object(self, pk):
         try:
             return Client.objects.get(pk=pk)
@@ -180,7 +196,8 @@ class ClientsDetail(APIView):
                             if str(value.id) == str(item):
                                 setattr(client.eav, key, value)
                     elif field_data.get('data_type') == 'date':
-                        item = datetime.datetime.strptime(item, "%Y-%m-%dT%H:%M:%S.%fZ")
+                        item = self.parse_datetime_with_milliseconds(item)
+                        setattr(client.eav, key, item)
                     else:
                         setattr(client.eav, key, item)
             
@@ -284,6 +301,7 @@ class ClientsFields(APIView):
             "display_order":block.display_order,
             'block_id': block.id,
             'block': block.name,
+            'name_he': block.name_he,
             'field': attr,
         }
 
@@ -303,9 +321,10 @@ class ClientsFields(APIView):
         value = data.get('value')
         unique = bool(data.get('unique'))
         display = bool(data.get('display'))
+        name_he = data.get('name_he')
 
         if is_block_created:
-            block = Block.objects.create(name=data.get('name'))
+            block = Block.objects.create(name=data.get('name'),name_he=data.get('name_he'))
             return Response({'data': data}, status=status.HTTP_201_CREATED)
 
         data_type = self.check_datatype(data.get('data_type'))
@@ -324,13 +343,13 @@ class ClientsFields(APIView):
                 enum_value, _ = EnumValue.objects.get_or_create(value=i)
                 en_group.values.add(enum_value)
             attribute = Attribute.objects.create(name=data.get('name'), datatype=datatype, enum_group=en_group)
-            BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display)
+            BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display,name_he=name_he)
             return Response({'data': "created"}, status=status.HTTP_201_CREATED)
         else:
             attr_check = Attribute.objects.filter(name=data.get('name').capitalize(), datatype=datatype).first()
             if not attr_check:
                 attribute, created = Attribute.objects.get_or_create(name=data.get('name'), datatype=datatype)
-                BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display)
+                BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display,name_he=name_he)
                 return Response({'data': "created"}, status=status.HTTP_201_CREATED)
             return Response({'error': 'already exist'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -397,6 +416,9 @@ class ClientsFields(APIView):
         display_order = field_data.get('display_order')
         field_name = field_data.get('name')
         value = field_data.get('value')
+        name_he = field_data.get('name_he')
+        if name_he:
+            obj.name_he = name_he
 
         if obj.unique and not unique and obj.is_editable:
             # If the field is unique but 'unique' is set to False, update 'unique' to False

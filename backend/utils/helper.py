@@ -1,15 +1,17 @@
+import imaplib
+import json
+import os
+import random
 import re
-from django.core.mail import EmailMultiAlternatives
+import string
+import time
+
+import requests
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-import time
-import random
-import string
-import imaplib
-from django.core.mail import send_mail
-from django.conf import settings
-import json, requests
-import os
+
 
 def send_email_with_template(subject, to_email, template_name, context):
     # Render the HTML template to a string
@@ -235,13 +237,17 @@ def get_netfree_traffic_data(url):
         data = res.json()
         results = data.get('traffic',[])
         urls = []
+        netfree_urls = []
         custumer_id = None
         for i in results:
             url = None
-            block = None
+            sector_block = None
+            netfree_block = None
             for item in i:
                 if item.get('block','') == "sector":
-                    block = True
+                    sector_block = True
+                if item.get('block','') == "deny":
+                    netfree_block = True
 
                 if item.get('url'):
                     if item.get('url').startswith("https://") or item.get('url').startswith("http://"):
@@ -252,10 +258,16 @@ def get_netfree_traffic_data(url):
 
                     if match:
                         custumer_id = match.group(1)
-            if block:
+            if sector_block:
                 urls.append(url)
+            if netfree_block:
+                netfree_urls.append(url)
             if urls:
                 urls = list(set(urls))
-        return urls,custumer_id
+            if netfree_urls:
+                netfree_urls = list(set(netfree_urls))
+        
+        data = {"netfree_url":netfree_urls,"sector_block":urls}
+        return data,custumer_id
     return False
 

@@ -137,6 +137,28 @@ class NetfreeTraffic(models.Model):
         default=None,
     )
     netfree_profile = models.ForeignKey(NetfreeCategoriesProfile,default=1,on_delete=models.CASCADE,blank=True,null=True)
+
+class Hoursvalues(models.Model):
+    CHOICES = (
+        ('pre_text', 'pre_text'),
+        ('after_text', 'after_text')
+    )
+    WEBSITE_CHOICES = (
+        ('open_url', 'open_url'),
+        ('open_domain', 'open_domain'),
+        ('open_url_temporary', 'open_url_temporary'),
+        ('open_domain_temporary', 'open_domain_temporary'),
+        ('netfree_block', 'netfree_block')
+    )
+    text = models.CharField(max_length=2000)
+    hour = models.IntegerField()
+    text_type = models.CharField(max_length=50,choices=CHOICES)
+    website = models.CharField(max_length=50,choices=WEBSITE_CHOICES)
+    is_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.text_type + " " + self.website + " " + self.text
+
 class Actions(models.Model):
     label = models.CharField(max_length=200)
     is_default = models.BooleanField(default=False)
@@ -250,23 +272,23 @@ class Emailrequest(models.Model):
     requested_website = models.CharField(max_length=2000)
     created_at = models.DateTimeField()
     def save(self,*args,**kwargs):
-        from clients.models import NetfreeUser
-        client = NetfreeUser.objects.filter(user_id=self.customer_id).first()
+        from clients.models import Client
         url_without_www = self.requested_website
         if self.requested_website.startswith("https://"):
             url_without_www = url_without_www.replace("https://", "http://", 1)
             self.requested_website = url_without_www
-        if client:
-            self.username = client.full_name
-            self.sender_email = client.email
-        else:
-            user_detail = netfree_obj.get_user(self.customer_id)
-            if user_detail.status_code == 200:
-                data = user_detail.json()
-                data = data.get('users',[])
-                if len(data)>0:
-                    client_name = data[0].get('full_name',"")
-                    client_email = data[0].get("email","")
+        user_detail = netfree_obj.get_user(self.customer_id)
+        if user_detail.status_code == 200:
+            data = user_detail.json()
+            data = data.get('users',[])
+            if len(data)>0:
+                client_name = data[0].get('full_name',"")
+                client_email = data[0].get("email","")
+                client = Client.objects.filter(eav__email=client_email).first()
+                if client:
+                    self.username = client.eav.first_name
+                    self.sender_email = client.eav.email
+                else:
                     self.username = client_name
                     self.sender_email = client_email
                 

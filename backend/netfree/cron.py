@@ -1,6 +1,7 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from crm.views import ReadEmail
 from apscheduler.triggers.cron import CronTrigger
+from crm.views import ReadEmail
+
 read_email = ReadEmail()
 
 

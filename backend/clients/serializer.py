@@ -31,7 +31,7 @@ class ClientAttributeSerializer(serializers.ModelSerializer):
     enum_values = serializers.SerializerMethodField()
     class Meta:
         model = BlockField
-        fields = ['id','field_name','field_slug','data_type','enum_values','required','defaultvalue','unique','is_delete','is_editable','display_order','display']
+        fields = ['id','field_name','name_he','field_slug','data_type','enum_values','required','defaultvalue','unique','is_delete','is_editable','display_order','display']
 
     def get_field_name(self,obj):
         return obj.attribute.name
@@ -94,6 +94,7 @@ class ClientListSerializer(serializers.Serializer):
             block_data.append({
                 'block_id': block.id,
                 'block': block.name,
+                'name_he': block.name_he,
                 'field': attr,
             })
 
