@@ -91,6 +91,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
             netfree_profile: data.netfree_profile,
             fields: fieldsArray
         }
+
         if (newClient) {
             clientsService.saveClient(formData).then((res) => {
                 reset();
