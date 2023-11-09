@@ -35,7 +35,7 @@ class Block(models.Model):
     is_delete = models.BooleanField(default=True)
     is_editable = models.BooleanField(default=True)
     display_order = models.PositiveIntegerField(default=1)
-    name_he = models.CharField(max_length=100, null=True, blank=True,default="")
+    fields_name_language = models.JSONField(default={})
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def save(self, *args, **kwargs):
@@ -52,7 +52,7 @@ class Block(models.Model):
 class BlockField(models.Model):
     block = models.ForeignKey(Block,on_delete=models.CASCADE,blank=True,null=True)
     datatype = models.CharField(max_length=100, null=True, blank=True,default=None)
-    name_he = models.CharField(max_length=100, null=True, blank=True,default="")
+    fields_name_language = models.JSONField(default={})
     attribute = models.ForeignKey(Attribute,on_delete=models.CASCADE,blank=True,null=True)
     required = models.BooleanField(default=False)
     defaultvalue = models.CharField(max_length=100, null=True, blank=True,default=None)

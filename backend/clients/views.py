@@ -46,7 +46,7 @@ class ClientsList(APIView):
             block_info = BlockField.objects.filter(block=block,display=True).order_by('display_order')
             for block_field in block_info:
                 if lang=='he':
-                    fields.append({block_field.attribute.slug:block_field.name_he})
+                    fields.append({block_field.attribute.slug:block_field.fields_name_language.get(lang) if block_field.fields_name_language.get(lang) else block_field.attribute.name})
                 else:
                     fields.append({block_field.attribute.slug:block_field.attribute.name})
                 check_fields.append(block_field.attribute.slug)
@@ -301,7 +301,7 @@ class ClientsFields(APIView):
             "display_order":block.display_order,
             'block_id': block.id,
             'block': block.name,
-            'name_he': block.name_he,
+            'fields_name_language': block.fields_name_language,
             'field': attr,
         }
 
@@ -324,7 +324,7 @@ class ClientsFields(APIView):
         name_he = data.get('name_he')
 
         if is_block_created:
-            block = Block.objects.create(name=data.get('name'),name_he=data.get('name_he'))
+            block = Block.objects.create(name=data.get('name'),fields_name_language=data.get('name_he'))
             return Response({'data': data}, status=status.HTTP_201_CREATED)
 
         data_type = self.check_datatype(data.get('data_type'))
@@ -343,13 +343,13 @@ class ClientsFields(APIView):
                 enum_value, _ = EnumValue.objects.get_or_create(value=i)
                 en_group.values.add(enum_value)
             attribute = Attribute.objects.create(name=data.get('name'), datatype=datatype, enum_group=en_group)
-            BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display,name_he=name_he)
+            BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display,fields_name_language=name_he)
             return Response({'data': "created"}, status=status.HTTP_201_CREATED)
         else:
             attr_check = Attribute.objects.filter(name=data.get('name').capitalize(), datatype=datatype).first()
             if not attr_check:
                 attribute, created = Attribute.objects.get_or_create(name=data.get('name'), datatype=datatype)
-                BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display,name_he=name_he)
+                BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display,fields_name_language=name_he)
                 return Response({'data': "created"}, status=status.HTTP_201_CREATED)
             return Response({'error': 'already exist'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -382,7 +382,7 @@ class ClientsFields(APIView):
                 block.display_order = field_data.get('display_order')
             name_he = field_data.get('name_he')
             if name_he:
-                block.name_he = name_he
+                block.fields_name_language = name_he
             block.save()
             # Return a success response
         return Response({'data': 'Block updated'}, status=status.HTTP_200_OK)
@@ -421,7 +421,7 @@ class ClientsFields(APIView):
         value = field_data.get('value')
         name_he = field_data.get('name_he')
         if name_he:
-            obj.name_he = name_he
+            obj.fields_name_language = name_he
 
         if obj.unique and not unique and obj.is_editable:
             # If the field is unique but 'unique' is set to False, update 'unique' to False
@@ -509,32 +509,41 @@ class ClientsFields(APIView):
 
 class ClientsImportData(APIView):
     def post(self, request):
-        file = request.data.get('file')
-        if not file or not file.name.endswith('.csv'):
-            return Response({'error': 'Invalid CSV file'}, status=status.HTTP_400_BAD_REQUEST)
 
-        csv_file = file.read().decode('UTF-8')
-        csv_reader = csv.DictReader(csv_file.splitlines())
-        count = 0
-        error_details = []
-        # block_data = get_blocks()
-        # missing_keys = [key for key, value in block_data.items() if value['required'] and key not in [list(d.keys())[0] for d in fields]]
+        data = request.data
+        fields = data.get('clientsData', [])
+        if not fields:
+            return Response({'error': 'No data'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        block_data = get_blocks()
+        clients_to_create = []
+        for field in fields:
+            missing_keys = [key for key, value in block_data.items() if value['required'] and  not field.get(key)]
+            client = Client()
+            if missing_keys:
+                return Response({'error': 'fields required'}, status=status.HTTP_400_BAD_REQUEST)
+            for key,item in field.items():
+                key_data = block_data.get(key)
+                if not key_data:
+                    return Response({"error": "Fields are invalid"}, status=status.HTTP_400_BAD_REQUEST)
+                if key_data.get('required') and not key_data.get('defaultvalue'):
+                    if not item:
+                        return Response({"error": "Field is required"}, status=status.HTTP_400_BAD_REQUEST)
+                if key_data.get('unique'):
+                    dicts = {f'eav__{key}': item}
+                    obj = Client.objects.filter(**dicts).first()
+                    if obj:
+                        return Response({"error": f"{key} is already exist"}, status=status.HTTP_400_BAD_REQUEST)
+                if key_data.get('defaultvalue'):
+                    item = item or key_data.get('defaultvalue')
 
-        # if missing_keys:
-        #     for i in missing_keys:
-        #         return Response({"error": f"{i} Field is required"}, status=status.HTTP_400_BAD_REQUEST)
-        for row_number, row in enumerate(csv_reader, start=1):
-            serializer = NetfreeUserSerializer(data=row)
-            if serializer.is_valid():
-                serializer.save()
-                count+=1
-            else:
-                errors = {}
-                for field, value in serializer.errors.items():
-                    errors[field] = value[0] if isinstance(value, list) else value
-                    break
-                error_details.append({'row': row_number, 'data': row, 'error': [errors]})
+                attr_name = key
+                if key_data.get('data_type') == 'select':
+                    item = EnumValue.objects.filter(id=item).first()  
 
-        if error_details:
-            return Response({'errors': error_details, "Total saved":count}, status=status.HTTP_400_BAD_REQUEST)
+                if key_data.get('data_type') == 'date':
+                    item = datetime.datetime.strptime(item, "%Y-%m-%d")
+                setattr(client.eav, attr_name, item)
+            client.save()
+            clients_to_create.append(client)
         return Response({'message': 'CSV file uploaded successfully'}, status=status.HTTP_201_CREATED)
