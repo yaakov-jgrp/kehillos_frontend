@@ -20,6 +20,7 @@ import DisplayFieldsModal from '../component/client/DisplayFieldsModal';
 
 const ClientsForm = () => {
     const { t } = useTranslation();
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     const [isLoading, setIsLoading] = useState(false);
     const [fullFormData, setFullFormData] = useState(null);
     const [activeBlock, setActiveBlock] = useState(1);
@@ -40,6 +41,7 @@ const ClientsForm = () => {
                 return ({
                     id: fieldData?.id,
                     name: fieldData?.field_name,
+                    name_he: fieldData?.name_he,
                     slug: fieldData?.field_slug,
                     display: fieldData?.display
                 })
@@ -191,7 +193,7 @@ const ClientsForm = () => {
                                                 return (
                                                     <div className={`mb-2 ${isCheckBox ? "flex items-center justify-end flex-row-reverse" : ""}`} key={index}>
                                                         <label className={`block text-black text-sm flex items-center justify-between font-bold ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
-                                                            {field?.field_name}
+                                                            {lang === "he" ? field?.name_he : field?.field_name}
                                                             <div className='flex items-center'>
                                                                 {field?.is_editable && <EditButtonIcon extra="mr-2" onClick={() => editBlockFieldModalHandler(field, false)} />}
                                                                 {field?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => deleteBlockFieldHandler(field?.id, false)} />}

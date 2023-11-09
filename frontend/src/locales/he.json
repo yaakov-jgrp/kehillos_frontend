@@ -50,7 +50,8 @@
     "display": "לְהַצִיג",
     "displayOrder": "הצג סדר",
     "noSections": "אין קטעים להצגה",
-    "noFields": "אין שדות להצגה"
+    "noFields": "אין שדות להצגה",
+    "id": "תְעוּדַת זֶהוּת"
   },
   "emails": {
     "templates": "תבניות",
@@ -75,6 +76,7 @@
   "netfree": {
     "categories": "קטגוריות",
     "name": "שם",
+    "nameHe": "שם בעברית",
     "actions": "פעולות",
     "templateActions": "פעולות תבנית",
     "customEmail": "אימייל מותאם אישית",

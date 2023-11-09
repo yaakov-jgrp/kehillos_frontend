@@ -1,14 +1,30 @@
 import { useState } from "react";
-import Importer from 'react-importer';
 import { useTranslation } from "react-i18next";
+import { Importer, ImporterField, enUS } from 'react-csv-importer';
+import 'react-csv-importer/dist/index.css';
+import { heIL } from "../../locales/reactCsvImporterHe";
+import clientsService from "../../services/clients";
+import { errorsToastHandler } from "../../lib/CommonFunctions";
 
-function CsvImporter() {
+function CsvImporter({ formFields, fetchClientsData }) {
     const [isOpen, setIsOpen] = useState(false);
     const { t } = useTranslation();
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+
+    const importClientsHandler = async (data) => {
+        clientsService.importClients(data).then((res) => {
+            toast.success("Import successfully done");
+            fetchClientsData();
+            setIsOpen(false)
+        }).catch((err) => {
+            errorsToastHandler(err.response.data.error);
+        });
+    }
+
 
     return (
         <>
-            <label onClick={() => { }} className={`w-full rounded-full py-1 px-4 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}>
+            <label onClick={() => { setIsOpen(true) }} className={`w-full rounded-full py-1 px-4 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}>
                 {t("clients.import")}
             </label>
             {isOpen ? (
@@ -28,28 +44,44 @@ function CsvImporter() {
                                     </button>
                                 </div>
                                 <Importer
-                                    fields={[
-                                        {
-                                            label: "Name", key: "name", validators: [
-                                                { validate: "required" },
-                                            ]
-                                        },
-                                        {
-                                            label: "Email", key: "email", validators: [
-                                                { validate: "required" },
-                                                { validate: "unique", error: "This email is not unique" },
-                                            ]
-                                        },
-                                        {
-                                            label: "State", key: "state", transformers: [
-                                                { transformer: "state_code" }
-                                            ]
-                                        },
-                                    ]}
-                                    onComplete={(data) => {
-                                        console.log(data)
+                                    locale={lang === "he" ? heIL : enUS}
+                                    dataHandler={async (rows, { startIndex }) => {
+                                        // required, may be called several times
+                                        // receives a list of parsed objects based on defined fields and user column mapping;
+                                        // (if this callback returns a promise, the widget will wait for it before parsing more data)
+                                        // mock timeout to simulate processing
+                                        const data = {
+                                            clientsData: rows
+                                        }
+                                        importClientsHandler(data);
                                     }}
-                                />
+                                    defaultNoHeader={false} // optional, keeps "data has headers" checkbox off by default
+                                    restartable={false} // optional, lets user choose to upload another file when import is complete
+                                    onStart={({ file, preview, fields, columnFields }) => {
+                                        // optional, invoked when user has mapped columns and started import
+                                        // prepMyAppForIncomingData();
+                                    }}
+                                    onComplete={({ file, preview, fields, columnFields }) => {
+                                        // optional, invoked right after import is done (but user did not dismiss/reset the widget yet)
+                                        // showMyAppToastNotification();
+                                        // console.log(file, preview, fields, columnFields);
+                                    }}
+                                    onClose={({ file, preview, fields, columnFields }) => {
+                                        // optional, if this is specified the user will see a "Finish" button after import is done,
+                                        // which will call this when clicked
+                                        // goToMyAppNextPage();
+                                        // console.log(file, preview, fields, columnFields);
+                                        setIsOpen(false);
+                                    }}
+                                >
+                                    {
+                                        formFields.map((field, index) => {
+                                            return (
+                                                <ImporterField key={index} name={field?.field_slug} label={lang === "he" ? field?.name_he : field?.field_name} optional={!field?.required} />
+                                            )
+                                        })
+                                    }
+                                </Importer>
                             </div>
                         </div>
                     </div>

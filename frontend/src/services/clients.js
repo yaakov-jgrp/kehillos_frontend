@@ -1,7 +1,7 @@
 import api from "./api";
 
 const getClients = (page) => {
-    const lang = localStorage.getItem("DEFAULT_LANGUAGE")
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     return api
         .get(`/api/client/?lang=${lang}&page=${page}`);
 }
@@ -19,11 +19,7 @@ const deleteClient = (id) => {
 }
 
 const importClients = (fileData) => {
-    return api.post(`/api/client/import/`, fileData, {
-        headers: {
-            "Content-Type": "multipart/form-data",
-        }
-    });
+    return api.post(`/api/client/import/`, fileData);
 }
 
 const exportClients = () => {
@@ -31,7 +27,9 @@ const exportClients = () => {
 }
 
 const getFullformData = () => {
-    return api.get("/api/client/field/");
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    // & lang=${ lang }
+    return api.get(`/api/client/field/`);
 }
 
 const createBlockField = (formData) => {

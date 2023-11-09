@@ -50,7 +50,8 @@
     "display": "Display",
     "displayOrder": "Display Order",
     "noSections": "No Sections to show",
-    "noFields": "No Fields to show"
+    "noFields": "No Fields to show",
+    "id": "ID"
   },
   "emails": {
     "templates": "Templates",
@@ -75,6 +76,7 @@
   "netfree": {
     "categories": "Categories",
     "name": "Name",
+    "nameHe": "Name in Hebrew",
     "actions": "Actions",
     "templateActions": "Template Actions",
     "customEmail": "Custom Email",

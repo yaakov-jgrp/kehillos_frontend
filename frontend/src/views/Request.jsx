@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from "react-i18next";
 import SearchField from "../component/fields/SearchField";
-import requestService from '../services/request';
+import requestService from '../../../request';
 import Loader from '../component/common/Loader';
 
 
@@ -29,11 +29,11 @@ const Request = () => {
   }
 
   const formateDateTime = (dateTime) => {
-    const date = new Date(dateTime).toLocaleString('en-us',{month:'short', day:'numeric', year:'numeric'});
+    const date = new Date(dateTime).toLocaleString('en-us', { month: 'short', day: 'numeric', year: 'numeric' });
     let hours = new Date(dateTime).getUTCHours();
     const minutes = new Date(dateTime).getUTCMinutes();
-    const time = `${hours<10 ? '0'+hours : hours}:${minutes<10 ? '0'+minutes : minutes}`;
-    return {date, time}
+    const time = `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+    return { date, time }
   }
 
   const searchResult = (searchBy, value) => {
@@ -41,28 +41,28 @@ const Request = () => {
     let results = JSON.parse(JSON.stringify(allRequestCopy));
     results = results.filter((request) => {
       return request.id.toString().includes(filterFields.id)
-            && request.created_at.toLowerCase().includes(filterFields.created)
-            && (request.customer_id.toString().includes(filterFields.from) || request.username.toLowerCase().includes(filterFields.from) || request.sender_email.toLowerCase().includes(filterFields.from))
-            && request.request_type.toLowerCase().includes(filterFields.requestType)
-            && (request.text.toLowerCase().includes(filterFields.requestDetails) || request.requested_website.toLowerCase().includes(filterFields.requestDetails))
-            && request.action_done.toLowerCase().includes(filterFields.actionsDone)
+        && request.created_at.toLowerCase().includes(filterFields.created)
+        && (request.customer_id.toString().includes(filterFields.from) || request.username.toLowerCase().includes(filterFields.from) || request.sender_email.toLowerCase().includes(filterFields.from))
+        && request.request_type.toLowerCase().includes(filterFields.requestType)
+        && (request.text.toLowerCase().includes(filterFields.requestDetails) || request.requested_website.toLowerCase().includes(filterFields.requestDetails))
+        && request.action_done.toLowerCase().includes(filterFields.actionsDone)
     })
-    if(!filterFields.id && !filterFields.created && !filterFields.from && !filterFields.requestType && !filterFields.requestDetails && !filterFields.actionsDone) {
+    if (!filterFields.id && !filterFields.created && !filterFields.from && !filterFields.requestType && !filterFields.requestDetails && !filterFields.actionsDone) {
       setAllRequests(allRequestCopy);
     } else {
       setAllRequests(results);
     }
   }
 
-  useEffect(()=> {
+  useEffect(() => {
     fetchRequestData();
-    return () => {};
+    return () => { };
   }, [])
   return (
     <div className='w-full bg-white rounded-3xl'>
       <div className='flex py-4 px-7 font-bold text-[#2B3674]'>{t('requests.title')}</div>
       {
-        isLoading && 
+        isLoading &&
         <div className='h-[90vh] w-full flex justify-center items-center'>
           <Loader />
         </div>
@@ -156,16 +156,16 @@ const Request = () => {
                       <a href={`https://netfree.link/app/#/sectors/user-filter-settings/${el.customer_id}`} target='_blank' rel="noreferrer"
                         className='text-[#2B3674] hover:text-[#2B3674] font-bold'
                       >#{el.customer_id}<br /></a>
-                       {el.username}<br />
-                       <a href={`mailto:${el.sender_email}`} className='text-[#2B3674] hover:text-[#2B3674] font-bold' >{el.sender_email}</a>
+                      {el.username}<br />
+                      <a href={`mailto:${el.sender_email}`} className='text-[#2B3674] hover:text-[#2B3674] font-bold' >{el.sender_email}</a>
                     </td>
                     <td>{el.request_type}</td>
                     <td>
-                      <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold'>{el.requested_website.length > 70 ? el.requested_website.substring(0, 70) + "..." : el.requested_website }</a>
+                      <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold'>{el.requested_website.length > 70 ? el.requested_website.substring(0, 70) + "..." : el.requested_website}</a>
                       <br />
                       {el.text}
-                        {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />                  */}
-                      </td> 
+                      {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />                  */}
+                    </td>
                     <td className='flex justify-center gap-4 px-2'>
                       <div className='bg-[#F4F7FE] px-2 py-1'>{el.action_done}</div>
                     </td>

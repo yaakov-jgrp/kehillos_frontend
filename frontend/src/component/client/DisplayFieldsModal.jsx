@@ -8,6 +8,7 @@ import clientsService from "../../services/clients";
 const DisplayFieldsModal = ({ showModal, setShowModal, formValues, displayFields, onClick }) => {
     const { t } = useTranslation();
     const defaultValues = formValues;
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
 
     const submitForm = async (data, e) => {
         e.preventDefault();
@@ -69,7 +70,7 @@ const DisplayFieldsModal = ({ showModal, setShowModal, formValues, displayFields
                                             return (
                                                 <div className="flex items-center justify-between" key={index}>
                                                     <label className="block text-black text-sm font-bold mb-1">
-                                                        {fieldData?.name}
+                                                        {lang === "he" ? fieldData?.name_he : fieldData?.name}
                                                     </label>
                                                     <Controller
                                                         name={fieldData?.slug}

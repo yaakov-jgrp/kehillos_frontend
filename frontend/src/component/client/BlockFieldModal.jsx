@@ -11,10 +11,6 @@ import {
 } from "react-icons/md";
 import CustomCheckBox from '../fields/checkbox';
 import Loader from '../common/Loader';
-import dayjs, { Dayjs } from 'dayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 
 
@@ -24,6 +20,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     const [selectedValues, setSelectedValues] = useState([]);
     const [defaultValues, setDefaultValues] = useState(block ? { name: "", is_block_created: true } : {
         name: "",
+        name_he: "",
         block_id: blockId,
         value: "",
         data_type: dataTypes[0],
@@ -36,8 +33,10 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
 
     const schema = block ? yup.object().shape({
         name: yup.string().min(3, "Name must contain atleast 3 characters").required(),
+        name_he: yup.string().min(3, "Hebrew name must contain atleast 3 characters").required(),
     }) : yup.object().shape({
         name: yup.string().min(3, "Name must contain atleast 3 characters").required(),
+        name_he: yup.string().min(3, "Hebrew name must contain atleast 3 characters").required(),
         block_id: yup.string().required(),
         data_type: yup.string().required("Data type is required"),
         value: yup.string().when('data_type', {
@@ -68,6 +67,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     const initModal = () => {
         setFormLoading(true);
         if (editData) {
+            setValue("name_he", editData?.name_he);
             if (block) {
                 setValue("name", editData?.block);
             } else {
@@ -90,10 +90,12 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     }
 
     const selectValueHandler = () => {
-        const values = [selectValue, ...selectedValues].join(",")
-        setSelectedValues((prev) => ([selectValue, ...prev]))
-        setValue("value", values, { shouldValidate: true, shouldDirty: true });
-        setSelectValue("");
+        if (selectValue !== "") {
+            const values = [selectValue, ...selectedValues].join(",")
+            setSelectedValues((prev) => ([selectValue, ...prev]))
+            setValue("value", values, { shouldValidate: true, shouldDirty: true });
+            setSelectValue("");
+        }
     }
 
     const deleteSelectedValuesHandler = (index) => {
@@ -104,16 +106,26 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
 
     const submitForm = async (data, e) => {
         e.preventDefault();
-        const formData = new FormData();
-        let updatedData;
         if (editData) {
+            let updatedData;
+            const updateArray = [];
             if (block) {
-                formData.append("id", editData.block_id);
-                formData.append("name", data.name);
-                formData.append("is_block", true);
-                updatedData = formData;
+                for (const dirtyField in dirtyFields) {
+                    updateArray.push({
+                        [dirtyField]: data[dirtyField],
+                    })
+                }
+                const updateValues = updateArray.reduce((acc, curr) => Object.assign(acc, curr), {});
+                updatedData = {
+                    fields: [
+                        {
+                            id: editData?.block_id,
+                            ...updateValues
+                        }
+                    ],
+                    is_block: true
+                };
             } else {
-                const updateArray = [];
                 for (const dirtyField in dirtyFields) {
                     if (!BlockFieldCheckValues.includes(dirtyField)) {
                         updateArray.push({
@@ -159,6 +171,12 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
 
     }
 
+    const addSelectValueHandler = (e) => {
+        if (e.target.value !== "") {
+            setSelectValue(e.target.value)
+        }
+    }
+
     useEffect(() => {
         initModal();
     }, [])
@@ -201,6 +219,17 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                     )}
                                 />
                                 {errors.name && <ErrorMessage message={errors.name.message} />}
+                                <label className="block text-black text-sm font-bold my-1">
+                                    {t('netfree.nameHe')}
+                                </label>
+                                <Controller
+                                    name="name_he"
+                                    control={control}
+                                    render={({ field: { value, onChange, onBlur } }) => (
+                                        <input value={value} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" onChange={onChange} onBlur={onBlur} />
+                                    )}
+                                />
+                                {errors.name_he && <ErrorMessage message={errors.name_he.message} />}
                                 {!block &&
                                     <>
                                         <label className="block text-black text-sm font-bold my-1">
@@ -229,7 +258,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                                         {t('clients.value')}
                                                     </label>
                                                     <div className='w-full flex justify-between items-center mb-2'>
-                                                        <input value={selectValue} className="shadow appearance-none outline-none border rounded w-3/4 py-2 px-1 text-black" onChange={(e) => setSelectValue(e.target.value)} />
+                                                        <input value={selectValue} className="shadow appearance-none outline-none border rounded w-3/4 py-2 px-1 text-black" onChange={addSelectValueHandler} />
                                                         <button type='button' className={`rounded-full w-1/5 py-1 px-4 h-fit text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`} onClick={selectValueHandler}>
                                                             {t("clients.add")}
                                                         </button>

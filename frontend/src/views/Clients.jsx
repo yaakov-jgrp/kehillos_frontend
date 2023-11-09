@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from "react-i18next";
-import SearchField from "../component/fields/SearchField";
 import Loader from '../component/common/Loader';
 import clientsService from '../services/clients';
 import AddButtonIcon from '../component/common/AddButton';
@@ -11,7 +10,6 @@ import {
     MdEdit
 } from "react-icons/md";
 import ErrorsModal from '../component/common/ErrorsModal';
-import { toast } from 'react-toastify';
 import CsvImporter from '../component/client/CsvImporter';
 import SettingButtonIcon from '../component/common/SettingButton';
 import { useNavigate } from 'react-router-dom';
@@ -19,23 +17,12 @@ import { DataGrid } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
-
-let filterFields = {
-    userID: '',
-    name: '',
-    email: '',
-    phone: '',
-    sector: '',
-    profile: '',
-}
-
 const Clients = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     dayjs.extend(utc);
     const [isLoading, setIsLoading] = useState(false);
     const [allClients, setAllClients] = useState([]);
-    const [allClientsCopy, setAllClientsCopy] = useState([]);
     const [clientModal, setClientModal] = useState(false);
     const [newClient, setNewClient] = useState(true);
     const [editClient, setEditClient] = useState({});
@@ -50,17 +37,15 @@ const Clients = () => {
     });
     const [totalRows, setTotalRows] = useState(0);
 
-
     const fetchClientsData = async () => {
         setIsLoading(true);
         const clientsData = await clientsService.getClients(paginationModel.page + 1);
         const formData = await clientsService.getFullformData();
-        const displayFieldValues = clientsData.data.field.map((item) => Object.keys(item).join(""));
         let formFields = [];
         let columnsData = [];
         columnsData.push({
             field: "id",
-            headerName: "ID",
+            headerName: t("clients.id"),
             flex: 1
         })
         setTotalRows(clientsData.data.count);
@@ -84,7 +69,7 @@ const Clients = () => {
         })
         columnsData.push({
             field: "clientActions",
-            headerName: "Client Actions",
+            headerName: t("netfree.clientActions"),
             flex: 1,
             renderCell: ({ row }) => {
                 return (
@@ -103,7 +88,6 @@ const Clients = () => {
         });
         setFullFormData(formFields);
         setAllClients(clientsData?.data?.data);
-        setAllClientsCopy(clientsData?.data?.data);
         if (clientsData?.data?.data.length > 0) {
             setEditClient(clientsData?.data?.data[0]);
         }
@@ -124,29 +108,6 @@ const Clients = () => {
     const deleteClientHandler = async (id) => {
         const res = await clientsService.deleteClient(id);
         fetchClientsData();
-    }
-
-    const importClientsHandler = async (e) => {
-        const formData = new FormData();
-        formData.append("file", e.target.files[0]);
-        clientsService.importClients(formData).then((res) => {
-            toast.success("Import successfully done");
-            fetchClientsData();
-        }).catch((err) => {
-            const errors = err.response.data.errors;
-            if (errors.length > 0) {
-                const allErrors = errors.map((errData) => {
-                    const errorMessages = errData.error.map((errMessage) => {
-                        for (const message in errMessage) {
-                            return errMessage[message];
-                        };
-                    });
-                    return errorMessages[0];
-                });
-                setImportErrors(allErrors);
-                setErrorModal(true);
-            }
-        });
     }
 
     const exportClientsHandler = async () => {
@@ -195,7 +156,7 @@ const Clients = () => {
                         setNewClient(true);
                         setClientModal(true);
                     }} />
-                    <CsvImporter />
+                    <CsvImporter formFields={fullFormData} fetchClientsData={fetchClientsData} />
                     <button className={`w-full rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
                         onClick={exportClientsHandler}>
                         {t("clients.export")}

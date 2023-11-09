@@ -106,9 +106,6 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
         }
     }
 
-    console.log(defaultValues)
-
-
     useEffect(() => {
         reset();
         if (clientLists && netfreeProfiles && client) {
