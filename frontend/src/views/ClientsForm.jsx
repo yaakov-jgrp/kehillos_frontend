@@ -162,7 +162,7 @@ const ClientsForm = () => {
                                     key={index}
                                     onClick={() => activeBlockHandler(blockData.block_id)}
                                     active={activeBlock === blockData.block_id}>
-                                    {blockData.block}
+                                    {lang === "he" ? blockData.name_he : blockData.block}
                                     <div className='flex items-center'>
                                         {blockData?.is_editable && <EditButtonIcon extra="mr-2" onClick={() => editBlockFieldModalHandler(blockData, true)} />}
                                         {blockData?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => deleteBlockFieldHandler(blockData.block_id, true)} />}
@@ -183,7 +183,7 @@ const ClientsForm = () => {
                         </label>
                     </h5>
                     <Accordion defaultIndex={[0]} allowMultiple>
-                        {fullFormData && !isLoading && fullFormData.map((blockData, index) => <CustomAccordion key={index} title={blockData.block} onClick={() => addBlockFieldModalHandler(false, blockData.block_id)} >
+                        {fullFormData && !isLoading && fullFormData.map((blockData, index) => <CustomAccordion key={index} title={lang === "he" ? blockData.name_he : blockData.block} onClick={() => addBlockFieldModalHandler(false, blockData.block_id)} >
                             {blockData.field.length > 0 ?
                                 <>
                                     <Draggable onPosChange={(currentPos, newPos,) => getChangedFieldsPos(currentPos, newPos, false, blockData.block_id)}>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from "react-i18next";
 import SearchField from "../component/fields/SearchField";
-import requestService from '../../../request';
+import requestService from '../services/request';
 import Loader from '../component/common/Loader';
 
 
