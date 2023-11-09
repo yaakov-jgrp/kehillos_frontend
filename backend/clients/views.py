@@ -321,10 +321,10 @@ class ClientsFields(APIView):
         value = data.get('value')
         unique = bool(data.get('unique'))
         display = bool(data.get('display'))
-        name_he = data.get('name_he')
+        name_he = data.get('field_name_language')
 
         if is_block_created:
-            block = Block.objects.create(name=data.get('name'),fields_name_language=data.get('name_he'))
+            block = Block.objects.create(name=data.get('name'),fields_name_language=data.get('field_name_language'))
             return Response({'data': data}, status=status.HTTP_201_CREATED)
 
         data_type = self.check_datatype(data.get('data_type'))
@@ -380,7 +380,7 @@ class ClientsFields(APIView):
                 block.name = field_data.get('name')
             if field_data.get('display_order'):
                 block.display_order = field_data.get('display_order')
-            name_he = field_data.get('name_he')
+            name_he = field_data.get('field_name_language')
             if name_he:
                 block.fields_name_language = name_he
             block.save()
@@ -419,7 +419,7 @@ class ClientsFields(APIView):
         display_order = field_data.get('display_order')
         field_name = field_data.get('name')
         value = field_data.get('value')
-        name_he = field_data.get('name_he')
+        name_he = field_data.get('field_name_language')
         if name_he:
             obj.fields_name_language = name_he
 
