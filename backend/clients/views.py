@@ -380,6 +380,9 @@ class ClientsFields(APIView):
                 block.name = field_data.get('name')
             if field_data.get('display_order'):
                 block.display_order = field_data.get('display_order')
+            name_he = field_data.get('name_he')
+            if name_he:
+                block.name_he = name_he
             block.save()
             # Return a success response
         return Response({'data': 'Block updated'}, status=status.HTTP_200_OK)
