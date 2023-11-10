@@ -324,7 +324,7 @@ class ClientsFields(APIView):
         name_he = data.get('field_name_language')
 
         if is_block_created:
-            block = Block.objects.create(name=data.get('name'),fields_name_language=data.get('field_name_language'))
+            block = Block.objects.create(name=data.get('name'),field_name_language=data.get('field_name_language'))
             return Response({'data': data}, status=status.HTTP_201_CREATED)
 
         data_type = self.check_datatype(data.get('data_type'))
@@ -343,13 +343,13 @@ class ClientsFields(APIView):
                 enum_value, _ = EnumValue.objects.get_or_create(value=i)
                 en_group.values.add(enum_value)
             attribute = Attribute.objects.create(name=data.get('name'), datatype=datatype, enum_group=en_group)
-            BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display,fields_name_language=name_he)
+            BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display,field_name_language=name_he)
             return Response({'data': "created"}, status=status.HTTP_201_CREATED)
         else:
             attr_check = Attribute.objects.filter(name=data.get('name').capitalize(), datatype=datatype).first()
             if not attr_check:
                 attribute, created = Attribute.objects.get_or_create(name=data.get('name'), datatype=datatype)
-                BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display,fields_name_language=name_he)
+                BlockField.objects.create(block=block, attribute=attribute, datatype=data.get('data_type'), required=required, defaultvalue=defaultvalue, unique=unique, display=display,field_name_language=name_he)
                 return Response({'data': "created"}, status=status.HTTP_201_CREATED)
             return Response({'error': 'already exist'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -382,7 +382,7 @@ class ClientsFields(APIView):
                 block.display_order = field_data.get('display_order')
             name_he = field_data.get('field_name_language')
             if name_he:
-                block.fields_name_language = name_he
+                block.field_name_language = name_he
             block.save()
             # Return a success response
         return Response({'data': 'Block updated'}, status=status.HTTP_200_OK)
@@ -421,7 +421,7 @@ class ClientsFields(APIView):
         value = field_data.get('value')
         name_he = field_data.get('field_name_language')
         if name_he:
-            obj.fields_name_language = name_he
+            obj.field_name_language = name_he
 
         if obj.unique and not unique and obj.is_editable:
             # If the field is unique but 'unique' is set to False, update 'unique' to False
