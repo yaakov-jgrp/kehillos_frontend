@@ -46,7 +46,7 @@ class ClientsList(APIView):
             block_info = BlockField.objects.filter(block=block,display=True).order_by('display_order')
             for block_field in block_info:
                 if lang=='he':
-                    fields.append({block_field.attribute.slug:block_field.fields_name_language.get(lang) if block_field.fields_name_language.get(lang) else block_field.attribute.name})
+                    fields.append({block_field.attribute.slug:block_field.field_name_language.get(lang) if block_field.field_name_language.get(lang) else block_field.attribute.name})
                 else:
                     fields.append({block_field.attribute.slug:block_field.attribute.name})
                 check_fields.append(block_field.attribute.slug)
@@ -301,7 +301,7 @@ class ClientsFields(APIView):
             "display_order":block.display_order,
             'block_id': block.id,
             'block': block.name,
-            'fields_name_language': block.fields_name_language,
+            'field_name_language': block.field_name_language,
             'field': attr,
         }
 
