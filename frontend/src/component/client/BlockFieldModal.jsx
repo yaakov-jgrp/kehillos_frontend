@@ -18,9 +18,17 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     const { t } = useTranslation();
     const [selectValue, setSelectValue] = useState("");
     const [selectedValues, setSelectedValues] = useState([]);
-    const [defaultValues, setDefaultValues] = useState(block ? { name: "", is_block_created: true } : {
+    const [defaultValues, setDefaultValues] = useState(block ? {
         name: "",
-        name_he: "",
+        field_name_language: {
+            he: ""
+        },
+        is_block_created: true
+    } : {
+        name: "",
+        field_name_language: {
+            he: ""
+        },
         block_id: blockId,
         value: "",
         data_type: dataTypes[0],
@@ -33,10 +41,14 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
 
     const schema = block ? yup.object().shape({
         name: yup.string().min(3, "Name must contain atleast 3 characters").required(),
-        name_he: yup.string().min(3, "Hebrew name must contain atleast 3 characters").required(),
+        field_name_language: yup.object({
+            he: yup.string().min(3, "Hebrew name must contain atleast 3 characters").required()
+        }),
     }) : yup.object().shape({
         name: yup.string().min(3, "Name must contain atleast 3 characters").required(),
-        name_he: yup.string().min(3, "Hebrew name must contain atleast 3 characters").required(),
+        field_name_language: yup.object({
+            he: yup.string().min(3, "Hebrew name must contain atleast 3 characters").required()
+        }),
         block_id: yup.string().required(),
         data_type: yup.string().required("Data type is required"),
         value: yup.string().when('data_type', {
@@ -67,7 +79,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     const initModal = () => {
         setFormLoading(true);
         if (editData) {
-            setValue("name_he", editData?.name_he);
+            setValue("field_name_language", editData?.field_name_language);
             if (block) {
                 setValue("name", editData?.block);
             } else {
@@ -223,13 +235,13 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                     {t('netfree.nameHe')}
                                 </label>
                                 <Controller
-                                    name="name_he"
+                                    name="field_name_language.he"
                                     control={control}
                                     render={({ field: { value, onChange, onBlur } }) => (
                                         <input value={value} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" onChange={onChange} onBlur={onBlur} />
                                     )}
                                 />
-                                {errors.name_he && <ErrorMessage message={errors.name_he.message} />}
+                                {errors?.field_name_language && <ErrorMessage message={errors?.field_name_language?.he?.message} />}
                                 {!block &&
                                     <>
                                         <label className="block text-black text-sm font-bold my-1">

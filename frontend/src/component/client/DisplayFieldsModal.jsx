@@ -19,7 +19,7 @@ const DisplayFieldsModal = ({ showModal, setShowModal, formValues, displayFields
         displayFields.forEach((field) => {
             formData.fields.push({
                 id: field.id,
-                display: data[field.slug]
+                display: data[field.field_slug]
             })
         })
 
@@ -70,10 +70,10 @@ const DisplayFieldsModal = ({ showModal, setShowModal, formValues, displayFields
                                             return (
                                                 <div className="flex items-center justify-between" key={index}>
                                                     <label className="block text-black text-sm font-bold mb-1">
-                                                        {lang === "he" ? fieldData?.name_he : fieldData?.name}
+                                                        {lang === "he" ? fieldData?.field_name_language.he : fieldData?.field_name}
                                                     </label>
                                                     <Controller
-                                                        name={fieldData?.slug}
+                                                        name={fieldData?.field_slug}
                                                         control={control}
                                                         render={({ field: { value, onChange } }) => {
                                                             return (

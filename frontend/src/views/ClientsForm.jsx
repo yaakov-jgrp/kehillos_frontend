@@ -37,15 +37,7 @@ const ClientsForm = () => {
         setFullFormData(res.data.result)
         let displayfields = [];
         res.data.result.forEach((block) => {
-            const data = block?.field.map((fieldData) => {
-                return ({
-                    id: fieldData?.id,
-                    name: fieldData?.field_name,
-                    name_he: fieldData?.name_he,
-                    slug: fieldData?.field_slug,
-                    display: fieldData?.display
-                })
-            })
+            const data = block?.field
             data.forEach((item) => {
                 displayfields.push(item)
             })
@@ -53,7 +45,7 @@ const ClientsForm = () => {
         // Array of objects
         const arr = displayfields.map((item) => {
             return {
-                [item.slug]: item.display
+                [item.field_slug]: item.display
             }
         });
 
@@ -162,7 +154,7 @@ const ClientsForm = () => {
                                     key={index}
                                     onClick={() => activeBlockHandler(blockData.block_id)}
                                     active={activeBlock === blockData.block_id}>
-                                    {lang === "he" ? blockData.name_he : blockData.block}
+                                    {lang === "he" ? blockData?.field_name_language.he : blockData.block}
                                     <div className='flex items-center'>
                                         {blockData?.is_editable && <EditButtonIcon extra="mr-2" onClick={() => editBlockFieldModalHandler(blockData, true)} />}
                                         {blockData?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => deleteBlockFieldHandler(blockData.block_id, true)} />}
@@ -193,7 +185,7 @@ const ClientsForm = () => {
                                                 return (
                                                     <div className={`mb-2 ${isCheckBox ? "flex items-center justify-end flex-row-reverse" : ""}`} key={index}>
                                                         <label className={`block text-black text-sm flex items-center justify-between font-bold ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
-                                                            {lang === "he" ? field?.name_he : field?.field_name}
+                                                            {lang === "he" ? field?.field_name_language.he : field?.field_name}
                                                             <div className='flex items-center'>
                                                                 {field?.is_editable && <EditButtonIcon extra="mr-2" onClick={() => editBlockFieldModalHandler(field, false)} />}
                                                                 {field?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => deleteBlockFieldHandler(field?.id, false)} />}
