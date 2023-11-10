@@ -94,7 +94,7 @@ class ClientListSerializer(serializers.Serializer):
             block_data.append({
                 'block_id': block.id,
                 'block': block.name,
-                'name_he': block.name_he,
+                'field_name_language': block.field_name_language,
                 'field': attr,
             })
 

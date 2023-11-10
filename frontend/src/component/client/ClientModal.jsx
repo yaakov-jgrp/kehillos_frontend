@@ -15,6 +15,7 @@ import utc from 'dayjs/plugin/utc';
 const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clientLists, netfreeProfiles, fullFormData }) => {
     const { t } = useTranslation();
     dayjs.extend(utc);
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     // Array of objects
     const arr = fullFormData.map((item) => {
         let value = "";
@@ -179,7 +180,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                                 return (
                                                     <div className={`mb-2 ${isCheckBox ? "flex items-center justify-end flex-row-reverse" : ""}`} key={index}>
                                                         <label className={`block text-black text-sm flex items-center justify-between font-bold ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
-                                                            {field?.field_name}
+                                                            {lang==='he' ?field.field_name_language.he:field?.field_name}
                                                         </label>
                                                         <Controller
                                                             name={field.field_slug}
