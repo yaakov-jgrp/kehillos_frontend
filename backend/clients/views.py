@@ -95,10 +95,17 @@ class ClientsList(APIView):
         block_data = get_blocks()
         missing_keys = [key for key, value in block_data.items() if value['required'] and key not in [list(d.keys())[0] for d in fields]]
 
+        for index,item in enumerate(fields):
+            key, value = next(iter(item.items()))
+            data = block_data.get(key)
+            if value=="" and not data.get('required'):
+                fields.pop(index)
+                
+
+
         if missing_keys:
             for i in missing_keys:
                 return Response({"error": f"{i} Field is required"}, status=status.HTTP_400_BAD_REQUEST) 
-
 
         for field in fields:
             for key, item in field.items():
@@ -167,6 +174,12 @@ class ClientsDetail(APIView):
         data = request.data
         fields = data.get('fields', [])
         client = self.get_object(pk)
+        block_data = get_blocks()
+        for index,item in enumerate(fields):
+            key, value = next(iter(item.items()))
+            data = block_data.get(key)
+            if value=="" and not data.get('required'):
+                fields.pop(index)
         netfree_profile = data.get('netfree_profile')
         if netfree_profile:
             net = NetfreeCategoriesProfile.objects.filter(id=netfree_profile).first()
@@ -179,12 +192,10 @@ class ClientsDetail(APIView):
             eav = client.eav
             for field in fields:
                 for key, item in field.items():
-                    block_data = get_blocks()
                     field_data = block_data.get(key)
                     if not field_data:
                         return Response({"error": "Fields are invalid"}, status=status.HTTP_400_BAD_REQUEST)
                     if field_data.get('unique'):
-
                         dicts = {f'eav__{key}': item}
                         obj = Client.objects.filter(**dicts).first()
                         if obj and getattr(client.eav,key) != item:
