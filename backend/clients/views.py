@@ -95,11 +95,13 @@ class ClientsList(APIView):
         block_data = get_blocks()
         missing_keys = [key for key, value in block_data.items() if value['required'] and key not in [list(d.keys())[0] for d in fields]]
 
+        process_data = []
         for index,item in enumerate(fields):
             key, value = next(iter(item.items()))
             data = block_data.get(key)
             if value=="" and not data.get('required'):
-                fields.pop(index)
+                value = None
+            process_data.append({key:value})
                 
 
 
@@ -107,7 +109,7 @@ class ClientsList(APIView):
             for i in missing_keys:
                 return Response({"error": f"{i} Field is required"}, status=status.HTTP_400_BAD_REQUEST) 
 
-        for field in fields:
+        for field in process_data:
             for key, item in field.items():
                 key_data = get_blocks().get(key)
                 if not key_data:
@@ -175,11 +177,14 @@ class ClientsDetail(APIView):
         fields = data.get('fields', [])
         client = self.get_object(pk)
         block_data = get_blocks()
+        process_data = []
         for index,item in enumerate(fields):
             key, value = next(iter(item.items()))
             data = block_data.get(key)
             if value=="" and not data.get('required'):
-                fields.pop(index)
+                value = None
+            process_data.append({key:value})
+
         netfree_profile = data.get('netfree_profile')
         if netfree_profile:
             net = NetfreeCategoriesProfile.objects.filter(id=netfree_profile).first()
@@ -190,7 +195,7 @@ class ClientsDetail(APIView):
         
         if client is not None:
             eav = client.eav
-            for field in fields:
+            for field in process_data:
                 for key, item in field.items():
                     field_data = block_data.get(key)
                     if not field_data:
