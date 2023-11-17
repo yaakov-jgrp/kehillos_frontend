@@ -14,9 +14,8 @@ import {
 } from "react-icons/md";
 import EditButtonIcon from "../component/common/EditButton";
 import { Draggable } from "react-drag-reorder";
-import { FiSettings } from 'react-icons/fi';
 import { PiDotsSixVerticalBold } from 'react-icons/pi'
-import DisplayFieldsModal from '../component/client/DisplayFieldsModal';
+import { fetchFullformDataHandler } from '../lib/CommonFunctions';
 
 const ClientsForm = () => {
     const { t } = useTranslation();
@@ -27,38 +26,6 @@ const ClientsForm = () => {
     const [showModal, setShowModal] = useState(false);
     const [isAddBlock, setIsAddBlock] = useState(false);
     const [editData, setEditData] = useState(null);
-    const [showDisplayModal, setShowDisplayModal] = useState(false);
-    const [displayFields, setDisplayFields] = useState([]);
-    const [displayFormValues, setDisplayFormValues] = useState({});
-
-    const fetchFullformDataHandler = useCallback(async () => {
-        setIsLoading(true);
-        const res = await clientsService.getFullformData();
-        setFullFormData(res.data.result)
-        let displayfields = [];
-        res.data.result.forEach((block) => {
-            const data = block?.field
-            data.forEach((item) => {
-                displayfields.push(item)
-            })
-        });
-        // Array of objects
-        const arr = displayfields.map((item) => {
-            return {
-                [item.field_slug]: item.display
-            }
-        });
-
-        // Combine all objects into a single object
-        const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
-
-        setDisplayFormValues(result);
-        setDisplayFields(displayfields);
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 500)
-    }, []);
-
 
     const showModalHandler = () => {
         setShowModal(!showModal);
@@ -81,7 +48,7 @@ const ClientsForm = () => {
             is_block: isBlock
         }
         const res = await clientsService.deleteBlockField(formData);
-        fetchFullformDataHandler();
+        fetchFullformDataHandler(setIsLoading, setFullFormData);
     }
 
     const editBlockFieldModalHandler = (data, isBlock) => {
@@ -132,7 +99,7 @@ const ClientsForm = () => {
     }
 
     useEffect(() => {
-        fetchFullformDataHandler();
+        fetchFullformDataHandler(setIsLoading, setFullFormData);
     }, [fetchFullformDataHandler]);
 
     return (
@@ -169,10 +136,6 @@ const ClientsForm = () => {
                 <div className='flex-2 w-3/4 p-2'>
                     <h5 className='text-start flex items-center justify-between text-[12px] py-2 md:text-[16px] font-bold text-[#2B3674] w-[100%]'>
                         {t('clients.fields')}
-                        <label className={`w-fit rounded-full flex items-center py-1 px-3 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`} onClick={() => setShowDisplayModal(!showDisplayModal)}>
-                            {t("clients.display")}
-                            <FiSettings className={`rounded-full text-white ml-1 w-3 h-3 hover:cursor-pointer`} />
-                        </label>
                     </h5>
                     <Accordion defaultIndex={[0]} allowMultiple>
                         {fullFormData && !isLoading && fullFormData.map((blockData, index) => <CustomAccordion key={index} title={lang === "he" ? blockData.name_he : blockData.block} onClick={() => addBlockFieldModalHandler(false, blockData.block_id)} >
@@ -203,10 +166,7 @@ const ClientsForm = () => {
                     </Accordion>
                 </div>
                 {
-                    showModal && <BlockFieldModal editData={editData} block={isAddBlock} blockId={activeBlock} onClick={() => fetchFullformDataHandler()} setShowModal={setShowModal} />
-                }
-                {
-                    showDisplayModal && <DisplayFieldsModal formValues={displayFormValues} displayFields={displayFields} onClick={() => fetchFullformDataHandler()} showModal={showDisplayModal} setShowModal={setShowDisplayModal} />
+                    showModal && <BlockFieldModal editData={editData} block={isAddBlock} blockId={activeBlock} onClick={() => fetchFullformDataHandler(setIsLoading, setFullFormData)} setShowModal={setShowModal} />
                 }
             </div>
         </div>

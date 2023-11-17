@@ -21,16 +21,16 @@ const requestSuccessInterceptor = (config) => {
 
 api.interceptors.request.use(requestSuccessInterceptor);
 
-axios.interceptors.response.use((res) => {
+api.interceptors.response.use((res) => {
   return res;
-}, async (err) => {
+}, (err) => {
   if (err.response.status === 401) {
-    const originalRequest = err.config;
-    if (err.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem(REFRESH_TOKEN_KEY);
-      return api(originalRequest);
-    }
+    // const originalRequest = err.config;
+    // // if (err.response.status === 401 && !originalRequest._retry) {
+    //   originalRequest._retry = true;
+    // api.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem(REFRESH_TOKEN_KEY);
+    //   return api(originalRequest);
+    // // }
     localStorage.clear();
     window.location = '/signin'
   }

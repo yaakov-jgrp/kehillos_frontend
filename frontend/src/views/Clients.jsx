@@ -11,11 +11,13 @@ import {
 } from "react-icons/md";
 import ErrorsModal from '../component/common/ErrorsModal';
 import CsvImporter from '../component/client/CsvImporter';
-import SettingButtonIcon from '../component/common/SettingButton';
+import { FiSettings } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import DisplayFieldsModal from '../component/client/DisplayFieldsModal';
+import { fetchFullformDataHandler } from '../lib/CommonFunctions';
 
 const Clients = () => {
     const { t } = useTranslation();
@@ -36,6 +38,9 @@ const Clients = () => {
         pageSize: 10,
     });
     const [totalRows, setTotalRows] = useState(0);
+    const [showDisplayModal, setShowDisplayModal] = useState(false);
+    const [displayFields, setDisplayFields] = useState([]);
+    const [displayFormValues, setDisplayFormValues] = useState({});
 
     const fetchClientsData = async () => {
         setIsLoading(true);
@@ -124,6 +129,7 @@ const Clients = () => {
     useEffect(() => {
         fetchClientsData();
         fetchNetfreeProfiles();
+        fetchFullformDataHandler(setIsLoading, setFullFormData, setDisplayFormValues, setDisplayFields)
     }, [paginationModel.page]);
 
     return (
@@ -148,14 +154,15 @@ const Clients = () => {
             }
             <div className='flex justify-between py-4 px-7 font-bold text-[#2B3674]'>
                 {t('clients.title')}
-                <div className='flex max-w-[200px]'>
-                    <SettingButtonIcon extra={''} onClick={() => {
-                        navigate("formSettings");
-                    }} />
+                <div className='flex max-w-[300px]'>
                     <AddButtonIcon extra={''} onClick={() => {
                         setNewClient(true);
                         setClientModal(true);
                     }} />
+                    <label className={`w-fit rounded-full flex items-center py-1 px-3 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`} onClick={() => setShowDisplayModal(!showDisplayModal)}>
+                        {t("clients.display")}
+                        <FiSettings className={`rounded-full text-white ml-1 w-3 h-3 hover:cursor-pointer`} />
+                    </label>
                     <CsvImporter formFields={fullFormData} fetchClientsData={fetchClientsData} />
                     <button className={`w-full rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
                         onClick={exportClientsHandler}>
@@ -195,6 +202,19 @@ const Clients = () => {
                     />
                 }
             </div>
+            {
+                showDisplayModal &&
+                <DisplayFieldsModal
+                    formValues={displayFormValues}
+                    displayFields={displayFields}
+                    onClick={() => {
+                        fetchFullformDataHandler(setIsLoading, setFullFormData, setDisplayFormValues, setDisplayFields);
+                        fetchClientsData();
+                    }}
+                    showModal={showDisplayModal}
+                    setShowModal={setShowDisplayModal}
+                />
+            }
         </div>
     )
 }

@@ -35,7 +35,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
         required: false,
         defaultvalue: "",
         unique: false,
-        display: false
+        display: true
     });
     const [formLoading, setFormLoading] = useState(false);
 
@@ -382,7 +382,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                                 {t('clients.unique')}
                                             </label>
                                         </div>
-                                        <div className='flex my-2'>
+                                        {/* <div className='flex my-2'>
                                             <Controller
                                                 name="display"
                                                 control={control}
@@ -398,7 +398,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                             <label className="block text-black text-sm font-bold">
                                                 {t('clients.display')}
                                             </label>
-                                        </div>
+                                        </div> */}
                                     </>
                                 }
                             </div> :

@@ -50,7 +50,7 @@ const DefaultLayout = () => {
     },
     {
       name: t('clients.clientFormSettings'),
-      path: "clients/formSettings",
+      path: "settings/formSettings",
       component: <ClientsForm />,
     },
     {

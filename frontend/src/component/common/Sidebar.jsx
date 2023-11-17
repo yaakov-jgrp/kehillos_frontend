@@ -25,6 +25,7 @@ import {
 import { HiOutlineUserGroup } from "react-icons/hi2"
 import NetFree from "../../views/NetFree";
 import Clients from "../../views/Clients";
+import ClientsForm from "../../views/ClientsForm";
 
 const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
@@ -55,6 +56,13 @@ const Sidebar = ({ open, onClose }) => {
       type: 'top-menu',
       icon: <MdOutlineSettings className="h-6 w-6" />,
       children: [
+        {
+          name: t('sidebar.clients'),
+          path: "settings/formSettings",
+          type: "menu",
+          icon: <HiOutlineUserGroup className="h-6 w-6" />,
+          component: <ClientsForm />,
+        },
         {
           name: t('sidebar.netfree'),
           path: "settings/netfree",
