@@ -159,11 +159,6 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
     setShowModal(false);
   }
 
-  useEffect(() => {
-    getActionsList();
-    getTemplates();
-  }, [trafficAction])
-
 
   function findPartialMatch(searchString, arr, text) {
     for (const item of arr) {
@@ -207,9 +202,15 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
     }
   }
 
+
+  useEffect(() => {
+    getActionsList();
+    getTemplates();
+  }, [trafficAction])
+
   useEffect(() => {
     getActionUpdateValue()
-  }, [categoryId])
+  }, [categoryId, editActionID])
 
   useEffect(() => {
     if (!sendEmailTypes.Custom) {

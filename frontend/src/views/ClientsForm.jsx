@@ -147,9 +147,9 @@ const ClientsForm = () => {
                                                 const isCheckBox = checkBoxConstants.includes(field.data_type);
                                                 return (
                                                     <div className={`mb-2 ${isCheckBox ? "flex items-center justify-end flex-row-reverse" : ""}`} key={index}>
-                                                        <div className='flex items-center justify-between'>
+                                                        <div className={`flex items-center justify-between ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
                                                             <div className='flex'>
-                                                                <label className={`block text-black text-sm font-bold ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
+                                                                <label className={`block text-black text-sm font-bold`}>
                                                                     {lang === "he" ? field?.field_name_language.he : field?.field_name}
                                                                 </label>
                                                                 <p className='text-sm ml-1 capitalize text-gray-500'>{`(${field?.data_type})`}</p>

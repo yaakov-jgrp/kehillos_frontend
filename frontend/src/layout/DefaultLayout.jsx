@@ -87,22 +87,19 @@ const DefaultLayout = () => {
   }, [location.pathname]);
 
   const getActiveRoute = (routes) => {
+    let isRoute = 0;
     for (let i = 0; i < routes.length; i++) {
       if (
         window.location.href.indexOf(
           "/" + routes[i].path
         ) !== -1
       ) {
-        setCurrentRoute(routes[i].path);
-        setCurrentRouteName(routes[i].name);
-        navigate(routes[i].path);
+        isRoute = i;
       }
     }
-    if (currentRoute === "" || currentRouteName === "") {
-      setCurrentRoute(routes[0].path);
-      setCurrentRouteName(routes[0].name);
-      navigate(routes[0].path);
-    }
+    setCurrentRoute(routes[isRoute].path);
+    setCurrentRouteName(routes[isRoute].name);
+    navigate(routes[isRoute].path);
   };
   const getActiveNavbar = (routes) => {
     let activeNavbar = false;

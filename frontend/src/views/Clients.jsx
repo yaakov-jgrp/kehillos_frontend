@@ -18,6 +18,8 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import DisplayFieldsModal from '../component/client/DisplayFieldsModal';
 import { fetchFullformDataHandler } from '../lib/CommonFunctions';
+import { NumberFieldConstants, dateRegex } from '../lib/FieldConstants';
+import DataGridSeachBar from '../component/client/DataGridSeachBar';
 
 const Clients = () => {
     const { t } = useTranslation();
@@ -48,11 +50,16 @@ const Clients = () => {
         const formData = await clientsService.getFullformData();
         let formFields = [];
         let columnsData = [];
+        formData.data.result.forEach((block) => {
+            block.field.forEach((field) => {
+                formFields.push(field);
+            })
+        });
         columnsData.push({
             field: "id",
             headerName: t("clients.id"),
             flex: 1
-        })
+        });
         setTotalRows(clientsData.data.count);
         clientsData.data.field.forEach((item, i) => {
             const column = {
@@ -60,14 +67,16 @@ const Clients = () => {
                 headerName: item[Object.keys(item).join("")],
                 flex: 1,
                 renderCell: ({ row }) => {
-                    const dataValue = row[Object.keys(item).join("")]
+                    const dataValue = row[Object.keys(item).join("")];
+                    const columnField = formFields.filter((field) => field?.field_slug === Object.keys(item).join(""))[0];
                     const value = typeof dataValue === "object" ? dataValue?.value : dataValue;
                     let isDate = false;
-                    if (dayjs(value, true).isValid() && typeof value === "string") {
+                    const isNumber = NumberFieldConstants.includes(columnField.data_type);
+                    if (dateRegex.test(value)) {
                         isDate = true;
                     }
 
-                    return isDate ? <p>{dayjs(value).format("DD/MM/YYYY")}</p> : <p>{value}</p>;
+                    return isDate ? <p>{dayjs(value).format("DD/MM/YYYY")}</p> : <p>{isNumber ? parseFloat(value) : value}</p>;
                 },
             }
             columnsData.push(column)
@@ -86,11 +95,6 @@ const Clients = () => {
             },
         })
         setColumns(columnsData);
-        formData.data.result.forEach((block) => {
-            block.field.forEach((field) => {
-                formFields.push(field);
-            })
-        });
         setFullFormData(formFields);
         setAllClients(clientsData?.data?.data);
         if (clientsData?.data?.data.length > 0) {
@@ -187,6 +191,11 @@ const Clients = () => {
                             pagination: {
                                 paginationModel: paginationModel,
                             },
+                            filter: {
+                                filterModel: {
+                                    items: [],
+                                },
+                            },
                         }}
                         sx={{
                             borderRadius: "10px",
@@ -197,8 +206,17 @@ const Clients = () => {
                         onPaginationModelChange={setPaginationModel}
                         pageSizeOptions={[10]}
                         paginationMode="server"
-                        disableSelectionOnClick={true}
-                        disableRowSelectionOnClick={true}
+                        disableSelectionOnClick
+                        disableRowSelectionOnClick
+                        disableColumnFilter
+                        disableColumnSelector
+                        disableDensitySelector
+                        slots={{ toolbar: DataGridSeachBar }}
+                        slotProps={{
+                            toolbar: {
+                                showQuickFilter: true,
+                            },
+                        }}
                     />
                 }
             </div>
