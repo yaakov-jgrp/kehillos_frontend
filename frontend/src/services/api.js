@@ -24,7 +24,7 @@ api.interceptors.request.use(requestSuccessInterceptor);
 api.interceptors.response.use((res) => {
   return res;
 }, (err) => {
-  if (err.response.status === 401) {
+  if (err.response.status >= 400 && err.response.status < 500) {
     // const originalRequest = err.config;
     // // if (err.response.status === 401 && !originalRequest._retry) {
     //   originalRequest._retry = true;

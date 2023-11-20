@@ -6,7 +6,7 @@ import SidebarLinks from "./SidebarLinks";
 // import routes from "../../routes";
 import { useTranslation } from "react-i18next";
 
-import Dashboard from "../../views/Dashboard";
+// import Dashboard from "../../views/Dashboard";
 import Request from "../../views/Request";
 import Profile from "../../views/Profile";
 import Emails from "../../views/Emails";

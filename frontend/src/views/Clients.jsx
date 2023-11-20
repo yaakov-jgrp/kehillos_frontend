@@ -160,7 +160,7 @@ const Clients = () => {
                         setClientModal(true);
                     }} />
                     <label className={`w-fit rounded-full flex items-center py-1 px-3 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`} onClick={() => setShowDisplayModal(!showDisplayModal)}>
-                        {t("clients.display")}
+                        {t("clients.visibility")}
                         <FiSettings className={`rounded-full text-white ml-1 w-3 h-3 hover:cursor-pointer`} />
                     </label>
                     <CsvImporter formFields={fullFormData} fetchClientsData={fetchClientsData} />

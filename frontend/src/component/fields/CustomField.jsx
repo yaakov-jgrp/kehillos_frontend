@@ -7,8 +7,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomCheckBox from './checkbox';
 
 function CustomField(props) {
-    const { data_type, required, enum_values } = props.field
-    const { onChange, onBlur, value } = props;
+    const { data_type, required, enum_values, defaultvalue } = props.field
+    const { onChange, onBlur, value, disabled } = props;
     const handleNumberkeyPress = (e) => {
         if (e.key == "e") {
             e.preventDefault();
@@ -28,6 +28,8 @@ function CustomField(props) {
                     onChange={onChange}
                     onBlur={onBlur}
                     value={value}
+                    disabled={disabled}
+                    placeholder={defaultvalue}
                 />}
             {NumberFieldConstants.includes(data_type) &&
                 <input
@@ -40,6 +42,8 @@ function CustomField(props) {
                     onChange={onChange}
                     onBlur={onBlur}
                     value={value}
+                    disabled={disabled}
+                    placeholder={defaultvalue}
                 />}
             {data_type === "select" &&
                 <select
@@ -48,6 +52,7 @@ function CustomField(props) {
                     onChange={onChange}
                     onBlur={onBlur}
                     value={value}
+                    disabled={disabled}
                     placeholder="Select"
                 >
                     {
@@ -64,6 +69,7 @@ function CustomField(props) {
                     onChange={onChange}
                     onBlur={onBlur}
                     value={value}
+                    disabled={disabled}
                 />
             }
             {DateFieldConstants.includes(data_type) &&
@@ -75,6 +81,7 @@ function CustomField(props) {
                         onChange={onChange}
                         onBlur={onBlur}
                         value={dayjs(value)}
+                        disabled={disabled}
                         sx={{
                             border: 0,
                             "& .MuiInputBase-input": {

@@ -147,15 +147,20 @@ const ClientsForm = () => {
                                                 const isCheckBox = checkBoxConstants.includes(field.data_type);
                                                 return (
                                                     <div className={`mb-2 ${isCheckBox ? "flex items-center justify-end flex-row-reverse" : ""}`} key={index}>
-                                                        <label className={`block text-black text-sm flex items-center justify-between font-bold ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
-                                                            {lang === "he" ? field?.field_name_language.he : field?.field_name}
+                                                        <div className='flex items-center justify-between'>
+                                                            <div className='flex'>
+                                                                <label className={`block text-black text-sm font-bold ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
+                                                                    {lang === "he" ? field?.field_name_language.he : field?.field_name}
+                                                                </label>
+                                                                <p className='text-sm ml-1 capitalize text-gray-500'>{`(${field?.data_type})`}</p>
+                                                            </div>
                                                             <div className='flex items-center'>
                                                                 {field?.is_editable && <EditButtonIcon extra="mr-2" onClick={() => editBlockFieldModalHandler(field, false)} />}
                                                                 {field?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => deleteBlockFieldHandler(field?.id, false)} />}
                                                                 <PiDotsSixVerticalBold className='cursor-grab z-20' />
                                                             </div>
-                                                        </label>
-                                                        <CustomField field={field} />
+                                                        </div>
+                                                        <CustomField disabled={true} field={field} />
                                                     </div>
                                                 )
                                             })

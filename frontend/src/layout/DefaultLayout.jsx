@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../component/common/Sidebar';
 // import Dashboard from '../views/Dashboard';
 import { useTranslation } from "react-i18next";
@@ -22,9 +22,10 @@ import ClientsForm from '../views/ClientsForm';
 const DefaultLayout = () => {
 
   const [open, setOpen] = useState(true);
-  const [currentRoute, setCurrentRoute] = useState("Dashboard");
-  const [currentRouteName, setCurrentRouteName] = useState("Dashboard");
+  const [currentRoute, setCurrentRoute] = useState("");
+  const [currentRouteName, setCurrentRouteName] = useState("");
   const location = useLocation();
+  const navigate = useNavigate();
 
   const { t, i18n } = useTranslation();
 
@@ -94,7 +95,13 @@ const DefaultLayout = () => {
       ) {
         setCurrentRoute(routes[i].path);
         setCurrentRouteName(routes[i].name);
+        navigate(routes[i].path);
       }
+    }
+    if (currentRoute === "" || currentRouteName === "") {
+      setCurrentRoute(routes[0].path);
+      setCurrentRouteName(routes[0].name);
+      navigate(routes[0].path);
     }
   };
   const getActiveNavbar = (routes) => {

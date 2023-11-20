@@ -48,6 +48,7 @@
     "required": "Required",
     "unique": "Unique",
     "display": "Display",
+    "visibility": "Visibility",
     "displayOrder": "Display Order",
     "noSections": "No Sections to show",
     "noFields": "No Fields to show",

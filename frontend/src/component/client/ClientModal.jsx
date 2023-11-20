@@ -180,13 +180,13 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                                 return (
                                                     <div className={`mb-2 ${isCheckBox ? "flex items-center justify-end flex-row-reverse" : ""}`} key={index}>
                                                         <label className={`block text-black text-sm flex items-center justify-between font-bold ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
-                                                            {lang==='he' ?field.field_name_language.he:field?.field_name}
+                                                            {lang === 'he' ? field.field_name_language.he : field?.field_name}
                                                         </label>
                                                         <Controller
                                                             name={field.field_slug}
                                                             control={control}
                                                             render={({ field: { value, onChange, onBlur } }) => (
-                                                                <CustomField field={field} onChange={(e) => {
+                                                                <CustomField disabled={false} field={field} onChange={(e) => {
                                                                     if (isDate) {
                                                                         setValue(field.field_slug, dayjs(e).utc(true).toISOString(), {
                                                                             shouldDirty: true,

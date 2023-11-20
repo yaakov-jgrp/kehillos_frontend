@@ -48,6 +48,7 @@
     "required": "נדרש",
     "unique": "ייחודי",
     "display": "לְהַצִיג",
+    "visibility": "רְאוּת",
     "displayOrder": "הצג סדר",
     "noSections": "אין קטעים להצגה",
     "noFields": "אין שדות להצגה",

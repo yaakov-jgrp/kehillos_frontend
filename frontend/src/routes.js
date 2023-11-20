@@ -1,7 +1,7 @@
 import React from "react";
 
 // Admin Imports
-import Dashboard from "./views/Dashboard";
+// import Dashboard from "./views/Dashboard";
 import Request from "./views/Request";
 import Emails from "./views/Emails";
 import NetfreeIcon from '../../assets/netfree.svg';
@@ -19,13 +19,13 @@ import NetFree from "./views/NetFree";
 import Clients from "./views/Clients";
 
 const routes = [
-  {
-    name: "dashboard",
-    path: "dashboard",
-    type: "menu",
-    icon: <MdHome className="h-6 w-6" />,
-    component: <Dashboard />,
-  },
+  // {
+  //   name: "dashboard",
+  //   path: "dashboard",
+  //   type: "menu",
+  //   icon: <MdHome className="h-6 w-6" />,
+  //   component: <Dashboard />,
+  // },
   {
     name: "clients",
     path: "clients",
