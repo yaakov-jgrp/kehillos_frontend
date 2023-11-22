@@ -6,6 +6,11 @@ const getClients = (page) => {
         .get(`/api/client/?lang=${lang}&page=${page}`);
 }
 
+const getClient = (id) => {
+    return api
+        .get(`/api/client/${id}/`);
+}
+
 const saveClient = (clientData) => {
     return api.post(`/api/client/`, clientData);
 }
@@ -46,6 +51,7 @@ const updateBlockField = (formData) => {
 
 const clientsService = {
     getClients,
+    getClient,
     saveClient,
     updateClient,
     deleteClient,

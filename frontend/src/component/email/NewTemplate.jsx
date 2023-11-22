@@ -133,7 +133,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
     if (editableTemplateId) {
       fetchEditableTemplateData();
     }
-  }, []);
+  }, [defaultLanguageValue]);
 
 
   const option = {

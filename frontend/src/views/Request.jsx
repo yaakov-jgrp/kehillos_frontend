@@ -19,6 +19,7 @@ const Request = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [allRequest, setAllRequests] = useState([]);
   const [allRequestCopy, setAllRequestsCopy] = useState([]);
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
 
   const fetchRequestData = async () => {
     setIsLoading(true);
@@ -56,8 +57,8 @@ const Request = () => {
 
   useEffect(() => {
     fetchRequestData();
-    return () => { };
-  }, [])
+  }, [lang])
+
   return (
     <div className='w-full bg-white rounded-3xl'>
       <div className='flex py-4 px-7 font-bold text-[#2B3674]'>{t('requests.title')}</div>

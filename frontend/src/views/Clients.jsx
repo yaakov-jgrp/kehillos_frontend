@@ -25,6 +25,7 @@ const Clients = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     dayjs.extend(utc);
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     const [isLoading, setIsLoading] = useState(false);
     const [allClients, setAllClients] = useState([]);
     const [clientModal, setClientModal] = useState(false);
@@ -58,7 +59,15 @@ const Clients = () => {
         columnsData.push({
             field: "id",
             headerName: t("clients.id"),
-            flex: 1
+            flex: 1,
+            minWidth: 100,
+            renderCell: ({ row }) => {
+                return (
+                    <div className='cursor-pointer w-full' onClick={() => handleRowClick(row.id)}>
+                        <p>{row.id}</p>
+                    </div>
+                );
+            },
         });
         setTotalRows(clientsData.data.count);
         clientsData.data.field.forEach((item, i) => {
@@ -66,6 +75,7 @@ const Clients = () => {
                 field: Object.keys(item).join(""),
                 headerName: item[Object.keys(item).join("")],
                 flex: 1,
+                minWidth: 120,
                 renderCell: ({ row }) => {
                     const dataValue = row[Object.keys(item).join("")];
                     const columnField = formFields.filter((field) => field?.field_slug === Object.keys(item).join(""))[0];
@@ -76,7 +86,13 @@ const Clients = () => {
                         isDate = true;
                     }
 
-                    return isDate ? <p>{dayjs(value).format("DD/MM/YYYY")}</p> : <p>{isNumber ? parseFloat(value) : value}</p>;
+                    return (
+                        <div className='cursor-pointer w-full' onClick={() => handleRowClick(row.id)}>
+                            {
+                                isDate ? <p>{dayjs(value).format("DD/MM/YYYY")}</p> : <p>{isNumber ? parseFloat(value) : value}</p>
+                            }
+                        </div>
+                    );
                 },
             }
             columnsData.push(column)
@@ -85,6 +101,7 @@ const Clients = () => {
             field: "clientActions",
             headerName: t("netfree.clientActions"),
             flex: 1,
+            minWidth: 160,
             renderCell: ({ row }) => {
                 return (
                     <div className="h-auto w-full flex items-center justify-around">
@@ -130,11 +147,15 @@ const Clients = () => {
         a.remove();
     }
 
+    const handleRowClick = (id) => {
+        navigate(`/clients/${id}`);
+    }
+
     useEffect(() => {
         fetchClientsData();
         fetchNetfreeProfiles();
         fetchFullformDataHandler(setIsLoading, setFullFormData, setDisplayFormValues, setDisplayFields)
-    }, [paginationModel.page]);
+    }, [paginationModel.page, lang]);
 
     return (
         <div className='w-full bg-white rounded-3xl'>
@@ -183,6 +204,9 @@ const Clients = () => {
             <div className='h-[calc(100vh-170px)] overflow-y-auto overflow-x-auto mx-5 px-2'>
                 {
                     fullFormData && columns && <DataGrid
+                        style={{
+                            height: "95%"
+                        }}
                         rows={allClients}
                         columns={columns}
                         loading={isLoading}

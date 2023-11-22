@@ -52,7 +52,9 @@
     "displayOrder": "הצג סדר",
     "noSections": "אין קטעים להצגה",
     "noFields": "אין שדות להצגה",
-    "id": "תְעוּדַת זֶהוּת"
+    "id": "תְעוּדַת זֶהוּת",
+    "clientDetails": "פרטי הלקוח",
+    "noClientFound": "לא נמצא לקוח עם תעודת זהות:"
   },
   "emails": {
     "templates": "תבניות",

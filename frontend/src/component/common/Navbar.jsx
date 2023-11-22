@@ -11,7 +11,7 @@ const Navbar = (props) => {
   const { t, i18n } = useTranslation();
 
   return (
-    <nav className={`sticky flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d] ${ i18n.dir() === 'rtl' ? 'xl:mr-3' : 'xl:ml-3'}`}>
+    <nav className={`sticky flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d] ${i18n.dir() === 'rtl' ? 'xl:mr-3' : 'xl:ml-3'}`}>
       <div className="ms-[6px]">
         <div className="h-6 w-auto pt-1">
           <a

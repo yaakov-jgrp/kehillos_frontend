@@ -100,8 +100,7 @@ const ClientsForm = () => {
 
     useEffect(() => {
         fetchFullformDataHandler(setIsLoading, setFullFormData);
-    }, [fetchFullformDataHandler]);
-
+    }, [fetchFullformDataHandler, lang]);
     return (
         <div className='w-full bg-white rounded-3xl'>
             {
@@ -138,7 +137,7 @@ const ClientsForm = () => {
                         {t('clients.fields')}
                     </h5>
                     <Accordion defaultIndex={[0]} allowMultiple>
-                        {fullFormData && !isLoading && fullFormData.map((blockData, index) => <CustomAccordion key={index} title={lang === "he" ? blockData.name_he : blockData.block} onClick={() => addBlockFieldModalHandler(false, blockData.block_id)} >
+                        {fullFormData && !isLoading && fullFormData.map((blockData, index) => <CustomAccordion key={index} showAddButton={true} title={lang === "he" ? blockData.field_name_language.he : blockData.block} onClick={() => addBlockFieldModalHandler(false, blockData.block_id)} >
                             {blockData.field.length > 0 ?
                                 <>
                                     <Draggable onPosChange={(currentPos, newPos,) => getChangedFieldsPos(currentPos, newPos, false, blockData.block_id)}>

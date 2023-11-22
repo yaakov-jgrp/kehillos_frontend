@@ -2,7 +2,7 @@ import React from 'react';
 import { AccordionItem, AccordionButton, Box, AccordionIcon, AccordionPanel } from '@chakra-ui/react'
 import AddButtonIcon from './AddButton';
 
-function CustomAccordion({ title, children, onClick }) {
+function CustomAccordion({ title, children, onClick, showAddButton }) {
     return (
         <AccordionItem className='p-2 mb-4 border-t-0 rounded-md bg-[#ffffff] shadow-lg'>
             {({ isExpanded }) => (
@@ -11,7 +11,7 @@ function CustomAccordion({ title, children, onClick }) {
                         <Box as="span" flex='1' fontSize='1.3rem' textAlign='left' className='flex items-center justify-between'>
                             {title}
                             {
-                                isExpanded && <AddButtonIcon extra={''} onClick={onClick} />
+                                isExpanded && showAddButton && <AddButtonIcon extra={''} onClick={onClick} />
                             }
                         </Box>
                         <AccordionIcon fontSize='1.5rem' />
