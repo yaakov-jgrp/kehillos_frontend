@@ -52,7 +52,9 @@
     "displayOrder": "Display Order",
     "noSections": "No Sections to show",
     "noFields": "No Fields to show",
-    "id": "ID"
+    "id": "ID",
+    "clientDetails": "Client Details",
+    "noClientFound": "No Client Found with ID :"
   },
   "emails": {
     "templates": "Templates",

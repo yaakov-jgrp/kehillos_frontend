@@ -284,7 +284,7 @@ const NetFree = () => {
         getActionsList();
         getDefaultTrafficActions();
         getDefaultTraffic();
-    }, []);
+    }, [defaultLanguageValue]);
 
     const ActionSelectBox = ({ options, categoryName, categoryId, currentActions, operationType, previousValue }) => {
         return (

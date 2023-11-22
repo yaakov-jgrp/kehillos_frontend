@@ -4,7 +4,7 @@ import React from "react";
 // import Dashboard from "./views/Dashboard";
 import Request from "./views/Request";
 import Emails from "./views/Emails";
-import NetfreeIcon from '../../assets/netfree.svg';
+import NetfreeIcon from './assets/netfree.svg';
 import {
   MdHome,
   MdOutlineContactSupport,
@@ -17,57 +17,58 @@ import {
 import { HiOutlineUserGroup } from "react-icons/hi2"
 import NetFree from "./views/NetFree";
 import Clients from "./views/Clients";
+import ClientDetails from "./views/ClientDetails";
 
 const routes = [
   // {
-  //   name: "dashboard",
+  //   name: t('sidebar.dashboard'),
   //   path: "dashboard",
-  //   type: "menu",
   //   icon: <MdHome className="h-6 w-6" />,
   //   component: <Dashboard />,
   // },
   {
-    name: "clients",
+    name: t('sidebar.clients'),
     path: "clients",
     type: "menu",
     icon: <HiOutlineUserGroup className="h-6 w-6" />,
     component: <Clients />,
   },
   {
-    name: "requests",
-    path: "requests",
-    type: "menu",
+    name: t('clients.clientDetails'),
+    path: "clients/:clientId",
+    component: <ClientDetails />,
+  },
+  {
+    name: t('clients.clientFormSettings'),
+    path: "settings/formSettings",
+    component: <ClientsForm />,
+  },
+  {
+    name: t('sidebar.request'),
+    path: "request",
     icon: <MdOutlineContactSupport className="h-6 w-6" />,
     component: <Request />,
   },
   {
-    name: 'settings',
-    type: 'top-menu',
+    name: t('sidebar.netfree'),
+    path: "settings/netfree",
+    type: "menu",
     icon: <MdOutlineSettings className="h-6 w-6" />,
-    children: [
-      {
-        name: "netfree",
-        path: "settings/netfree",
-        type: "menu",
-        icon: <MdOutlineSettings className="h-6 w-6" />,
-        component: <NetFree />,
-      },
-      {
-        name: "emails",
-        path: "settings/emails",
-        type: "menu",
-        icon: <img src={NetfreeIcon} className="h-6 w-6" alt="Netfree" />,
-        component: <Emails />,
-      },
-      {
-        name: "goto",
-        path: "settings/goto",
-        type: "menu",
-        icon: <MdOutlineSettings className="h-6 w-6" />,
-        component: <Emails />,
-      },
-    ]
-  }
+    component: <NetFree />,
+  },
+  {
+    name: t('sidebar.emails'),
+    path: "settings/emails",
+    type: "menu",
+    icon: <MdOutlineSettings className="h-6 w-6" />,
+    component: <Emails />,
+  },
+  // {
+  //   name: t('sidebar.profile'),
+  //   path: "profile",
+  //   icon: <MdPerson className="h-6 w-6" />,
+  //   component: <Profile />,
+  // }
 ];
 
 export default routes;
