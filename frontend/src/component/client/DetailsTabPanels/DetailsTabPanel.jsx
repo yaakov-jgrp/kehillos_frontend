@@ -41,8 +41,8 @@ function DetailsTabPanel(props) {
 
 
                                             return (
-                                                <div className={`mb-2 ${isCheckBox ? "flex items-center justify-end flex-row-reverse" : ""}`} key={index}>
-                                                    <div className={`flex items-center justify-between ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
+                                                <div className={`mb-2`} key={index}>
+                                                    <div className={`flex items-center justify-between mb-1`}>
                                                         <div className='flex'>
                                                             <label className={`block text-black text-sm font-bold`}>
                                                                 {lang === "he" ? field?.field_name_language.he : field?.field_name}

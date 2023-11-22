@@ -61,6 +61,13 @@ const Clients = () => {
             headerName: t("clients.id"),
             flex: 1,
             minWidth: 100,
+            renderCell: ({ row }) => {
+                return (
+                    <div className='cursor-pointer w-full' onClick={() => handleRowClick(row.id)}>
+                        <p>{row.id}</p>
+                    </div>
+                );
+            },
         });
         setTotalRows(clientsData.data.count);
         clientsData.data.field.forEach((item, i) => {
@@ -79,7 +86,13 @@ const Clients = () => {
                         isDate = true;
                     }
 
-                    return isDate ? <p>{dayjs(value).format("DD/MM/YYYY")}</p> : <p>{isNumber ? parseFloat(value) : value}</p>;
+                    return (
+                        <div className='cursor-pointer w-full' onClick={() => handleRowClick(row.id)}>
+                            {
+                                isDate ? <p>{dayjs(value).format("DD/MM/YYYY")}</p> : <p>{isNumber ? parseFloat(value) : value}</p>
+                            }
+                        </div>
+                    );
                 },
             }
             columnsData.push(column)
@@ -134,8 +147,8 @@ const Clients = () => {
         a.remove();
     }
 
-    const handleRowClick = (rowData) => {
-        navigate(`/clients/${rowData.row.id}`);
+    const handleRowClick = (id) => {
+        navigate(`/clients/${id}`);
     }
 
     useEffect(() => {
@@ -198,7 +211,6 @@ const Clients = () => {
                         columns={columns}
                         loading={isLoading}
                         rowCount={totalRows}
-                        onRowClick={handleRowClick}
                         initialState={{
                             pagination: {
                                 paginationModel: paginationModel,
