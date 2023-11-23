@@ -1,6 +1,7 @@
 {
   "common": {
-    "pages": "Pages"
+    "pages": "Pages",
+    "noDataFound": "No Data Found"
   },
   "auth": {
     "email": "Email",
@@ -54,7 +55,9 @@
     "noFields": "No Fields to show",
     "id": "ID",
     "clientDetails": "Client Details",
-    "noClientFound": "No Client Found with ID :"
+    "noClientFound": "No Client Found with ID :",
+    "noValueFound": "No Value Found",
+    "filters": "Filters"
   },
   "emails": {
     "templates": "Templates",

@@ -1,12 +1,11 @@
 import api from "./api";
 
-const getRequests = () => {
-  const lang = localStorage.getItem("DEFAULT_LANGUAGE")
-    return api
-      .get(`/api/crm/requests/?lang=${lang}`)
-  }
+const getRequests = (params) => {
+  return api
+    .get(`/api/crm/requests/${params}`)
+}
 
-  const requestService = {
-    getRequests
-  }
-  export default requestService;
+const requestService = {
+  getRequests
+}
+export default requestService;

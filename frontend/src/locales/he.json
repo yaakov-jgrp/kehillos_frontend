@@ -1,6 +1,7 @@
 {
   "common": {
-    "pages": "בית"
+    "pages": "בית",
+    "noDataFound": "לא נמצאו נתונים"
   },
   "auth": {
     "email": "אימייל",
@@ -54,7 +55,9 @@
     "noFields": "אין שדות להצגה",
     "id": "תְעוּדַת זֶהוּת",
     "clientDetails": "פרטי הלקוח",
-    "noClientFound": "לא נמצא לקוח עם תעודת זהות:"
+    "noClientFound": "לא נמצא לקוח עם תעודת זהות:",
+    "noValueFound": "לא נמצא ערך",
+    "filters": "מסננים"
   },
   "emails": {
     "templates": "תבניות",

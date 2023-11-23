@@ -5,10 +5,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomCheckBox from './checkbox';
+import 'react-phone-number-input/style.css'
+import PhoneInput, { parsePhoneNumber } from 'react-phone-number-input'
 
 function CustomField(props) {
     const { data_type, required, enum_values, defaultvalue } = props.field
     const { onChange, onBlur, value, disabled } = props;
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     const handleNumberkeyPress = (e) => {
         if (e.key == "e") {
             e.preventDefault();
@@ -18,6 +21,7 @@ function CustomField(props) {
             }
         }
     }
+
     return (
         <>
             {TextFieldConstants.includes(data_type) &&
@@ -45,13 +49,23 @@ function CustomField(props) {
                     disabled={disabled}
                     placeholder={defaultvalue}
                 />}
+            {/* {
+                data_type === "phone" &&
+                <PhoneInput
+                    placeholder="Enter phone number"
+                    defaultCountry={lang === 'he' ? "IL" : "IN"}
+                    value={value}
+                    onChange={(e) => console.log(e)}
+                    onBlur={onBlur}
+                />
+            } */}
             {data_type === "select" &&
                 <select
                     className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white"
                     required={required}
                     onChange={onChange}
                     onBlur={onBlur}
-                    value={value}
+                    defaultValue={enum_values?.choices.filter((item) => item.value === defaultvalue)[0].id}
                     disabled={disabled}
                     placeholder="Select"
                 >
@@ -62,7 +76,8 @@ function CustomField(props) {
                             );
                         })
                     }
-                </select>}
+                </select>
+            }
             {
                 checkBoxConstants.includes(data_type) &&
                 <CustomCheckBox
@@ -70,6 +85,7 @@ function CustomField(props) {
                     onBlur={onBlur}
                     value={value}
                     disabled={disabled}
+                    defaultChecked={defaultvalue === "true" ? true : false}
                 />
             }
             {DateFieldConstants.includes(data_type) &&
