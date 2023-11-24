@@ -1,7 +1,7 @@
 import { Checkbox } from "@mui/material";
 
 const CustomCheckBox = (props) => {
-  const { extra, ...rest } = props;
+  const { ...rest } = props;
   return (
     <Checkbox
       {...rest}

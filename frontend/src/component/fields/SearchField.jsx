@@ -5,13 +5,13 @@ import { useTranslation } from "react-i18next";
 function SearchField(props) {
   const { label, id, extra, type, placeholder, variant, state, disabled, onChange, name, noUnderline, borderRadius } =
     props;
-  
+
   const { i18n } = useTranslation();
   return (
     <div className={`${extra} ${(i18n.dir() === 'rtl') ? 'text-right' : 'text-left'}`}>
       {label && <label
         htmlFor={id}
-        className={`text-[10px] md:text-[14px] text-navy-700 ${variant === "auth" ? "ml-1.5 font-medium" : "ml-3 font-bold"
+        className={`text-[10px] truncate md:text-[14px] text-navy-700 ${variant === "auth" ? "ml-1.5 font-medium" : "ml-3 font-bold"
           }`}
       >
         {label}

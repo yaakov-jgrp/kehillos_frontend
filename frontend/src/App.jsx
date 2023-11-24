@@ -1,11 +1,11 @@
 
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import "./App.css";
 import { useTranslation } from "react-i18next";
 import i18next from "i18next";
 import SignIn from "./views/auth/SignIn";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
 import {
   BrowserRouter as Router,
   Routes,
@@ -20,6 +20,7 @@ import DefaultLayout from "./layout/DefaultLayout";
 import { ACCESS_TOKEN_KEY } from "./constants";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import * as locales from '@mui/material/locale';
 
 // Admin Imports
 // import Dashboard from "./views/Dashboard";
@@ -45,6 +46,8 @@ import RouteGuard from "./component/common/RouteGuard";
 function App() {
   const { t, i18n } = useTranslation();
   document.body.dir = i18n.dir();
+  const [locale, setLocale] = React.useState('heIL');
+  const lang = localStorage.getItem(DEFAULT_LANGUAGE);
 
   useEffect(() => {
     if (localStorage.getItem(DEFAULT_LANGUAGE)) {
@@ -52,15 +55,18 @@ function App() {
       if (defaultLanguageValue === 'he') {
         document.body.dir = 'rtl'
         i18next.changeLanguage('he');
+        setLocale("heIL")
       } else {
         document.body.dir = 'ltr'
         i18next.changeLanguage('en');
+        setLocale("enUS")
       }
     } else {
       document.body.dir = 'rtl'
       i18next.changeLanguage('he');
+      setLocale("heIL")
     }
-  }, [])
+  }, [lang])
 
 
   const theme = createTheme({
@@ -73,6 +79,12 @@ function App() {
       },
     },
   });
+
+
+  const themeWithLocale = useMemo(
+    () => createTheme(theme, locales[locale]),
+    [locale, theme],
+  );
 
   const routes = [
     // {
@@ -129,7 +141,7 @@ function App() {
 
   return (
     <>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={themeWithLocale}>
         <Router>
           <Routes>
             <Route exact path="/signin" element={<SignIn />} />
