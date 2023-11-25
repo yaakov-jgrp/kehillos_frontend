@@ -6,7 +6,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomCheckBox from './checkbox';
 import 'react-phone-number-input/style.css';
-import PhoneInput, { parsePhoneNumber } from 'react-phone-number-input';
+import PhoneInput from 'react-phone-number-input';
 
 function CustomField(props) {
     const { data_type, required, field_slug, enum_values, defaultvalue } = props.field
@@ -89,7 +89,6 @@ function CustomField(props) {
                     onBlur={onBlur}
                     checked={value === "true" ? true : false}
                     disabled={disabled}
-                    defaultChecked={defaultvalue === "true" ? true : false}
                 />
             }
             {DateFieldConstants.includes(data_type) &&

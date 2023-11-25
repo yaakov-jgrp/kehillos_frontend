@@ -70,7 +70,7 @@ function ClientDetails() {
                                     :
                                     <div className='ml-1'>
                                         <p className='capitalize'>{netfreeprofile?.name}</p>
-                                        <p className='capitalize text-gray-700'>({netfreeprofile?.description})</p>
+                                        {netfreeprofile?.description !== "" && <p className='capitalize text-gray-700'>({netfreeprofile?.description})</p>}
                                     </div>
                                 </div>
                             </div>

@@ -31,7 +31,7 @@ function DetailsTabPanel(props) {
                                             blockData.field.map((field, index) => {
                                                 const emptyValues = ["", null, undefined];
                                                 let value;
-                                                if (DateFieldConstants.includes(field.data_type)) {
+                                                if (DateFieldConstants.includes(field.data_type) && !emptyValues.includes(field?.value)) {
                                                     value = dayjs(field?.value).format("DD/MM/YYYY");
                                                 } else if (field.data_type === "select") {
                                                     value = field?.value[1];
