@@ -5,19 +5,8 @@ import requestService from '../services/request';
 import Loader from '../component/common/Loader';
 import { TablePagination } from '@mui/material';
 import NoDataFound from '../component/common/NoDataFound';
-
-
-const searchFields = {
-  id: '',
-  sender_email: '',
-  username: '',
-  customer_id: '',
-  created_at: '',
-  text: '',
-  request_type: '',
-  requested_website: '',
-  action_done: ''
-};
+import { searchFields } from '../lib/FieldConstants';
+import { formateDateTime } from '../lib/CommonFunctions';
 
 const Request = () => {
   const { t } = useTranslation();
@@ -53,14 +42,6 @@ const Request = () => {
     setTimeout(() => {
       setIsLoading(false);
     }, 500)
-  }
-
-  const formateDateTime = (dateTime) => {
-    const date = new Date(dateTime).toLocaleString('en-us', { month: 'short', day: 'numeric', year: 'numeric' });
-    let hours = new Date(dateTime).getUTCHours();
-    const minutes = new Date(dateTime).getUTCMinutes();
-    const time = `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
-    return { date, time }
   }
 
   const searchResult = (searchBy, value) => {

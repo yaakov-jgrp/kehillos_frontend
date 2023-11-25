@@ -5,13 +5,14 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomCheckBox from './checkbox';
-import 'react-phone-number-input/style.css'
-import PhoneInput, { parsePhoneNumber } from 'react-phone-number-input'
+import 'react-phone-number-input/style.css';
+import PhoneInput from 'react-phone-number-input';
 
 function CustomField(props) {
-    const { data_type, required, enum_values, defaultvalue } = props.field
+    const { data_type, required, field_slug, enum_values, defaultvalue } = props.field
     const { onChange, onBlur, value, disabled } = props;
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+
     const handleNumberkeyPress = (e) => {
         if (e.key == "e") {
             e.preventDefault();
@@ -22,12 +23,13 @@ function CustomField(props) {
         }
     }
 
+
     return (
         <>
             {TextFieldConstants.includes(data_type) &&
                 <input
                     type={data_type}
-                    className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
+                    className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
                     required={required}
                     onChange={onChange}
                     onBlur={onBlur}
@@ -41,7 +43,7 @@ function CustomField(props) {
                     min="0"
                     step={data_type === "number" ? "1" : "0.01"}
                     onKeyDown={handleNumberkeyPress}
-                    className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
+                    className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
                     required={required}
                     onChange={onChange}
                     onBlur={onBlur}
@@ -49,23 +51,25 @@ function CustomField(props) {
                     disabled={disabled}
                     placeholder={defaultvalue}
                 />}
-            {/* {
+            {
                 data_type === "phone" &&
                 <PhoneInput
+                    className='shadow appearance-none outline-none border rounded w-full p-2 text-black [&>input]:outline-none [&>input]:bg-white'
                     placeholder="Enter phone number"
                     defaultCountry={lang === 'he' ? "IL" : "IN"}
                     value={value}
-                    onChange={(e) => console.log(e)}
+                    onChange={onChange}
                     onBlur={onBlur}
+                    disabled={disabled}
                 />
-            } */}
+            }
             {data_type === "select" &&
                 <select
-                    className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white"
+                    className="shadow appearance-none border rounded outline-none w-full p-2 text-black bg-white"
                     required={required}
                     onChange={onChange}
                     onBlur={onBlur}
-                    defaultValue={enum_values?.choices.filter((item) => item.value === defaultvalue)[0].id}
+                    defaultValue={enum_values?.choices?.filter((item) => item.value === defaultvalue)[0]?.id}
                     disabled={disabled}
                     placeholder="Select"
                 >
@@ -83,9 +87,8 @@ function CustomField(props) {
                 <CustomCheckBox
                     onChange={onChange}
                     onBlur={onBlur}
-                    value={value}
+                    checked={value === "true" || value === true ? true : false}
                     disabled={disabled}
-                    defaultChecked={defaultvalue === "true" ? true : false}
                 />
             }
             {DateFieldConstants.includes(data_type) &&
@@ -102,6 +105,7 @@ function CustomField(props) {
                             border: 0,
                             "& .MuiInputBase-input": {
                                 padding: 1.5,
+                                border: "none"
                             }
                         }}
                     />

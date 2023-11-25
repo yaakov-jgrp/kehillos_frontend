@@ -10,40 +10,21 @@ import CustomField from "../fields/CustomField";
 import { DateFieldConstants, NumberFieldConstants, checkBoxConstants } from "../../lib/FieldConstants";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
+import FieldLabel from "../fields/FormLabel";
 
 
 const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clientLists, netfreeProfiles, fullFormData }) => {
     const { t } = useTranslation();
     dayjs.extend(utc);
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-    // Array of objects
-    const arr = fullFormData.map((item) => {
-        let value = "";
-        if (item.data_type === "select") {
-            value = item.enum_values.choices[0].id;
-        }
-        if (item.data_type === "date") {
-            value = dayjs(Date.now()).utc(true).toISOString();
-        }
-        return {
-            [item.field_slug]: value
-        }
-    });
+    const [defaultValues, setDefaultValues] = useState(null);
 
-    arr.push({
-        netfree_profile: netfreeProfiles[0].id,
-    })
-
-    // Combine all objects into a single object
-    const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
-    const defaultValues = result;
-
-    const schemaHandler = (type, required) => {
+    const schemaHandler = (type, name, required) => {
         let validation;
         if (type === "email") {
-            validation = required ? validation = yup.string().email().required() : validation = yup.string().email().notRequired();
+            validation = required ? validation = yup.string().email(`${name} must be a valid mail`).required(`${name} is required`) : validation = yup.string().email().notRequired();
         } else {
-            validation = required ? yup.string().required() : validation = yup.string().notRequired();
+            validation = required ? yup.string().required(`${name} is required`) : validation = yup.string().notRequired();
         }
         return validation;
     }
@@ -51,7 +32,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
     const schema = yup.object().shape(
         fullFormData.reduce((acc, key) => {
             return {
-                ...acc, [key.field_slug]: schemaHandler(key.data_type, key.required),
+                ...acc, [key.field_slug]: schemaHandler(key.data_type, key.field_name, key.required),
             };
         }, {})
     );
@@ -68,6 +49,41 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
         mode: "onBlur",
         resolver: yupResolver(schema),
     });
+
+    const initialValuesHandler = () => {
+        const arr = fullFormData.map((item) => {
+            let value = "";
+            switch (item?.data_type) {
+                case "select":
+                    value = item.enum_values.choices[0].id;
+                    break;
+                case "date":
+                    value = dayjs(Date.now()).utc(true).toISOString(true);
+                    break;
+                case "checkbox":
+                    value = item.defaultvalue;
+                    break;
+
+                default:
+                    break;
+            }
+            return {
+                [item.field_slug]: value
+            }
+        });
+
+        arr.push({
+            netfree_profile: netfreeProfiles[0].id,
+        })
+
+        // Combine all objects into a single object
+        const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
+        setDefaultValues(result);
+        for (const field in result) {
+            setValue(field, result[field]);
+        }
+    }
+
 
     const submitForm = async (data, e) => {
         e.preventDefault();
@@ -109,6 +125,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
 
     useEffect(() => {
         reset();
+        initialValuesHandler();
         if (clientLists && netfreeProfiles && client) {
             let data;
             if (!newClient) {
@@ -119,7 +136,23 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
             }
             for (let value in data) {
                 if (value !== "netfree_profile") {
-                    setValue(value, typeof data[value] === "object" ? data[value].id : data[value]);
+                    let fieldValue;
+                    const field = fullFormData.filter((field) => field?.field_slug === value);
+                    switch (field[0]?.data_type) {
+                        case "select":
+                            fieldValue = data[value] === "" ? field[0]?.enum_values?.choices[0]?.id : data[value].id;
+                            break;
+                        case "date":
+                            fieldValue = data[value] === "" ? dayjs(Date.now()).utc(true).toISOString(true) : data[value];
+                            break;
+                        case "checkbox":
+                            fieldValue = data[value] === "" ? "true" : JSON.stringify(data[value]);
+                            break;
+                        default:
+                            fieldValue = data[value];
+                            break;
+                    }
+                    setValue(value, fieldValue);
                 }
             }
         }
@@ -127,11 +160,11 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
 
     return (
         <>
-            {showModal && fullFormData.length > 0 ? (
+            {defaultValues && fullFormData.length > 0 ? (
                 <div className="fixed left-0 bottom-0 z-[99] h-screen w-screen bg-[#00000080] flex justify-center items-center">
                     <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
-                        <div className="relative w-auto my-6 mx-auto max-w-3xl">
-                            <div className="w-[100%] min-w-[300px] md:min-w-[400px] overflow-y-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                        <div className="relative w-auto my-6 mx-auto max-w-7xl">
+                            <div className="w-[100%] min-w-[80vw] md:min-w-[70vw] lg:min-w-[60vw] overflow-y-auto border-0 rounded-2xl shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                 <form
                                     style={{
                                         width: "100%",
@@ -142,11 +175,12 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                     autoComplete="off"
                                     onSubmit={handleSubmit((data, e) => submitForm(data, e))}
                                 >
-                                    <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                                        <h3 className="text-2xl font-semibold">{newClient ? t('netfree.addClient') : t('netfree.editClient')}</h3>
+                                    <div className="flex items-start justify-between p-5 shadow-md rounded-t">
+                                        <h3 className="text-xl font-bold">{newClient ? t('netfree.addClient') : t('netfree.editClient')}</h3>
                                         <button
                                             className="bg-transparent border-0 text-black float-right"
                                             onClick={() => setShowModal(false)}
+                                            type="button"
                                         >
                                             <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
                                                 x
@@ -154,57 +188,67 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                         </button>
                                     </div>
                                     <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
-                                        <label className="block text-black text-sm font-bold mb-1">
-                                            {t('netfree.netfreeProfile')}
-                                        </label>
-                                        <Controller
-                                            name="netfree_profile"
-                                            control={control}
-                                            render={({ field: { value, onChange, onBlur } }) => (
-                                                <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={onChange} value={value} placeholder="Select Profile">
-                                                    {
-                                                        netfreeProfiles?.map(el => {
-                                                            return (
-                                                                el ? <option key={el.id} value={el.id}>{el.name}</option> : null
-                                                            );
-                                                        })
-                                                    }
-                                                </select>
-                                            )}
-                                        />
-                                        {errors.netfree_profile && <ErrorMessage message={errors.netfree_profile.message} />}
+                                        <div className="mb-6 flex w-full items-center">
+                                            <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
+                                                {t('netfree.netfreeProfile')}
+                                            </FieldLabel>
+                                            <div className="w-[60%]">
+                                                <Controller
+                                                    name="netfree_profile"
+                                                    control={control}
+                                                    render={({ field: { value, onChange, onBlur } }) => (
+                                                        <select className="shadow appearance-none border rounded outline-none w-full p-2 text-black bg-white" onChange={onChange} value={value} placeholder="Select Profile">
+                                                            {
+                                                                netfreeProfiles?.map(el => {
+                                                                    return (
+                                                                        el ? <option key={el.id} value={el.id}>{el.name}</option> : null
+                                                                    );
+                                                                })
+                                                            }
+                                                        </select>
+                                                    )}
+                                                />
+                                                {errors.netfree_profile && <ErrorMessage message={errors.netfree_profile.message} />}
+                                            </div>
+                                        </div>
                                         {
                                             fullFormData.map((field, index) => {
-                                                const isCheckBox = checkBoxConstants.includes(field.data_type);
                                                 const isDate = DateFieldConstants.includes(field.data_type);
                                                 return (
-                                                    <div className={`mb-2 ${isCheckBox ? "flex items-center justify-end flex-row-reverse" : ""}`} key={index}>
-                                                        <label className={`block text-black text-sm flex items-center justify-between font-bold ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
+                                                    <div className={`mb-6 flex w-full items-center`} key={index}>
+                                                        <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
                                                             {lang === 'he' ? field.field_name_language.he : field?.field_name}
-                                                        </label>
-                                                        <Controller
-                                                            name={field.field_slug}
-                                                            control={control}
-                                                            render={({ field: { value, onChange, onBlur } }) => (
-                                                                <CustomField disabled={false} field={field} onChange={(e) => {
-                                                                    if (isDate) {
-                                                                        setValue(field.field_slug, dayjs(e).utc(true).toISOString(), {
-                                                                            shouldDirty: true,
-                                                                            shouldValidate: true
-                                                                        })
-                                                                    } else {
-                                                                        onChange(e);
-                                                                    }
-                                                                }} value={value} onBlur={onBlur} />
-                                                            )}
-                                                        />
-                                                        {errors[field.field_slug] && <ErrorMessage message={errors[field.field_slug].message} />}
+                                                        </FieldLabel>
+                                                        <div className="w-[60%]">
+                                                            <Controller
+                                                                name={field.field_slug}
+                                                                control={control}
+                                                                render={({ field: { value, onChange, onBlur } }) => {
+                                                                    return (
+                                                                        <CustomField setValue={setValue} disabled={false} field={field} onChange={(e) => {
+                                                                            if (isDate) {
+                                                                                setValue(field.field_slug, dayjs(e).utc(true).toISOString(), {
+                                                                                    shouldDirty: true,
+                                                                                    shouldValidate: true
+                                                                                })
+                                                                            } else {
+                                                                                onChange(e);
+                                                                            }
+                                                                        }}
+                                                                            value={value}
+                                                                            onBlur={onBlur}
+                                                                        />
+                                                                    )
+                                                                }}
+                                                            />
+                                                            {errors[field.field_slug] && <ErrorMessage message={errors[field.field_slug].message} />}
+                                                        </div>
                                                     </div>
                                                 )
                                             })
                                         }
                                     </div>
-                                    <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+                                    <div className="flex items-center justify-end p-4 border-t border-solid border-blueGray-200 rounded-b">
                                         <button
                                             className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
                                             type="button"

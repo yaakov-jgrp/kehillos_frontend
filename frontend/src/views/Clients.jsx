@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useTranslation } from "react-i18next";
 import Loader from '../component/common/Loader';
 import clientsService from '../services/clients';
@@ -45,6 +45,7 @@ const Clients = () => {
     const [totalCount, setTotalCount] = useState(100);
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [searchParams, setSearchParams] = useState({});
+    const [filters, setFilters] = useState([]);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -55,15 +56,28 @@ const Clients = () => {
         setPage(0);
     };
 
+    const fetchFiltersHandler = async () => {
+        try {
+            const response = await clientsService.getClientFilters();
+            setFilters(response.data);
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const fetchClientsData = async () => {
         setIsLoading(true);
+        const filters = await fetchFiltersHandler();
+        const defaultFilter = filters?.filter((filter) => filter.fg_default);
+        const filterParams = defaultFilter.length > 0 ? `&filter_ids=${defaultFilter[0].id}` : "";
         let searchValues = "";
         for (const searchfield in searchParams) {
             if (searchParams[searchfield] !== "") {
                 searchValues += `&search_${[searchfield]}=${searchParams[searchfield]}`
             };
         }
-        const params = `?page=${page + 1}&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
+        const params = `?page=${page + 1}&lang=${lang}&page_size=${rowsPerPage}${searchValues}${filterParams}`;
         const clientsData = await clientsService.getClients(params);
         setTotalCount(clientsData.data.count);
         setAllClients(clientsData?.data?.data);
@@ -106,7 +120,7 @@ const Clients = () => {
     }
 
     const fetchNetfreeProfiles = async () => {
-        const profilesListData = await categoryService.getProfilesList("");
+        const profilesListData = await categoryService.getProfilesList();
         setNetfreeProfiles(profilesListData.data.data);
     }
 
@@ -210,9 +224,10 @@ const Clients = () => {
                             {fullFormData && fullFormData.length > 0 &&
                                 fullFormData.map((field, i) => {
                                     return (
-                                        <>
+                                        <Fragment key={i}>
                                             {
-                                                field?.display && <th className='pr-3' key={i}>
+                                                field?.display &&
+                                                <th className='pr-3'>
                                                     <SearchField
                                                         variant="auth"
                                                         extra="mb-2"
@@ -225,7 +240,7 @@ const Clients = () => {
                                                     />
                                                 </th>
                                             }
-                                        </>
+                                        </Fragment>
                                     )
                                 })}
                             <th className='pr-3'>
@@ -253,52 +268,53 @@ const Clients = () => {
                                 :
                                 <>
                                     {
-                                        allClients?.length > 0 ? <>
-                                            {
-                                                allClients.length > 0 && allClients.map((client, i) => {
-                                                    return (
-                                                        <tr className='h-[75px]' key={client.id}>
-                                                            <td>
-                                                                #{client?.id}
-                                                            </td>
-                                                            {fullFormData?.length > 0 && fullFormData.map((field, i) => {
-                                                                const dataValue = client[field?.field_slug];
-                                                                const value = typeof dataValue === "object" ? dataValue?.value : typeof dataValue === "boolean" ? JSON.stringify(dataValue) : dataValue;
-                                                                let isDate = false;
-                                                                const isNumber = NumberFieldConstants.includes(field?.data_type);
-                                                                const emptyValues = ["", null];
-                                                                if (dateRegex.test(value)) {
-                                                                    isDate = true;
-                                                                }
+                                        allClients?.length > 0 ?
+                                            <>
+                                                {
+                                                    allClients.length > 0 && allClients.map((client, i) => {
+                                                        return (
+                                                            <tr className='h-[75px] cursor-pointer' key={client.id}>
+                                                                <td onClick={() => { handleRowClick(client?.id) }}>
+                                                                    #{client?.id}
+                                                                </td>
+                                                                {fullFormData?.length > 0 && fullFormData.map((field, i) => {
+                                                                    const dataValue = client[field?.field_slug];
+                                                                    const value = typeof dataValue === "object" ? dataValue?.value : typeof dataValue === "boolean" ? JSON.stringify(dataValue) : dataValue;
+                                                                    let isDate = false;
+                                                                    const isNumber = NumberFieldConstants.includes(field?.data_type);
+                                                                    const emptyValues = ["", null];
+                                                                    if (dateRegex.test(value)) {
+                                                                        isDate = true;
+                                                                    }
 
-                                                                return (
-                                                                    <>
-                                                                        {
-                                                                            field?.display && <td key={i} onClick={() => { handleRowClick(client?.id) }}>
-                                                                                {
-                                                                                    emptyValues.includes(value) ? <p>{t("clients.noValueFound")}</p> :
-                                                                                        <>
-                                                                                            {
-                                                                                                isDate ? <p>{dayjs(value).format("DD/MM/YYYY")}</p> : <p>{isNumber ? parseFloat(value) : value}</p>
-                                                                                            }
-                                                                                        </>
-                                                                                }
-                                                                            </td>
-                                                                        }
-                                                                    </>
-                                                                )
-                                                            })}
-                                                            <td>
-                                                                <div className="h-auto w-full flex items-center justify-around">
-                                                                    <MdEdit className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => editClientHandler(client)} />
-                                                                    <MdDelete className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => deleteClientHandler(client?.id)} />
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })
-                                            }
-                                        </> :
+                                                                    return (
+                                                                        <Fragment key={i}>
+                                                                            {
+                                                                                field?.display && <td key={i} onClick={() => { handleRowClick(client?.id) }}>
+                                                                                    {
+                                                                                        emptyValues.includes(value) ? <p>{t("clients.noValueFound")}</p> :
+                                                                                            <>
+                                                                                                {
+                                                                                                    isDate ? <p>{dayjs(value).format("DD/MM/YYYY")}</p> : <p>{isNumber ? parseFloat(value) : value}</p>
+                                                                                                }
+                                                                                            </>
+                                                                                    }
+                                                                                </td>
+                                                                            }
+                                                                        </Fragment>
+                                                                    )
+                                                                })}
+                                                                <td>
+                                                                    <div className="h-auto w-full flex items-center justify-around">
+                                                                        <MdEdit className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => editClientHandler(client)} />
+                                                                        <MdDelete className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => deleteClientHandler(client?.id)} />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })
+                                                }
+                                            </> :
                                             <tr className='h-[75px] text-center'>
                                                 <td colSpan={fullFormData?.length + 1 || 6}>
                                                     <NoDataFound description={t("common.noDataFound")} />
@@ -334,6 +350,9 @@ const Clients = () => {
             {
                 showFilterModal &&
                 <FilterModal
+                    fetchClientsData={fetchClientsData}
+                    fullFormData={fullFormData}
+                    filters={filters}
                     showModal={showFilterModal}
                     setShowModal={setShowFilterModal}
                 />

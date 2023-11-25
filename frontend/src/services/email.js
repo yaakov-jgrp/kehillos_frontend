@@ -39,7 +39,7 @@ const getSMTPDetail = () => {
 }
 
 const duplicateTemplate = (templateId) => {
-  return api.post('/api/crm/template-clone/', {id: templateId});
+  return api.post('/api/crm/template-clone/', { id: templateId });
 }
 
 const emailService = {
@@ -53,4 +53,4 @@ const emailService = {
   getSMTPDetail,
   duplicateTemplate
 }
-  export default emailService;
+export default emailService;

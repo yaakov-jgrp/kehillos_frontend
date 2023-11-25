@@ -58,7 +58,7 @@ const updateActionInCategory = (data, id) => {
   }
 };
 
-const getProfilesList = (params) => {
+const getProfilesList = (params = "") => {
   return api.get(`/api/crm/netfree-categories-profile/${params}`);
 };
 

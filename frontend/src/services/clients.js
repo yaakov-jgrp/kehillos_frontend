@@ -5,9 +5,9 @@ const getClients = (params) => {
         .get(`/api/client/${params}`);
 }
 
-const getClient = (id) => {
+const getClient = (id, params = "") => {
     return api
-        .get(`/api/client/${id}/`);
+        .get(`/api/client/${id}/${params}`);
 }
 
 const saveClient = (clientData) => {
@@ -32,8 +32,7 @@ const exportClients = () => {
 
 const getFullformData = () => {
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-    // & lang=${ lang }
-    return api.get(`/api/client/field/`);
+    return api.get(`/api/client/field/?lang=${lang}`);
 }
 
 const createBlockField = (formData) => {
@@ -48,6 +47,27 @@ const updateBlockField = (formData) => {
     return api.put("/api/client/field/", formData);
 }
 
+const getClientFilters = () => {
+    return api.get("/api/client/filters/");
+}
+
+const getClientFilterOptions = () => {
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    return api.options(`/api/client/filters/${lang}/`);
+}
+
+const createFilter = (data) => {
+    return api.post(`/api/client/filters/`, data)
+}
+
+const deleteFilter = (filterId) => {
+    return api.delete(`/api/client/filters/`, { data: filterId })
+}
+
+const updateFilterGroup = (data) => {
+    return api.put(`/api/client/filters/`, data)
+}
+
 const clientsService = {
     getClients,
     getClient,
@@ -59,6 +79,11 @@ const clientsService = {
     getFullformData,
     createBlockField,
     deleteBlockField,
-    updateBlockField
+    updateBlockField,
+    getClientFilters,
+    getClientFilterOptions,
+    createFilter,
+    deleteFilter,
+    updateFilterGroup
 }
 export default clientsService;

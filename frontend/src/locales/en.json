@@ -20,7 +20,8 @@
     "emails": "Emails",
     "profile": "Profile",
     "logout": "Logout",
-    "clients": "Clients"
+    "clients": "Clients",
+    "details": "Details"
   },
   "requests": {
     "title": "Requests",
@@ -46,7 +47,6 @@
     "value": "Value",
     "add": "Add",
     "defaultValue": "Default Value",
-    "required": "Required",
     "unique": "Unique",
     "display": "Display",
     "visibility": "Visibility",
@@ -57,7 +57,21 @@
     "clientDetails": "Client Details",
     "noClientFound": "No Client Found with ID :",
     "noValueFound": "No Value Found",
-    "filters": "Filters"
+    "filters": "Filters",
+    "apply": "Apply",
+    "applied": "Applied",
+    "addCondition": "Add Condition",
+    "filterNameMinCondition": "Filter name must be atleast 3 Characters",
+    "required": "required",
+    "is": "is",
+    "are": "are",
+    "filterName": "Filter name",
+    "conditions": "Conditions",
+    "minimumConditions": "Atleast one condition is required",
+    "setAsDefault": "Set as Default",
+    "goBack": "Go Back",
+    "condition": "Condition",
+    "field": "field"
   },
   "emails": {
     "templates": "Templates",

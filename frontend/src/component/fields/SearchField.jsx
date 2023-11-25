@@ -7,6 +7,7 @@ function SearchField(props) {
     props;
 
   const { i18n } = useTranslation();
+
   return (
     <div className={`${extra} ${(i18n.dir() === 'rtl') ? 'text-right' : 'text-left'}`}>
       {label && <label
