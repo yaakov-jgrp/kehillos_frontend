@@ -22,3 +22,11 @@ export const fetchFullformDataHandler = async (setIsLoading, setFullFormData) =>
         setIsLoading(false);
     }, 500)
 };
+
+export const formateDateTime = (dateTime) => {
+    const date = new Date(dateTime).toLocaleString('en-us', { month: 'short', day: 'numeric', year: 'numeric' });
+    let hours = new Date(dateTime).getUTCHours();
+    const minutes = new Date(dateTime).getUTCMinutes();
+    const time = `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+    return { date, time }
+}

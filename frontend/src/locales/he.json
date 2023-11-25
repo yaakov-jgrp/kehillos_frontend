@@ -20,7 +20,8 @@
     "emails": "אימייל",
     "profile": "פרופיל",
     "logout": "התנתק",
-    "clients": "לקוחות"
+    "clients": "לקוחות",
+    "details": "פרטים"
   },
   "requests": {
     "title": "פניות",
@@ -46,7 +47,6 @@
     "value": "ערך",
     "add": "לְהוֹסִיף",
     "defaultValue": "ערך ברירת מחדל",
-    "required": "נדרש",
     "unique": "ייחודי",
     "display": "לְהַצִיג",
     "visibility": "רְאוּת",
@@ -59,7 +59,19 @@
     "noValueFound": "לא נמצא ערך",
     "filters": "מסננים",
     "apply": "להגיש מועמדות",
-    "applied": "הוחל"
+    "applied": "הוחל",
+    "addCondition": "הוסף מצב",
+    "filterNameMinCondition": "שם המסנן חייב להיות לפחות 3 תווים",
+    "required": "נדרש",
+    "is": "הוא",
+    "are": "הם",
+    "filterName": "שם מסנן",
+    "conditions": "תנאים",
+    "minimumConditions": "נדרש תנאי אחד לפחות",
+    "setAsDefault": "נקבע כברירת מחדל",
+    "goBack": "תחזור",
+    "condition": "מַצָב",
+    "field": "שדה"
   },
   "emails": {
     "templates": "תבניות",

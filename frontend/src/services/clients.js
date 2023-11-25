@@ -55,6 +55,18 @@ const getClientFilterOptions = () => {
     return api.options("/api/client/filters/");
 }
 
+const createFilter = (data) => {
+    return api.post(`/api/client/filters/`, data)
+}
+
+const deleteFilter = (filterId) => {
+    return api.delete(`/api/client/filters/`, { data: filterId })
+}
+
+const updateFilterGroup = (data) => {
+    return api.put(`/api/client/filters/`, data)
+}
+
 const clientsService = {
     getClients,
     getClient,
@@ -69,5 +81,8 @@ const clientsService = {
     updateBlockField,
     getClientFilters,
     getClientFilterOptions,
+    createFilter,
+    deleteFilter,
+    updateFilterGroup
 }
 export default clientsService;

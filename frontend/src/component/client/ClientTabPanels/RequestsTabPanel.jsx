@@ -6,6 +6,7 @@ import Loader from '../../common/Loader';
 import NoDataFound from '../../common/NoDataFound';
 import SearchField from '../../fields/SearchField';
 import { useTranslation } from "react-i18next";
+import { formateDateTime } from '../../../lib/CommonFunctions';
 
 function RequestsTabPanel(props) {
     const { children, value, index, id, ...other } = props;
@@ -27,7 +28,7 @@ function RequestsTabPanel(props) {
                     searchValues += `&search_${[searchfield]}=${searchParams[searchfield]}`
                 };
             }
-            const params = `?email_request=true${searchValues}`;
+            const params = `?email_request=true${searchValues}&lang=${lang}`;
             clientsService.getClient(id, params).then((res) => {
                 setRequests(res.data);
                 setTotalCount(res.data.count);
@@ -77,149 +78,144 @@ function RequestsTabPanel(props) {
         >
             {value === index && (
                 <Box sx={{ py: 3 }}>
-                    {
-                        isLoading ? <Loader /> :
-                            <>
-                                <div className='h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto px-2'>
-                                    <table className='!table text-[12px] md:text-[14px] mb-3'>
-                                        <thead className='sticky top-0 z-10 [&_th]:min-w-[8.5rem]'>
-                                            <tr className='tracking-[-2%] mb-5 bg-lightPrimary'>
-                                                <th className='pr-3'>
-                                                    <SearchField
-                                                        variant="auth"
-                                                        extra="mb-2"
-                                                        label={t('searchbox.requestId')}
-                                                        id="requestId"
-                                                        type="text"
-                                                        placeholder={t('searchbox.placeHolder')}
-                                                        onChange={(e) => searchResult('id', e.target.value)}
-                                                        name="id"
-                                                    />
-                                                </th>
-                                                <th className='pr-3'>
-                                                    <SearchField
-                                                        variant="auth"
-                                                        extra="mb-2"
-                                                        label={t('searchbox.dateCreated')}
-                                                        id="dateCreated"
-                                                        type="text"
-                                                        placeholder={t('searchbox.placeHolder')}
-                                                        onChange={(e) => searchResult('created_at', e.target.value)}
-                                                        name="created_at"
-                                                    />
-                                                </th>
-                                                <th className='pr-3'>
-                                                    <SearchField
-                                                        variant="auth"
-                                                        extra="mb-2"
-                                                        label={t('searchbox.from')}
-                                                        id="from"
-                                                        type="text"
-                                                        placeholder={t('searchbox.placeHolder')}
-                                                        onChange={(e) => searchResult('from', e.target.value)}
-                                                        name="from"
-                                                    />
-                                                </th>
-                                                <th className='pr-3'>
-                                                    <SearchField
-                                                        variant="auth"
-                                                        extra="mb-2"
-                                                        label={t('searchbox.requestType')}
-                                                        id="requestType"
-                                                        type="text"
-                                                        placeholder={t('searchbox.placeHolder')}
-                                                        onChange={(e) => searchResult('request_type', e.target.value)}
-                                                        name="request_type"
-                                                    />
-                                                </th>
-                                                <th className='pr-3'>
-                                                    <SearchField
-                                                        variant="auth"
-                                                        extra="mb-2"
-                                                        label={t('searchbox.requestdetail')}
-                                                        id="requestdetail"
-                                                        type="text"
-                                                        placeholder={t('searchbox.placeHolder')}
-                                                        onChange={(e) => searchResult('requestdetail', e.target.value)}
-                                                        name="requestdetail"
-                                                    />
-                                                </th>
-                                                <th className='pr-3'>
-                                                    <SearchField
-                                                        variant="auth"
-                                                        extra="mb-2"
-                                                        label={t('searchbox.actionsDone')}
-                                                        id="actionsDone"
-                                                        type="text"
-                                                        placeholder={t('searchbox.placeHolder')}
-                                                        onChange={(e) => searchResult('action_done', e.target.value)}
-                                                        name="action_done"
-                                                    />
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className='[&_td]:min-w-[9rem]'>
+                    <div className='h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto px-2'>
+                        <table className='!table text-[12px] md:text-[14px] mb-3'>
+                            <thead className='sticky top-0 z-10 [&_th]:min-w-[8.5rem]'>
+                                <tr className='tracking-[-2%] mb-5 bg-lightPrimary'>
+                                    <th className='pr-3'>
+                                        <SearchField
+                                            variant="auth"
+                                            extra="mb-2"
+                                            label={t('searchbox.requestId')}
+                                            id="requestId"
+                                            type="text"
+                                            placeholder={t('searchbox.placeHolder')}
+                                            onChange={(e) => searchResult('id', e.target.value)}
+                                            name="id"
+                                        />
+                                    </th>
+                                    <th className='pr-3'>
+                                        <SearchField
+                                            variant="auth"
+                                            extra="mb-2"
+                                            label={t('searchbox.dateCreated')}
+                                            id="dateCreated"
+                                            type="text"
+                                            placeholder={t('searchbox.placeHolder')}
+                                            onChange={(e) => searchResult('created_at', e.target.value)}
+                                            name="created_at"
+                                        />
+                                    </th>
+                                    <th className='pr-3'>
+                                        <SearchField
+                                            variant="auth"
+                                            extra="mb-2"
+                                            label={t('searchbox.from')}
+                                            id="from"
+                                            type="text"
+                                            placeholder={t('searchbox.placeHolder')}
+                                            onChange={(e) => searchResult('from', e.target.value)}
+                                            name="from"
+                                        />
+                                    </th>
+                                    <th className='pr-3'>
+                                        <SearchField
+                                            variant="auth"
+                                            extra="mb-2"
+                                            label={t('searchbox.requestType')}
+                                            id="requestType"
+                                            type="text"
+                                            placeholder={t('searchbox.placeHolder')}
+                                            onChange={(e) => searchResult('request_type', e.target.value)}
+                                            name="request_type"
+                                        />
+                                    </th>
+                                    <th className='pr-3'>
+                                        <SearchField
+                                            variant="auth"
+                                            extra="mb-2"
+                                            label={t('searchbox.requestdetail')}
+                                            id="requestdetail"
+                                            type="text"
+                                            placeholder={t('searchbox.placeHolder')}
+                                            onChange={(e) => searchResult('requestdetail', e.target.value)}
+                                            name="requestdetail"
+                                        />
+                                    </th>
+                                    <th className='pr-3'>
+                                        <SearchField
+                                            variant="auth"
+                                            extra="mb-2"
+                                            label={t('searchbox.actionsDone')}
+                                            id="actionsDone"
+                                            type="text"
+                                            placeholder={t('searchbox.placeHolder')}
+                                            onChange={(e) => searchResult('action_done', e.target.value)}
+                                            name="action_done"
+                                        />
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className='[&_td]:min-w-[9rem]'>
+                                {
+                                    isLoading ?
+                                        <tr>
+                                            <td colSpan="6">
+                                                <div className='h-[calc(100vh-210px)] w-full flex justify-center items-center'>
+                                                    <Loader />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        :
+                                        <>
                                             {
-                                                isLoading ?
-                                                    <tr>
-                                                        <td colSpan="6">
-                                                            <div className='h-[calc(100vh-210px)] w-full flex justify-center items-center'>
-                                                                <Loader />
-                                                            </div>
+                                                requests.count > 0 ? <>                  {
+                                                    requests.data.map((el) => {
+                                                        return (
+                                                            <tr className='h-[75px]' key={el.id}>
+                                                                <td>#{el.id}</td>
+                                                                <td>{formateDateTime(el.created_at).date}<br />{formateDateTime(el.created_at).time}</td>
+                                                                <td>
+                                                                    <a href={`https://netfree.link/app/#/sectors/user-filter-settings/${el.customer_id}`} target='_blank' rel="noreferrer"
+                                                                        className='text-[#2B3674] hover:text-[#2B3674] font-bold'
+                                                                    >#{el.customer_id}<br /></a>
+                                                                    {el.username}<br />
+                                                                    <a href={`mailto:${el.sender_email}`} className='text-[#2B3674] hover:text-[#2B3674] font-bold' >{el.sender_email}</a>
+                                                                </td>
+                                                                <td>{el.request_type}</td>
+                                                                <td>
+                                                                    <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold'>{el.requested_website.length > 70 ? el.requested_website.substring(0, 70) + "..." : el.requested_website}</a>
+                                                                    <br />
+                                                                    {el.text}
+                                                                    {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />                  */}
+                                                                </td>
+                                                                <td className='flex justify-center gap-4 px-2'>
+                                                                    <div className='bg-[#F4F7FE] px-2 py-1'>{el.action_done}</div>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })
+                                                }
+                                                </> :
+                                                    <tr className='h-[75px] text-center'>
+                                                        <td colSpan={6}>
+                                                            <NoDataFound description={t("common.noDataFound")} />
                                                         </td>
                                                     </tr>
-                                                    :
-                                                    <>
-                                                        {
-                                                            requests.length > 0 ? <>                  {
-                                                                requests.map((el) => {
-                                                                    return (
-                                                                        <tr className='h-[75px]' key={el.id}>
-                                                                            <td>#{el.id}</td>
-                                                                            <td>{formateDateTime(el.created_at).date}<br />{formateDateTime(el.created_at).time}</td>
-                                                                            <td>
-                                                                                <a href={`https://netfree.link/app/#/sectors/user-filter-settings/${el.customer_id}`} target='_blank' rel="noreferrer"
-                                                                                    className='text-[#2B3674] hover:text-[#2B3674] font-bold'
-                                                                                >#{el.customer_id}<br /></a>
-                                                                                {el.username}<br />
-                                                                                <a href={`mailto:${el.sender_email}`} className='text-[#2B3674] hover:text-[#2B3674] font-bold' >{el.sender_email}</a>
-                                                                            </td>
-                                                                            <td>{el.request_type}</td>
-                                                                            <td>
-                                                                                <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold'>{el.requested_website.length > 70 ? el.requested_website.substring(0, 70) + "..." : el.requested_website}</a>
-                                                                                <br />
-                                                                                {el.text}
-                                                                                {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />                  */}
-                                                                            </td>
-                                                                            <td className='flex justify-center gap-4 px-2'>
-                                                                                <div className='bg-[#F4F7FE] px-2 py-1'>{el.action_done}</div>
-                                                                            </td>
-                                                                        </tr>
-                                                                    );
-                                                                })
-                                                            }
-                                                            </> :
-                                                                <tr className='h-[75px] text-center'>
-                                                                    <td colSpan={6}>
-                                                                        <NoDataFound description={t("common.noDataFound")} />
-                                                                    </td>
-                                                                </tr>
-                                                        }
-                                                    </>
                                             }
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <TablePagination
-                                    component="div"
-                                    count={totalCount}
-                                    page={page}
-                                    onPageChange={handleChangePage}
-                                    rowsPerPage={rowsPerPage}
-                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                />
-                            </>
-                    }
+                                        </>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <TablePagination
+                        component="div"
+                        count={totalCount}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
                 </Box>
             )}
         </div>

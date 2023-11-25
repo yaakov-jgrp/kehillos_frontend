@@ -15,7 +15,7 @@ function ClientDetails() {
     const { id } = useParams();
     const { t } = useTranslation();
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-    const tabs = ["Details", "Netfree", "Requests"];
+    const tabs = [t("sidebar.details"), t("sidebar.netfree"), t("sidebar.request")];
     const [isLoading, setIsloading] = useState(false);
     const [clientData, setClientData] = useState(null);
     const [value, setValue] = useState(0);

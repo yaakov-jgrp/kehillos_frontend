@@ -87,7 +87,7 @@ function CustomField(props) {
                 <CustomCheckBox
                     onChange={onChange}
                     onBlur={onBlur}
-                    checked={value === "true" ? true : false}
+                    checked={value === "true" || value === true ? true : false}
                     disabled={disabled}
                 />
             }

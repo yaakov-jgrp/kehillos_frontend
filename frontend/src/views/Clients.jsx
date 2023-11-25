@@ -56,11 +56,20 @@ const Clients = () => {
         setPage(0);
     };
 
+    const fetchFiltersHandler = async () => {
+        try {
+            const response = await clientsService.getClientFilters();
+            setFilters(response.data);
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const fetchClientsData = async () => {
         setIsLoading(true);
-        const response = await clientsService.getClientFilters();
-        setFilters(response.data);
-        const defaultFilter = response.data?.filter((filter) => filter.fg_default);
+        const filters = await fetchFiltersHandler();
+        const defaultFilter = filters?.filter((filter) => filter.fg_default);
         const filterParams = defaultFilter.length > 0 ? `&filter_ids=${defaultFilter[0].id}` : "";
         let searchValues = "";
         for (const searchfield in searchParams) {
@@ -341,6 +350,7 @@ const Clients = () => {
             {
                 showFilterModal &&
                 <FilterModal
+                    fetchClientsData={fetchClientsData}
                     fullFormData={fullFormData}
                     filters={filters}
                     showModal={showFilterModal}
