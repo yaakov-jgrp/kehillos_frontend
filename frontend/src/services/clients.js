@@ -52,7 +52,8 @@ const getClientFilters = () => {
 }
 
 const getClientFilterOptions = () => {
-    return api.options("/api/client/filters/");
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    return api.options(`/api/client/filters/${lang}/`);
 }
 
 const createFilter = (data) => {
