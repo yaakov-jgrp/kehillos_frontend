@@ -57,18 +57,18 @@ function ClientDetails() {
                 {clientData && !isLoading ?
                     <Box sx={{ width: '100%', height: "100%", overflow: "auto" }}>
                         <div className='flex p-2'>
-                            <div className='p-2 mr-2 rounded-lg shadow-md'>
+                            <div className='p-2 mx-2 rounded-lg shadow-md'>
                                 <FaUser color='lightgrey' size={80} />
                             </div>
-                            <div className='ml-2 flex flex-col w-[80%] text-sm'>
+                            <div className='mx-2 flex flex-col w-[80%] text-sm'>
                                 <div className={`mb-1 flex w-full items-start`}>
                                     <span className='font-semibold w-1/6'>ID</span>
                                     <p>  : {clientData?.client_id}</p>
                                 </div>
                                 <div className={`mb-1 flex w-full items-start`}>
-                                    <span className='font-semibold w-1/6'>Netfree Profile</span>
+                                    <span className='font-semibold w-1/6'>{t("netfree.netfreeProfile")}</span>
                                     :
-                                    <div className='ml-1'>
+                                    <div className='mx-1'>
                                         <p className='capitalize'>{netfreeprofile?.name}</p>
                                         {netfreeprofile?.description !== "" && <p className='capitalize text-gray-700'>({netfreeprofile?.description})</p>}
                                     </div>

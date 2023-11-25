@@ -40,14 +40,14 @@ function DetailsTabPanel(props) {
                                                 }
 
                                                 return (
-                                                    <div className={`mb-2 pl-6`} key={index}>
+                                                    <div className={`mb-2 ${lang === "he" ? "pr-6" : "pl-6"}`} key={index}>
                                                         <div className={`flex items-center justify-between mb-1`}>
                                                             <div className='flex w-full'>
                                                                 <label className={`block text-black text-md font-semibold w-1/5`}>
                                                                     {lang === "he" ? field?.field_name_language.he : field?.field_name}
                                                                 </label>
                                                                 :
-                                                                <p className='text-sm ml-4 capitalize text-gray-900'>{`${emptyValues.includes(value) ? t("clients.noValueFound") : value}`}</p>
+                                                                <p className='text-sm mx-4 capitalize text-gray-900'>{`${emptyValues.includes(value) ? t("clients.noValueFound") : value}`}</p>
                                                             </div>
                                                         </div>
                                                     </div>
