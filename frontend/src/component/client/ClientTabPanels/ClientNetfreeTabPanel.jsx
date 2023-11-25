@@ -6,34 +6,8 @@ import Loader from '../../common/Loader';
 import FieldLabel from '../../fields/FormLabel';
 
 function ClientNetfreeTabPanel(props) {
-    const { children, value, index, clientData, isLoading, setIsloading, ...other } = props;
-    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    const { children, value, index, netfreeprofile, isLoading, ...other } = props;
     const { t } = useTranslation();
-    const [netfreeprofile, setNetfreeProfile] = useState({});
-
-    const fetchNetfreeProfiles = () => {
-        setIsloading(true);
-        try {
-            categoryService.getProfilesList().then((res) => {
-                const netfreeProfiles = res.data.data;
-                if (clientData && netfreeProfiles.length > 0) {
-                    const { netfree_profile } = clientData;
-                    const matchingProfile = netfreeProfiles.filter((profile) => profile.id === netfree_profile)[0];
-                    setNetfreeProfile(matchingProfile);
-                    setIsloading(false);
-                }
-            }).catch((err) => {
-                console.log(err);
-                setIsloading(false);
-            })
-        } catch (error) {
-            console.log(error)
-        }
-    };
-
-    useEffect(() => {
-        fetchNetfreeProfiles();
-    }, [lang]);
 
     return (
         <div

@@ -32,8 +32,7 @@ const exportClients = () => {
 
 const getFullformData = () => {
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-    // & lang=${ lang }
-    return api.get(`/api/client/field/`);
+    return api.get(`/api/client/field/?lang=${lang}`);
 }
 
 const createBlockField = (formData) => {

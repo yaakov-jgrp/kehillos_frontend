@@ -8,7 +8,7 @@ import SearchField from '../../fields/SearchField';
 import { useTranslation } from "react-i18next";
 
 function RequestsTabPanel(props) {
-    const { children, value, index, id, isLoading, setIsloading, ...other } = props;
+    const { children, value, index, id, ...other } = props;
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     const { t } = useTranslation();
     const [requests, setRequests] = useState([]);
@@ -16,6 +16,7 @@ function RequestsTabPanel(props) {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [totalCount, setTotalCount] = useState(100);
     const [searchParams, setSearchParams] = useState(searchFields);
+    const [isLoading, setIsloading] = useState(false);
 
     const fetchClientRequests = () => {
         setIsloading(true);

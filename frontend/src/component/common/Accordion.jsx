@@ -8,7 +8,7 @@ function CustomAccordion({ title, children, onClick, showAddButton }) {
             {({ isExpanded }) => (
                 <>
                     <AccordionButton as="p" className='py-2'>
-                        <Box as="span" flex='1' fontSize='1.3rem' textAlign='left' className='flex items-center justify-between'>
+                        <Box as="span" flex='1' fontSize='1.3rem' textAlign='left' className='flex items-center capitalize justify-between'>
                             {title}
                             {
                                 isExpanded && showAddButton && <AddButtonIcon extra={''} onClick={onClick} />

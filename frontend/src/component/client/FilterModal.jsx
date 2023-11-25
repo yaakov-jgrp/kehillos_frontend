@@ -42,7 +42,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters }) {
                                                                             {t("netfree.remove")}
                                                                         </button> :
                                                                         <button
-                                                                            className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none"
+                                                                            className="text-white text-sm transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-2 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none"
                                                                             type="submit"
                                                                         >
                                                                             {t("clients.apply")}

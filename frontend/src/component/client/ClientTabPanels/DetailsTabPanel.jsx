@@ -12,7 +12,6 @@ function DetailsTabPanel(props) {
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     const { t } = useTranslation();
 
-
     return (
         <div
             role="tabpanel"
@@ -24,13 +23,13 @@ function DetailsTabPanel(props) {
             {value === index && (
                 <Box sx={{ p: 3 }}>
                     {isLoading ? <Loader /> :
-                        <Accordion>
+                        <Accordion defaultIndex={[0]} allowMultiple>
                             {clientData && clientData.blocks.map((blockData, index) => <CustomAccordion key={index} showAddButton={false} title={lang === "he" ? blockData.field_name_language.he : blockData.block} >
                                 {blockData.field.length > 0 ?
                                     <>
                                         {
                                             blockData.field.map((field, index) => {
-                                                const isCheckBox = checkBoxConstants.includes(field.data_type);
+                                                const emptyValues = ["", null, undefined];
                                                 let value;
                                                 if (DateFieldConstants.includes(field.data_type)) {
                                                     value = dayjs(field?.value).format("DD/MM/YYYY");
@@ -40,15 +39,15 @@ function DetailsTabPanel(props) {
                                                     value = field?.value;
                                                 }
 
-
                                                 return (
-                                                    <div className={`mb-2`} key={index}>
+                                                    <div className={`mb-2 pl-6`} key={index}>
                                                         <div className={`flex items-center justify-between mb-1`}>
-                                                            <div className='flex'>
-                                                                <label className={`block text-black text-sm font-bold`}>
+                                                            <div className='flex w-full'>
+                                                                <label className={`block text-black text-md font-semibold w-1/5`}>
                                                                     {lang === "he" ? field?.field_name_language.he : field?.field_name}
                                                                 </label>
-                                                                <p className='text-sm ml-1 capitalize text-gray-900'>{` : ${value}`}</p>
+                                                                :
+                                                                <p className='text-sm ml-4 capitalize text-gray-900'>{`${emptyValues.includes(value) ? t("clients.noValueFound") : value}`}</p>
                                                             </div>
                                                         </div>
                                                     </div>

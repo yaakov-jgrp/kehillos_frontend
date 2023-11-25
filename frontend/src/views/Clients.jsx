@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useTranslation } from "react-i18next";
 import Loader from '../component/common/Loader';
 import clientsService from '../services/clients';
@@ -215,9 +215,10 @@ const Clients = () => {
                             {fullFormData && fullFormData.length > 0 &&
                                 fullFormData.map((field, i) => {
                                     return (
-                                        <>
+                                        <Fragment key={i}>
                                             {
-                                                field?.display && <th className='pr-3' key={i}>
+                                                field?.display &&
+                                                <th className='pr-3'>
                                                     <SearchField
                                                         variant="auth"
                                                         extra="mb-2"
@@ -230,7 +231,7 @@ const Clients = () => {
                                                     />
                                                 </th>
                                             }
-                                        </>
+                                        </Fragment>
                                     )
                                 })}
                             <th className='pr-3'>
@@ -278,7 +279,7 @@ const Clients = () => {
                                                                     }
 
                                                                     return (
-                                                                        <>
+                                                                        <Fragment key={i}>
                                                                             {
                                                                                 field?.display && <td key={i} onClick={() => { handleRowClick(client?.id) }}>
                                                                                     {
@@ -291,7 +292,7 @@ const Clients = () => {
                                                                                     }
                                                                                 </td>
                                                                             }
-                                                                        </>
+                                                                        </Fragment>
                                                                     )
                                                                 })}
                                                                 <td>

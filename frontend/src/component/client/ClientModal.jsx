@@ -17,27 +17,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
     const { t } = useTranslation();
     dayjs.extend(utc);
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-    // Array of objects
-    const arr = fullFormData.map((item) => {
-        let value = "";
-        if (item.data_type === "select") {
-            value = item.enum_values.choices[0].id;
-        }
-        if (item.data_type === "date") {
-            value = dayjs(Date.now()).utc(true).toISOString();
-        }
-        return {
-            [item.field_slug]: value
-        }
-    });
-
-    arr.push({
-        netfree_profile: netfreeProfiles[0].id,
-    })
-
-    // Combine all objects into a single object
-    const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
-    const defaultValues = result;
+    const [defaultValues, setDefaultValues] = useState(null);
 
     const schemaHandler = (type, name, required) => {
         let validation;
@@ -69,6 +49,41 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
         mode: "onBlur",
         resolver: yupResolver(schema),
     });
+
+    const initialValuesHandler = () => {
+        const arr = fullFormData.map((item) => {
+            let value = "";
+            switch (item?.data_type) {
+                case "select":
+                    value = item.enum_values.choices[0].id;
+                    break;
+                case "date":
+                    value = dayjs(Date.now()).utc(true).toISOString(true);
+                    break;
+                case "checkbox":
+                    value = item.defaultvalue;
+                    break;
+
+                default:
+                    break;
+            }
+            return {
+                [item.field_slug]: value
+            }
+        });
+
+        arr.push({
+            netfree_profile: netfreeProfiles[0].id,
+        })
+
+        // Combine all objects into a single object
+        const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
+        setDefaultValues(result);
+        for (const field in result) {
+            setValue(field, result[field]);
+        }
+    }
+
 
     const submitForm = async (data, e) => {
         e.preventDefault();
@@ -110,6 +125,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
 
     useEffect(() => {
         reset();
+        initialValuesHandler();
         if (clientLists && netfreeProfiles && client) {
             let data;
             if (!newClient) {
@@ -120,7 +136,23 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
             }
             for (let value in data) {
                 if (value !== "netfree_profile") {
-                    setValue(value, typeof data[value] === "object" ? data[value].id : data[value]);
+                    let fieldValue;
+                    const field = fullFormData.filter((field) => field?.field_slug === value);
+                    switch (field[0]?.data_type) {
+                        case "select":
+                            fieldValue = data[value] === "" ? field[0]?.enum_values?.choices[0]?.id : data[value].id;
+                            break;
+                        case "date":
+                            fieldValue = data[value] === "" ? dayjs(Date.now()).utc(true).toISOString(true) : data[value];
+                            break;
+                        case "checkbox":
+                            fieldValue = data[value] === "" ? "true" : JSON.stringify(data[value]);
+                            break;
+                        default:
+                            fieldValue = data[value];
+                            break;
+                    }
+                    setValue(value, fieldValue);
                 }
             }
         }
@@ -128,7 +160,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
 
     return (
         <>
-            {showModal && fullFormData.length > 0 ? (
+            {defaultValues && fullFormData.length > 0 ? (
                 <div className="fixed left-0 bottom-0 z-[99] h-screen w-screen bg-[#00000080] flex justify-center items-center">
                     <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
                         <div className="relative w-auto my-6 mx-auto max-w-7xl">
@@ -148,6 +180,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                         <button
                                             className="bg-transparent border-0 text-black float-right"
                                             onClick={() => setShowModal(false)}
+                                            type="button"
                                         >
                                             <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
                                                 x
@@ -156,7 +189,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                     </div>
                                     <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
                                         <div className="mb-6 flex w-full items-center">
-                                            <FieldLabel className="w-[30%] mr-6">
+                                            <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
                                                 {t('netfree.netfreeProfile')}
                                             </FieldLabel>
                                             <div className="w-[60%]">
@@ -164,7 +197,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                                     name="netfree_profile"
                                                     control={control}
                                                     render={({ field: { value, onChange, onBlur } }) => (
-                                                        <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={onChange} value={value} placeholder="Select Profile">
+                                                        <select className="shadow appearance-none border rounded outline-none w-full p-2 text-black bg-white" onChange={onChange} value={value} placeholder="Select Profile">
                                                             {
                                                                 netfreeProfiles?.map(el => {
                                                                     return (
@@ -183,28 +216,30 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                                 const isDate = DateFieldConstants.includes(field.data_type);
                                                 return (
                                                     <div className={`mb-6 flex w-full items-center`} key={index}>
-                                                        <FieldLabel className="w-[30%] mr-6">
+                                                        <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
                                                             {lang === 'he' ? field.field_name_language.he : field?.field_name}
                                                         </FieldLabel>
                                                         <div className="w-[60%]">
                                                             <Controller
                                                                 name={field.field_slug}
                                                                 control={control}
-                                                                render={({ field: { value, onChange, onBlur } }) => (
-                                                                    <CustomField disabled={false} field={field} onChange={(e) => {
-                                                                        if (isDate) {
-                                                                            setValue(field.field_slug, dayjs(e).utc(true).toISOString(), {
-                                                                                shouldDirty: true,
-                                                                                shouldValidate: true
-                                                                            })
-                                                                        } else {
-                                                                            onChange(e);
-                                                                        }
-                                                                    }}
-                                                                        value={value}
-                                                                        onBlur={onBlur}
-                                                                    />
-                                                                )}
+                                                                render={({ field: { value, onChange, onBlur } }) => {
+                                                                    return (
+                                                                        <CustomField setValue={setValue} disabled={false} field={field} onChange={(e) => {
+                                                                            if (isDate) {
+                                                                                setValue(field.field_slug, dayjs(e).utc(true).toISOString(), {
+                                                                                    shouldDirty: true,
+                                                                                    shouldValidate: true
+                                                                                })
+                                                                            } else {
+                                                                                onChange(e);
+                                                                            }
+                                                                        }}
+                                                                            value={value}
+                                                                            onBlur={onBlur}
+                                                                        />
+                                                                    )
+                                                                }}
                                                             />
                                                             {errors[field.field_slug] && <ErrorMessage message={errors[field.field_slug].message} />}
                                                         </div>

@@ -159,7 +159,7 @@ const ClientsForm = () => {
                                                                 <PiDotsSixVerticalBold className='cursor-grab z-20' />
                                                             </div>
                                                         </div>
-                                                        <CustomField disabled={true} field={field} />
+                                                        <CustomField disabled={true} value={field?.defaultvalue} field={field} />
                                                     </div>
                                                 )
                                             })
