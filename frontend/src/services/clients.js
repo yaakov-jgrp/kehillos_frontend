@@ -5,9 +5,9 @@ const getClients = (params) => {
         .get(`/api/client/${params}`);
 }
 
-const getClient = (id) => {
+const getClient = (id, params = "") => {
     return api
-        .get(`/api/client/${id}/`);
+        .get(`/api/client/${id}/${params}`);
 }
 
 const saveClient = (clientData) => {
@@ -48,6 +48,14 @@ const updateBlockField = (formData) => {
     return api.put("/api/client/field/", formData);
 }
 
+const getClientFilters = () => {
+    return api.get("/api/client/filters/");
+}
+
+const getClientFilterOptions = () => {
+    return api.options("/api/client/filters/");
+}
+
 const clientsService = {
     getClients,
     getClient,
@@ -59,6 +67,8 @@ const clientsService = {
     getFullformData,
     createBlockField,
     deleteBlockField,
-    updateBlockField
+    updateBlockField,
+    getClientFilters,
+    getClientFilterOptions,
 }
 export default clientsService;

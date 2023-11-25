@@ -232,7 +232,7 @@ const NetFree = () => {
 
     const getAllProfilesListHandler = async () => {
         localStorage.setItem("FILTER_PROFILE_ID", 1);
-        const profilesListData = await categoryService.getProfilesList("");
+        const profilesListData = await categoryService.getProfilesList();
         const defaultProfile = profilesListData.data.data.filter((profile) => profile.is_default);
         const nonDefaultProfiles = profilesListData.data.data.filter((profile) => !profile.is_default);
         const listsData = [...defaultProfile, ...nonDefaultProfiles];

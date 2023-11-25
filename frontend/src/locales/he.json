@@ -57,7 +57,9 @@
     "clientDetails": "פרטי הלקוח",
     "noClientFound": "לא נמצא לקוח עם תעודת זהות:",
     "noValueFound": "לא נמצא ערך",
-    "filters": "מסננים"
+    "filters": "מסננים",
+    "apply": "להגיש מועמדות",
+    "applied": "הוחל"
   },
   "emails": {
     "templates": "תבניות",

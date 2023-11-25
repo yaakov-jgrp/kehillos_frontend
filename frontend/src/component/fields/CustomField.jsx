@@ -5,13 +5,14 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomCheckBox from './checkbox';
-import 'react-phone-number-input/style.css'
-import PhoneInput, { parsePhoneNumber } from 'react-phone-number-input'
+import 'react-phone-number-input/style.css';
+import PhoneInput, { parsePhoneNumber } from 'react-phone-number-input';
 
 function CustomField(props) {
     const { data_type, required, enum_values, defaultvalue } = props.field
     const { onChange, onBlur, value, disabled } = props;
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+
     const handleNumberkeyPress = (e) => {
         if (e.key == "e") {
             e.preventDefault();
@@ -20,6 +21,16 @@ function CustomField(props) {
                 e.preventDefault();
             }
         }
+    }
+
+    const handleEnumChoices = () => {
+        const filterValue = value === "" ? defaultvalue : value;
+        return enum_values?.choices.filter((item) => item.value === filterValue)[0].id;
+    }
+
+    const handleBooleanValues = () => {
+        const booleanValue = value === "" ? defaultvalue : value;
+        return booleanValue === "true" ? true : false;
     }
 
     return (
@@ -65,7 +76,7 @@ function CustomField(props) {
                     required={required}
                     onChange={onChange}
                     onBlur={onBlur}
-                    defaultValue={enum_values?.choices.filter((item) => item.value === defaultvalue)[0].id}
+                    defaultValue={handleEnumChoices}
                     disabled={disabled}
                     placeholder="Select"
                 >
@@ -85,7 +96,7 @@ function CustomField(props) {
                     onBlur={onBlur}
                     value={value}
                     disabled={disabled}
-                    defaultChecked={defaultvalue === "true" ? true : false}
+                    defaultChecked={handleBooleanValues}
                 />
             }
             {DateFieldConstants.includes(data_type) &&

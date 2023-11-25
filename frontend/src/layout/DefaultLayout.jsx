@@ -10,8 +10,6 @@ import AlertPopup from '../component/common/AlertPopup';
 const DefaultLayout = ({ children, route }) => {
 
   const [open, setOpen] = useState(true);
-  const [currentRoute, setCurrentRoute] = useState("");
-  const [currentRouteName, setCurrentRouteName] = useState("");
 
   const { t, i18n } = useTranslation();
 

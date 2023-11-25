@@ -5,19 +5,7 @@ import requestService from '../services/request';
 import Loader from '../component/common/Loader';
 import { TablePagination } from '@mui/material';
 import NoDataFound from '../component/common/NoDataFound';
-
-
-const searchFields = {
-  id: '',
-  sender_email: '',
-  username: '',
-  customer_id: '',
-  created_at: '',
-  text: '',
-  request_type: '',
-  requested_website: '',
-  action_done: ''
-};
+import { searchFields } from '../lib/FieldConstants';
 
 const Request = () => {
   const { t } = useTranslation();

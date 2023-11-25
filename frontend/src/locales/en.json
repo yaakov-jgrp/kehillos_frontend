@@ -57,7 +57,9 @@
     "clientDetails": "Client Details",
     "noClientFound": "No Client Found with ID :",
     "noValueFound": "No Value Found",
-    "filters": "Filters"
+    "filters": "Filters",
+    "apply": "Apply",
+    "applied": "Applied"
   },
   "emails": {
     "templates": "Templates",
