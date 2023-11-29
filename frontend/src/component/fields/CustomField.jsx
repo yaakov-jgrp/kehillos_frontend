@@ -41,7 +41,6 @@ function CustomField(props) {
                 <input
                     type="number"
                     min="0"
-                    step={data_type === "number" ? "1" : "0.01"}
                     onKeyDown={handleNumberkeyPress}
                     className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
                     required={required}

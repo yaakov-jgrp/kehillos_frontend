@@ -5,16 +5,16 @@ import requestService from '../services/request';
 import Loader from '../component/common/Loader';
 import { TablePagination } from '@mui/material';
 import NoDataFound from '../component/common/NoDataFound';
-import { searchFields } from '../lib/FieldConstants';
+import { paginationRowOptions, searchFields } from '../lib/FieldConstants';
 import { formateDateTime } from '../lib/CommonFunctions';
 
 const Request = () => {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [allRequest, setAllRequests] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [totalCount, setTotalCount] = useState(100);
   const [searchParams, setSearchParams] = useState(searchFields);
 
@@ -198,6 +198,7 @@ const Request = () => {
         component="div"
         count={totalCount}
         page={page}
+        rowsPerPageOptions={paginationRowOptions}
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}

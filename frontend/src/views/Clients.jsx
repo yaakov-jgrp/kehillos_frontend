@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import DisplayFieldsModal from '../component/client/DisplayFieldsModal';
-import { NumberFieldConstants, dateRegex } from '../lib/FieldConstants';
+import { NumberFieldConstants, dateRegex, paginationRowOptions } from '../lib/FieldConstants';
 import SearchField from '../component/fields/SearchField';
 import { TablePagination } from '@mui/material';
 import { FaFilter } from "react-icons/fa";
@@ -28,7 +28,7 @@ const Clients = () => {
     const navigate = useNavigate();
     dayjs.extend(utc);
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [allClients, setAllClients] = useState([]);
     const [clientModal, setClientModal] = useState(false);
     const [newClient, setNewClient] = useState(true);
@@ -41,7 +41,7 @@ const Clients = () => {
     const [displayFields, setDisplayFields] = useState([]);
     const [displayFormValues, setDisplayFormValues] = useState({});
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(50);
     const [totalCount, setTotalCount] = useState(100);
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [searchParams, setSearchParams] = useState({});
@@ -207,54 +207,55 @@ const Clients = () => {
             </div>
             <div className='h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2'>
                 <table className='!table text-[12px] md:text-[14px] mb-3'>
-                    <thead className='sticky top-0 z-10 [&_th]:min-w-[8.5rem]'>
-                        <tr className='tracking-[-2%] mb-5 bg-lightPrimary'>
-                            <th className='pr-3'>
-                                <SearchField
-                                    variant="auth"
-                                    extra="mb-2"
-                                    label={t("clients.id")}
-                                    id="field_id"
-                                    type="text"
-                                    placeholder={t('searchbox.placeHolder')}
-                                    onChange={(e) => searchResult("id", e.target.value)}
-                                    name="id"
-                                />
-                            </th>
-                            {fullFormData && fullFormData.length > 0 &&
-                                fullFormData.map((field, i) => {
-                                    return (
-                                        <Fragment key={i}>
-                                            {
-                                                field?.display &&
-                                                <th className='pr-3'>
-                                                    <SearchField
-                                                        variant="auth"
-                                                        extra="mb-2"
-                                                        label={lang === "he" ? field?.field_name_language.he : field?.field_name}
-                                                        id={field?.id}
-                                                        type="text"
-                                                        placeholder={t('searchbox.placeHolder')}
-                                                        onChange={(e) => searchResult(field?.field_slug, e.target.value)}
-                                                        name={field?.field_slug}
-                                                    />
-                                                </th>
-                                            }
-                                        </Fragment>
-                                    )
-                                })}
-                            <th className='pr-3'>
-                                <div className={` ${(i18n.dir() === 'rtl') ? 'text-right' : 'text-left'}`}>
-                                    <label
-                                        className={`text-[10px] truncate md:text-[14px] text-navy-700 ml-1.5 font-medium
+                    {fullFormData && fullFormData.length > 0 &&
+                        <thead className='sticky top-0 z-10 [&_th]:min-w-[8.5rem]'>
+                            <tr className='tracking-[-2%] mb-5 bg-lightPrimary'>
+                                <th className='pr-3'>
+                                    <SearchField
+                                        variant="auth"
+                                        extra="mb-2"
+                                        label={t("clients.id")}
+                                        id="field_id"
+                                        type="text"
+                                        placeholder={t('searchbox.placeHolder')}
+                                        onChange={(e) => searchResult("id", e.target.value)}
+                                        name="id"
+                                    />
+                                </th>
+                                {
+                                    fullFormData.map((field, i) => {
+                                        return (
+                                            <Fragment key={i}>
+                                                {
+                                                    field?.display &&
+                                                    <th className='pr-3'>
+                                                        <SearchField
+                                                            variant="auth"
+                                                            extra="mb-2"
+                                                            label={lang === "he" ? field?.field_name_language.he : field?.field_name}
+                                                            id={field?.id}
+                                                            type="text"
+                                                            placeholder={t('searchbox.placeHolder')}
+                                                            onChange={(e) => searchResult(field?.field_slug, e.target.value)}
+                                                            name={field?.field_slug}
+                                                        />
+                                                    </th>
+                                                }
+                                            </Fragment>
+                                        )
+                                    })}
+                                <th className='pr-3'>
+                                    <div className={` ${(i18n.dir() === 'rtl') ? 'text-right' : 'text-left'}`}>
+                                        <label
+                                            className={`text-[10px] truncate md:text-[14px] text-navy-700 ml-1.5 font-medium
                                             `}
-                                    >
-                                        {t("netfree.clientActions")}
-                                    </label>
-                                </div>
-                            </th>
-                        </tr>
-                    </thead>
+                                        >
+                                            {t("netfree.clientActions")}
+                                        </label>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>}
                     <tbody className='[&_td]:min-w-[9rem]'>
                         {
                             isLoading ?
@@ -331,6 +332,7 @@ const Clients = () => {
                 count={totalCount}
                 page={page}
                 onPageChange={handleChangePage}
+                rowsPerPageOptions={paginationRowOptions}
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
