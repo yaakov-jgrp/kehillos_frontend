@@ -76,7 +76,8 @@
     "setAsDefault": "נקבע כברירת מחדל",
     "goBack": "תחזור",
     "condition": "מַצָב",
-    "field": "שדה"
+    "field": "שדה",
+    "enterNumber": "הכנס מספר טלפון"
   },
   "emails": {
     "templates": "תבניות",

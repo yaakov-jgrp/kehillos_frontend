@@ -76,7 +76,8 @@
     "setAsDefault": "Set as Default",
     "goBack": "Go Back",
     "condition": "Condition",
-    "field": "Field"
+    "field": "Field",
+    "enterNumber": "Enter phone number"
   },
   "emails": {
     "templates": "Templates",

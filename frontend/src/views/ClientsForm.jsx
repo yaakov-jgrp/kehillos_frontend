@@ -163,7 +163,7 @@ const ClientsForm = () => {
                                                                 <label className={`block text-black text-sm font-bold`}>
                                                                     {lang === "he" ? field?.field_name_language.he : field?.field_name}
                                                                 </label>
-                                                                <p className='text-sm ml-1 capitalize text-gray-500'>{`(${field?.data_type?.value})`}</p>
+                                                                <p className='text-sm mx-1 capitalize text-gray-500'>{`(${field?.data_type?.label})`}</p>
                                                             </div>
                                                             <div className='flex items-center'>
                                                                 {field?.is_editable && <EditButtonIcon extra="mr-2" onClick={() => editBlockFieldModalHandler(field, false)} />}

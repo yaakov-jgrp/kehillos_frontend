@@ -135,7 +135,6 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netf
                     netfree_profile: data.netfree_profile,
                     fields: updateFieldsArray
                 }
-                console.log(updateFieldsArray)
                 formData.append("data", JSON.stringify(detailsData));
                 clientsService.updateClient(formData, client.client_id).then((res) => {
                     reset();

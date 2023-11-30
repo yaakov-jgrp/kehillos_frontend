@@ -10,8 +10,6 @@ const DisplayFieldsModal = ({ showModal, setShowModal, formValues, displayFields
     const defaultValues = formValues;
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
 
-    console.log(formValues, displayFields)
-
     const submitForm = async (data, e) => {
         e.preventDefault();
         let formData = {

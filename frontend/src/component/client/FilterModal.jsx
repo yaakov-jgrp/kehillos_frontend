@@ -111,7 +111,6 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
         } else {
 
             const updateData = { filter_group_id: editFilter?.id, name: editFilter?.name, ...data }
-            console.log(updateData)
             const res = await clientsService.updateFilterGroup(updateData);
             console.log(res);
         }
