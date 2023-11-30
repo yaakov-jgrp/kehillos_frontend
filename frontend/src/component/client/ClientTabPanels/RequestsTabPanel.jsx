@@ -28,7 +28,7 @@ function RequestsTabPanel(props) {
                     searchValues += `&search_${[searchfield]}=${searchParams[searchfield]}`
                 };
             }
-            const params = `?email_request=true${searchValues}&lang=${lang}`;
+            const params = `email_request=true${searchValues}`;
             clientsService.getClient(id, params).then((res) => {
                 setRequests(res.data);
                 setTotalCount(res.data.count);
