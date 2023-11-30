@@ -287,7 +287,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                                                                                     (field) =>
                                                                                                         field?.field_slug ===
                                                                                                         filterCondition?.attr_name
-                                                                                                )[0]?.data_type
+                                                                                                )[0]?.data_type.value
                                                                                         )[0]
                                                                                         .conditions.map((condition, i) => (
                                                                                             <MenuItem

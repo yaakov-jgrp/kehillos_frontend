@@ -17,7 +17,7 @@ function RequestsTabPanel(props) {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [totalCount, setTotalCount] = useState(100);
     const [searchParams, setSearchParams] = useState(searchFields);
-    const [isLoading, setIsloading] = useState(false);
+    const [isLoading, setIsloading] = useState(true);
 
     const fetchClientRequests = () => {
         setIsloading(true);

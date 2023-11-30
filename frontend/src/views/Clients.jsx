@@ -5,10 +5,6 @@ import clientsService from '../services/clients';
 import AddButtonIcon from '../component/common/AddButton';
 import categoryService from '../services/category';
 import ClientModal from '../component/client/ClientModal';
-import {
-    MdDelete,
-    MdEdit
-} from "react-icons/md";
 import ErrorsModal from '../component/common/ErrorsModal';
 import CsvImporter from '../component/client/CsvImporter';
 import { FiSettings } from 'react-icons/fi';
@@ -124,17 +120,6 @@ const Clients = () => {
         setNetfreeProfiles(profilesListData.data.data);
     }
 
-    const editClientHandler = (data) => {
-        setEditClient(data);
-        setNewClient(false);
-        setClientModal(true);
-    }
-
-    const deleteClientHandler = async (id) => {
-        const res = await clientsService.deleteClient(id);
-        fetchClientsData();
-    }
-
     const exportClientsHandler = async () => {
         const res = await clientsService.exportClients();
         var url = "data:text/csv;charset=utf-8,%EF%BB%BF" + res.data;
@@ -162,7 +147,6 @@ const Clients = () => {
         fetchFullFormData();
     }, [])
 
-
     return (
         <div className='w-full bg-white rounded-3xl'>
             {allClients && netfreeprofiles && editClient && clientModal &&
@@ -171,7 +155,6 @@ const Clients = () => {
                     setShowModal={setClientModal}
                     newClient={newClient}
                     client={editClient}
-                    clientLists={allClients}
                     netfreeProfiles={netfreeprofiles}
                     fullFormData={fullFormData}
                     onClick={() => { setNewClient(true); fetchClientsData(); }}
@@ -206,7 +189,7 @@ const Clients = () => {
                 </div>
             </div>
             <div className='h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2'>
-                <table className='!table text-[12px] md:text-[14px] mb-3'>
+                <table className='!table text-[12px] md:text-[14px] min-w-[100%] mb-3'>
                     {fullFormData && fullFormData.length > 0 &&
                         <thead className='sticky top-0 z-10 [&_th]:min-w-[8.5rem]'>
                             <tr className='tracking-[-2%] mb-5 bg-lightPrimary'>
@@ -244,16 +227,6 @@ const Clients = () => {
                                             </Fragment>
                                         )
                                     })}
-                                <th className='pr-3'>
-                                    <div className={` ${(i18n.dir() === 'rtl') ? 'text-right' : 'text-left'}`}>
-                                        <label
-                                            className={`text-[10px] truncate md:text-[14px] text-navy-700 ml-1.5 font-medium
-                                            `}
-                                        >
-                                            {t("netfree.clientActions")}
-                                        </label>
-                                    </div>
-                                </th>
                             </tr>
                         </thead>}
                     <tbody className='[&_td]:min-w-[9rem]'>
@@ -280,9 +253,9 @@ const Clients = () => {
                                                                 </td>
                                                                 {fullFormData?.length > 0 && fullFormData.map((field, i) => {
                                                                     const dataValue = client[field?.field_slug];
-                                                                    const value = typeof dataValue === "object" ? dataValue?.value : typeof dataValue === "boolean" ? JSON.stringify(dataValue) : dataValue;
+                                                                    const value = typeof dataValue === "object" ? field?.data_type.value === "file" ? dataValue.file_name.split("upload/")[1] : dataValue?.value : typeof dataValue === "boolean" ? JSON.stringify(dataValue) : dataValue;
                                                                     let isDate = false;
-                                                                    const isNumber = NumberFieldConstants.includes(field?.data_type);
+                                                                    const isNumber = NumberFieldConstants.includes(field?.data_type.value);
                                                                     const emptyValues = ["", null];
                                                                     if (dateRegex.test(value)) {
                                                                         isDate = true;
@@ -305,12 +278,6 @@ const Clients = () => {
                                                                         </Fragment>
                                                                     )
                                                                 })}
-                                                                <td>
-                                                                    <div className="h-auto w-full flex items-center justify-around">
-                                                                        <MdEdit className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => editClientHandler(client)} />
-                                                                        <MdDelete className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => deleteClientHandler(client?.id)} />
-                                                                    </div>
-                                                                </td>
                                                             </tr>
                                                         );
                                                     })

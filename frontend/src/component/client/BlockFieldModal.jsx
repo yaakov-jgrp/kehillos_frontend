@@ -41,14 +41,8 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
 
     const schema = block ? yup.object().shape({
         name: yup.string().min(3, "Name must contain atleast 3 characters").required(),
-        field_name_language: yup.object({
-            he: yup.string().min(3, "Hebrew name must contain atleast 3 characters").required()
-        }),
     }) : yup.object().shape({
         name: yup.string().min(3, "Name must contain atleast 3 characters").required(),
-        field_name_language: yup.object({
-            he: yup.string().min(3, "Hebrew name must contain atleast 3 characters").required()
-        }),
         block_id: yup.string().required(),
         data_type: yup.string().required("Data type is required"),
         value: yup.string().when('data_type', {
@@ -83,13 +77,13 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
             if (block) {
                 setValue("name", editData?.block);
             } else {
-                if (editData?.data_type === "select") {
+                if (editData?.data_type.value === "select") {
                     const choices = editData?.enum_values?.choices?.map((item) => item.value);
                     setValue("value", choices.join(","));
                     setSelectedValues(choices);
                 }
                 setValue("name", editData?.field_name);
-                setValue("data_type", editData?.data_type);
+                setValue("data_type", editData?.data_type.value);
                 setValue("defaultvalue", editData?.defaultvalue || "");
                 setValue("required", editData?.required);
                 setValue("unique", editData?.unique);
@@ -193,6 +187,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
         initModal();
     }, [])
 
+
     return (
         <div className="fixed left-0 bottom-0 z-[99] h-screen w-screen bg-[#00000080] flex justify-center items-center">
             <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
@@ -231,17 +226,6 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                     )}
                                 />
                                 {errors.name && <ErrorMessage message={errors.name.message} />}
-                                <label className="block text-black text-sm font-bold my-1">
-                                    {t('netfree.nameHe')}
-                                </label>
-                                <Controller
-                                    name="field_name_language.he"
-                                    control={control}
-                                    render={({ field: { value, onChange, onBlur } }) => (
-                                        <input value={value} className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" onChange={onChange} onBlur={onBlur} />
-                                    )}
-                                />
-                                {errors?.field_name_language && <ErrorMessage message={errors?.field_name_language?.he?.message} />}
                                 {!block &&
                                     <>
                                         <label className="block text-black text-sm font-bold my-1">
@@ -327,7 +311,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                                             </>
                                                             : <>
                                                                 {
-                                                                    watch("data_type") === "date" ? null
+                                                                    ["date", "file"].includes(watch("data_type")) ? null
                                                                         : <>
                                                                             <label className="block text-black text-sm font-bold my-1">
                                                                                 {t('clients.defaultValue')}
@@ -382,23 +366,6 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                                 {t('clients.unique')}
                                             </label>
                                         </div>
-                                        {/* <div className='flex my-2'>
-                                            <Controller
-                                                name="display"
-                                                control={control}
-                                                render={({ field: { value, onChange } }) => (
-                                                    <CustomCheckBox
-                                                        className='mr-2'
-                                                        defaultChecked={value}
-                                                        checked={value}
-                                                        onChange={onChange}
-                                                    />
-                                                )}
-                                            />
-                                            <label className="block text-black text-sm font-bold">
-                                                {t('clients.display')}
-                                            </label>
-                                        </div> */}
                                     </>
                                 }
                             </div> :

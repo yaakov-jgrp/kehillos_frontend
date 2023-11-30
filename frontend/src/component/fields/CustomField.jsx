@@ -7,9 +7,10 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomCheckBox from './checkbox';
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
+import { MdOutlineUploadFile } from "react-icons/md";
 
 function CustomField(props) {
-    const { data_type, required, field_slug, enum_values, defaultvalue } = props.field
+    const { data_type, required, enum_values, defaultvalue } = props.field
     const { onChange, onBlur, value, disabled } = props;
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
 
@@ -17,7 +18,7 @@ function CustomField(props) {
         if (e.key == "e") {
             e.preventDefault();
         } else {
-            if (data_type === "number" && e.key == ".") {
+            if (data_type.value === "number" && e.key == ".") {
                 e.preventDefault();
             }
         }
@@ -26,9 +27,9 @@ function CustomField(props) {
 
     return (
         <>
-            {TextFieldConstants.includes(data_type) &&
+            {TextFieldConstants.includes(data_type.value) &&
                 <input
-                    type={data_type}
+                    type={data_type.value}
                     className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
                     required={required}
                     onChange={onChange}
@@ -37,7 +38,7 @@ function CustomField(props) {
                     disabled={disabled}
                     placeholder={defaultvalue}
                 />}
-            {NumberFieldConstants.includes(data_type) &&
+            {NumberFieldConstants.includes(data_type.value) &&
                 <input
                     type="number"
                     min="0"
@@ -51,7 +52,7 @@ function CustomField(props) {
                     placeholder={defaultvalue}
                 />}
             {
-                data_type === "phone" &&
+                data_type.value === "phone" &&
                 <PhoneInput
                     className='shadow appearance-none outline-none border rounded w-full p-2 text-black [&>input]:outline-none [&>input]:bg-white'
                     placeholder="Enter phone number"
@@ -62,7 +63,27 @@ function CustomField(props) {
                     disabled={disabled}
                 />
             }
-            {data_type === "select" &&
+            {
+                data_type.value === "file" &&
+                <label
+                    className="shadow text-md flex items-center w-full appearance-none outline-none border rounded p-2 text-black"
+                >
+                    <MdOutlineUploadFile style={{
+                        marginRight: "5px",
+                        fontSize: "1.25rem"
+                    }} />
+                    {value.name}
+                    <input
+                        type={data_type.value}
+                        required={required}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        hidden
+                        disabled={disabled}
+                    />
+                </label>
+            }
+            {data_type.value === "select" &&
                 <select
                     className="shadow appearance-none border rounded outline-none w-full p-2 text-black bg-white"
                     required={required}
@@ -82,7 +103,7 @@ function CustomField(props) {
                 </select>
             }
             {
-                checkBoxConstants.includes(data_type) &&
+                checkBoxConstants.includes(data_type.value) &&
                 <CustomCheckBox
                     onChange={onChange}
                     onBlur={onBlur}
@@ -90,7 +111,7 @@ function CustomField(props) {
                     disabled={disabled}
                 />
             }
-            {DateFieldConstants.includes(data_type) &&
+            {DateFieldConstants.includes(data_type.value) &&
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                         className="shadow appearance-none outline-none border-0 rounded w-full p-0 text-black"

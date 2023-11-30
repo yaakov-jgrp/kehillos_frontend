@@ -31,10 +31,12 @@ function DetailsTabPanel(props) {
                                             blockData.field.map((field, index) => {
                                                 const emptyValues = ["", null, undefined];
                                                 let value;
-                                                if (DateFieldConstants.includes(field.data_type) && !emptyValues.includes(field?.value)) {
+                                                if (DateFieldConstants.includes(field.data_type.value) && !emptyValues.includes(field?.value)) {
                                                     value = dayjs(field?.value).format("DD/MM/YYYY");
-                                                } else if (field.data_type === "select") {
+                                                } else if (field.data_type.value === "select") {
                                                     value = field?.value[1];
+                                                } else if (field.data_type.value === "file") {
+                                                    value = field?.value.file_name?.split("upload/")[1];
                                                 } else {
                                                     value = field?.value;
                                                 }

@@ -11,11 +11,19 @@ const getClient = (id, params = "") => {
 }
 
 const saveClient = (clientData) => {
-    return api.post(`/api/client/`, clientData);
+    return api.post(`/api/client/`, clientData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
 }
 
 const updateClient = (clientData, id) => {
-    return api.put(`/api/client/${id}/`, clientData);
+    return api.post(`/api/client/${id}/`, clientData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
 }
 
 const deleteClient = (id) => {
