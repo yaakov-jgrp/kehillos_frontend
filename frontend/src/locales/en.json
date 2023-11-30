@@ -1,7 +1,12 @@
 {
   "common": {
     "pages": "Pages",
-    "noDataFound": "No Data Found"
+    "noDataFound": "No Data Found",
+    "deleteConfirmation": "Are you sure",
+    "delete": "Yes, Delete",
+    "no": "No",
+    "deleteNote": "Data will be permanently deleted",
+    "deleteSuccess": "Data deleted successfully"
   },
   "auth": {
     "email": "Email",
@@ -71,7 +76,7 @@
     "setAsDefault": "Set as Default",
     "goBack": "Go Back",
     "condition": "Condition",
-    "field": "field"
+    "field": "Field"
   },
   "emails": {
     "templates": "Templates",
@@ -143,7 +148,8 @@
     "phone": "Phone",
     "sector": "Sector",
     "netfreeProfile": "Netfree Profile",
-    "clientActions": "Client Actions"
+    "clientActions": "Client Actions",
+    "buyerReviewNotification": "Buyer Review Notifications"
   },
   "searchbox": {
     "placeHolder": "Search",

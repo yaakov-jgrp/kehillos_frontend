@@ -17,6 +17,7 @@ import {
 } from "react-icons/md";
 import ClientModal from '../component/client/ClientModal';
 import { toast } from 'react-toastify';
+import DeleteConfirmationModal from '../component/common/DeleteConfirmationModal';
 
 function ClientDetails() {
     const { id } = useParams();
@@ -31,6 +32,7 @@ function ClientDetails() {
     const [clientModal, setClientModal] = useState(false);
     const [netfreeprofiles, setNetfreeProfiles] = useState(null);
     const [fullFormData, setFullFormData] = useState(null);
+    const [confirmationModal, setConfirmationModal] = useState(false);
 
     const getClientDataHandler = async () => {
         setIsloading(true);
@@ -68,7 +70,7 @@ function ClientDetails() {
             const res = await clientsService.deleteClient(id);
             if (res.status > 200) {
                 navigate('/clients')
-                toast.success("Deleted client successfully");
+                toast.success(t("common.deleteSuccess"));
             }
         } catch (error) {
             console.log(error)
@@ -135,7 +137,7 @@ function ClientDetails() {
                                         </div>
                                         <div className="h-auto w-full flex items-center justify-end">
                                             <MdEdit className="text-blueSecondary mx-2 w-5 h-5 hover:cursor-pointer" onClick={() => editClientHandler(clientData)} />
-                                            <MdDelete className="text-blueSecondary mx-2 w-5 h-5 hover:cursor-pointer" onClick={() => deleteClientHandler(clientData?.client_id)} />
+                                            <MdDelete className="text-blueSecondary mx-2 w-5 h-5 hover:cursor-pointer" onClick={() => setConfirmationModal(true)} />
                                         </div>
                                     </div>
                                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -174,6 +176,14 @@ function ClientDetails() {
                         fullFormData={fullFormData}
                         onClick={() => { getClientDataHandler() }}
                     />}
+                {
+                    confirmationModal &&
+                    <DeleteConfirmationModal
+                        showModal={confirmationModal}
+                        setShowModal={setConfirmationModal}
+                        onClick={() => deleteClientHandler(clientData?.client_id)}
+                    />
+                }
             </div>
         </>
     )

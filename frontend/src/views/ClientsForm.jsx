@@ -16,6 +16,8 @@ import EditButtonIcon from "../component/common/EditButton";
 import { Draggable } from "react-drag-reorder";
 import { PiDotsSixVerticalBold } from 'react-icons/pi'
 import { fetchFullformDataHandler } from '../lib/CommonFunctions';
+import DeleteConfirmationModal from '../component/common/DeleteConfirmationModal';
+import { toast } from 'react-toastify';
 
 const ClientsForm = () => {
     const { t } = useTranslation();
@@ -26,6 +28,11 @@ const ClientsForm = () => {
     const [showModal, setShowModal] = useState(false);
     const [isAddBlock, setIsAddBlock] = useState(false);
     const [editData, setEditData] = useState(null);
+    const [confirmationModal, setConfirmationModal] = useState(false);
+    const [deleteMethod, setDeleteMethod] = useState({
+        type: "",
+        value: ""
+    });
 
     const showModalHandler = () => {
         setShowModal(!showModal);
@@ -48,6 +55,8 @@ const ClientsForm = () => {
             is_block: isBlock
         }
         const res = await clientsService.deleteBlockField(formData);
+        toast.success(t("common.deleteSuccess"));
+        setConfirmationModal(false);
         fetchFullformDataHandler(setIsLoading, setFullFormData);
     }
 
@@ -123,7 +132,10 @@ const ClientsForm = () => {
                                     {lang === "he" ? blockData?.field_name_language.he : blockData.block}
                                     <div className='flex items-center'>
                                         {blockData?.is_editable && <EditButtonIcon extra="mr-2" onClick={() => editBlockFieldModalHandler(blockData, true)} />}
-                                        {blockData?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => deleteBlockFieldHandler(blockData.block_id, true)} />}
+                                        {blockData?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => {
+                                            setDeleteMethod((prev) => ({ type: blockData.block_id, value: true }));
+                                            setConfirmationModal(true);
+                                        }} />}
                                         <PiDotsSixVerticalBold className='cursor-grab z-20' />
                                     </div>
                                 </BlockButton>
@@ -155,7 +167,10 @@ const ClientsForm = () => {
                                                             </div>
                                                             <div className='flex items-center'>
                                                                 {field?.is_editable && <EditButtonIcon extra="mr-2" onClick={() => editBlockFieldModalHandler(field, false)} />}
-                                                                {field?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => deleteBlockFieldHandler(field?.id, false)} />}
+                                                                {field?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => {
+                                                                    setDeleteMethod((prev) => ({ type: field?.id, value: false }));
+                                                                    setConfirmationModal(true);
+                                                                }} />}
                                                                 <PiDotsSixVerticalBold className='cursor-grab z-20' />
                                                             </div>
                                                         </div>
@@ -170,8 +185,23 @@ const ClientsForm = () => {
                     </Accordion>
                 </div>
                 {
-                    showModal && <BlockFieldModal editData={editData} block={isAddBlock} blockId={activeBlock} onClick={() => fetchFullformDataHandler(setIsLoading, setFullFormData)} setShowModal={setShowModal} />
+                    showModal &&
+                    <BlockFieldModal
+                        editData={editData}
+                        block={isAddBlock}
+                        blockId={activeBlock}
+                        onClick={() => fetchFullformDataHandler(setIsLoading, setFullFormData)}
+                        setShowModal={setShowModal}
+                    />
                 }
+                {confirmationModal &&
+                    <DeleteConfirmationModal
+                        showModal={confirmationModal}
+                        setShowModal={setConfirmationModal}
+                        onClick={() => {
+                            deleteBlockFieldHandler(deleteMethod.type, deleteMethod.value);
+                        }}
+                    />}
             </div>
         </div>
     )

@@ -519,15 +519,15 @@ const NetFree = () => {
                 }
                 <div className="py-3 bg-white h-[23%] rounded-3xl text-center text-[#2B3674]">
                     <div className="flex items-center justify-center">
-                        <p className="p-2 text-xs">Buyer Review Notifications</p>
+                        <p className="p-2 text-xs">{t("netfree.buyerReviewNotification")}</p>
                         <ToggleSwitch selected={true} />
                     </div>
                     <div className="flex items-center justify-center">
-                        <p className="p-2 text-xs">Buyer Review Notifications</p>
+                        <p className="p-2 text-xs">{t("netfree.buyerReviewNotification")}</p>
                         <ToggleSwitch selected={true} />
                     </div>
                     <div className="flex items-center justify-center">
-                        <p className="p-2 text-xs">Buyer Review Notifications</p>
+                        <p className="p-2 text-xs">{t("netfree.buyerReviewNotification")}</p>
                         <ToggleSwitch selected={true} />
                     </div>
                 </div>

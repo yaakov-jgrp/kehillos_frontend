@@ -1,7 +1,12 @@
 {
   "common": {
     "pages": "בית",
-    "noDataFound": "לא נמצאו נתונים"
+    "noDataFound": "לא נמצאו נתונים",
+    "deleteConfirmation": "האם אתה בטוח",
+    "delete": "כן, מחק",
+    "no": "לא",
+    "deleteNote": "הנתונים יימחקו לצמיתות",
+    "deleteSuccess": "הנתונים נמחקו בהצלחה"
   },
   "auth": {
     "email": "אימייל",
@@ -148,7 +153,8 @@
     "phone": "טלפון",
     "sector": "מִגזָר",
     "netfreeProfile": "פרופיל",
-    "clientActions": "פעולות הלקוח"
+    "clientActions": "פעולות הלקוח",
+    "buyerReviewNotification": "הודעות ביקורת קונה"
   },
   "searchbox": {
     "placeHolder": "חיפוש",
