@@ -8,7 +8,7 @@ const getClients = (params) => {
 const getClient = (id, params = "") => {
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     return api
-        .get(`/api/client/${id}/?lang=${lang}${params}`);
+        .get(`/api/client/${id}/?lang=${lang}&${params}`);
 }
 
 const saveClient = (clientData) => {
