@@ -159,7 +159,9 @@
     "sector": "מִגזָר",
     "netfreeProfile": "פרופיל",
     "clientActions": "פעולות הלקוח",
-    "buyerReviewNotification": "הודעות ביקורת קונה"
+    "buyerReviewNotification": "הודעות ביקורת קונה",
+    "addUser": "הוסף משתמש",
+    "editUser": "ערוך משתמש"
   },
   "searchbox": {
     "placeHolder": "חיפוש",

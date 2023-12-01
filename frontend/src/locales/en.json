@@ -155,7 +155,9 @@
     "sector": "Sector",
     "netfreeProfile": "Netfree Profile",
     "clientActions": "Client Actions",
-    "buyerReviewNotification": "Buyer Review Notifications"
+    "buyerReviewNotification": "Buyer Review Notifications",
+    "addUser": "Add User",
+    "editUser": "Edit User"
   },
   "searchbox": {
     "placeHolder": "Search",

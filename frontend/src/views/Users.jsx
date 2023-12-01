@@ -11,6 +11,9 @@ import {
     MdDelete,
     MdEdit
 } from "react-icons/md";
+import UserModal from '../component/category/UserModal';
+import DeleteConfirmationModal from '../component/common/DeleteConfirmationModal';
+import { toast } from 'react-toastify';
 
 function Users() {
     const { t, i18n } = useTranslation();
@@ -23,8 +26,8 @@ function Users() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(50);
     const [totalCount, setTotalCount] = useState(100);
-    const [searchParams, setSearchParams] = useState(searchFields);
-
+    const [searchParams, setSearchParams] = useState(searchFields)
+    const [confirmationModal, setConfirmationModal] = useState(false);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -59,6 +62,26 @@ function Users() {
 
     const searchResult = (searchBy, value) => {
         setSearchParams((prev) => ({ ...prev, ...{ [searchBy]: value } }));
+    }
+
+    const editUserHandler = (user) => {
+        setNewUser(false);
+        setEditUser(user);
+        setUserModal(true);
+    }
+
+
+    const deleteUserHandler = async () => {
+        try {
+            const res = await authService.deleteUser(editUser?.id);
+            if (res.status > 200) {
+                toast.success(t("common.deleteSuccess"));
+                fetchUsersData();
+                setConfirmationModal(false);
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     useEffect(() => {
@@ -158,8 +181,11 @@ function Users() {
                                                                 </td>
                                                                 <td>
                                                                     <div className="h-auto w-full flex items-center justify-around">
-                                                                        <MdEdit className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => { }} />
-                                                                        <MdDelete className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => { }} />
+                                                                        <MdEdit className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => { editUserHandler(el) }} />
+                                                                        <MdDelete className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => {
+                                                                            setEditUser(el);
+                                                                            setConfirmationModal(true);
+                                                                        }} />
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -187,6 +213,23 @@ function Users() {
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
+
+            {userModal &&
+                <UserModal
+                    showModal={userModal}
+                    setShowModal={setUserModal}
+                    user={editUser}
+                    newUser={newUser}
+                    onClick={() => { fetchUsersData() }}
+                />}
+            {
+                confirmationModal && editUser &&
+                <DeleteConfirmationModal
+                    showModal={confirmationModal}
+                    setShowModal={setConfirmationModal}
+                    onClick={() => deleteUserHandler()}
+                />
+            }
         </div>
     )
 }

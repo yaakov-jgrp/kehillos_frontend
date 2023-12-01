@@ -8,7 +8,7 @@ import NoDataFound from '../component/common/NoDataFound';
 import { paginationRowOptions, searchFields } from '../lib/FieldConstants';
 import logsService from '../services/logs';
 import dayjs from 'dayjs';
-import LogChanges from '../component/logs/changes';
+import LogChanges from '../component/LogsComponents/changes';
 
 function Logs() {
     const { t } = useTranslation();
