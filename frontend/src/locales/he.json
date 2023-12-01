@@ -6,7 +6,9 @@
     "delete": "כן, מחק",
     "no": "לא",
     "deleteNote": "הנתונים יימחקו לצמיתות",
-    "deleteSuccess": "הנתונים נמחקו בהצלחה"
+    "deleteSuccess": "הנתונים נמחקו בהצלחה",
+    "viewMore": "ראה עוד",
+    "viewLess": "תראה פחות"
   },
   "auth": {
     "email": "אימייל",
@@ -26,7 +28,9 @@
     "profile": "פרופיל",
     "logout": "התנתק",
     "clients": "לקוחות",
-    "details": "פרטים"
+    "details": "פרטים",
+    "logs": "יומנים",
+    "users": "משתמשים"
   },
   "requests": {
     "title": "פניות",
@@ -170,7 +174,12 @@
     "from": "מאת",
     "requestType": "סוג פניה",
     "requestdetail": "פרטי פניה",
-    "actionsDone": "פעולות שבוצעו"
+    "actionsDone": "פעולות שבוצעו",
+    "user": "מִשׁתַמֵשׁ",
+    "changes": "שינויים",
+    "action": "פעולה",
+    "entity": "יֵשׁוּת",
+    "timeStamp": "חותמת זמן"
   },
   "buttons.add_column": "הוסף עמודה",
   "buttons.add_content": "הוסף תוכן",

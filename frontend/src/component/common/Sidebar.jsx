@@ -21,11 +21,14 @@ import {
   MdLogout,
   MdOutlineSettings,
 } from "react-icons/md";
+import { IoLogoBuffer } from "react-icons/io";
 
-import { HiOutlineUserGroup } from "react-icons/hi2"
+import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2"
 import NetFree from "../../views/NetFree";
 import Clients from "../../views/Clients";
 import ClientsForm from "../../views/ClientsForm";
+import Logs from "../../views/Logs";
+import Users from "../../views/Users";
 
 const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
@@ -64,6 +67,13 @@ const Sidebar = ({ open, onClose }) => {
           component: <ClientsForm />,
         },
         {
+          name: t('sidebar.users'),
+          path: "settings/users",
+          type: "menu",
+          icon: <HiOutlineUsers className="h-6 w-6" />,
+          component: <Users />,
+        },
+        {
           name: t('sidebar.netfree'),
           path: "settings/netfree",
           type: "menu",
@@ -76,6 +86,13 @@ const Sidebar = ({ open, onClose }) => {
           type: "menu",
           icon: <MdOutlineEmail className="h-6 w-6" />,
           component: <Emails />,
+        },
+        {
+          name: t('sidebar.logs'),
+          path: "settings/logs",
+          type: "menu",
+          icon: <IoLogoBuffer className="h-6 w-6" />,
+          component: <Logs />,
         },
       ]
     },

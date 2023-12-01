@@ -64,51 +64,60 @@ const Clients = () => {
 
     const fetchClientsData = async () => {
         setIsLoading(true);
-        const filters = await fetchFiltersHandler();
-        const defaultFilter = filters?.filter((filter) => filter.fg_default);
-        const filterParams = defaultFilter.length > 0 ? `&filter_ids=${defaultFilter[0].id}` : "";
-        let searchValues = "";
-        for (const searchfield in searchParams) {
-            if (searchParams[searchfield] !== "") {
-                searchValues += `&search_${[searchfield]}=${searchParams[searchfield]}`
-            };
+        try {
+            const filters = await fetchFiltersHandler();
+            const defaultFilter = filters?.filter((filter) => filter.fg_default);
+            const filterParams = defaultFilter.length > 0 ? `&filter_ids=${defaultFilter[0].id}` : "";
+            let searchValues = "";
+            for (const searchfield in searchParams) {
+                if (searchParams[searchfield] !== "") {
+                    searchValues += `&search_${[searchfield]}=${searchParams[searchfield]}`
+                };
+            }
+            const params = `?page=${page + 1}&lang=${lang}&page_size=${rowsPerPage}${searchValues}${filterParams}`;
+            const clientsData = await clientsService.getClients(params);
+            setTotalCount(clientsData.data.count);
+            setAllClients(clientsData?.data?.data);
+            if (clientsData?.data?.data.length > 0) {
+                setEditClient(clientsData?.data?.data[0]);
+            }
+            setIsLoading(false);
+        } catch (error) {
+            console.log(error)
+            setIsLoading(false);
         }
-        const params = `?page=${page + 1}&lang=${lang}&page_size=${rowsPerPage}${searchValues}${filterParams}`;
-        const clientsData = await clientsService.getClients(params);
-        setTotalCount(clientsData.data.count);
-        setAllClients(clientsData?.data?.data);
-        if (clientsData?.data?.data.length > 0) {
-            setEditClient(clientsData?.data?.data[0]);
-        }
-        setIsLoading(false);
     }
 
     const fetchFullFormData = async () => {
-        const formData = await clientsService.getFullformData();
-        let formFields = [];
-        formData.data.result.forEach((block) => {
-            block.field.forEach((field) => {
-                formFields.push(field);
-            })
-        });
-        // Array of objects
-        const arr = formFields.map((item) => {
-            return {
-                [item.field_slug]: item.display
-            }
-        });
-        // Combine all objects into a single object
-        const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
-        const searchFields = arr.reduce((acc, curr) => {
-            Object.keys(curr).forEach(key => {
-                acc[key] = '';
+        try {
+            const formData = await clientsService.getFullformData();
+            let formFields = [];
+            formData.data.result.forEach((block) => {
+                block.field.forEach((field) => {
+                    formFields.push(field);
+                })
             });
-            return acc;
-        }, {});
-        setSearchParams(searchFields)
-        setDisplayFormValues(result);
-        setDisplayFields(formFields);
-        setFullFormData(formFields);
+            // Array of objects
+            const arr = formFields.map((item) => {
+                return {
+                    [item.field_slug]: item.display
+                }
+            });
+            // Combine all objects into a single object
+            const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
+            const searchFields = arr.reduce((acc, curr) => {
+                Object.keys(curr).forEach(key => {
+                    acc[key] = '';
+                });
+                return acc;
+            }, {});
+            setSearchParams(searchFields)
+            setDisplayFormValues(result);
+            setDisplayFields(formFields);
+            setFullFormData(formFields);
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const searchResult = (searchBy, value) => {

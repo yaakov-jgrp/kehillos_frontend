@@ -29,19 +29,24 @@ const Request = () => {
 
   const fetchRequestData = async () => {
     setIsLoading(true);
-    let searchValues = "";
-    for (const searchfield in searchParams) {
-      if (searchParams[searchfield] !== "") {
-        searchValues += `&search_${[searchfield]}=${searchParams[searchfield]}`
-      };
-    }
-    const params = `?page=${page + 1}&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
-    const requestData = await requestService.getRequests(params);
-    setTotalCount(requestData?.data?.count)
-    setAllRequests(requestData?.data?.data);
-    setTimeout(() => {
+    try {
+      let searchValues = "";
+      for (const searchfield in searchParams) {
+        if (searchParams[searchfield] !== "") {
+          searchValues += `&search_${[searchfield]}=${searchParams[searchfield]}`
+        };
+      }
+      const params = `?page=${page + 1}&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
+      const requestData = await requestService.getRequests(params);
+      setTotalCount(requestData?.data?.count)
+      setAllRequests(requestData?.data?.data);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500)
+    } catch (error) {
+      console.log(error);
       setIsLoading(false);
-    }, 500)
+    }
   }
 
   const searchResult = (searchBy, value) => {

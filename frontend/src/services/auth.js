@@ -8,7 +8,13 @@ const login = (email, password) => {
     })
 }
 
+const getUsers = (params) => {
+  return api
+    .get(`/api/auth/users/${params}`)
+}
+
 const authService = {
-  login
+  login,
+  getUsers
 }
 export default authService

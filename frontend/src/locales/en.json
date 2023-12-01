@@ -6,7 +6,9 @@
     "delete": "Yes, Delete",
     "no": "No",
     "deleteNote": "Data will be permanently deleted",
-    "deleteSuccess": "Data deleted successfully"
+    "deleteSuccess": "Data deleted successfully",
+    "viewMore": "View more",
+    "viewLess": "View less"
   },
   "auth": {
     "email": "Email",
@@ -26,7 +28,9 @@
     "profile": "Profile",
     "logout": "Logout",
     "clients": "Clients",
-    "details": "Details"
+    "details": "Details",
+    "logs": "Logs",
+    "users": "Users"
   },
   "requests": {
     "title": "Requests",
@@ -36,6 +40,7 @@
     "$domainRequested": "$domain_requested",
     "$adminEmail": "$admin_email"
   },
+  "user": {},
   "clients": {
     "title": "Clients",
     "import": "Import",
@@ -165,6 +170,11 @@
     "from": "From",
     "requestType": "Request Type",
     "requestdetail": "Request Details",
-    "actionsDone": "Actions Done"
+    "actionsDone": "Actions Done",
+    "user": "User",
+    "changes": "Changes",
+    "action": "Action",
+    "entity": "Entity",
+    "timeStamp": "Time Stamp"
   }
 }

@@ -252,7 +252,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                                                                     <MenuItem value="" disabled>
                                                                                         Select
                                                                                     </MenuItem>
-                                                                                    {fullFormData.map((field, i) => (
+                                                                                    {fullFormData.filter((item) => item?.data_type.value !== "file").map((field, i) => (
                                                                                         <MenuItem value={field?.field_slug} key={i} >
                                                                                             {field.field_name}
                                                                                         </MenuItem>
