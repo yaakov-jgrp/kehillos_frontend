@@ -110,6 +110,8 @@ const ClientsForm = () => {
     useEffect(() => {
         fetchFullformDataHandler(setIsLoading, setFullFormData);
     }, [fetchFullformDataHandler, lang]);
+
+
     return (
         <div className='w-full bg-white rounded-3xl'>
             {
@@ -148,8 +150,8 @@ const ClientsForm = () => {
                     <h5 className='text-start flex items-center justify-between text-[12px] py-2 md:text-[16px] font-bold text-[#2B3674] w-[100%]'>
                         {t('clients.fields')}
                     </h5>
-                    <Accordion defaultIndex={[0]} allowMultiple>
-                        {fullFormData && !isLoading && fullFormData.map((blockData, index) => <CustomAccordion key={index} showAddButton={true} title={lang === "he" ? blockData.field_name_language.he : blockData.block} onClick={() => addBlockFieldModalHandler(false, blockData.block_id)} >
+                    {fullFormData && <Accordion defaultIndex={Array.from({ length: fullFormData?.length }, (x, i) => i)} allowMultiple>
+                        {!isLoading && fullFormData.map((blockData, index) => <CustomAccordion key={index} showAddButton={true} title={lang === "he" ? blockData.field_name_language.he : blockData.block} onClick={() => addBlockFieldModalHandler(false, blockData.block_id)} >
                             {blockData.field.length > 0 ?
                                 <>
                                     <Draggable onPosChange={(currentPos, newPos,) => getChangedFieldsPos(currentPos, newPos, false, blockData.block_id)}>
@@ -182,7 +184,8 @@ const ClientsForm = () => {
                                     </Draggable>
                                 </> : <p>{t("clients.noFields")}</p>}
                         </CustomAccordion>)}
-                    </Accordion>
+                    </Accordion>}
+
                 </div>
                 {
                     showModal &&

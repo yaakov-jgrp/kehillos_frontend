@@ -40,6 +40,15 @@
     "$domainRequested": "אתר מבוקש",
     "$adminEmail": "אימייל מנהל"
   },
+  "logs": {
+    "old": "ישן",
+    "new": "חָדָשׁ"
+  },
+  "users": {
+    "admin": "מנהל מערכת",
+    "normal": "רגיל",
+    "userType": "סוג משתמש"
+  },
   "clients": {
     "title": "לקוחות",
     "import": "יְבוּא",

@@ -55,36 +55,38 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netf
     });
 
     const initialValuesHandler = () => {
-        const arr = fullFormData.map((item) => {
-            let value = "";
-            switch (item?.data_type.value) {
-                case "select":
-                    value = item.enum_values.choices[0].id;
-                    break;
-                case "date":
-                    value = dayjs(Date.now()).utc(true).toISOString(true);
-                    break;
-                case "checkbox":
-                    value = item.defaultvalue;
-                    break;
+        if (newClient) {
+            const arr = fullFormData.map((item) => {
+                let value = "";
+                switch (item?.data_type.value) {
+                    case "select":
+                        value = item.enum_values.choices[0].id;
+                        break;
+                    case "date":
+                        value = dayjs(Date.now()).utc(true).toISOString(true);
+                        break;
+                    case "checkbox":
+                        value = item.defaultvalue;
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
+                }
+                return {
+                    [item.field_slug]: value
+                }
+            });
+
+            arr.push({
+                netfree_profile: netfreeProfiles[0]?.id,
+            })
+
+            // Combine all objects into a single object
+            const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
+            setDefaultValues(result);
+            for (const field in result) {
+                setValue(field, result[field]);
             }
-            return {
-                [item.field_slug]: value
-            }
-        });
-
-        arr.push({
-            netfree_profile: netfreeProfiles[0].id,
-        })
-
-        // Combine all objects into a single object
-        const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
-        setDefaultValues(result);
-        for (const field in result) {
-            setValue(field, result[field]);
         }
     }
 
@@ -156,10 +158,13 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netf
             let data;
             if (!newClient) {
                 // Array of objects
-                const arr = client.blocks[0].field.map((item) => {
-                    return {
-                        [item.field_slug]: item.value
-                    }
+                let arr = []
+                client.blocks.forEach((block) => {
+                    block.field.forEach((item) => {
+                        arr.push({
+                            [item.field_slug]: item.value
+                        })
+                    })
                 });
 
                 // Combine all objects into a single object
@@ -169,31 +174,38 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netf
             } else {
                 setValue("netfree_profile", netfreeProfiles[0].id);
             }
+            let defaultData = [];
             for (let value in data) {
                 if (value !== "netfree_profile") {
                     let fieldValue;
                     const field = fullFormData.filter((field) => field?.field_slug === value);
                     const dataValue = data[value];
+
                     switch (field[0]?.data_type.value) {
                         case "select":
-                            fieldValue = data[value].length < 1 ? field[0]?.enum_values?.choices[0]?.id : dataValue[0];
+                            fieldValue = dataValue.length < 1 ? field[0]?.enum_values?.choices[0]?.id : dataValue[0];
                             break;
                         case "file":
-                            fieldValue = data[value] !== "" ? { name: data[value].file_name.split("upload/")[1] } : "";
+                            fieldValue = dataValue !== "" ? { name: dataValue.file_name.split("upload/")[1] } : "";
                             break;
                         case "date":
-                            fieldValue = data[value] === "" ? dayjs(Date.now()).utc(true).toISOString(true) : data[value];
+                            fieldValue = dataValue === "" ? dayjs(Date.now()).utc(true).toISOString(true) : dataValue;
                             break;
                         case "checkbox":
-                            fieldValue = data[value] === "" ? "true" : JSON.stringify(data[value]);
+                            fieldValue = dataValue === "" ? "false" : JSON.stringify(dataValue);
                             break;
                         default:
-                            fieldValue = data[value];
+                            fieldValue = dataValue;
                             break;
                     }
+                    defaultData.push({
+                        [value]: fieldValue
+                    })
                     setValue(value, fieldValue);
                 }
             }
+            const result = defaultData.reduce((acc, curr) => Object.assign(acc, curr), {});
+            setDefaultValues(result);
         }
     }, [JSON.stringify(client), newClient]);
 

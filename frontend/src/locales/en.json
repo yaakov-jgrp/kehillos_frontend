@@ -40,7 +40,15 @@
     "$domainRequested": "$domain_requested",
     "$adminEmail": "$admin_email"
   },
-  "user": {},
+  "logs": {
+    "old": "Old",
+    "new": "New"
+  },
+  "users": {
+    "admin": "Admin",
+    "normal": "Regular",
+    "userType": "User Type"
+  },
   "clients": {
     "title": "Clients",
     "import": "Import",

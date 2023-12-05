@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 function LogChanges({ changes }) {
     const { t } = useTranslation();
     const [more, setMore] = useState(false);
+    console.log(changes)
 
     return (
         <div>
@@ -11,7 +12,9 @@ function LogChanges({ changes }) {
                 changes.slice(0, 2).map((change, i) => {
                     return (
                         <div key={i} className='flex flex-col w-full break-words px-2'>
-                            <p className='mx-2 font-semibold'>{change?.label} :</p><p className='mx-2'>{typeof change?.value === "object" ? change?.value?.file_name : change?.value}</p>
+                            <p className=' truncate font-semibold'>{change?.label} :</p>
+                            <p className='truncate'> {`${t("logs.old")} - ${typeof change.old_value === "object" ? change.old_value?.file_name : change.old_value}`}</p>
+                            <p className='truncate'>{`${t("logs.new")} - ${typeof change.new_value === "object" ? change.new_value?.file_name : change.new_value}`}</p>
                         </div>
                     )
                 })

@@ -8,13 +8,16 @@ import FieldLabel from "../fields/FormLabel";
 import { toast } from "react-toastify";
 import authService from "../../services/auth";
 
-function UserModal({ showModal, setShowModal, user, newUser, onClick }) {
+
+function UserModal({ showModal, setShowModal, user, newUser, onClick, userTypes }) {
     const { t } = useTranslation();
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+
     const [defaultValues, setDefaultValues] = useState({
         name: "",
         email: "",
-        password: ""
+        password: "",
+        user_type: userTypes[0].label
     });
 
     const schema = yup.object().shape({
@@ -26,6 +29,7 @@ function UserModal({ showModal, setShowModal, user, newUser, onClick }) {
             }
             return yup.string().notRequired();
         }),
+        user_type: yup.string().required(),
     });
 
     const {
@@ -61,6 +65,7 @@ function UserModal({ showModal, setShowModal, user, newUser, onClick }) {
         if (!newUser) {
             setValue("name", user?.name);
             setValue("email", user?.email);
+            setValue("user_type", user?.user_type)
         }
     }, [])
 
@@ -146,6 +151,33 @@ function UserModal({ showModal, setShowModal, user, newUser, onClick }) {
                                                             className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
                                                             {...field}
                                                         />
+                                                    )}
+                                                />
+                                                {errors.password && <ErrorMessage message={errors.password.message} />}
+                                            </div>
+                                        </div>
+                                        <div className="mb-6 flex w-full items-center">
+                                            <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
+                                                {t('users.userType')}
+                                            </FieldLabel>
+                                            <div className="w-[60%]">
+                                                <Controller
+                                                    name="user_type"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <select
+                                                            className="shadow appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                                                            {...field}
+                                                            placeholder="Select"
+                                                        >
+                                                            {
+                                                                userTypes?.map((el, i) => {
+                                                                    return (
+                                                                        el !== "" ? <option key={i} value={el.value}>{el.label}</option> : null
+                                                                    );
+                                                                })
+                                                            }
+                                                        </select>
                                                     )}
                                                 />
                                                 {errors.password && <ErrorMessage message={errors.password.message} />}

@@ -18,6 +18,13 @@ import { toast } from 'react-toastify';
 function Users() {
     const { t, i18n } = useTranslation();
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    const userTypes = [{
+        label: t("users.admin"),
+        value: "super_user"
+    }, {
+        label: t("users.normal"),
+        value: "normal_user"
+    }]
     const [isLoading, setIsLoading] = useState(true);
     const [userModal, setUserModal] = useState(false);
     const [newUser, setNewUser] = useState(true);
@@ -142,6 +149,18 @@ function Users() {
                                 />
                             </th>
                             <th className='pr-3'>
+                                <SearchField
+                                    variant="auth"
+                                    extra="mb-2"
+                                    label={t('users.user_type')}
+                                    id="user_type"
+                                    type="text"
+                                    placeholder={t('searchbox.placeHolder')}
+                                    onChange={(e) => searchResult('user_type', e.target.value)}
+                                    name="user_type"
+                                />
+                            </th>
+                            <th className='pr-3'>
                                 <div className={` ${(i18n.dir() === 'rtl') ? 'text-right' : 'text-left'}`}>
                                     <label
                                         className={`text-[10px] truncate md:text-[14px] text-navy-700 ml-1.5 font-medium
@@ -178,6 +197,9 @@ function Users() {
                                                                 </td>
                                                                 <td>
                                                                     {el.email}
+                                                                </td>
+                                                                <td>
+                                                                    {userTypes.filter((type) => type.value === el.user_type)[0].label}
                                                                 </td>
                                                                 <td>
                                                                     <div className="h-auto w-full flex items-center justify-around">
@@ -220,6 +242,7 @@ function Users() {
                     setShowModal={setUserModal}
                     user={editUser}
                     newUser={newUser}
+                    userTypes={userTypes}
                     onClick={() => { fetchUsersData() }}
                 />}
             {

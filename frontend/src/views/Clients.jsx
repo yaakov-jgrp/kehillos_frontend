@@ -262,9 +262,11 @@ const Clients = () => {
                                                                 </td>
                                                                 {fullFormData?.length > 0 && fullFormData.map((field, i) => {
                                                                     const dataValue = client[field?.field_slug];
-                                                                    const value = typeof dataValue === "object" ? field?.data_type.value === "file" ? dataValue.file_name.split("upload/")[1] : dataValue?.value : typeof dataValue === "boolean" ? JSON.stringify(dataValue) : dataValue;
+                                                                    const data_type = field?.data_type.value;
+                                                                    const linkTypes = ["phone", "email"];
+                                                                    const value = typeof dataValue === "object" ? data_type === "file" ? dataValue.file_name.split("upload/")[1] : dataValue?.value : typeof dataValue === "boolean" ? JSON.stringify(dataValue) : dataValue;
                                                                     let isDate = false;
-                                                                    const isNumber = NumberFieldConstants.includes(field?.data_type.value);
+                                                                    const isNumber = NumberFieldConstants.includes(data_type);
                                                                     const emptyValues = ["", null];
                                                                     if (dateRegex.test(value)) {
                                                                         isDate = true;
@@ -273,14 +275,14 @@ const Clients = () => {
                                                                     return (
                                                                         <Fragment key={i}>
                                                                             {
-                                                                                field?.display && <td key={i} onClick={() => { handleRowClick(client?.id) }}>
+                                                                                field?.display && <td key={i} onClick={() => { !linkTypes.includes(data_type) && handleRowClick(client?.id) }}>
                                                                                     {
-                                                                                        emptyValues.includes(value) ? <p>{t("clients.noValueFound")}</p> :
-                                                                                            <>
-                                                                                                {
-                                                                                                    isDate ? <p>{dayjs(value).format("DD/MM/YYYY")}</p> : <p>{isNumber ? parseFloat(value) : value}</p>
-                                                                                                }
-                                                                                            </>
+                                                                                        !emptyValues.includes(value) &&
+                                                                                        <>
+                                                                                            {
+                                                                                                isDate ? <p>{dayjs(value).format("DD/MM/YYYY")}</p> : <p>{isNumber ? parseFloat(value) : linkTypes.includes(data_type) ? <a href={data_type !== "phone" ? `mailto:${value}` : "#"} className='text-[#2B3674] hover:text-[#2B3674] font-bold' >{value}</a> : value}</p>
+                                                                                            }
+                                                                                        </>
                                                                                     }
                                                                                 </td>
                                                                             }

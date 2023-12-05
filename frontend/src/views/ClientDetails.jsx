@@ -158,7 +158,7 @@ function ClientDetails() {
                                             })}
                                         </Tabs>
                                     </Box>
-                                    {value === 0 && <DetailsTabPanel isLoading={isLoading} clientData={clientData} value={value} index={0} />}
+                                    {value === 0 && <DetailsTabPanel isLoading={isLoading} clientData={clientData} setClientData={setClientData} value={value} index={0} />}
                                     {value === 1 && <ClientNetfreeTabPanel isLoading={isLoading} netfreeprofile={netfreeprofile} value={value} index={1} />}
                                     {value === 2 && <RequestsTabPanel id={id} value={value} index={2} />}
                                 </Box>

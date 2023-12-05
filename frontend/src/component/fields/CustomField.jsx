@@ -77,7 +77,7 @@ function CustomField(props) {
                         marginRight: "5px",
                         fontSize: "1.25rem"
                     }} />
-                    {value.name}
+                    {value?.name || value?.file_name || value}
                     <input
                         type={data_type.value}
                         required={required}
@@ -94,14 +94,14 @@ function CustomField(props) {
                     required={required}
                     onChange={onChange}
                     onBlur={onBlur}
-                    value={value}
                     disabled={disabled}
+                    defaultValue={enum_values?.choices?.filter((item) => item.id == value)[0]?.id}
                     placeholder="Select"
                 >
                     {
                         enum_values?.choices?.map(el => {
                             return (
-                                el !== "" ? <option key={el.id} value={el.id}>{el.value}</option> : null
+                                el !== "" ? <option key={el.id} value={el.id}>{el.label}</option> : null
                             );
                         })
                     }

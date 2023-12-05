@@ -147,7 +147,7 @@ const Request = () => {
               </th>
             </tr>
           </thead>
-          <tbody className='[&_td]:min-w-[9rem]'>
+          <tbody className='[&_td]:min-w-[9rem] [&_td]:max-w-[18rem]'>
             {
               isLoading ?
                 <tr>
@@ -177,7 +177,7 @@ const Request = () => {
                             <td>
                               <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold'>{el.requested_website.length > 70 ? el.requested_website.substring(0, 70) + "..." : el.requested_website}</a>
                               <br />
-                              {el.text}
+                              <p className='line-clamp-4'>{el.text}</p>
                               {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />                  */}
                             </td>
                             <td className='flex justify-center gap-4 px-2'>

@@ -109,8 +109,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
             const res = await clientsService.createFilter(data);
             console.log(res);
         } else {
-
-            const updateData = { filter_group_id: editFilter?.id, name: editFilter?.name, ...data }
+            const updateData = { filter_group_id: editFilter?.id, name: data.filter_name, ...data }
             const res = await clientsService.updateFilterGroup(updateData);
             console.log(res);
         }
