@@ -47,7 +47,7 @@ const FileViewModal = ({ field, setShowModal }) => {
                                 <iframe
                                     onLoad={handleIframeLoad}
                                     x
-                                    src={`https://drive.google.com/viewer?url=${BASEURL + field?.value?.file_url}&embedded=true`}
+                                    src={`https://drive.google.com/a/${BASEURL.split('//')[1]}/viewer?url=${BASEURL + field?.value?.file_url}&embedded=true`}
                                     style={{
                                         height: "500px",
                                         width: "500px"
