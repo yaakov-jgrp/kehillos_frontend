@@ -53,7 +53,8 @@ const deleteBlockField = (formData) => {
 }
 
 const updateBlockField = (formData) => {
-    return api.put("/api/client/field/", formData);
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    return api.put(`/api/client/field/?lang=${lang}`, formData);
 }
 
 const getClientFilters = () => {
