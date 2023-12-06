@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import emailService from "../../services/email";
 import EmailEditor from 'react-email-editor';
 import useAlert from "../../Hooks/useAlert";
@@ -21,7 +21,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
 
   // const heTranslations = { 'ar-AE' : emailEditorHe }
   const [formdata, setFormData] = useState(formObject);
-  const [loadingTemplate, setLoadingTemplate] = useState(true);
+  const [loadingTemplate, setLoadingTemplate] = useState(false);
   const [loadingTags, setloadingTags] = useState(true);
   const [mergeTagsData, setMergeTagsData] = useState({
     $request_id: {
@@ -133,6 +133,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   }
 
   const fetchFormDataTags = async () => {
+    setloadingTags(true);
     try {
       const res = await clientsService.getFullformData("&field_email_template=true");
       setMergeTagsData((prev) => ({ ...prev, ...res.data.result }));
@@ -184,6 +185,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
       }
     }
   }
+
 
 
   return (
