@@ -18,3 +18,6 @@ export const searchFields = {
     action_done: ''
 };
 export const paginationRowOptions = [25, 50, 100, 500];
+export const linkTypes = ["phone", "email"];
+export const imageTypes = ["jpeg", "png", "jpg"];
+export const docTypes = ["csv", "xls", "xlsx", "txt", "pdf", "doc", "docx"]

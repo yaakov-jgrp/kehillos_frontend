@@ -136,7 +136,7 @@ function ClientDetails() {
                                             </div>
                                         </div>
                                         <div className="h-auto w-full flex items-center justify-end">
-                                            <MdEdit className="text-blueSecondary mx-2 w-5 h-5 hover:cursor-pointer" onClick={() => editClientHandler(clientData)} />
+                                            {/* <MdEdit className="text-blueSecondary mx-2 w-5 h-5 hover:cursor-pointer" onClick={() => editClientHandler(clientData)} /> */}
                                             <MdDelete className="text-blueSecondary mx-2 w-5 h-5 hover:cursor-pointer" onClick={() => setConfirmationModal(true)} />
                                         </div>
                                     </div>

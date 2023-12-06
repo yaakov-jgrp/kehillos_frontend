@@ -5,6 +5,7 @@ import EmailEditor from 'react-email-editor';
 import useAlert from "../../Hooks/useAlert";
 import { DEFAULT_LANGUAGE } from "../../constants";
 import emailEditorHe from "../../locales/emailEditorHe.json";
+import clientsService from "../../services/clients";
 
 const NewTemplate = ({ editableTemplateId, onSave }) => {
   const formObject = {
@@ -13,39 +14,41 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
     subject: '',
     message: ''
   }
-
-  // const heTranslations = { 'ar-AE' : emailEditorHe }
-  const [formdata, setFormData] = useState(formObject);
-  const [loadingTemplate, setLoadingTemplate] = useState(false);
   const { t } = useTranslation();
   const { setAlert } = useAlert();
   const emailEditorRef = useRef(null);
   const defaultLanguageValue = localStorage.getItem(DEFAULT_LANGUAGE);
 
+  // const heTranslations = { 'ar-AE' : emailEditorHe }
+  const [formdata, setFormData] = useState(formObject);
+  const [loadingTemplate, setLoadingTemplate] = useState(true);
+  const [loadingTags, setloadingTags] = useState(true);
+  const [mergeTagsData, setMergeTagsData] = useState({
+    $request_id: {
+      name: t('requests.$requestId'),
+      value: '{request_id}'
+    },
+    $client_name: {
+      name: t('requests.$clinetName'),
+      value: "{client_name}"
+    },
+    $client_email: {
+      name: t('requests.$clientEmail'),
+      value: "{client_email}"
+    },
+    $domain_requested: {
+      name: t('requests.$domainRequested'),
+      value: '{domain_requested}'
+    },
+    $admin_email: {
+      name: t('requests.$adminEmail'),
+      value: '{admin_email}'
+    }
+  });
+
 
   const onReady = () => {
-    emailEditorRef.current.editor.setMergeTags({
-      $request_id: {
-        name: t('requests.$requestId'),
-        value: '{request_id}'
-      },
-      $client_name: {
-        name: t('requests.$clinetName'),
-        value: "{client_name}"
-      },
-      $client_email: {
-        name: t('requests.$clientEmail'),
-        value: "{client_email}"
-      },
-      $domain_requested: {
-        name: t('requests.$domainRequested'),
-        value: '{domain_requested}'
-      },
-      $admin_email: {
-        name: t('requests.$adminEmail'),
-        value: '{admin_email}'
-      }
-    })
+    emailEditorRef.current.editor.setMergeTags(mergeTagsData);
     // editor is ready
     // you can load your template here;
     // const templateJson = {};
@@ -129,12 +132,24 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
     setLoadingTemplate(false);
   }
 
+  const fetchFormDataTags = async () => {
+    try {
+      const res = await clientsService.getFullformData("&field_email_template=true");
+      setMergeTagsData((prev) => ({ ...prev, ...res.data.result }));
+      setloadingTags(false);
+    } catch (error) {
+      console.log(error)
+      setloadingTags(false);
+    }
+  }
+
+
   useEffect(() => {
     if (editableTemplateId) {
       fetchEditableTemplateData();
     }
+    fetchFormDataTags();
   }, [defaultLanguageValue]);
-
 
   const option = {
     locale: 'en-US',
@@ -202,7 +217,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
                 />
               </div>
               <div className="w-full my-5 h-[calc(100vh-330px)] [&_iframe]:!min-w-[100%] [&_iframe]:!h-[calc(100vh-330px)] [&_div]:!max-h-[calc(100vh-330px)]">
-                {!loadingTemplate ? <EmailEditor ref={emailEditorRef} onReady={onReady}
+                {!loadingTemplate && !loadingTags ? <EmailEditor ref={emailEditorRef} onReady={onReady}
                   options={
                     defaultLanguageValue === 'he' ? option : null
                   }

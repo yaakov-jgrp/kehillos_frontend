@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useTranslation } from "react-i18next";
 import Loader from '../component/common/Loader';
 import clientsService from '../services/clients';
@@ -12,18 +12,20 @@ import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import DisplayFieldsModal from '../component/client/DisplayFieldsModal';
-import { NumberFieldConstants, dateRegex, paginationRowOptions } from '../lib/FieldConstants';
+import { NumberFieldConstants, dateRegex, linkTypes, paginationRowOptions } from '../lib/FieldConstants';
 import SearchField from '../component/fields/SearchField';
 import { TablePagination } from '@mui/material';
 import { FaFilter } from "react-icons/fa";
 import FilterModal from '../component/client/FilterModal';
 import NoDataFound from '../component/common/NoDataFound';
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 const Clients = () => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     dayjs.extend(utc);
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    const tableRef = useRef(null);
     const [isLoading, setIsLoading] = useState(true);
     const [allClients, setAllClients] = useState([]);
     const [clientModal, setClientModal] = useState(false);
@@ -42,6 +44,30 @@ const Clients = () => {
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [searchParams, setSearchParams] = useState({});
     const [filters, setFilters] = useState([]);
+
+    const [sortField, setSortField] = useState(null);
+    const [sortOrder, setSortOrder] = useState('asc');
+
+    const handleSort = (field) => {
+        if (field === sortField) {
+            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortField(field);
+            setSortOrder('asc');
+        }
+        const sortedData = allClients.sort((a, b) => {
+            if (typeof a[field] === 'number' && typeof b[field] === 'number') {
+                return (sortOrder === 'asc' ? a[field] - b[field] : b[field] - a[field]);
+            } else if (typeof a[field] === 'string' && typeof b[field] === 'string') {
+                const comparison = a[field].localeCompare(b[field]);
+                return (sortOrder === 'asc' ? comparison : -comparison);
+            } else {
+                return 0;
+            }
+        });
+        setAllClients(sortedData);
+    };
+
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -183,12 +209,12 @@ const Clients = () => {
                         setClientModal(true);
                     }} />
                     <label className={`w-fit rounded-full flex items-center py-1 px-3 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`} onClick={() => setShowFilterModal(!showFilterModal)}>
-                        <FaFilter className={`rounded-full text-white mr-1 w-3 h-3 hover:cursor-pointer`} />
+                        <FaFilter className={`rounded-full text-white ${lang === "he" ? "ml-1" : "mr-1"} w-3 h-3 hover:cursor-pointer`} />
                         {t("clients.filters")}
                     </label>
                     <label className={`w-fit rounded-full flex items-center py-1 px-3 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`} onClick={() => setShowDisplayModal(!showDisplayModal)}>
+                        <FiSettings className={`rounded-full text-white  ${lang === "he" ? "ml-1" : "mr-1"} w-3 h-3 hover:cursor-pointer`} />
                         {t("clients.visibility")}
-                        <FiSettings className={`rounded-full text-white ml-1 w-3 h-3 hover:cursor-pointer`} />
                     </label>
                     <CsvImporter formFields={fullFormData} fetchClientsData={fetchClientsData} />
                     <button className={`w-full rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
@@ -198,7 +224,7 @@ const Clients = () => {
                 </div>
             </div>
             <div className='h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2'>
-                <table className='!table text-[12px] md:text-[14px] min-w-[100%] mb-3'>
+                <table className='!table text-[12px] md:text-[14px] min-w-[100%] mb-3' ref={tableRef}>
                     {fullFormData && fullFormData.length > 0 &&
                         <thead className='sticky top-0 z-10 [&_th]:min-w-[8.5rem]'>
                             <tr className='tracking-[-2%] mb-5 bg-lightPrimary'>
@@ -206,7 +232,7 @@ const Clients = () => {
                                     <SearchField
                                         variant="auth"
                                         extra="mb-2"
-                                        label={t("clients.id")}
+                                        label={<p onClick={() => handleSort('id')} className='flex cursor-pointer items-center justify-between w-full'>{t("clients.id")}{sortField === "id" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                         id="field_id"
                                         type="text"
                                         placeholder={t('searchbox.placeHolder')}
@@ -224,7 +250,7 @@ const Clients = () => {
                                                         <SearchField
                                                             variant="auth"
                                                             extra="mb-2"
-                                                            label={lang === "he" ? field?.field_name_language.he : field?.field_name}
+                                                            label={<p onClick={() => handleSort(field?.field_slug)} className='flex cursor-pointer items-center justify-between w-full'>{lang === "he" ? field?.field_name_language.he : field?.field_name}{sortField === field?.field_slug ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                                             id={field?.id}
                                                             type="text"
                                                             placeholder={t('searchbox.placeHolder')}
@@ -263,7 +289,6 @@ const Clients = () => {
                                                                 {fullFormData?.length > 0 && fullFormData.map((field, i) => {
                                                                     const dataValue = client[field?.field_slug];
                                                                     const data_type = field?.data_type.value;
-                                                                    const linkTypes = ["phone", "email"];
                                                                     const value = typeof dataValue === "object" ? data_type === "file" ? dataValue.file_name.split("upload/")[1] : dataValue?.value : typeof dataValue === "boolean" ? JSON.stringify(dataValue) : dataValue;
                                                                     let isDate = false;
                                                                     const isNumber = NumberFieldConstants.includes(data_type);

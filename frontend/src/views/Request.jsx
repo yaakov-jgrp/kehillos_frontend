@@ -175,9 +175,9 @@ const Request = () => {
                             </td>
                             <td>{el.request_type}</td>
                             <td>
-                              <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold line-clamp-2'>{el.requested_website}</a>
+                              <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold line-clamp-2 break-words'>{el.requested_website}</a>
                               <br />
-                              <p className='line-clamp-4'>{el.text}</p>
+                              <p className='line-clamp-4 break-words'>{el.text}</p>
                               {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />                  */}
                             </td>
                             <td className='flex justify-center gap-4 px-2'>

@@ -176,7 +176,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                 <div className="fixed left-0 bottom-0 z-[999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
                     <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
                         <div className="relative w-auto my-6 mx-auto max-w-7xl">
-                            <div className="w-[100%] min-w-[80vw] md:min-w-[70vw] lg:min-w-[60vw] overflow-y-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                            <div className={`w-[100%] ${!showForm ? "max-w-[400px]" : "min-w-[80vw] md:min-w-[70vw] lg:min-w-[60vw]"}  overflow-y-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none`}>
                                 <div className="flex items-start justify-between p-5 shadow-md rounded-t ">
                                     <h3 className="text-2xl font-semibold">
                                         {t("clients.filters")}
@@ -365,12 +365,12 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                 ) : (
                                     <>
                                         {filters.length > 0 ? (
-                                            <>
+                                            <div className=" max-h-[calc(90vh-170px)] overflow-y-auto">
                                                 {filters.map((filter, i) => {
                                                     return (
                                                         <div className="flex items-start justify-between p-6 border-solid rounded-t" key={i}>
                                                             {filter.name}
-                                                            <div className="flex items-center">
+                                                            <div className="flex items-center ml-4">
                                                                 {filter?.fg_default ? (
                                                                     <button
                                                                         className="text-red-500 mx-1 background-transparent font-semibold uppercase px-3 py-1 text-sm outline-none focus:outline-none"
@@ -394,7 +394,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                                         </div>
                                                     );
                                                 })}
-                                            </>
+                                            </div>
                                         ) : (
                                             <NoDataFound description="No filters found" />
                                         )}

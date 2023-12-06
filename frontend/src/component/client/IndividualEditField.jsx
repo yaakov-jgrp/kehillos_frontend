@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import EditButtonIcon from '../common/EditButton';
-import { DateFieldConstants } from '../../lib/FieldConstants';
+import { DateFieldConstants, linkTypes } from '../../lib/FieldConstants';
 import dayjs from 'dayjs';
 import { useTranslation } from "react-i18next";
 import CustomField from '../fields/CustomField';
@@ -11,6 +11,8 @@ import ErrorMessage from "../common/ErrorMessage";
 import clientsService from '../../services/clients';
 import { errorsToastHandler } from '../../lib/CommonFunctions';
 import utc from 'dayjs/plugin/utc';
+import { FaEye } from "react-icons/fa";
+import FileViewModal from '../common/FileViewModal';
 
 function IndividualEditField({ field, clientData, setClientData }) {
     const emptyValues = ["", null, undefined];
@@ -22,7 +24,9 @@ function IndividualEditField({ field, clientData, setClientData }) {
     const [defaultValues, setDefaultValues] = useState({
         [field?.field_slug]: field?.value
     });
+    const [showFile, setShowFile] = useState(false);
 
+    const data_type = field.data_type.value;
     const isDate = DateFieldConstants.includes(field.data_type.value);
     const isFile = field?.data_type?.value === "file";
 
@@ -85,43 +89,18 @@ function IndividualEditField({ field, clientData, setClientData }) {
         }
 
         formData.append("data", JSON.stringify(detailsData));
-        let clientCopy = clientData
-        let blockIndex, fieldIndex;
-        clientCopy.blocks.forEach((block, i) => block.field.forEach((item, j) => {
-            if (item.field_slug === field?.field_slug) {
-                blockIndex = i;
-                fieldIndex = j;
-            }
-        }));
-        const blockData = clientCopy.blocks[blockIndex];
-        const fieldData = blockData.field[fieldIndex];
-        switch (field?.data_type?.value) {
-            case "select":
-                const selectValue = fieldData?.enum_values?.choices.filter((item) => item.id == data[fieldData?.field_slug])[0];
-                fieldData.value = selectValue.id;
-                setfieldValue(selectValue.label);
-                break;
-            case "file":
-                fieldData.value = data[fieldData?.field_slug].name;
-                break;
-            case "date":
-                setfieldValue(dayjs(data[fieldData?.field_slug]).format("DD/MM/YYYY"))
-            default:
-                fieldData.value = data[fieldData?.field_slug];
-                break;
-        }
-        blockData[fieldIndex] = fieldData;
-        clientCopy[blockIndex] = blockData;
-        if (fieldData?.data_type?.value !== "select" && fieldData?.data_type?.value !== "date") {
-            setfieldValue(fieldData.value);
-        }
-        setClientData(clientCopy);
         clientsService.updateClient(formData, clientData.client_id).then((res) => {
-            reset();
-            setEdit(false);
+            clientsService.getClient(clientData.client_id).then((res) => {
+                setClientData(res.data);
+                reset();
+                setEdit(false);
+            }).catch((err) => {
+                console.log(err);
+            });
         }).catch((err) => {
             errorsToastHandler(err?.response?.data?.error);
         });
+
     }
 
     useEffect(() => {
@@ -141,7 +120,7 @@ function IndividualEditField({ field, clientData, setClientData }) {
             setfieldValue(defaultValue);
         }
         setValue(field?.field_slug, defaultValue);
-    }, [])
+    }, [JSON.stringify(field)])
 
     return (
         <div className={`mb-2 ${lang === "he" ? "pr-6" : "pl-6"}`}>
@@ -165,7 +144,7 @@ function IndividualEditField({ field, clientData, setClientData }) {
                                     autoComplete="off"
                                     onSubmit={handleSubmit((data, e) => submitForm(data, e))}
                                 >
-                                    <div className='flex w-full'>
+                                    <div className='flex w-full items-center'>
                                         <div className='flex flex-col items-start w-full'>
                                             <Controller
                                                 name={field.field_slug}
@@ -213,13 +192,19 @@ function IndividualEditField({ field, clientData, setClientData }) {
                                     {errors[field.field_slug] && <ErrorMessage message={errors[field.field_slug].message} />}
                                 </form> :
                                 <>
-                                    <p className='text-sm mx-4 text-gray-900'>{`${emptyValues.includes(fieldValue) ? "" : fieldValue}`}</p>
+                                    <p className='text-sm mx-4 text-gray-900 flex items-center'>
+                                        {emptyValues.includes(fieldValue) ? "" : linkTypes.includes(data_type) ? <a href={data_type !== "phone" ? `mailto:${fieldValue}` : "#"} className='text-[#2B3674] hover:text-[#2B3674] font-bold' >{fieldValue}</a> : data_type === "checkbox" ? <CustomField field={field} value={field.value} disabled={true} /> : fieldValue}
+                                        {data_type === "file" &&
+                                            <FaEye className='justify-self-start ml-2 cursor-pointer' onClick={() => setShowFile(!showFile)} />
+                                        }
+                                    </p>
                                     <EditButtonIcon extra="mr-2 justify-self-end" onClick={editShowHandler} />
                                 </>
                         }
                     </div>
                 </div>
             </div>
+            {showFile && <FileViewModal field={field} setShowModal={setShowFile} />}
         </div>
     )
 }

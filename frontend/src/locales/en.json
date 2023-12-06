@@ -8,7 +8,8 @@
     "deleteNote": "Data will be permanently deleted",
     "deleteSuccess": "Data deleted successfully",
     "viewMore": "View more",
-    "viewLess": "View less"
+    "viewLess": "View less",
+    "fileViewer": "File Viewer"
   },
   "auth": {
     "email": "Email",

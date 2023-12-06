@@ -8,7 +8,8 @@
     "deleteNote": "הנתונים יימחקו לצמיתות",
     "deleteSuccess": "הנתונים נמחקו בהצלחה",
     "viewMore": "ראה עוד",
-    "viewLess": "תראה פחות"
+    "viewLess": "תראה פחות",
+    "fileViewer": "מציג קבצים"
   },
   "auth": {
     "email": "אימייל",
