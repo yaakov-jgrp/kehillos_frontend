@@ -1,27 +1,54 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from "react-i18next";
-import { docTypes, driveDocTypes, imageTypes } from '../../lib/FieldConstants';
+import { docTypes, imageTypes } from '../../lib/FieldConstants';
 import Loader from './Loader';
+import NoDataFound from './NoDataFound';
 
 const FileViewModal = ({ field, setShowModal }) => {
     const { t } = useTranslation();
     const [fileType, setFileType] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [iframeTimeoutId, setIframeTimeoutId] = useState(undefined);
+    const iframeRef = useRef(null);
 
-    const handleIframeLoad = () => {
+    const supportTypeHandler = (type) => {
+        if (!docTypes.includes(type) && !imageTypes.includes(type)) {
+            setLoading(false);
+        }
+    }
+    function iframeLoaded() {
         setLoading(false);
-    };
+        clearInterval(iframeTimeoutId);
+    }
+    function getIframeLink() {
+        return `https://docs.google.com/gview?url=${BASEURL + field?.value?.file_url}&embedded=true`;
+    }
+    function updateIframeSrc() {
+        if (iframeRef.current) {
+            iframeRef.current.src = getIframeLink();
+        }
+    }
 
     const BASEURL = import.meta.env.VITE_API_URL;
 
     const fileTypeHandler = () => {
         const type = field?.value?.file_name.split(".")[field?.value?.file_name.split(".").length - 1];
         setFileType(type);
+        supportTypeHandler(type);
     }
 
     useEffect(() => {
-        fileTypeHandler()
+        fileTypeHandler();
     }, [JSON.stringify(field)])
+
+    useEffect(() => {
+        const intervalId = setInterval(
+            updateIframeSrc, 1000 * 3
+        );
+        setIframeTimeoutId(intervalId)
+    }, []);
+
+
 
     return (
         <div className="fixed left-0 bottom-0 z-[99] h-screen w-screen bg-[#00000080] flex justify-center items-center">
@@ -42,32 +69,26 @@ const FileViewModal = ({ field, setShowModal }) => {
                         </div>
                         <div className='w-full p-2 max-h-[80vh] min-h-[400px] flex flex-col items-center justify-center'>
                             {loading ? <Loader /> : null}
-                            {
-                                docTypes.includes(fileType) &&
-                                <iframe
-                                    onLoad={handleIframeLoad}
-                                    x
-                                    src={`https://docs.google.com/viewer?url=${BASEURL + field?.value?.file_url}&embedded=true`}
-                                    style={{
-                                        height: "500px",
-                                        width: "500px"
-                                    }}
-                                />
-                            }
-                            {
-                                driveDocTypes.includes(fileType) &&
-                                <iframe
-                                    onLoad={handleIframeLoad}
-                                    x
-                                    src={`https://drive.google.com/viewer?url=${BASEURL + field?.value?.file_url}&embedded=true`}
-                                    style={{
-                                        height: "500px",
-                                        width: "500px"
-                                    }}
-                                />
-                            }
-                            {
-                                imageTypes.includes(fileType) && <img onLoad={handleIframeLoad} src={BASEURL + field?.value?.file_url} className='h-auto w-auto max-w-[80vw] max-h-[80vh]' alt="image" />
+                            {docTypes.includes(fileType) || imageTypes.includes(fileType) ? <>
+                                {
+                                    docTypes.includes(fileType) &&
+                                    <iframe
+                                        ref={iframeRef}
+                                        onLoad={iframeLoaded}
+                                        style={{
+                                            height: "500px",
+                                            width: "500px"
+                                        }}
+                                    />
+                                }
+                                {
+                                    imageTypes.includes(fileType) && <img onLoad={handleIframeLoad} src={BASEURL + field?.value?.file_url} className='h-auto w-auto max-w-[80vw] max-h-[80vh]' alt="image" />
+                                }
+                            </> :
+                                <div className='h-full w-full flex flex-col justify-center items-center'>
+                                    <NoDataFound />
+                                    <p className='font-bold'>{t("common.fileNotSupported")}</p>
+                                </div>
                             }
                         </div>
                     </div>

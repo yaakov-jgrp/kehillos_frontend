@@ -9,7 +9,8 @@
     "deleteSuccess": "הנתונים נמחקו בהצלחה",
     "viewMore": "ראה עוד",
     "viewLess": "ראה פחות",
-    "fileViewer": "מציג קבצים"
+    "fileViewer": "מציג קבצים",
+    "fileNotSupported": "הקובץ אינו נתמך"
   },
   "auth": {
     "email": "אימייל",

@@ -9,7 +9,8 @@
     "deleteSuccess": "Data deleted successfully",
     "viewMore": "View more",
     "viewLess": "View less",
-    "fileViewer": "File Viewer"
+    "fileViewer": "File Viewer",
+    "fileNotSupported": "File not supported"
   },
   "auth": {
     "email": "Email",

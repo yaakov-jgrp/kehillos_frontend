@@ -195,7 +195,7 @@ function IndividualEditField({ field, clientData, setClientData }) {
                                     <p className='text-sm mx-4 text-gray-900 flex items-center'>
                                         {emptyValues.includes(fieldValue) ? "" : linkTypes.includes(data_type) ? <a href={data_type !== "phone" ? `mailto:${fieldValue}` : "#"} className='text-[#2B3674] hover:text-[#2B3674] font-bold' >{fieldValue}</a> : data_type === "checkbox" ? <CustomField field={field} value={field.value} disabled={true} /> : fieldValue}
                                         {data_type === "file" && !emptyValues.includes(fieldValue) &&
-                                            <FaEye className='justify-self-start ml-2 cursor-pointer' onClick={() => setShowFile(!showFile)} />
+                                            <FaEye className='justify-self-start mx-2 cursor-pointer' onClick={() => setShowFile(!showFile)} />
                                         }
                                     </p>
                                     <EditButtonIcon extra="mr-2 justify-self-end" onClick={editShowHandler} />
