@@ -23,32 +23,33 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   const [formdata, setFormData] = useState(formObject);
   const [loadingTemplate, setLoadingTemplate] = useState(false);
   const [loadingTags, setloadingTags] = useState(true);
-  const [mergeTagsData, setMergeTagsData] = useState({
-    $request_id: {
-      name: t('requests.$requestId'),
-      value: '{request_id}'
-    },
-    $client_name: {
-      name: t('requests.$clinetName'),
-      value: "{client_name}"
-    },
-    $client_email: {
-      name: t('requests.$clientEmail'),
-      value: "{client_email}"
-    },
-    $domain_requested: {
-      name: t('requests.$domainRequested'),
-      value: '{domain_requested}'
-    },
-    $admin_email: {
-      name: t('requests.$adminEmail'),
-      value: '{admin_email}'
-    }
-  });
+  const [mergeTagsData, setMergeTagsData] = useState({});
 
 
   const onReady = () => {
-    emailEditorRef.current.editor.setMergeTags(mergeTagsData);
+    emailEditorRef.current.editor.setMergeTags({
+      $request_id: {
+        name: t('requests.$requestId'),
+        value: '{request_id}'
+      },
+      $client_name: {
+        name: t('requests.$clinetName'),
+        value: "{client_name}"
+      },
+      $client_email: {
+        name: t('requests.$clientEmail'),
+        value: "{client_email}"
+      },
+      $domain_requested: {
+        name: t('requests.$domainRequested'),
+        value: '{domain_requested}'
+      },
+      $admin_email: {
+        name: t('requests.$adminEmail'),
+        value: '{admin_email}'
+      },
+      ...mergeTagsData
+    });
     // editor is ready
     // you can load your template here;
     // const templateJson = {};
@@ -136,7 +137,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
     setloadingTags(true);
     try {
       const res = await clientsService.getFullformData("&field_email_template=true");
-      setMergeTagsData((prev) => ({ ...prev, ...res.data.result }));
+      setMergeTagsData(res.data.result);
       setloadingTags(false);
     } catch (error) {
       console.log(error)
@@ -219,11 +220,12 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
                 />
               </div>
               <div className="w-full my-5 h-[calc(100vh-330px)] [&_iframe]:!min-w-[100%] [&_iframe]:!h-[calc(100vh-330px)] [&_div]:!max-h-[calc(100vh-330px)]">
-                {!loadingTemplate && !loadingTags ? <EmailEditor ref={emailEditorRef} onReady={onReady}
-                  options={
-                    defaultLanguageValue === 'he' ? option : null
-                  }
-                /> : null}
+                {!loadingTemplate && !loadingTags ?
+                  <EmailEditor ref={emailEditorRef} onReady={onReady}
+                    options={
+                      defaultLanguageValue === 'he' ? option : null
+                    }
+                  /> : null}
               </div>
               <button className={`linear mb-2 px-[30px] rounded-lg py-2 text-base font-medium transition duration-200 ${formValidate() ? 'bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white' : 'bg-gray-300'}`}>{t('emails.save')}</button>
             </div>
