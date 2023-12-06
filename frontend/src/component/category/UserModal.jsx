@@ -17,7 +17,7 @@ function UserModal({ showModal, setShowModal, user, newUser, onClick, userTypes 
         name: "",
         email: "",
         password: "",
-        user_type: userTypes[0].label
+        user_type: userTypes[0].value
     });
 
     const schema = yup.object().shape({

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
-import { docTypes, imageTypes } from '../../lib/FieldConstants';
+import { docTypes, driveDocTypes, imageTypes } from '../../lib/FieldConstants';
 import Loader from './Loader';
 
 const FileViewModal = ({ field, setShowModal }) => {
@@ -47,7 +47,19 @@ const FileViewModal = ({ field, setShowModal }) => {
                                 <iframe
                                     onLoad={handleIframeLoad}
                                     x
-                                    src={`https://drive.google.com/a/${BASEURL.split('//')[1]}/viewer?url=${BASEURL + field?.value?.file_url}&embedded=true`}
+                                    src={`https://docs.google.com/viewer?url=${BASEURL + field?.value?.file_url}&embedded=true`}
+                                    style={{
+                                        height: "500px",
+                                        width: "500px"
+                                    }}
+                                />
+                            }
+                            {
+                                driveDocTypes.includes(fileType) &&
+                                <iframe
+                                    onLoad={handleIframeLoad}
+                                    x
+                                    src={`https://drive.google.com/viewer?url=${BASEURL + field?.value?.file_url}&embedded=true`}
                                     style={{
                                         height: "500px",
                                         width: "500px"
