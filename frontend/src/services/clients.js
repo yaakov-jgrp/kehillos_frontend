@@ -58,7 +58,8 @@ const updateBlockField = (formData) => {
 }
 
 const getClientFilters = () => {
-    return api.get("/api/client/filters/");
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    return api.get(`/api/client/filters/?lang=${lang}`);
 }
 
 const getClientFilterOptions = () => {

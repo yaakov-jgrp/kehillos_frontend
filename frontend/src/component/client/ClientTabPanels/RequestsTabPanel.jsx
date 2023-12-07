@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, TablePagination } from '@mui/material';
-import { searchFields } from '../../../lib/FieldConstants';
+import { paginationRowOptions, searchFields } from '../../../lib/FieldConstants';
 import clientsService from '../../../services/clients';
 import Loader from '../../common/Loader';
 import NoDataFound from '../../common/NoDataFound';
@@ -15,7 +15,7 @@ function RequestsTabPanel(props) {
     const { t } = useTranslation();
     const [requests, setRequests] = useState([]);
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(50);
     const [totalCount, setTotalCount] = useState(100);
     const [searchParams, setSearchParams] = useState(searchFields);
     const [isLoading, setIsloading] = useState(true);
@@ -37,7 +37,7 @@ function RequestsTabPanel(props) {
                     searchValues += `&search_${[searchfield]}=${searchParams[searchfield]}`
                 };
             }
-            const params = `email_request=true${searchValues}`;
+            const params = `page=${page + 1}&page_size=${rowsPerPage}&email_request=true${searchValues}`;
             clientsService.getClient(id, params).then((res) => {
                 setRequests(res.data);
                 setTotalCount(res.data.count);
@@ -193,9 +193,9 @@ function RequestsTabPanel(props) {
                                                                 </td>
                                                                 <td>{el.request_type}</td>
                                                                 <td>
-                                                                    <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold'>{el.requested_website.length > 70 ? el.requested_website.substring(0, 70) + "..." : el.requested_website}</a>
+                                                                    <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold line-clamp-2 break-words'>{el.requested_website}</a>
                                                                     <br />
-                                                                    {el.text}
+                                                                    <p className='line-clamp-4 break-words'>{el.text}</p>
                                                                     {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />                  */}
                                                                 </td>
                                                                 <td className='flex justify-center gap-4 px-2'>
@@ -221,6 +221,7 @@ function RequestsTabPanel(props) {
                         component="div"
                         count={totalCount}
                         page={page}
+                        rowsPerPageOptions={paginationRowOptions}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
                         onRowsPerPageChange={handleChangeRowsPerPage}

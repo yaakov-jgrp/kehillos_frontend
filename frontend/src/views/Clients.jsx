@@ -192,6 +192,8 @@ const Clients = () => {
                         setClientModal(true);
                     }} />
                     {fullFormData && <FilterModal
+                        fetchFiltersHandler={fetchFiltersHandler}
+                        fetchFullFormData={fetchFullFormData}
                         fetchClientsData={fetchClientsData}
                         fullFormData={fullFormData}
                         filters={filters}

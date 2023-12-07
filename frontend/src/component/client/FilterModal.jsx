@@ -18,23 +18,25 @@ import Popover from '@mui/material/Popover';
 import { FaFilter } from "react-icons/fa";
 import { HiDotsVertical } from "react-icons/hi";
 
-function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClientsData }) {
+function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClientsData, fetchFullFormData, fetchFiltersHandler }) {
     const { t } = useTranslation();
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-    const [showForm, setShowForm] = useState(false);
-    const [isLoading, setIsloading] = useState(false);
-    const [conditions, setConditions] = useState([
+    const initialConditions = [
         {
             attr_name: fullFormData[0]?.field_slug,
             condition: "",
             value: "",
         }
-    ]);
+    ]
+    const [showForm, setShowForm] = useState(false);
+    const [isLoading, setIsloading] = useState(false);
+    const [conditions, setConditions] = useState(initialConditions);
     const [filterOptions, setFilterOptions] = useState([]);
     const [newFilter, setNewFilter] = useState(true);
     const [editFilter, setEditFilter] = useState(null);
     const [anchorEl, setAnchorEl] = useState(null);
-    const [anchorEl2, setAnchorEl2] = useState(null);
+    const [menuanchorEl, setMenuAnchorEl] = useState(null);
+    const [menuId, setMenuId] = useState(0);
 
     const handleFilterClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -44,16 +46,17 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
         setAnchorEl(null);
     };
 
-    const handleFilterMenuClick = (event) => {
-        setAnchorEl2(event.currentTarget);
+    const handleFilterMenuClick = (event, id) => {
+        setMenuId(id);
+        setMenuAnchorEl(event.currentTarget);
     };
 
     const handleFilterMenuClose = () => {
-        setAnchorEl2(null);
+        setMenuAnchorEl(null);
     };
 
     const open = Boolean(anchorEl);
-    const open2 = Boolean(anchorEl2);
+    const open2 = Boolean(menuanchorEl);
 
     const defaultValues = {
         filter_name: "",
@@ -139,6 +142,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
         }
         fetchClientsData();
         setShowForm(false);
+        setShowModal(false);
     };
 
     const deleteFilterHandler = async (id) => {
@@ -146,6 +150,8 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
             const res = await clientsService.deleteFilter({
                 filter_group_id: id
             });
+            handleFilterMenuClose();
+            fetchFiltersHandler();
             fetchClientsData();
         } catch (error) {
             console.log(error);
@@ -192,6 +198,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
     const openFilterModal = () => {
         handleFilterClose();
         handleFilterMenuClose();
+        setConditions(initialConditions);
         setEditFilter(null);
         setNewFilter(true);
         setShowForm(true);
@@ -209,8 +216,9 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
     }
 
     useEffect(() => {
+        fetchFullFormData();
         fetchFilterOptions();
-    }, []);
+    }, [lang]);
 
     return (
         <>
@@ -225,6 +233,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                 slotProps={{
                     paper: {
                         sx: {
+                            minWidth: "180px",
                             marginTop: "10px"
                         }
                     }
@@ -251,15 +260,16 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                 return (
                                     <div className="group flex items-center hover:bg-gray-200 cursor-pointer justify-between p-3 border-solid rounded-t" key={i}>
                                         {filter.name}
-                                        <HiDotsVertical onClick={handleFilterMenuClick} className="m-1" />
+                                        <HiDotsVertical onClick={(e) => handleFilterMenuClick(e, i)} className="m-1" />
                                         <Popover
-                                            open={open2}
-                                            anchorEl={anchorEl2}
+                                            open={i === menuId ? open2 : false}
+                                            anchorEl={menuanchorEl}
                                             onClose={handleFilterMenuClose}
                                             slotProps={{
                                                 paper: {
                                                     sx: {
                                                         marginTop: "5px",
+                                                        marginLeft: "10px",
                                                         boxShadow: "0 0 10px lightgrey"
                                                     }
                                                 }
@@ -295,7 +305,6 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                                 <MdDelete className="mx-1 text-blueSecondary h-[22px] w-[22px] hover:cursor-pointer" onClick={() => deleteFilterHandler(filter?.id)} />
                                             </div>
                                         </Popover>
-
                                     </div>
                                 );
                             })}
@@ -356,8 +365,8 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                                             {t("clients.conditions")}
                                                         </FieldLabel>
                                                         <div className="w-[60%]">
-                                                            {conditions.length > 0 &&
-                                                                conditions.map((filterCondition, i) => {
+                                                            {conditions?.length > 0 &&
+                                                                conditions?.map((filterCondition, i) => {
                                                                     return (
                                                                         <div className="flex w-full flex-wrap" key={i}>
                                                                             <FormControl
@@ -414,7 +423,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                                                                                         filterCondition?.attr_name
                                                                                                 )[0]?.data_type.value
                                                                                         )[0]
-                                                                                        .conditions.map((condition, i) => (
+                                                                                        .conditions?.map((condition, i) => (
                                                                                             <MenuItem
                                                                                                 value={condition?.condition}
                                                                                                 key={i}
