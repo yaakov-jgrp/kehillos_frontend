@@ -63,7 +63,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netf
                         value = item.enum_values.choices[0].id;
                         break;
                     case "date":
-                        value = dayjs(Date.now()).utc(true).toISOString(true);
+                        value = "";
                         break;
                     case "checkbox":
                         value = item.defaultvalue;

@@ -61,7 +61,7 @@ function CustomField(props) {
                     labels={lang === "en" ? en : he}
                     className='shadow appearance-none outline-none border rounded w-full p-2 text-black [&>input]:outline-none [&>input]:bg-white'
                     placeholder={t("clients.enterNumber")}
-                    defaultCountry={lang === 'he' ? "IL" : "IN"}
+                    defaultCountry={"IL"}
                     value={value}
                     onChange={onChange}
                     onBlur={onBlur}
@@ -120,17 +120,20 @@ function CustomField(props) {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                         className="shadow appearance-none outline-none border-0 rounded w-full p-0 text-black"
-                        defaultValue={dayjs(Date.now())}
                         format="DD/MM/YYYY"
                         onChange={onChange}
                         onBlur={onBlur}
                         value={dayjs(value)}
                         disabled={disabled}
+
                         sx={{
                             border: 0,
                             "& .MuiInputBase-input": {
                                 padding: 1.5,
                                 border: "none"
+                            },
+                            "& fieldset": {
+                                borderColor: "inherit!important"
                             }
                         }}
                     />

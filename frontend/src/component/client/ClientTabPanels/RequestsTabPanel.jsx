@@ -6,7 +6,8 @@ import Loader from '../../common/Loader';
 import NoDataFound from '../../common/NoDataFound';
 import SearchField from '../../fields/SearchField';
 import { useTranslation } from "react-i18next";
-import { formateDateTime } from '../../../lib/CommonFunctions';
+import { formateDateTime, handleSort } from '../../../lib/CommonFunctions';
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 function RequestsTabPanel(props) {
     const { children, value, index, id, ...other } = props;
@@ -18,6 +19,14 @@ function RequestsTabPanel(props) {
     const [totalCount, setTotalCount] = useState(100);
     const [searchParams, setSearchParams] = useState(searchFields);
     const [isLoading, setIsloading] = useState(true);
+    const [sortField, setSortField] = useState(null);
+    const [sortOrder, setSortOrder] = useState('asc');
+
+    const handleSortHandler = (field) => {
+        if (requests.length > 0) {
+            handleSort(field, requests, sortField, sortOrder, setSortOrder, setSortField, setRequests);
+        }
+    };
 
     const fetchClientRequests = () => {
         setIsloading(true);
@@ -86,7 +95,7 @@ function RequestsTabPanel(props) {
                                         <SearchField
                                             variant="auth"
                                             extra="mb-2"
-                                            label={t('searchbox.requestId')}
+                                            label={<p onClick={() => handleSortHandler('id')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.requestId')}{sortField === "id" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                             id="requestId"
                                             type="text"
                                             placeholder={t('searchbox.placeHolder')}
@@ -98,7 +107,7 @@ function RequestsTabPanel(props) {
                                         <SearchField
                                             variant="auth"
                                             extra="mb-2"
-                                            label={t('searchbox.dateCreated')}
+                                            label={<p onClick={() => handleSortHandler('created_at')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.dateCreated')}{sortField === "created_at" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                             id="dateCreated"
                                             type="text"
                                             placeholder={t('searchbox.placeHolder')}
@@ -110,7 +119,7 @@ function RequestsTabPanel(props) {
                                         <SearchField
                                             variant="auth"
                                             extra="mb-2"
-                                            label={t('searchbox.from')}
+                                            label={<p onClick={() => handleSortHandler('sender_email')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.from')}{sortField === "from" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                             id="from"
                                             type="text"
                                             placeholder={t('searchbox.placeHolder')}
@@ -122,7 +131,7 @@ function RequestsTabPanel(props) {
                                         <SearchField
                                             variant="auth"
                                             extra="mb-2"
-                                            label={t('searchbox.requestType')}
+                                            label={<p onClick={() => handleSortHandler('request_type')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.requestType')}{sortField === "request_type" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                             id="requestType"
                                             type="text"
                                             placeholder={t('searchbox.placeHolder')}
@@ -134,7 +143,7 @@ function RequestsTabPanel(props) {
                                         <SearchField
                                             variant="auth"
                                             extra="mb-2"
-                                            label={t('searchbox.requestdetail')}
+                                            label={<p onClick={() => handleSortHandler('requested_website')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.requestdetail')}{sortField === "requestdetail" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                             id="requestdetail"
                                             type="text"
                                             placeholder={t('searchbox.placeHolder')}
@@ -146,7 +155,7 @@ function RequestsTabPanel(props) {
                                         <SearchField
                                             variant="auth"
                                             extra="mb-2"
-                                            label={t('searchbox.actionsDone')}
+                                            label={<p onClick={() => handleSortHandler('action_done')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.actionsDone')}{sortField === "action_done" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                             id="actionsDone"
                                             type="text"
                                             placeholder={t('searchbox.placeHolder')}
