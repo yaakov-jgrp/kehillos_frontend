@@ -75,6 +75,7 @@ const FileViewModal = ({ field, setShowModal }) => {
                                     <iframe
                                         ref={iframeRef}
                                         onLoad={iframeLoaded}
+                                        className={`${loading ? "opacity-0" : "opacity-100"}`}
                                         style={{
                                             height: "500px",
                                             width: "500px"
@@ -82,13 +83,17 @@ const FileViewModal = ({ field, setShowModal }) => {
                                     />
                                 }
                                 {
-                                    imageTypes.includes(fileType) && <img onLoad={handleIframeLoad} src={BASEURL + field?.value?.file_url} className='h-auto w-auto max-w-[80vw] max-h-[80vh]' alt="image" />
+                                    imageTypes.includes(fileType) && <img onLoad={iframeLoaded} src={BASEURL + field?.value?.file_url} className='h-auto w-auto max-w-[80vw] max-h-[80vh]' alt="image" />
                                 }
                             </> :
-                                <div className='h-full w-full flex flex-col justify-center items-center'>
-                                    <NoDataFound />
-                                    <p className='font-bold'>{t("common.fileNotSupported")}</p>
-                                </div>
+                                <>
+                                    {
+                                        !loading && <div className='h-full w-full flex flex-col justify-center items-center'>
+                                            <NoDataFound />
+                                            <p className='font-bold'>{t("common.fileNotSupported")}</p>
+                                        </div>
+                                    }
+                                </>
                             }
                         </div>
                     </div>
