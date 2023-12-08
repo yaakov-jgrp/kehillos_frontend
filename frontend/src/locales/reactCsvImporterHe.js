@@ -36,7 +36,7 @@ export const heIL = {
         selectColumnTooltip: 'בחר עמודה להקצאה',
         unselectColumnTooltip: 'בטל את בחירת העמודה',
 
-        dragTargetAreaCaption: 'Target fields',
+        dragTargetAreaCaption: 'שדות יעד',
         getDragTargetOptionalCaption: (field) => `${field} (אופציונאלי)`,
         getDragTargetRequiredCaption: (field) => `${field} (נדרש)`,
         dragTargetPlaceholder: 'גרור את העמודה לכאן',

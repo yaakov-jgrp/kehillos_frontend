@@ -76,7 +76,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
             yup.object().shape({
                 attr_name: yup.string().required(`${t("clients.condition")} ${t("clients.field")} ${t("clients.is")} ${t("clients.required")}`),
                 condition: yup.string().required(`${t("clients.condition")} ${t("clients.is")} ${t("clients.required")}`),
-                value: yup.string().required(`${t("clients.condition")} ${t("clients.value")} ${t("clients.is")} ${t("clients.required")}`),
+                value: yup.string().notRequired(`${t("clients.condition")} ${t("clients.value")} ${t("clients.is")} ${t("clients.required")}`),
             })
         ).min(1, t("clients.minimumConditions")).required(`${t("clients.conditions")} ${t("clients.are")} ${t("clients.required")}`),
         default: yup.boolean().notRequired()
