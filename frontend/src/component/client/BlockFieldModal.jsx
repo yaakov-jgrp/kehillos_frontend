@@ -40,14 +40,14 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     const [formLoading, setFormLoading] = useState(false);
 
     const schema = block ? yup.object().shape({
-        name: yup.string().min(3, "Name must contain atleast 3 characters").required(),
+        name: yup.string().min(3, `${t("netfree.name")} ${t("messages.mustContain")} 3 ${t("messages.characters")}`).required(),
     }) : yup.object().shape({
-        name: yup.string().min(3, "Name must contain atleast 3 characters").required(),
+        name: yup.string().min(3, `${t("netfree.name")} ${t("messages.mustContain")} 3 ${t("messages.characters")}`).required(),
         block_id: yup.string().required(),
-        data_type: yup.string().required("Data type is required"),
+        data_type: yup.string().required(`${t('clients.dataType')} ${t("clients.is")} ${t("clients.required")}`),
         value: yup.string().when('data_type', {
             is: "select",
-            then: () => yup.string().required('Minimum one value is required'),
+            then: () => yup.string().required(`${t("messages.minimum")} ${t("messages.one")} ${t("messages.value")} ${t("clients.is")} ${t("clients.required")}`),
             otherwise: () => yup.string().notRequired(),
         }),
         required: yup.boolean().required(),

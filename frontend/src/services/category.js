@@ -59,7 +59,8 @@ const updateActionInCategory = (data, id) => {
 };
 
 const getProfilesList = (params = "") => {
-  return api.get(`/api/crm/netfree-categories-profile/${params}`);
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  return api.get(`/api/crm/netfree-categories-profile/?lang=${lang}&${params}`);
 };
 
 const createFilterProfile = (data) => {

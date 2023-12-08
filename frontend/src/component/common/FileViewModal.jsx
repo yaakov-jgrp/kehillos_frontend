@@ -67,7 +67,7 @@ const FileViewModal = ({ field, setShowModal }) => {
                                 </span>
                             </button>
                         </div>
-                        <div className='w-full p-2 max-h-[80vh] min-h-[400px] flex flex-col items-center justify-center'>
+                        <div className='w-full p-6 max-h-[80vh] min-h-[400px] flex flex-col items-center justify-center'>
                             {loading ? <Loader /> : null}
                             {docTypes.includes(fileType) || imageTypes.includes(fileType) ? <>
                                 {
@@ -83,7 +83,7 @@ const FileViewModal = ({ field, setShowModal }) => {
                                     />
                                 }
                                 {
-                                    imageTypes.includes(fileType) && <img onLoad={iframeLoaded} src={BASEURL + field?.value?.file_url} className='h-auto w-auto max-w-[80vw] max-h-[80vh]' alt="image" />
+                                    imageTypes.includes(fileType) && <img onLoad={iframeLoaded} src={BASEURL + field?.value?.file_url} className='h-auto w-auto max-w-[80vw] max-h-[60vh]' alt="image" />
                                 }
                             </> :
                                 <>

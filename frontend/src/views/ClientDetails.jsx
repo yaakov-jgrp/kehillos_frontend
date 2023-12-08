@@ -81,6 +81,7 @@ function ClientDetails() {
         const profilesListData = await categoryService.getProfilesList();
         setNetfreeProfiles(profilesListData.data.data);
     }
+
     const fetchFullFormData = async () => {
         const formData = await clientsService.getFullformData();
         let formFields = [];
@@ -123,11 +124,11 @@ function ClientDetails() {
                                         </div>
                                         <div className='mx-2 flex flex-col w-[80%] text-sm'>
                                             <div className={`mb-1 flex w-full items-start`}>
-                                                <span className='font-semibold w-1/6'>ID</span>
+                                                <span className='font-semibold w-1/6  w-[120px]'>ID</span>
                                                 <p>  : {clientData?.client_id}</p>
                                             </div>
                                             <div className={`mb-1 flex w-full items-start`}>
-                                                <span className='font-semibold w-1/6'>{t("netfree.netfreeProfile")}</span>
+                                                <span className='font-semibold w-1/6  w-[120px]'>{t("netfree.netfreeProfile")}</span>
                                                 :
                                                 <div className='mx-1'>
                                                     <p className='capitalize'>{netfreeprofile?.name}</p>
@@ -159,7 +160,7 @@ function ClientDetails() {
                                         </Tabs>
                                     </Box>
                                     {value === 0 && <DetailsTabPanel isLoading={isLoading} clientData={clientData} setClientData={setClientData} value={value} index={0} />}
-                                    {value === 1 && <ClientNetfreeTabPanel isLoading={isLoading} netfreeprofile={netfreeprofile} value={value} index={1} />}
+                                    {value === 1 && netfreeprofiles && <ClientNetfreeTabPanel isLoading={isLoading} setNetfreeProfile={setNetfreeProfile} clientData={clientData} setClientData={setClientData} netfreeprofile={netfreeprofile} netfreeProfiles={netfreeprofiles} value={value} index={1} />}
                                     {value === 2 && <RequestsTabPanel id={id} value={value} index={2} />}
                                 </Box>
                                 : t('clients.noClientFound') + " " + id

@@ -19,6 +19,7 @@ import FilterModal from '../component/client/FilterModal';
 import NoDataFound from '../component/common/NoDataFound';
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { handleSort } from '../lib/CommonFunctions';
+import CustomField from '../component/fields/CustomField';
 
 const Clients = () => {
     const { t, i18n } = useTranslation();
@@ -44,8 +45,10 @@ const Clients = () => {
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [searchParams, setSearchParams] = useState({});
     const [filters, setFilters] = useState([]);
+    const [appliedFilter, setAppliedFilter] = useState(null);
     const [sortField, setSortField] = useState(null);
     const [sortOrder, setSortOrder] = useState('asc');
+
 
     const handleSortHandler = (field, type) => {
         handleSort(field, allClients, sortField, sortOrder, setSortOrder, setSortField, setAllClients, type);
@@ -76,6 +79,7 @@ const Clients = () => {
         try {
             const filters = await fetchFiltersHandler();
             const defaultFilter = filters?.filter((filter) => filter.fg_default);
+            setAppliedFilter(defaultFilter.length > 0 ? defaultFilter[0] : null);
             const filterParams = defaultFilter.length > 0 ? `&filter_ids=${defaultFilter[0].id}` : "";
             let searchValues = "";
             for (const searchfield in searchParams) {
@@ -106,12 +110,14 @@ const Clients = () => {
                     formFields.push(field);
                 })
             });
+
             // Array of objects
             const arr = formFields.map((item) => {
                 return {
                     [item.field_slug]: item.display
                 }
             });
+
             // Combine all objects into a single object
             const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
             const searchFields = arr.reduce((acc, curr) => {
@@ -153,6 +159,14 @@ const Clients = () => {
         navigate(`/clients/${id}`);
     }
 
+    const applyFilterHandler = async (filter, value) => {
+        const filterData = filter;
+        filterData["fg_default"] = value;
+        const updateData = { filter_group_id: filter?.id, default: value, ...filterData };
+        const res = await clientsService.updateFilterGroup(updateData);
+        fetchClientsData();
+    }
+
     useEffect(() => {
         const searchTimer = setTimeout(() => {
             fetchClientsData();
@@ -160,6 +174,7 @@ const Clients = () => {
         }, 500)
         return () => clearTimeout(searchTimer);
     }, [page, rowsPerPage, lang, JSON.stringify(searchParams)]);
+
 
     useEffect(() => {
         fetchFullFormData();
@@ -185,21 +200,26 @@ const Clients = () => {
                 />
             }
             <div className='flex justify-between py-4 px-7 font-bold text-[#2B3674]'>
-                {t('clients.title')}
+                <p>
+                    {t('clients.title')}
+                    {appliedFilter && <span className='text-gray-700 text-sm font-normal mx-2'>{`( ${t("clients.appliedFilter")} : ${appliedFilter?.name} )`}</span>}
+                </p>
                 <div className='flex max-w-[350px]'>
                     <AddButtonIcon extra={''} onClick={() => {
                         setNewClient(true);
                         setClientModal(true);
                     }} />
-                    {fullFormData && <FilterModal
-                        fetchFiltersHandler={fetchFiltersHandler}
-                        fetchFullFormData={fetchFullFormData}
-                        fetchClientsData={fetchClientsData}
-                        fullFormData={fullFormData}
-                        filters={filters}
-                        showModal={showFilterModal}
-                        setShowModal={setShowFilterModal}
-                    />}
+                    {fullFormData &&
+                        <FilterModal
+                            fetchFiltersHandler={fetchFiltersHandler}
+                            fetchFullFormData={fetchFullFormData}
+                            fetchClientsData={fetchClientsData}
+                            applyFilterHandler={applyFilterHandler}
+                            fullFormData={fullFormData}
+                            filters={filters}
+                            showModal={showFilterModal}
+                            setShowModal={setShowFilterModal}
+                        />}
                     <label className={`w-fit rounded-full flex items-center py-1 px-3 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`} onClick={() => setShowDisplayModal(!showDisplayModal)}>
                         <FiSettings className={`rounded-full text-white  ${lang === "he" ? "ml-1" : "mr-1"} w-3 h-3 hover:cursor-pointer`} />
                         {t("clients.visibility")}
@@ -306,7 +326,7 @@ const Clients = () => {
                                                                                         !emptyValues.includes(value) &&
                                                                                         <>
                                                                                             {
-                                                                                                isDate ? <p>{dayjs(value).format("DD/MM/YYYY")}</p> : <p>{isNumber ? parseFloat(value) : linkTypes.includes(data_type) ? <a href={data_type !== "phone" ? `mailto:${value}` : "#"} className='text-[#2B3674] hover:text-[#2B3674] font-bold' >{value}</a> : value}</p>
+                                                                                                isDate ? <p>{dayjs(value).format("DD/MM/YYYY")}</p> : <p>{isNumber ? parseFloat(value) : linkTypes.includes(data_type) ? <a href={data_type !== "phone" ? `mailto:${value}` : "#"} className='text-[#2B3674] hover:text-[#2B3674] font-bold' >{value}</a> : <>{data_type === "checkbox" ? <CustomField field={field} value={value} disabled={true} /> : value}</>}</p>
                                                                                             }
                                                                                         </>
                                                                                     }

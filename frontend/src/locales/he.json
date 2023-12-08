@@ -12,6 +12,14 @@
     "fileViewer": "מציג קבצים",
     "fileNotSupported": "הקובץ אינו נתמך"
   },
+  "messages": {
+    "mustBeValid": "חייב להיות דואר חוקי",
+    "mustContain": "חייב להכיל לפחות",
+    "characters": "דמויות",
+    "minimum": "מִינִימוּם",
+    "one": "אחד",
+    "value": "ערך"
+  },
   "auth": {
     "email": "אימייל",
     "password": "סיסמה",
@@ -92,7 +100,8 @@
     "goBack": "חזור",
     "condition": "תנאי",
     "field": "שדה",
-    "enterNumber": "הכנס מספר טלפון"
+    "enterNumber": "הכנס מספר טלפון",
+    "appliedFilter": "הוחל מסנן"
   },
   "emails": {
     "templates": "תבניות",

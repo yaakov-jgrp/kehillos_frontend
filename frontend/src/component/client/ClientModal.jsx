@@ -23,12 +23,12 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netf
     const schemaHandler = (type, name, required) => {
         let validation;
         if (type.value === "email") {
-            validation = required ? yup.string().email(`${name} must be a valid mail`).required(`${name} is required`) : yup.string().email().notRequired();
+            validation = required ? yup.string().email(`${name} ${t("messages.mustBeValid")}`).required(`${name} ${t("clients.is")} ${t("clients.required")}`) : yup.string().email().notRequired();
         } else if (type.value === "file") {
             validation = required ? yup.mixed()
-                .required(`${name} string is required`) : yup.mixed().notRequired();
+                .required(`${name} ${t("clients.is")} ${t("clients.required")}`) : yup.mixed().notRequired();
         } else {
-            validation = required ? yup.string().required(`${name} is required`) : validation = yup.string().notRequired();
+            validation = required ? yup.string().required(`${name} ${t("clients.is")} ${t("clients.required")}`) : validation = yup.string().notRequired();
         }
         return validation;
     }

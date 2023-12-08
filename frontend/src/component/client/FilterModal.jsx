@@ -18,7 +18,7 @@ import Popover from '@mui/material/Popover';
 import { FaFilter } from "react-icons/fa";
 import { HiDotsVertical } from "react-icons/hi";
 
-function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClientsData, fetchFullFormData, fetchFiltersHandler }) {
+function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClientsData, fetchFullFormData, fetchFiltersHandler, applyFilterHandler }) {
     const { t } = useTranslation();
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     const initialConditions = [
@@ -134,11 +134,9 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
         e.preventDefault();
         if (newFilter) {
             const res = await clientsService.createFilter(data);
-            console.log(res);
         } else {
             const updateData = { filter_group_id: editFilter?.id, name: data.filter_name, ...data }
             const res = await clientsService.updateFilterGroup(updateData);
-            console.log(res);
         }
         fetchClientsData();
         setShowForm(false);
@@ -151,7 +149,6 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                 filter_group_id: id
             });
             handleFilterMenuClose();
-            fetchFiltersHandler();
             fetchClientsData();
         } catch (error) {
             console.log(error);
@@ -206,15 +203,6 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
         reset();
     }
 
-    const applyFilterHandler = async (filter, value) => {
-        const filterData = filter;
-        filterData["fg_default"] = value;
-        const updateData = { filter_group_id: filter?.id, default: value, ...filterData };
-        const res = await clientsService.updateFilterGroup(updateData);
-        fetchClientsData();
-        setShowModal(false);
-    }
-
     useEffect(() => {
         fetchFullFormData();
         fetchFilterOptions();
@@ -258,7 +246,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                         <div className=" max-h-[calc(60vh-170px)] overflow-y-auto">
                             {filters.map((filter, i) => {
                                 return (
-                                    <div className="group flex items-center hover:bg-gray-200 cursor-pointer justify-between p-3 border-solid rounded-t" key={i}>
+                                    <div className={`group flex ${filter?.fg_default && "bg-gray-200"} items-center hover:bg-gray-200 cursor-pointer justify-between p-3 border-solid`} key={i}>
                                         {filter.name}
                                         <HiDotsVertical onClick={(e) => handleFilterMenuClick(e, i)} className="m-1" />
                                         <Popover
@@ -288,7 +276,10 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                                     <button
                                                         className="text-red-500 mx-1 background-transparent font-semibold uppercase px-3 py-1 text-sm outline-none focus:outline-none"
                                                         type="button"
-                                                        onClick={() => applyFilterHandler(filter, false)}
+                                                        onClick={() => {
+                                                            applyFilterHandler(filter, false);
+                                                            setMenuAnchorEl(null);
+                                                        }}
                                                     >
                                                         {t("netfree.remove")}
                                                     </button>
@@ -296,7 +287,10 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                                     <button
                                                         className="text-white mx-1 text-sm transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-2 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none"
                                                         type="button"
-                                                        onClick={() => applyFilterHandler(filter, true)}
+                                                        onClick={() => {
+                                                            applyFilterHandler(filter, true)
+                                                            setMenuAnchorEl(null);
+                                                        }}
                                                     >
                                                         {t("clients.apply")}
                                                     </button>
@@ -323,6 +317,15 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                     <h3 className="text-2xl font-semibold">
                                         {t("clients.filters")}
                                     </h3>
+                                    <button
+                                        className="bg-transparent border-0 text-black float-right"
+                                        onClick={() => setShowModal(false)}
+                                        type="button"
+                                    >
+                                        <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
+                                            x
+                                        </span>
+                                    </button>
                                 </div>
                                 {showForm && (
                                     <>
@@ -344,7 +347,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                                         <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
                                                             {t("clients.filterName")}
                                                         </FieldLabel>
-                                                        <div className="w-[60%]">
+                                                        <div className="w-[60%] mx-2">
                                                             <Controller
                                                                 name="filter_name"
                                                                 control={control}
@@ -452,9 +455,8 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                                         </div>
                                                     </div>
                                                     <div className="w-full flex mb-6">
-                                                        <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
-                                                        </FieldLabel>
-                                                        <div className="w-[60%]">
+                                                        <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`} />
+                                                        <div className="w-[60%] mx-2">
                                                             <p className="w-fit p-3 rounded-md flex cursor-pointer items-center bg-gray-200" onClick={addConditionHandler}>
                                                                 <IoIosAdd /> {t("clients.addCondition")}
                                                             </p>
@@ -465,7 +467,7 @@ function FilterModal({ showModal, setShowModal, fullFormData, filters, fetchClie
                                                         <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
                                                             {t("clients.setAsDefault")}
                                                         </FieldLabel>
-                                                        <div className="w-[60%]">
+                                                        <div className="w-[60%] mx-2">
                                                             <Controller
                                                                 name="default"
                                                                 control={control}

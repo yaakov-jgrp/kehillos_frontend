@@ -12,6 +12,14 @@
     "fileViewer": "File Viewer",
     "fileNotSupported": "File not supported"
   },
+  "messages": {
+    "mustBeValid": "must be a valid mail",
+    "mustContain": "must contain atleast",
+    "characters": "characters",
+    "minimum": "Minimum",
+    "one": "one",
+    "value": "value"
+  },
   "auth": {
     "email": "Email",
     "password": "Password",
@@ -92,7 +100,8 @@
     "goBack": "Go Back",
     "condition": "Condition",
     "field": "Field",
-    "enterNumber": "Enter phone number"
+    "enterNumber": "Enter phone number",
+    "appliedFilter": "Applied filter"
   },
   "emails": {
     "templates": "Templates",
