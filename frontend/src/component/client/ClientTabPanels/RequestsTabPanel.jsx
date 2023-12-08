@@ -165,7 +165,7 @@ function RequestsTabPanel(props) {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className='[&_td]:min-w-[9rem]'>
+                            <tbody className='[&_td]:min-w-[9rem] [&_td]:max-w-[18rem]'>
                                 {
                                     isLoading ?
                                         <tr>

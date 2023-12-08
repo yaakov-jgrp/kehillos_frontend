@@ -18,7 +18,9 @@
     "characters": "characters",
     "minimum": "Minimum",
     "one": "one",
-    "value": "value"
+    "value": "value",
+    "andConditionsMessage": "All Conditions  ( All conditions must be met )",
+    "orConditionsMessage": "Any Conditions  ( At least one of the conditions must be met )"
   },
   "auth": {
     "email": "Email",

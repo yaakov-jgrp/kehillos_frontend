@@ -18,7 +18,9 @@
     "characters": "דמויות",
     "minimum": "מִינִימוּם",
     "one": "אחד",
-    "value": "ערך"
+    "value": "ערך",
+    "andConditionsMessage": "כל התנאים (יש לעמוד בכל התנאים)",
+    "orConditionsMessage": "כל תנאי (יש לעמוד באחד מהתנאים לפחות)"
   },
   "auth": {
     "email": "אימייל",
