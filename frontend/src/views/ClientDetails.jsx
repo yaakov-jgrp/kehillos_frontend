@@ -124,7 +124,7 @@ function ClientDetails() {
                                         </div>
                                         <div className='mx-2 flex flex-col w-[80%] text-sm'>
                                             <div className={`mb-1 flex w-full items-start`}>
-                                                <span className='font-semibold w-1/6  w-[120px]'>ID</span>
+                                                <span className='font-semibold w-1/6  w-[120px]'>{t("clients.id")}</span>
                                                 <p>  : {clientData?.client_id}</p>
                                             </div>
                                             <div className={`mb-1 flex w-full items-start`}>

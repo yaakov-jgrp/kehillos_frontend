@@ -152,7 +152,7 @@ function Users() {
                                 <SearchField
                                     variant="auth"
                                     extra="mb-2"
-                                    label={t('users.user_type')}
+                                    label={t('users.userType')}
                                     id="user_type"
                                     type="text"
                                     placeholder={t('searchbox.placeHolder')}
