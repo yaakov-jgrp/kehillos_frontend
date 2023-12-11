@@ -158,21 +158,30 @@ const NetFree = () => {
         setShowActionModal(true);
     }
 
-    const searchCategories = (searchTerm, response) => {
+    const searchCategories = (searchTerm, response, type) => {
         setCurrentSearchTerm(searchTerm);
         if (siteSearch) {
             setCategoriesData(response);
         }
         else if (currentSearchTerm) {
-            const filteredData = response?.filter((el) =>
-                el.name.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            let filteredData = [];
+            if (type === "name") {
+                filteredData = response?.filter((el) =>
+                    el[type].toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            } else {
+                filteredData = response?.filter((el) =>
+                    el.actions?.filter((action) =>
+                        action.label.toLowerCase().includes(searchTerm.toLowerCase())).length > 0
+                );
+            }
+            if (searchTerm === "") {
+                filteredData = response;
+            }
             setCategoriesData(filteredData);
         } else {
             setCategoriesData(response);
         }
-
-
     }
 
     const searchSetting = async (query) => {
@@ -379,12 +388,19 @@ const NetFree = () => {
                                         variant="auth"
                                         type="text"
                                         placeholder={t('searchbox.placeHolder')}
-                                        onChange={(e) => searchCategories(e.target.value, categoriesDataCopy)}
+                                        onChange={(e) => searchCategories(e.target.value, categoriesDataCopy, "name")}
                                         name="name"
                                     />
                                 </th>
                                 <th className='pl-5'>
                                     <h5 className='text-start text-[10px] md:text-[14px] font-bold text-[#2B3674]'>{t('netfree.actions')}</h5>
+                                    <SearchField
+                                        variant="auth"
+                                        type="text"
+                                        placeholder={t('searchbox.placeHolder')}
+                                        onChange={(e) => searchCategories(e.target.value, categoriesDataCopy, "actions")}
+                                        name="actions"
+                                    />
                                 </th>
                             </tr>
                         </thead>
@@ -519,15 +535,15 @@ const NetFree = () => {
                 }
                 <div className="py-3 bg-white h-[23%] rounded-3xl text-center text-[#2B3674]">
                     <div className="flex items-center justify-center">
-                        <p className="p-2 text-xs">Buyer Review Notifications</p>
+                        <p className="p-2 text-xs">{t("netfree.buyerReviewNotification")}</p>
                         <ToggleSwitch selected={true} />
                     </div>
                     <div className="flex items-center justify-center">
-                        <p className="p-2 text-xs">Buyer Review Notifications</p>
+                        <p className="p-2 text-xs">{t("netfree.buyerReviewNotification")}</p>
                         <ToggleSwitch selected={true} />
                     </div>
                     <div className="flex items-center justify-center">
-                        <p className="p-2 text-xs">Buyer Review Notifications</p>
+                        <p className="p-2 text-xs">{t("netfree.buyerReviewNotification")}</p>
                         <ToggleSwitch selected={true} />
                     </div>
                 </div>

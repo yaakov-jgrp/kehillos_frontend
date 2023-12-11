@@ -16,6 +16,8 @@ import EditButtonIcon from "../component/common/EditButton";
 import { Draggable } from "react-drag-reorder";
 import { PiDotsSixVerticalBold } from 'react-icons/pi'
 import { fetchFullformDataHandler } from '../lib/CommonFunctions';
+import DeleteConfirmationModal from '../component/common/DeleteConfirmationModal';
+import { toast } from 'react-toastify';
 
 const ClientsForm = () => {
     const { t } = useTranslation();
@@ -26,6 +28,11 @@ const ClientsForm = () => {
     const [showModal, setShowModal] = useState(false);
     const [isAddBlock, setIsAddBlock] = useState(false);
     const [editData, setEditData] = useState(null);
+    const [confirmationModal, setConfirmationModal] = useState(false);
+    const [deleteMethod, setDeleteMethod] = useState({
+        type: "",
+        value: ""
+    });
 
     const showModalHandler = () => {
         setShowModal(!showModal);
@@ -48,6 +55,8 @@ const ClientsForm = () => {
             is_block: isBlock
         }
         const res = await clientsService.deleteBlockField(formData);
+        toast.success(t("common.deleteSuccess"));
+        setConfirmationModal(false);
         fetchFullformDataHandler(setIsLoading, setFullFormData);
     }
 
@@ -101,6 +110,8 @@ const ClientsForm = () => {
     useEffect(() => {
         fetchFullformDataHandler(setIsLoading, setFullFormData);
     }, [fetchFullformDataHandler, lang]);
+
+
     return (
         <div className='w-full bg-white rounded-3xl'>
             {
@@ -123,7 +134,10 @@ const ClientsForm = () => {
                                     {lang === "he" ? blockData?.field_name_language.he : blockData.block}
                                     <div className='flex items-center'>
                                         {blockData?.is_editable && <EditButtonIcon extra="mr-2" onClick={() => editBlockFieldModalHandler(blockData, true)} />}
-                                        {blockData?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => deleteBlockFieldHandler(blockData.block_id, true)} />}
+                                        {blockData?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => {
+                                            setDeleteMethod((prev) => ({ type: blockData.block_id, value: true }));
+                                            setConfirmationModal(true);
+                                        }} />}
                                         <PiDotsSixVerticalBold className='cursor-grab z-20' />
                                     </div>
                                 </BlockButton>
@@ -136,14 +150,14 @@ const ClientsForm = () => {
                     <h5 className='text-start flex items-center justify-between text-[12px] py-2 md:text-[16px] font-bold text-[#2B3674] w-[100%]'>
                         {t('clients.fields')}
                     </h5>
-                    <Accordion defaultIndex={[0]} allowMultiple>
-                        {fullFormData && !isLoading && fullFormData.map((blockData, index) => <CustomAccordion key={index} showAddButton={true} title={lang === "he" ? blockData.field_name_language.he : blockData.block} onClick={() => addBlockFieldModalHandler(false, blockData.block_id)} >
+                    {fullFormData && <Accordion defaultIndex={Array.from({ length: fullFormData?.length }, (x, i) => i)} allowMultiple>
+                        {!isLoading && fullFormData.map((blockData, index) => <CustomAccordion key={index} showAddButton={true} title={lang === "he" ? blockData.field_name_language.he : blockData.block} onClick={() => addBlockFieldModalHandler(false, blockData.block_id)} >
                             {blockData.field.length > 0 ?
                                 <>
                                     <Draggable onPosChange={(currentPos, newPos,) => getChangedFieldsPos(currentPos, newPos, false, blockData.block_id)}>
                                         {
                                             blockData.field.map((field, index) => {
-                                                const isCheckBox = checkBoxConstants.includes(field.data_type);
+                                                const isCheckBox = checkBoxConstants.includes(field.data_type.value);
                                                 return (
                                                     <div className={`mb-2 ${isCheckBox ? "flex items-center justify-end flex-row-reverse" : ""}`} key={index}>
                                                         <div className={`flex items-center justify-between ${isCheckBox ? "ml-2 w-full" : "mb-1"}`}>
@@ -151,11 +165,14 @@ const ClientsForm = () => {
                                                                 <label className={`block text-black text-sm font-bold`}>
                                                                     {lang === "he" ? field?.field_name_language.he : field?.field_name}
                                                                 </label>
-                                                                <p className='text-sm ml-1 capitalize text-gray-500'>{`(${field?.data_type})`}</p>
+                                                                <p className='text-sm mx-1 capitalize text-gray-500'>{`(${field?.data_type?.label})`}</p>
                                                             </div>
                                                             <div className='flex items-center'>
                                                                 {field?.is_editable && <EditButtonIcon extra="mr-2" onClick={() => editBlockFieldModalHandler(field, false)} />}
-                                                                {field?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => deleteBlockFieldHandler(field?.id, false)} />}
+                                                                {field?.is_delete && <MdDelete className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer" onClick={() => {
+                                                                    setDeleteMethod((prev) => ({ type: field?.id, value: false }));
+                                                                    setConfirmationModal(true);
+                                                                }} />}
                                                                 <PiDotsSixVerticalBold className='cursor-grab z-20' />
                                                             </div>
                                                         </div>
@@ -167,11 +184,27 @@ const ClientsForm = () => {
                                     </Draggable>
                                 </> : <p>{t("clients.noFields")}</p>}
                         </CustomAccordion>)}
-                    </Accordion>
+                    </Accordion>}
+
                 </div>
                 {
-                    showModal && <BlockFieldModal editData={editData} block={isAddBlock} blockId={activeBlock} onClick={() => fetchFullformDataHandler(setIsLoading, setFullFormData)} setShowModal={setShowModal} />
+                    showModal &&
+                    <BlockFieldModal
+                        editData={editData}
+                        block={isAddBlock}
+                        blockId={activeBlock}
+                        onClick={() => fetchFullformDataHandler(setIsLoading, setFullFormData)}
+                        setShowModal={setShowModal}
+                    />
                 }
+                {confirmationModal &&
+                    <DeleteConfirmationModal
+                        showModal={confirmationModal}
+                        setShowModal={setConfirmationModal}
+                        onClick={() => {
+                            deleteBlockFieldHandler(deleteMethod.type, deleteMethod.value);
+                        }}
+                    />}
             </div>
         </div>
     )

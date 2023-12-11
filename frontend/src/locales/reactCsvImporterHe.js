@@ -11,7 +11,7 @@ export const heIL = {
 
         getImportError: (message) => `שגיאת ייבוא: ${message}`,
         getDataFormatError: (message) => `אנא בדוק את עיצוב הנתונים: ${message}`,
-        goBackButton: 'תחזור',
+        goBackButton: 'חזור',
         nextButton: 'בחר עמודות',
 
         rawFileContentsHeading: 'תוכן קובץ גלם',
@@ -23,11 +23,11 @@ export const heIL = {
     fieldsStep: {
         stepSubtitle: 'בחר עמודות',
         requiredFieldsError: 'אנא הקצה את כל השדות הנדרשים',
-        nextButton: 'יְבוּא',
+        nextButton: 'יבוא',
 
         dragSourceAreaCaption: 'עמודות לייבוא',
         getDragSourcePageIndicator: (currentPage, pageCount) =>
-            `עמוד ${currentPage} שֶׁל ${pageCount}`,
+            `עמוד ${currentPage} של ${pageCount}`,
         getDragSourceActiveStatus: (columnCode) =>
             `מקצה טור ${columnCode}`,
         nextColumnsTooltip: 'הצג את העמודות הבאות',
@@ -36,7 +36,7 @@ export const heIL = {
         selectColumnTooltip: 'בחר עמודה להקצאה',
         unselectColumnTooltip: 'בטל את בחירת העמודה',
 
-        dragTargetAreaCaption: 'Target fields',
+        dragTargetAreaCaption: 'שדות יעד',
         getDragTargetOptionalCaption: (field) => `${field} (אופציונאלי)`,
         getDragTargetRequiredCaption: (field) => `${field} (נדרש)`,
         dragTargetPlaceholder: 'גרור את העמודה לכאן',
@@ -49,11 +49,11 @@ export const heIL = {
     },
 
     progressStep: {
-        stepSubtitle: 'יְבוּא',
+        stepSubtitle: 'יבוא',
         uploadMoreButton: 'העלה עוד',
         finishButton: 'סיים',
         statusError: 'לא ניתן לייבא',
-        statusComplete: 'לְהַשְׁלִים',
+        statusComplete: 'הנתונים הובאו בהצלחה',
         statusPending: 'מייבא...',
         processedRowsLabel: 'שורות מעובדות:'
     }

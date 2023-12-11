@@ -21,10 +21,9 @@ function CsvImporter({ formFields, fetchClientsData }) {
         });
     }
 
-
     return (
         <>
-            <label onClick={() => { setIsOpen(true) }} className={`w-full rounded-full py-1 px-4 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}>
+            <label onClick={() => { setIsOpen(true) }} className={`w-full rounded-full py-1 px-4 mx-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}>
                 {t("clients.import")}
             </label>
             {isOpen ? (
@@ -75,9 +74,9 @@ function CsvImporter({ formFields, fetchClientsData }) {
                                     }}
                                 >
                                     {
-                                        formFields.map((field, index) => {
+                                        formFields.length > 0 && formFields.map((field, index) => {
                                             return (
-                                                <ImporterField key={index} name={field?.field_slug} label={lang === "he" ? field?.name_he : field?.field_name} optional={!field?.required} />
+                                                <ImporterField key={index} name={field?.field_slug} label={field?.field_name} optional={!field?.required} />
                                             )
                                         })
                                     }

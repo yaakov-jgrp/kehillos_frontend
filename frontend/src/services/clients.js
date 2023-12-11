@@ -6,16 +6,25 @@ const getClients = (params) => {
 }
 
 const getClient = (id, params = "") => {
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     return api
-        .get(`/api/client/${id}/${params}`);
+        .get(`/api/client/${id}/?lang=${lang}&${params}`);
 }
 
 const saveClient = (clientData) => {
-    return api.post(`/api/client/`, clientData);
+    return api.post(`/api/client/`, clientData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
 }
 
 const updateClient = (clientData, id) => {
-    return api.put(`/api/client/${id}/`, clientData);
+    return api.post(`/api/client/${id}/`, clientData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
 }
 
 const deleteClient = (id) => {
@@ -30,9 +39,9 @@ const exportClients = () => {
     return api.get("/api/client/export/");
 }
 
-const getFullformData = () => {
+const getFullformData = (params = "") => {
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-    return api.get(`/api/client/field/?lang=${lang}`);
+    return api.get(`/api/client/field/?lang=${lang}${params}`);
 }
 
 const createBlockField = (formData) => {
@@ -44,11 +53,13 @@ const deleteBlockField = (formData) => {
 }
 
 const updateBlockField = (formData) => {
-    return api.put("/api/client/field/", formData);
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    return api.put(`/api/client/field/?lang=${lang}`, formData);
 }
 
 const getClientFilters = () => {
-    return api.get("/api/client/filters/");
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    return api.get(`/api/client/filters/?lang=${lang}`);
 }
 
 const getClientFilterOptions = () => {

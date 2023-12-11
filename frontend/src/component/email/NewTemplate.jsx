@@ -1,10 +1,11 @@
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import emailService from "../../services/email";
 import EmailEditor from 'react-email-editor';
 import useAlert from "../../Hooks/useAlert";
 import { DEFAULT_LANGUAGE } from "../../constants";
 import emailEditorHe from "../../locales/emailEditorHe.json";
+import clientsService from "../../services/clients";
 
 const NewTemplate = ({ editableTemplateId, onSave }) => {
   const formObject = {
@@ -13,14 +14,16 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
     subject: '',
     message: ''
   }
-
-  // const heTranslations = { 'ar-AE' : emailEditorHe }
-  const [formdata, setFormData] = useState(formObject);
-  const [loadingTemplate, setLoadingTemplate] = useState(false);
   const { t } = useTranslation();
   const { setAlert } = useAlert();
   const emailEditorRef = useRef(null);
   const defaultLanguageValue = localStorage.getItem(DEFAULT_LANGUAGE);
+
+  // const heTranslations = { 'ar-AE' : emailEditorHe }
+  const [formdata, setFormData] = useState(formObject);
+  const [loadingTemplate, setLoadingTemplate] = useState(false);
+  const [loadingTags, setloadingTags] = useState(true);
+  const [mergeTagsData, setMergeTagsData] = useState({});
 
 
   const onReady = () => {
@@ -44,8 +47,9 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
       $admin_email: {
         name: t('requests.$adminEmail'),
         value: '{admin_email}'
-      }
-    })
+      },
+      ...mergeTagsData
+    });
     // editor is ready
     // you can load your template here;
     // const templateJson = {};
@@ -129,12 +133,25 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
     setLoadingTemplate(false);
   }
 
+  const fetchFormDataTags = async () => {
+    setloadingTags(true);
+    try {
+      const res = await clientsService.getFullformData("&field_email_template=true");
+      setMergeTagsData(res.data.result);
+      setloadingTags(false);
+    } catch (error) {
+      console.log(error)
+      setloadingTags(false);
+    }
+  }
+
+
   useEffect(() => {
     if (editableTemplateId) {
       fetchEditableTemplateData();
     }
+    fetchFormDataTags();
   }, [defaultLanguageValue]);
-
 
   const option = {
     locale: 'en-US',
@@ -171,6 +188,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   }
 
 
+
   return (
     <div className="h-full w-full flex flex-col-reverse md:flex-row gap-4">
       <div className="bg-white rounded-3xl w-full">
@@ -202,11 +220,12 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
                 />
               </div>
               <div className="w-full my-5 h-[calc(100vh-330px)] [&_iframe]:!min-w-[100%] [&_iframe]:!h-[calc(100vh-330px)] [&_div]:!max-h-[calc(100vh-330px)]">
-                {!loadingTemplate ? <EmailEditor ref={emailEditorRef} onReady={onReady}
-                  options={
-                    defaultLanguageValue === 'he' ? option : null
-                  }
-                /> : null}
+                {!loadingTemplate && !loadingTags ?
+                  <EmailEditor ref={emailEditorRef} onReady={onReady}
+                    options={
+                      defaultLanguageValue === 'he' ? option : null
+                    }
+                  /> : null}
               </div>
               <button className={`linear mb-2 px-[30px] rounded-lg py-2 text-base font-medium transition duration-200 ${formValidate() ? 'bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white' : 'bg-gray-300'}`}>{t('emails.save')}</button>
             </div>

@@ -11,9 +11,10 @@ import { DateFieldConstants, NumberFieldConstants, checkBoxConstants } from "../
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import FieldLabel from "../fields/FormLabel";
+import { toast } from "react-toastify";
 
 
-const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clientLists, netfreeProfiles, fullFormData }) => {
+const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netfreeProfiles, fullFormData }) => {
     const { t } = useTranslation();
     dayjs.extend(utc);
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -21,10 +22,13 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
 
     const schemaHandler = (type, name, required) => {
         let validation;
-        if (type === "email") {
-            validation = required ? validation = yup.string().email(`${name} must be a valid mail`).required(`${name} is required`) : validation = yup.string().email().notRequired();
+        if (type.value === "email") {
+            validation = required ? yup.string().email(`${name} ${t("messages.mustBeValid")}`).required(`${name} ${t("clients.is")} ${t("clients.required")}`) : yup.string().email().notRequired();
+        } else if (type.value === "file") {
+            validation = required ? yup.mixed()
+                .required(`${name} ${t("clients.is")} ${t("clients.required")}`) : yup.mixed().notRequired();
         } else {
-            validation = required ? yup.string().required(`${name} is required`) : validation = yup.string().notRequired();
+            validation = required ? yup.string().required(`${name} ${t("clients.is")} ${t("clients.required")}`) : validation = yup.string().notRequired();
         }
         return validation;
     }
@@ -42,7 +46,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
         setValue,
         reset,
         watch,
-        formState: { errors },
+        formState: { errors, dirtyFields },
         handleSubmit,
     } = useForm({
         defaultValues,
@@ -51,36 +55,38 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
     });
 
     const initialValuesHandler = () => {
-        const arr = fullFormData.map((item) => {
-            let value = "";
-            switch (item?.data_type) {
-                case "select":
-                    value = item.enum_values.choices[0].id;
-                    break;
-                case "date":
-                    value = dayjs(Date.now()).utc(true).toISOString(true);
-                    break;
-                case "checkbox":
-                    value = item.defaultvalue;
-                    break;
+        if (newClient) {
+            const arr = fullFormData.map((item) => {
+                let value = "";
+                switch (item?.data_type.value) {
+                    case "select":
+                        value = item.enum_values.choices[0].id;
+                        break;
+                    case "date":
+                        value = "";
+                        break;
+                    case "checkbox":
+                        value = item.defaultvalue;
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
+                }
+                return {
+                    [item.field_slug]: value
+                }
+            });
+
+            arr.push({
+                netfree_profile: netfreeProfiles[0]?.id,
+            })
+
+            // Combine all objects into a single object
+            const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
+            setDefaultValues(result);
+            for (const field in result) {
+                setValue(field, result[field]);
             }
-            return {
-                [item.field_slug]: value
-            }
-        });
-
-        arr.push({
-            netfree_profile: netfreeProfiles[0].id,
-        })
-
-        // Combine all objects into a single object
-        const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
-        setDefaultValues(result);
-        for (const field in result) {
-            setValue(field, result[field]);
         }
     }
 
@@ -88,19 +94,36 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
     const submitForm = async (data, e) => {
         e.preventDefault();
         let fieldsArray = [];
+        const formData = new FormData();
+        const dirtyFieldsArray = Object.keys(dirtyFields);
+        let updateFieldsArray = []
+
         for (const field in data) {
-            if (field !== "netfree_profile") {
+            if (field !== "netfree_profile" && typeof data[field] !== "object") {
+                for (const dirty in dirtyFields) {
+                    if (field === dirty) {
+                        updateFieldsArray.push({
+                            [field]: data[field]
+                        })
+                    }
+                }
                 fieldsArray.push({
                     [field]: data[field]
                 })
             }
+            if (typeof data[field] === "object") {
+                formData.append(field, data[field])
+            }
         };
-        const formData = {
-            netfree_profile: data.netfree_profile,
-            fields: fieldsArray
-        }
 
         if (newClient) {
+            const detailsData = {
+                netfree_profile: data.netfree_profile,
+                fields: fieldsArray
+            }
+
+            formData.append("data", JSON.stringify(detailsData));
+
             clientsService.saveClient(formData).then((res) => {
                 reset();
                 setShowModal(!showModal);
@@ -109,52 +132,80 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                 errorsToastHandler(err.response.data.error);
             });
         } else {
-            const updateData = {
-                ...formData,
-                fields: formData.fields.filter((field) => !field["id"])
+            if (dirtyFieldsArray.length > 0) {
+                const detailsData = {
+                    netfree_profile: data.netfree_profile,
+                    fields: updateFieldsArray
+                }
+                formData.append("data", JSON.stringify(detailsData));
+                clientsService.updateClient(formData, client.client_id).then((res) => {
+                    reset();
+                    setShowModal(!showModal);
+                    onClick();
+                }).catch((err) => {
+                    errorsToastHandler(err.response.data.error);
+                });
+            } else {
+                toast.error("No fields to update");
             }
-            clientsService.updateClient(updateData, data.id).then((res) => {
-                reset();
-                setShowModal(!showModal);
-                onClick();
-            }).catch((err) => {
-                errorsToastHandler(err.response.data.error);
-            });
         }
     }
 
     useEffect(() => {
         reset();
         initialValuesHandler();
-        if (clientLists && netfreeProfiles && client) {
+        if (netfreeProfiles && client) {
             let data;
             if (!newClient) {
-                data = client;
+                // Array of objects
+                let arr = []
+                client.blocks.forEach((block) => {
+                    block.field.forEach((item) => {
+                        arr.push({
+                            [item.field_slug]: item.value
+                        })
+                    })
+                });
+
+                // Combine all objects into a single object
+                const result = arr.reduce((acc, curr) => Object.assign(acc, curr), {});
+                data = result;
                 setValue("netfree_profile", client.netfree_profile);
             } else {
                 setValue("netfree_profile", netfreeProfiles[0].id);
             }
+            let defaultData = [];
             for (let value in data) {
                 if (value !== "netfree_profile") {
                     let fieldValue;
                     const field = fullFormData.filter((field) => field?.field_slug === value);
-                    switch (field[0]?.data_type) {
+                    const dataValue = data[value];
+
+                    switch (field[0]?.data_type.value) {
                         case "select":
-                            fieldValue = data[value] === "" ? field[0]?.enum_values?.choices[0]?.id : data[value].id;
+                            fieldValue = dataValue.length < 1 ? field[0]?.enum_values?.choices[0]?.id : dataValue[0];
+                            break;
+                        case "file":
+                            fieldValue = dataValue !== "" ? { name: dataValue.file_name.split("upload/")[1] } : "";
                             break;
                         case "date":
-                            fieldValue = data[value] === "" ? dayjs(Date.now()).utc(true).toISOString(true) : data[value];
+                            fieldValue = dataValue === "" ? dayjs(Date.now()).utc(true).toISOString(true) : dataValue;
                             break;
                         case "checkbox":
-                            fieldValue = data[value] === "" ? "true" : JSON.stringify(data[value]);
+                            fieldValue = dataValue === "" ? "false" : JSON.stringify(dataValue);
                             break;
                         default:
-                            fieldValue = data[value];
+                            fieldValue = dataValue;
                             break;
                     }
+                    defaultData.push({
+                        [value]: fieldValue
+                    })
                     setValue(value, fieldValue);
                 }
             }
+            const result = defaultData.reduce((acc, curr) => Object.assign(acc, curr), {});
+            setDefaultValues(result);
         }
     }, [JSON.stringify(client), newClient]);
 
@@ -213,7 +264,8 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                         </div>
                                         {
                                             fullFormData.map((field, index) => {
-                                                const isDate = DateFieldConstants.includes(field.data_type);
+                                                const isDate = DateFieldConstants.includes(field.data_type.value);
+                                                const isFile = field?.data_type?.value === "file";
                                                 return (
                                                     <div className={`mb-6 flex w-full items-center`} key={index}>
                                                         <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
@@ -228,6 +280,11 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, clie
                                                                         <CustomField setValue={setValue} disabled={false} field={field} onChange={(e) => {
                                                                             if (isDate) {
                                                                                 setValue(field.field_slug, dayjs(e).utc(true).toISOString(), {
+                                                                                    shouldDirty: true,
+                                                                                    shouldValidate: true
+                                                                                })
+                                                                            } else if (isFile) {
+                                                                                setValue(field.field_slug, e.target.files[0], {
                                                                                     shouldDirty: true,
                                                                                     shouldValidate: true
                                                                                 })

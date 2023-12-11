@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Box, TablePagination } from '@mui/material';
-import { searchFields } from '../../../lib/FieldConstants';
+import { paginationRowOptions, searchFields } from '../../../lib/FieldConstants';
 import clientsService from '../../../services/clients';
 import Loader from '../../common/Loader';
 import NoDataFound from '../../common/NoDataFound';
 import SearchField from '../../fields/SearchField';
 import { useTranslation } from "react-i18next";
-import { formateDateTime } from '../../../lib/CommonFunctions';
+import { formateDateTime, handleSort } from '../../../lib/CommonFunctions';
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 function RequestsTabPanel(props) {
     const { children, value, index, id, ...other } = props;
@@ -14,10 +15,18 @@ function RequestsTabPanel(props) {
     const { t } = useTranslation();
     const [requests, setRequests] = useState([]);
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(50);
     const [totalCount, setTotalCount] = useState(100);
     const [searchParams, setSearchParams] = useState(searchFields);
-    const [isLoading, setIsloading] = useState(false);
+    const [isLoading, setIsloading] = useState(true);
+    const [sortField, setSortField] = useState(null);
+    const [sortOrder, setSortOrder] = useState('asc');
+
+    const handleSortHandler = (field) => {
+        if (requests.length > 0) {
+            handleSort(field, requests, sortField, sortOrder, setSortOrder, setSortField, setRequests);
+        }
+    };
 
     const fetchClientRequests = () => {
         setIsloading(true);
@@ -28,7 +37,7 @@ function RequestsTabPanel(props) {
                     searchValues += `&search_${[searchfield]}=${searchParams[searchfield]}`
                 };
             }
-            const params = `?email_request=true${searchValues}&lang=${lang}`;
+            const params = `page=${page + 1}&page_size=${rowsPerPage}&email_request=true${searchValues}`;
             clientsService.getClient(id, params).then((res) => {
                 setRequests(res.data);
                 setTotalCount(res.data.count);
@@ -86,7 +95,7 @@ function RequestsTabPanel(props) {
                                         <SearchField
                                             variant="auth"
                                             extra="mb-2"
-                                            label={t('searchbox.requestId')}
+                                            label={<p onClick={() => handleSortHandler('id')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.requestId')}{sortField === "id" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                             id="requestId"
                                             type="text"
                                             placeholder={t('searchbox.placeHolder')}
@@ -98,7 +107,7 @@ function RequestsTabPanel(props) {
                                         <SearchField
                                             variant="auth"
                                             extra="mb-2"
-                                            label={t('searchbox.dateCreated')}
+                                            label={<p onClick={() => handleSortHandler('created_at')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.dateCreated')}{sortField === "created_at" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                             id="dateCreated"
                                             type="text"
                                             placeholder={t('searchbox.placeHolder')}
@@ -110,7 +119,7 @@ function RequestsTabPanel(props) {
                                         <SearchField
                                             variant="auth"
                                             extra="mb-2"
-                                            label={t('searchbox.from')}
+                                            label={<p onClick={() => handleSortHandler('sender_email')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.from')}{sortField === "from" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                             id="from"
                                             type="text"
                                             placeholder={t('searchbox.placeHolder')}
@@ -122,7 +131,7 @@ function RequestsTabPanel(props) {
                                         <SearchField
                                             variant="auth"
                                             extra="mb-2"
-                                            label={t('searchbox.requestType')}
+                                            label={<p onClick={() => handleSortHandler('request_type')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.requestType')}{sortField === "request_type" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                             id="requestType"
                                             type="text"
                                             placeholder={t('searchbox.placeHolder')}
@@ -134,7 +143,7 @@ function RequestsTabPanel(props) {
                                         <SearchField
                                             variant="auth"
                                             extra="mb-2"
-                                            label={t('searchbox.requestdetail')}
+                                            label={<p onClick={() => handleSortHandler('requested_website')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.requestdetail')}{sortField === "requestdetail" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                             id="requestdetail"
                                             type="text"
                                             placeholder={t('searchbox.placeHolder')}
@@ -146,7 +155,7 @@ function RequestsTabPanel(props) {
                                         <SearchField
                                             variant="auth"
                                             extra="mb-2"
-                                            label={t('searchbox.actionsDone')}
+                                            label={<p onClick={() => handleSortHandler('action_done')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.actionsDone')}{sortField === "action_done" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                                             id="actionsDone"
                                             type="text"
                                             placeholder={t('searchbox.placeHolder')}
@@ -156,7 +165,7 @@ function RequestsTabPanel(props) {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className='[&_td]:min-w-[9rem]'>
+                            <tbody className='[&_td]:min-w-[9rem] [&_td]:max-w-[18rem]'>
                                 {
                                     isLoading ?
                                         <tr>
@@ -184,9 +193,9 @@ function RequestsTabPanel(props) {
                                                                 </td>
                                                                 <td>{el.request_type}</td>
                                                                 <td>
-                                                                    <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold'>{el.requested_website.length > 70 ? el.requested_website.substring(0, 70) + "..." : el.requested_website}</a>
+                                                                    <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold line-clamp-2 break-words'>{el.requested_website}</a>
                                                                     <br />
-                                                                    {el.text}
+                                                                    <p className='line-clamp-4 break-words'>{el.text}</p>
                                                                     {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />                  */}
                                                                 </td>
                                                                 <td className='flex justify-center gap-4 px-2'>
@@ -212,6 +221,7 @@ function RequestsTabPanel(props) {
                         component="div"
                         count={totalCount}
                         page={page}
+                        rowsPerPageOptions={paginationRowOptions}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
                         onRowsPerPageChange={handleChangeRowsPerPage}

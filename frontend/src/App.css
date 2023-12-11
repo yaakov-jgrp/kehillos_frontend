@@ -4,13 +4,13 @@
 
 /* Firefox */
 * {
-  scrollbar-width: 10px;
+  scrollbar-width: 7px;
   scrollbar-color: #4318FF;
 }
 
 /* Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
-  width: 10px;
+  width: 7px;
 }
 
 *::-webkit-scrollbar-track {

@@ -1,7 +1,26 @@
 {
   "common": {
     "pages": "Pages",
-    "noDataFound": "No Data Found"
+    "noDataFound": "No Data Found",
+    "deleteConfirmation": "Are you sure",
+    "delete": "Yes, Delete",
+    "no": "No",
+    "deleteNote": "Data will be permanently deleted",
+    "deleteSuccess": "Data deleted successfully",
+    "viewMore": "View more",
+    "viewLess": "View less",
+    "fileViewer": "File Viewer",
+    "fileNotSupported": "File not supported"
+  },
+  "messages": {
+    "mustBeValid": "must be a valid mail",
+    "mustContain": "must contain atleast",
+    "characters": "characters",
+    "minimum": "Minimum",
+    "one": "one",
+    "value": "value",
+    "andConditionsMessage": "All Conditions  ( All conditions must be met )",
+    "orConditionsMessage": "Any Conditions  ( At least one of the conditions must be met )"
   },
   "auth": {
     "email": "Email",
@@ -21,7 +40,9 @@
     "profile": "Profile",
     "logout": "Logout",
     "clients": "Clients",
-    "details": "Details"
+    "details": "Details",
+    "logs": "Logs",
+    "users": "Users"
   },
   "requests": {
     "title": "Requests",
@@ -30,6 +51,15 @@
     "$clientEmail": "$client_email",
     "$domainRequested": "$domain_requested",
     "$adminEmail": "$admin_email"
+  },
+  "logs": {
+    "old": "Old",
+    "new": "New"
+  },
+  "users": {
+    "admin": "Admin",
+    "normal": "Regular",
+    "userType": "User Type"
   },
   "clients": {
     "title": "Clients",
@@ -62,7 +92,7 @@
     "applied": "Applied",
     "addCondition": "Add Condition",
     "filterNameMinCondition": "Filter name must be atleast 3 Characters",
-    "required": "required",
+    "required": "Required",
     "is": "is",
     "are": "are",
     "filterName": "Filter name",
@@ -71,7 +101,9 @@
     "setAsDefault": "Set as Default",
     "goBack": "Go Back",
     "condition": "Condition",
-    "field": "field"
+    "field": "Field",
+    "enterNumber": "Enter phone number",
+    "appliedFilter": "Applied filter"
   },
   "emails": {
     "templates": "Templates",
@@ -143,7 +175,10 @@
     "phone": "Phone",
     "sector": "Sector",
     "netfreeProfile": "Netfree Profile",
-    "clientActions": "Client Actions"
+    "clientActions": "Client Actions",
+    "buyerReviewNotification": "Buyer Review Notifications",
+    "addUser": "Add User",
+    "editUser": "Edit User"
   },
   "searchbox": {
     "placeHolder": "Search",
@@ -158,6 +193,11 @@
     "from": "From",
     "requestType": "Request Type",
     "requestdetail": "Request Details",
-    "actionsDone": "Actions Done"
+    "actionsDone": "Actions Done",
+    "user": "User",
+    "changes": "Changes",
+    "action": "Action",
+    "entity": "Entity",
+    "timeStamp": "Time Stamp"
   }
 }

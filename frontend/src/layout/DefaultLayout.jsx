@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { Route, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../component/common/Sidebar';
 import { useTranslation } from "react-i18next";
 import Navbar from '../component/common/Navbar';

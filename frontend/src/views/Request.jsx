@@ -5,18 +5,28 @@ import requestService from '../services/request';
 import Loader from '../component/common/Loader';
 import { TablePagination } from '@mui/material';
 import NoDataFound from '../component/common/NoDataFound';
-import { searchFields } from '../lib/FieldConstants';
-import { formateDateTime } from '../lib/CommonFunctions';
+import { paginationRowOptions, searchFields } from '../lib/FieldConstants';
+import { formateDateTime, handleSort } from '../lib/CommonFunctions';
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 const Request = () => {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [allRequest, setAllRequests] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [totalCount, setTotalCount] = useState(100);
   const [searchParams, setSearchParams] = useState(searchFields);
+
+
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState('asc');
+
+  const handleSortHandler = (field) => {
+    handleSort(field, allRequest, sortField, sortOrder, setSortOrder, setSortField, setAllRequests);
+  };
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -29,19 +39,24 @@ const Request = () => {
 
   const fetchRequestData = async () => {
     setIsLoading(true);
-    let searchValues = "";
-    for (const searchfield in searchParams) {
-      if (searchParams[searchfield] !== "") {
-        searchValues += `&search_${[searchfield]}=${searchParams[searchfield]}`
-      };
-    }
-    const params = `?page=${page + 1}&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
-    const requestData = await requestService.getRequests(params);
-    setTotalCount(requestData?.data?.count)
-    setAllRequests(requestData?.data?.data);
-    setTimeout(() => {
+    try {
+      let searchValues = "";
+      for (const searchfield in searchParams) {
+        if (searchParams[searchfield] !== "") {
+          searchValues += `&search_${[searchfield]}=${searchParams[searchfield]}`
+        };
+      }
+      const params = `?page=${page + 1}&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
+      const requestData = await requestService.getRequests(params);
+      setTotalCount(requestData?.data?.count)
+      setAllRequests(requestData?.data?.data);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500)
+    } catch (error) {
+      console.log(error);
       setIsLoading(false);
-    }, 500)
+    }
   }
 
   const searchResult = (searchBy, value) => {
@@ -72,7 +87,7 @@ const Request = () => {
                 <SearchField
                   variant="auth"
                   extra="mb-2"
-                  label={t('searchbox.requestId')}
+                  label={<p onClick={() => handleSortHandler('id')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.requestId')}{sortField === "id" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                   id="requestId"
                   type="text"
                   placeholder={t('searchbox.placeHolder')}
@@ -84,7 +99,7 @@ const Request = () => {
                 <SearchField
                   variant="auth"
                   extra="mb-2"
-                  label={t('searchbox.dateCreated')}
+                  label={<p onClick={() => handleSortHandler('created_at')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.dateCreated')}{sortField === "created_at" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                   id="dateCreated"
                   type="text"
                   placeholder={t('searchbox.placeHolder')}
@@ -96,7 +111,7 @@ const Request = () => {
                 <SearchField
                   variant="auth"
                   extra="mb-2"
-                  label={t('searchbox.from')}
+                  label={<p onClick={() => handleSortHandler('sender_email')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.from')}{sortField === "from" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                   id="from"
                   type="text"
                   placeholder={t('searchbox.placeHolder')}
@@ -108,7 +123,7 @@ const Request = () => {
                 <SearchField
                   variant="auth"
                   extra="mb-2"
-                  label={t('searchbox.requestType')}
+                  label={<p onClick={() => handleSortHandler('request_type')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.requestType')}{sortField === "request_type" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                   id="requestType"
                   type="text"
                   placeholder={t('searchbox.placeHolder')}
@@ -120,7 +135,7 @@ const Request = () => {
                 <SearchField
                   variant="auth"
                   extra="mb-2"
-                  label={t('searchbox.requestdetail')}
+                  label={<p onClick={() => handleSortHandler('requested_website')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.requestdetail')}{sortField === "requestdetail" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                   id="requestdetail"
                   type="text"
                   placeholder={t('searchbox.placeHolder')}
@@ -132,7 +147,7 @@ const Request = () => {
                 <SearchField
                   variant="auth"
                   extra="mb-2"
-                  label={t('searchbox.actionsDone')}
+                  label={<p onClick={() => handleSortHandler('action_done')} className='flex cursor-pointer items-center justify-between w-full'>{t('searchbox.actionsDone')}{sortField === "action_done" ? sortOrder === "asc" ? <FaArrowUp className='ml-1' /> : <FaArrowDown className='ml-1' /> : <FaArrowUp className='ml-1' />}</p>}
                   id="actionsDone"
                   type="text"
                   placeholder={t('searchbox.placeHolder')}
@@ -142,7 +157,7 @@ const Request = () => {
               </th>
             </tr>
           </thead>
-          <tbody className='[&_td]:min-w-[9rem]'>
+          <tbody className='[&_td]:min-w-[9rem] [&_td]:max-w-[18rem]'>
             {
               isLoading ?
                 <tr>
@@ -170,9 +185,9 @@ const Request = () => {
                             </td>
                             <td>{el.request_type}</td>
                             <td>
-                              <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold'>{el.requested_website.length > 70 ? el.requested_website.substring(0, 70) + "..." : el.requested_website}</a>
+                              <a href={el.requested_website} target='_blank' rel="noreferrer" className='text-[#2B3674] hover:text-[#2B3674] font-bold line-clamp-2 break-words'>{el.requested_website}</a>
                               <br />
-                              {el.text}
+                              <p className='line-clamp-4 break-words'>{el.text}</p>
                               {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />                  */}
                             </td>
                             <td className='flex justify-center gap-4 px-2'>
@@ -198,6 +213,7 @@ const Request = () => {
         component="div"
         count={totalCount}
         page={page}
+        rowsPerPageOptions={paginationRowOptions}
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}

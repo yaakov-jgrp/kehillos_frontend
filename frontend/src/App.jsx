@@ -36,12 +36,15 @@ import {
   // MdPerson,
   // MdLock,
 } from "react-icons/md";
-import { HiOutlineUserGroup } from "react-icons/hi2"
+import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2"
 import NetFree from "./views/NetFree";
 import Clients from "./views/Clients";
 import ClientDetails from "./views/ClientDetails";
 import ClientsForm from "./views/ClientsForm";
 import RouteGuard from "./component/common/RouteGuard";
+import { IoLogoBuffer } from "react-icons/io";
+import Logs from "./views/Logs";
+import Users from "./views/Users";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -101,6 +104,13 @@ function App() {
       component: <Clients />,
     },
     {
+      name: t('sidebar.users'),
+      path: "settings/users",
+      type: "menu",
+      icon: <HiOutlineUsers className="h-6 w-6" />,
+      component: <Users />,
+    },
+    {
       name: t('clients.clientDetails'),
       path: "clients/:id",
       component: <ClientDetails />,
@@ -129,6 +139,13 @@ function App() {
       type: "menu",
       icon: <MdOutlineSettings className="h-6 w-6" />,
       component: <Emails />,
+    },
+    {
+      name: t('sidebar.logs'),
+      path: "settings/logs",
+      type: "menu",
+      icon: <IoLogoBuffer className="h-6 w-6" />,
+      component: <Logs />,
     },
     // {
     //   name: t('sidebar.profile'),
