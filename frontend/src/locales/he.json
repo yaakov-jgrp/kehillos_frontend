@@ -20,7 +20,8 @@
     "one": "אחד",
     "value": "ערך",
     "andConditionsMessage": "כל התנאים (יש לעמוד בכל התנאים)",
-    "orConditionsMessage": "כל תנאי (יש לעמוד באחד מהתנאים לפחות)"
+    "orConditionsMessage": "כל תנאי (יש לעמוד באחד מהתנאים לפחות)",
+    "importClientsError": "בנתוני הייבוא ​​יש שגיאות. לחץ על הקישור למטה כדי להוריד את הנתונים עם שגיאות."
   },
   "auth": {
     "email": "אימייל",
@@ -103,7 +104,8 @@
     "condition": "תנאי",
     "field": "שדה",
     "enterNumber": "הכנס מספר טלפון",
-    "appliedFilter": "הוחל מסנן"
+    "appliedFilter": "הוחל מסנן",
+    "download": "הורד"
   },
   "emails": {
     "templates": "תבניות",

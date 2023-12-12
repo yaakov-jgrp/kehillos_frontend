@@ -180,7 +180,7 @@ function UserModal({ showModal, setShowModal, user, newUser, onClick, userTypes 
                                                         </select>
                                                     )}
                                                 />
-                                                {errors.password && <ErrorMessage message={errors.password.message} />}
+                                                {errors.user_type && <ErrorMessage message={errors.user_type.message} />}
                                             </div>
                                         </div>
                                     </div>

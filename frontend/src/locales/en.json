@@ -20,7 +20,8 @@
     "one": "one",
     "value": "value",
     "andConditionsMessage": "All Conditions  ( All conditions must be met )",
-    "orConditionsMessage": "Any Conditions  ( At least one of the conditions must be met )"
+    "orConditionsMessage": "Any Conditions  ( At least one of the conditions must be met )",
+    "importClientsError": "The import data has errors. Click the below link to download the data with errors."
   },
   "auth": {
     "email": "Email",
@@ -103,7 +104,8 @@
     "condition": "Condition",
     "field": "Field",
     "enterNumber": "Enter phone number",
-    "appliedFilter": "Applied filter"
+    "appliedFilter": "Applied filter",
+    "download": "Download"
   },
   "emails": {
     "templates": "Templates",

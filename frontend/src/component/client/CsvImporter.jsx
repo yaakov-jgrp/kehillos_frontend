@@ -4,21 +4,26 @@ import { Importer, ImporterField, enUS } from 'react-csv-importer';
 import 'react-csv-importer/dist/index.css';
 import { heIL } from "../../locales/reactCsvImporterHe";
 import clientsService from "../../services/clients";
-import { errorsToastHandler } from "../../lib/CommonFunctions";
+import { CSVLink } from "react-csv";
 
 function CsvImporter({ formFields, fetchClientsData }) {
-    const [isOpen, setIsOpen] = useState(false);
     const { t } = useTranslation();
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    const [isOpen, setIsOpen] = useState(false);
+    const [errorEntries, setErrorEntries] = useState([]);
 
-    const importClientsHandler = async (data) => {
-        clientsService.importClients(data).then((res) => {
-            toast.success("Import successfully done");
+    const importClientsHandler = async (rows) => {
+        try {
+            const data = {
+                clientsData: rows
+            }
+            const res = await clientsService.importClients(data);
             fetchClientsData();
-            setIsOpen(false)
-        }).catch((err) => {
-            errorsToastHandler(err.response.data.error);
-        });
+        } catch (error) {
+            if (error?.response?.status === 422) {
+                setErrorEntries(error.response.data?.errors)
+            }
+        }
     }
 
     return (
@@ -35,7 +40,10 @@ function CsvImporter({ formFields, fetchClientsData }) {
                                     <h3 className="text-2xl font-semibold">{t('netfree.addClient')}</h3>
                                     <button
                                         className="bg-transparent border-0 text-black float-right"
-                                        onClick={() => setIsOpen(false)}
+                                        onClick={() => {
+                                            setIsOpen(false);
+                                            setErrorEntries([])
+                                        }}
                                     >
                                         <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
                                             x
@@ -44,15 +52,14 @@ function CsvImporter({ formFields, fetchClientsData }) {
                                 </div>
                                 <Importer
                                     locale={lang === "he" ? heIL : enUS}
+                                    skipEmptyLines={true}
+
                                     dataHandler={async (rows, { startIndex }) => {
                                         // required, may be called several times
                                         // receives a list of parsed objects based on defined fields and user column mapping;
                                         // (if this callback returns a promise, the widget will wait for it before parsing more data)
                                         // mock timeout to simulate processing
-                                        const data = {
-                                            clientsData: rows
-                                        }
-                                        importClientsHandler(data);
+                                        await importClientsHandler(rows);
                                     }}
                                     defaultNoHeader={false} // optional, keeps "data has headers" checkbox off by default
                                     restartable={false} // optional, lets user choose to upload another file when import is complete
@@ -71,6 +78,7 @@ function CsvImporter({ formFields, fetchClientsData }) {
                                         // goToMyAppNextPage();
                                         // console.log(file, preview, fields, columnFields);
                                         setIsOpen(false);
+                                        setErrorEntries([]);
                                     }}
                                 >
                                     {
@@ -81,6 +89,24 @@ function CsvImporter({ formFields, fetchClientsData }) {
                                         })
                                     }
                                 </Importer>
+                                {errorEntries.length > 0 &&
+                                    <div className="w-full items-center flex flex-col my-4">
+                                        <p>{t("messages.importClientsError")}</p>
+
+                                        <button
+                                            className="text-red-500 my-2 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
+                                            type="button"
+                                        >
+                                            <CSVLink
+                                                data={errorEntries}
+                                                filename={`${t("clients.errors")}.csv`}
+                                                target="_blank"
+                                            >
+                                                {t('clients.download')}
+                                            </CSVLink>
+                                        </button>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>

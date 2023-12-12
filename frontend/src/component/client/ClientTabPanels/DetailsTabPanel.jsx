@@ -11,6 +11,8 @@ function DetailsTabPanel(props) {
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     const { t } = useTranslation();
 
+    console.log(clientData)
+
     return (
         <div
             role="tabpanel"
