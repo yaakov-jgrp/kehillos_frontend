@@ -239,7 +239,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                                     {
                                                         dataTypes?.map(el => {
                                                             return (
-                                                                el ? <option key={el} value={el}>{el}</option> : null
+                                                                el ? <option key={el} value={el}>{t(`dataTypes.${el}`)}</option> : null
                                                             );
                                                         })
                                                     }
@@ -298,10 +298,11 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                                                     control={control}
                                                                     render={({ field: { value, onChange, onBlur } }) => (
                                                                         <select className="shadow appearance-none border rounded  outline-none w-full py-2 px-1 text-black bg-white" onChange={onChange} onBlur={onBlur} value={value} placeholder="Select Default Value">
+                                                                            <option value="">{t("common.select")}</option>
                                                                             {
                                                                                 checkBoxValues.map(el => {
                                                                                     return (
-                                                                                        el !== "" ? <option key={el} value={el}>{JSON.stringify(el)}</option> : null
+                                                                                        el !== "" ? <option key={el} value={el}>{t(`dataTypes.${JSON.stringify(el)}`)}</option> : null
                                                                                     );
                                                                                 })
                                                                             }

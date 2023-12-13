@@ -1,6 +1,7 @@
 import axios from 'axios'
 import.meta.env.VITE_API_URL
 import { ACCESS_TOKEN_KEY } from '../constants';
+import { errorsToastHandler } from '../lib/CommonFunctions';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -25,14 +26,17 @@ api.interceptors.response.use((res) => {
   return res;
 }, (err) => {
   if (err.response.status === 401) {
-    // const originalRequest = err.config;
-    // // if (err.response.status === 401 && !originalRequest._retry) {
-    //   originalRequest._retry = true;
-    // api.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem(REFRESH_TOKEN_KEY);
-    //   return api(originalRequest);
-    // // }
+    const originalRequest = err.config;
+    if (err.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      api.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem(REFRESH_TOKEN_KEY);
+      return api(originalRequest);
+    }
     localStorage.clear();
     window.location = '/signin'
+  }
+  if (Object.keys(err?.response?.data?.errors).length > 0) {
+    errorsToastHandler(err.response.data.errors);
   }
   return Promise.reject(err)
 })

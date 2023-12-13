@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 function LogChanges({ changes }) {
     const { t } = useTranslation();
     const [more, setMore] = useState(false);
-    console.log(changes)
 
     return (
         <div>

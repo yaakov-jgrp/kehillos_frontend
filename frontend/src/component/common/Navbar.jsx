@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { FiAlignJustify } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import { RiMoonFill, RiSunFill } from "react-icons/ri";
 import LanguageSelect from "./LanguageSelect";
 import { useTranslation } from "react-i18next";
 
 const Navbar = (props) => {
   const { onOpenSidenav, brandText, brandName } = props;
-
   const { t, i18n } = useTranslation();
+  const routeTextArray = brandText.split('/').map((item) => {
+    if (isNaN(Number(item))) {
+      return t(`routes.${item}`)
+    }
+    return item;
+  });
 
   return (
     <nav className={`sticky flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d] ${i18n.dir() === 'rtl' ? 'xl:mr-3' : 'xl:ml-3'}`}>
@@ -28,7 +32,7 @@ const Navbar = (props) => {
             className="text-sm font-normal capitalize text-navy-700 hover:underline dark:text-white dark:hover:text-white"
             to="#"
           >
-            {brandText.split('/').join(' / ')}
+            {routeTextArray.join(' / ')}
           </Link>
         </div>
         <p className="shrink text-[28px] capitalize text-navy-700 dark:text-white">

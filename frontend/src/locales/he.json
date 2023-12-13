@@ -10,7 +10,8 @@
     "viewMore": "ראה עוד",
     "viewLess": "ראה פחות",
     "fileViewer": "מציג קבצים",
-    "fileNotSupported": "הקובץ אינו נתמך"
+    "fileNotSupported": "הקובץ אינו נתמך",
+    "select": "נבחר"
   },
   "messages": {
     "mustBeValid": "חייב להיות דואר חוקי",
@@ -106,6 +107,28 @@
     "enterNumber": "הכנס מספר טלפון",
     "appliedFilter": "הוחל מסנן",
     "download": "הורד"
+  },
+  "dataTypes": {
+    "text": "טֶקסט",
+    "email": "אימייל",
+    "number": "מספר",
+    "phone": "טלפון",
+    "date": "תַאֲרִיך",
+    "select": "נבחר",
+    "checkbox": "תיבת סימון",
+    "file": "קבצים",
+    "true": "נָכוֹן",
+    "false": "שֶׁקֶר"
+  },
+  "routes": {
+    "clients": "לקוחות",
+    "request": "בַּקָשָׁה",
+    "settings": "הגדרות",
+    "formSettings": "הגדרות צורה",
+    "users": "משתמשים",
+    "netfree": "נטוחינם",
+    "emails": "מיילים",
+    "logs": "יומנים"
   },
   "emails": {
     "templates": "תבניות",

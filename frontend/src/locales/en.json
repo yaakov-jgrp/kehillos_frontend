@@ -10,7 +10,8 @@
     "viewMore": "View more",
     "viewLess": "View less",
     "fileViewer": "File Viewer",
-    "fileNotSupported": "File not supported"
+    "fileNotSupported": "File not supported",
+    "select": "select"
   },
   "messages": {
     "mustBeValid": "must be a valid mail",
@@ -106,6 +107,28 @@
     "enterNumber": "Enter phone number",
     "appliedFilter": "Applied filter",
     "download": "Download"
+  },
+  "dataTypes": {
+    "text": "text",
+    "email": "email",
+    "number": "number",
+    "phone": "phone",
+    "date": "date",
+    "select": "select",
+    "checkbox": "checkbox",
+    "file": "file",
+    "true": "true",
+    "false": "false"
+  },
+  "routes": {
+    "clients": "Clients",
+    "request": "Request",
+    "settings": "settings",
+    "formSettings": "formSettings",
+    "users": "users",
+    "netfree": "netfree",
+    "emails": "emails",
+    "logs": "logs"
   },
   "emails": {
     "templates": "Templates",

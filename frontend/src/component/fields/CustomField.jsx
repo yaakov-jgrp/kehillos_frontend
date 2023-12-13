@@ -95,7 +95,7 @@ function CustomField(props) {
                     onChange={onChange}
                     onBlur={onBlur}
                     disabled={disabled}
-                    defaultValue={enum_values?.choices?.filter((item) => item.id == value)[0]?.id}
+                    defaultValue={enum_values?.choices?.filter((item) => item.id == value || item.value === value)[0]?.id}
                     placeholder="Select"
                 >
                     {

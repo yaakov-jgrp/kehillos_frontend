@@ -45,7 +45,6 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netf
         control,
         setValue,
         reset,
-        watch,
         formState: { errors, dirtyFields },
         handleSubmit,
     } = useForm({
@@ -60,7 +59,12 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netf
                 let value = "";
                 switch (item?.data_type.value) {
                     case "select":
-                        value = item.enum_values.choices[0].id;
+                        value = item.enum_values.choices.filter((choice) => {
+                            if (item.defaultvalue !== "") {
+                                return choice.value === item.defaultvalue
+                            }
+                            return choice
+                        })[0].id;
                         break;
                     case "date":
                         value = "";
@@ -277,21 +281,25 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netf
                                                                 control={control}
                                                                 render={({ field: { value, onChange, onBlur } }) => {
                                                                     return (
-                                                                        <CustomField setValue={setValue} disabled={false} field={field} onChange={(e) => {
-                                                                            if (isDate) {
-                                                                                setValue(field.field_slug, dayjs(e).utc(true).toISOString(), {
-                                                                                    shouldDirty: true,
-                                                                                    shouldValidate: true
-                                                                                })
-                                                                            } else if (isFile) {
-                                                                                setValue(field.field_slug, e.target.files[0], {
-                                                                                    shouldDirty: true,
-                                                                                    shouldValidate: true
-                                                                                })
-                                                                            } else {
-                                                                                onChange(e);
-                                                                            }
-                                                                        }}
+                                                                        <CustomField
+                                                                            setValue={setValue}
+                                                                            disabled={false}
+                                                                            field={field}
+                                                                            onChange={(e) => {
+                                                                                if (isDate) {
+                                                                                    setValue(field.field_slug, dayjs(e).utc(true).toISOString(), {
+                                                                                        shouldDirty: true,
+                                                                                        shouldValidate: true
+                                                                                    })
+                                                                                } else if (isFile) {
+                                                                                    setValue(field.field_slug, e.target.files[0], {
+                                                                                        shouldDirty: true,
+                                                                                        shouldValidate: true
+                                                                                    })
+                                                                                } else {
+                                                                                    onChange(e);
+                                                                                }
+                                                                            }}
                                                                             value={value}
                                                                             onBlur={onBlur}
                                                                         />

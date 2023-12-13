@@ -2,29 +2,29 @@ import i18next from "i18next";
 import { DEFAULT_LANGUAGE } from '../../constants/index';
 import { useEffect, useState } from "react";
 
-const LanguageSelect = ({customClass}) => {
+const LanguageSelect = ({ customClass }) => {
   const [selectedLanguage, setSelectedLanguage] = useState('');
-  
+
   const setDefaultLangauage = (value) => {
     localStorage.setItem(DEFAULT_LANGUAGE, value);
     i18next.changeLanguage(value);
     setSelectedLanguage(value);
   }
 
-  useEffect(()=> {
-    if(localStorage.getItem(DEFAULT_LANGUAGE)){
+  useEffect(() => {
+    if (localStorage.getItem(DEFAULT_LANGUAGE)) {
       const defaultLanguageValue = localStorage.getItem(DEFAULT_LANGUAGE);
-      setSelectedLanguage(defaultLanguageValue);
+      setDefaultLangauage(defaultLanguageValue);
     } else {
-      setSelectedLanguage('he');
-      localStorage.setItem(DEFAULT_LANGUAGE, 'he');
+      setDefaultLangauage('he');
     }
-  },[])
+  }, [])
+
   return (
     <>
       <select onChange={(e) => setDefaultLangauage(e.target.value)} className={customClass} value={selectedLanguage}>
-        <option value="en" className={ `p-2` }>En</option>
-        <option value="he" className={ `p-2` }>עב</option>
+        <option value="en" className={`p-2`}>En</option>
+        <option value="he" className={`p-2`}>עב</option>
       </select>
     </>
   );
