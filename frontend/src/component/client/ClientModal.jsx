@@ -61,10 +61,10 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netf
                     case "select":
                         value = item.enum_values.choices.filter((choice) => {
                             if (item.defaultvalue !== "") {
-                                return choice.value === item.defaultvalue
+                                return choice.value === item.defaultvalue;
                             }
                             return choice
-                        })[0].id;
+                        })[0]?.id;
                         break;
                     case "date":
                         value = "";

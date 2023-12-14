@@ -180,6 +180,10 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     const addSelectValueHandler = (e) => {
         if (e.target.value !== "") {
             setSelectValue(e.target.value)
+            setValue("defaultvalue", e.target.value, {
+                shouldDirty: true,
+                shouldValidate: true
+            })
         }
     }
 
@@ -340,7 +344,6 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                                         <CustomCheckBox
                                                             className='mr-2'
                                                             checked={value}
-                                                            defaultChecked={value}
                                                             onChange={onChange}
                                                         />
                                                     )
@@ -358,7 +361,6 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                                     <CustomCheckBox
                                                         className='mr-2'
                                                         checked={value}
-                                                        defaultChecked={value}
                                                         onChange={onChange}
                                                     />
                                                 )}

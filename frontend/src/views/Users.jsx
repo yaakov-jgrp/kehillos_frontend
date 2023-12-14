@@ -163,8 +163,7 @@ function Users() {
                             <th className='pr-3'>
                                 <div className={` ${(i18n.dir() === 'rtl') ? 'text-right' : 'text-left'}`}>
                                     <label
-                                        className={`text-[10px] truncate md:text-[14px] text-navy-700 ml-1.5 font-medium
-                                            `}
+                                        className={`text-[10px] truncate md:text-[14px] text-navy-700 ml-1.5 font-medium`}
                                     >
                                         {t("netfree.actions")}
                                     </label>
