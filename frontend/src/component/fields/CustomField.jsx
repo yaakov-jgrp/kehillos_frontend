@@ -11,23 +11,13 @@ import en from 'react-phone-number-input/locale/en';
 import he from 'react-phone-number-input/locale/he'
 import { MdOutlineUploadFile } from "react-icons/md";
 import { useTranslation } from "react-i18next";
+import { handleNumberkeyPress } from '../../lib/CommonFunctions';
 
 function CustomField(props) {
     const { t } = useTranslation();
     const { data_type, required, enum_values, defaultvalue } = props.field
     const { onChange, onBlur, value, disabled } = props;
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-
-    const handleNumberkeyPress = (e) => {
-        if (e.key == "e") {
-            e.preventDefault();
-        } else {
-            if (data_type.value === "number" && e.key == ".") {
-                e.preventDefault();
-            }
-        }
-    }
-
 
     return (
         <>

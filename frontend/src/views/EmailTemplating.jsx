@@ -1,35 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import emailService from '../services/email'
 import AddButtonIcon from '../component/common/AddButton';
-import authService from '../services/auth';
 import SearchField from "../component/fields/SearchField";
 import Loader from '../component/common/Loader';
 import { TablePagination } from '@mui/material';
 import NoDataFound from '../component/common/NoDataFound';
-import { paginationRowOptions } from '../lib/FieldConstants';
+import { paginationRowOptions, templateTextTypes, websiteChoices } from '../lib/FieldConstants';
 import {
     MdDelete,
     MdEdit
 } from "react-icons/md";
-import UserModal from '../component/category/UserModal';
 import DeleteConfirmationModal from '../component/common/DeleteConfirmationModal';
 import { toast } from 'react-toastify';
+import TemplatingModal from '../component/email/TemplatingModal';
 
-function Users() {
+function EmailTemplating() {
     const { t, i18n } = useTranslation();
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-    const userTypes = [{
-        label: t("users.admin"),
-        value: "super_user"
-    }, {
-        label: t("users.normal"),
-        value: "normal_user"
-    }];
+    const [templatingTexts, setTemplatingTexts] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [userModal, setUserModal] = useState(false);
-    const [newUser, setNewUser] = useState(true);
-    const [editUser, setEditUser] = useState(null);
-    const [allUsers, setAllUsers] = useState([]);
+    const [templatingModal, setTemplatingModal] = useState(false);
+    const [newText, setNewText] = useState(true);
+    const [editText, setEditText] = useState(null);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(50);
     const [totalCount, setTotalCount] = useState(100);
@@ -45,7 +38,11 @@ function Users() {
         setPage(0);
     };
 
-    const fetchUsersData = async () => {
+    const searchResult = (searchBy, value) => {
+        setSearchParams((prev) => ({ ...prev, ...{ [searchBy]: value } }));
+    }
+
+    const getTemplatingHandler = async () => {
         setIsLoading(true);
         try {
             let searchValues = "";
@@ -55,35 +52,29 @@ function Users() {
                 };
             }
             const params = `?page=${page + 1}&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
-            const requestData = await authService.getUsers(params);
-            setTotalCount(requestData?.data?.count)
-            setAllUsers(requestData?.data?.data);
-            setTimeout(() => {
-                setIsLoading(false);
-            }, 500)
+            const res = await emailService.getTemplatingTexts(params);
+            setTemplatingTexts(res.data?.data);
+            setTotalCount(res?.data?.count)
+            setIsLoading(false);
         } catch (error) {
             console.log(error);
             setIsLoading(false);
         }
     }
 
-    const searchResult = (searchBy, value) => {
-        setSearchParams((prev) => ({ ...prev, ...{ [searchBy]: value } }));
-    }
-
-    const editUserHandler = (user) => {
-        setNewUser(false);
-        setEditUser(user);
-        setUserModal(true);
+    const editTextHandler = (text) => {
+        setNewText(false);
+        setEditText(text);
+        setTemplatingModal(true);
     }
 
 
-    const deleteUserHandler = async () => {
+    const deleteTextHandler = async () => {
         try {
-            const res = await authService.deleteUser(editUser?.id);
+            const res = await emailService.deleteTemplatingText(editText?.id);
             if (res.status > 200) {
                 toast.success(t("common.deleteSuccess"));
-                fetchUsersData();
+                getTemplatingHandler();
                 setConfirmationModal(false);
             }
         } catch (error) {
@@ -92,19 +83,18 @@ function Users() {
     }
 
     useEffect(() => {
-        const searchTimer = setTimeout(() => fetchUsersData(), 500)
-        return () => clearTimeout(searchTimer);
-    }, [lang, page, rowsPerPage, JSON.stringify(searchParams)])
+        getTemplatingHandler();
+    }, [lang, page, rowsPerPage, JSON.stringify(searchParams)]);
 
     return (
         <div className='w-full bg-white rounded-3xl'>
             <div className='flex justify-between py-4 px-7 font-bold text-[#2B3674]'>
-                {t('sidebar.users')}
+                {t('sidebar.templating')}
                 <div className='flex max-w-[150px]'>
                     <AddButtonIcon extra={''} onClick={() => {
-                        setUserModal(true);
-                        setNewUser(true);
-                        setEditUser(null);
+                        setTemplatingModal(true);
+                        setNewText(true);
+                        setEditText(null);
                     }} />
                 </div>
             </div>
@@ -128,36 +118,60 @@ function Users() {
                                 <SearchField
                                     variant="auth"
                                     extra="mb-2"
-                                    label={t('netfree.name')}
-                                    id="userName"
+                                    label={t('dataTypes.text')}
+                                    id="text"
                                     type="text"
                                     placeholder={t('searchbox.placeHolder')}
-                                    onChange={(e) => searchResult('name', e.target.value)}
-                                    name="name"
+                                    onChange={(e) => searchResult('text', e.target.value)}
+                                    name="text"
                                 />
                             </th>
                             <th className='pr-3'>
                                 <SearchField
                                     variant="auth"
                                     extra="mb-2"
-                                    label={t('netfree.email')}
-                                    id="userEmail"
+                                    label={t('emails.text_type')}
+                                    id="text_type"
                                     type="text"
                                     placeholder={t('searchbox.placeHolder')}
-                                    onChange={(e) => searchResult('email', e.target.value)}
-                                    name="email"
+                                    onChange={(e) => searchResult('text_type', e.target.value)}
+                                    name="text_type"
                                 />
                             </th>
                             <th className='pr-3'>
                                 <SearchField
                                     variant="auth"
                                     extra="mb-2"
-                                    label={t('users.userType')}
-                                    id="user_type"
+                                    label={t('emails.website')}
+                                    id="website"
                                     type="text"
                                     placeholder={t('searchbox.placeHolder')}
-                                    onChange={(e) => searchResult('user_type', e.target.value)}
-                                    name="user_type"
+                                    onChange={(e) => searchResult('website', e.target.value)}
+                                    name="website"
+                                />
+                            </th>
+                            <th className='pr-3'>
+                                <SearchField
+                                    variant="auth"
+                                    extra="mb-2"
+                                    label={t('emails.start_hour')}
+                                    id="start_hour"
+                                    type="text"
+                                    placeholder={t('searchbox.placeHolder')}
+                                    onChange={(e) => searchResult('start_hour', e.target.value)}
+                                    name="start_hour"
+                                />
+                            </th>
+                            <th className='pr-3'>
+                                <SearchField
+                                    variant="auth"
+                                    extra="mb-2"
+                                    label={t('emails.end_hour')}
+                                    id="end_hour"
+                                    type="text"
+                                    placeholder={t('searchbox.placeHolder')}
+                                    onChange={(e) => searchResult('end_hour', e.target.value)}
+                                    name="end_hour"
                                 />
                             </th>
                             <th className='pr-3'>
@@ -171,7 +185,7 @@ function Users() {
                             </th>
                         </tr>
                     </thead>
-                    <tbody className='[&_td]:min-w-[9rem] [&_td]:max-w-[18rem]'>
+                    <tbody className='[&_td]:min-w-[9rem] [&_td]:max-w-[18rem] [&_td]:p-1'>
                         {
                             isLoading ?
                                 <tr>
@@ -184,27 +198,35 @@ function Users() {
                                 :
                                 <>
                                     {
-                                        allUsers.length > 0 ?
+                                        templatingTexts && templatingTexts.length > 0 ?
                                             <>
                                                 {
-                                                    allUsers.map((el) => {
+                                                    templatingTexts.map((el) => {
                                                         return (
                                                             <tr className='h-[75px]' key={el.id}>
                                                                 <td>#{el.id}</td>
                                                                 <td>
-                                                                    {el.name}
+                                                                    <p className='line-clamp-4 break-words flex h-full items-center'>
+                                                                        {el.text}
+                                                                    </p>
                                                                 </td>
                                                                 <td>
-                                                                    {el.email}
+                                                                    {templateTextTypes.filter((type) => type === el.text_type)[0]}
                                                                 </td>
                                                                 <td>
-                                                                    {userTypes.filter((type) => type.value === el.user_type)[0].label}
+                                                                    {websiteChoices.filter((choice) => choice === el.website)[0]}
+                                                                </td>
+                                                                <td>
+                                                                    {el.start_hour}
+                                                                </td>
+                                                                <td>
+                                                                    {el.end_hour}
                                                                 </td>
                                                                 <td>
                                                                     <div className="h-auto w-full flex items-center justify-around">
-                                                                        <MdEdit className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => { editUserHandler(el) }} />
+                                                                        <MdEdit className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => { editTextHandler(el) }} />
                                                                         <MdDelete className="text-blueSecondary w-5 h-5 hover:cursor-pointer" onClick={() => {
-                                                                            setEditUser(el);
+                                                                            setEditText(el);
                                                                             setConfirmationModal(true);
                                                                         }} />
                                                                     </div>
@@ -213,7 +235,8 @@ function Users() {
                                                         );
                                                     })
                                                 }
-                                            </> :
+                                            </>
+                                            :
                                             <tr className='h-[75px] text-center'>
                                                 <td colSpan={6}>
                                                     <NoDataFound description={t("common.noDataFound")} />
@@ -225,35 +248,38 @@ function Users() {
                     </tbody>
                 </table>
             </div>
-            <TablePagination
-                component="div"
-                count={totalCount}
-                page={page}
-                rowsPerPageOptions={paginationRowOptions}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-
-            {userModal &&
-                <UserModal
-                    showModal={userModal}
-                    setShowModal={setUserModal}
-                    user={editUser}
-                    newUser={newUser}
-                    userTypes={userTypes}
-                    onClick={() => { fetchUsersData() }}
-                />}
             {
-                confirmationModal && editUser &&
+                templatingTexts && templatingTexts.length > 0 &&
+                <TablePagination
+                    component="div"
+                    count={totalCount}
+                    page={page}
+                    rowsPerPageOptions={paginationRowOptions}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            }
+            {
+                templatingModal &&
+                <TemplatingModal
+                    showModal={templatingModal}
+                    setShowModal={setTemplatingModal}
+                    textData={editText}
+                    newtext={newText}
+                    onClick={() => { getTemplatingHandler(); }}
+                />
+            }
+            {
+                confirmationModal && editText &&
                 <DeleteConfirmationModal
                     showModal={confirmationModal}
                     setShowModal={setConfirmationModal}
-                    onClick={() => deleteUserHandler()}
+                    onClick={() => deleteTextHandler()}
                 />
             }
         </div>
     )
 }
 
-export default Users
+export default EmailTemplating

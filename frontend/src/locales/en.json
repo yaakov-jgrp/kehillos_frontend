@@ -44,7 +44,8 @@
     "clients": "Clients",
     "details": "Details",
     "logs": "Logs",
-    "users": "Users"
+    "users": "Users",
+    "templating": "Templating"
   },
   "requests": {
     "title": "Requests",
@@ -128,7 +129,8 @@
     "users": "users",
     "netfree": "netfree",
     "emails": "emails",
-    "logs": "logs"
+    "logs": "logs",
+    "templating": "templating"
   },
   "emails": {
     "templates": "Templates",
@@ -148,7 +150,21 @@
     "deleteTemplateSuccess": "Deleted Template Successfully",
     "deleteTemplateFailed": "Deleting Template Failed",
     "duplicateTemplateSuccess": "Duplicated Template Successfully",
-    "duplicateTemplateFailed": "Duplicating Template Failed"
+    "duplicateTemplateFailed": "Duplicating Template Failed",
+    "templating": "Templating",
+    "pre_text": "Pre-text",
+    "after_text": "After-text",
+    "open_url": "Open url",
+    "open_domain": "Open domain",
+    "open_url_temporary": "Open url temporary",
+    "open_domain_temporary": "Open domain temporary",
+    "netfree_block": "Netfree block",
+    "newText": "New Template text",
+    "editText": "Edit Template text",
+    "text_type": "Text type",
+    "start_hour": "Start hour",
+    "end_hour": "End hour",
+    "website": "Website"
   },
   "netfree": {
     "categories": "Categories",

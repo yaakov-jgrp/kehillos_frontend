@@ -9,10 +9,12 @@ import {
 } from "react-icons/md";
 import { HiDuplicate } from "react-icons/hi"
 import useAlert from "../../Hooks/useAlert";
+import { useNavigate } from "react-router-dom";
 
 const ListTemplate = ({ newTemplate, onEdit }) => {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [templateList, setTemplateList] = useState([]);
   const [addEditMode, setAddEditMode] = useState(false);
@@ -124,13 +126,16 @@ const ListTemplate = ({ newTemplate, onEdit }) => {
 
   return (
     <div className="h-full w-full">
-      <div className="w-full flex justify-between gap-2 items-center [&_div]:bg-white [&_div]:px-1 [&_div]:py-1 [&_div]:rounded-2xl">
-        <div className="dark:!bg-navy-800">
-          <button type="submit" className={`w-full rounded-full py-2 px-7 text-[12px] md:text-base font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`} onClick={newTemplate}>
+      <div className="w-full flex justify-between gap-2 items-center [&_div]:px-1 [&_div]:py-1 [&_div]:rounded-2xl">
+        <div className="dark:!bg-navy-800 flex w-1/2">
+          <button type="submit" className={`w-full rounded-full py-2 mx-2 px-7 text-[12px] md:text-base font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`} onClick={newTemplate}>
             {t('emails.newTemplate')}
           </button>
+          <button type="button" className={`w-full rounded-full py-2 mx-2 px-7 text-[12px] md:text-base font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`} onClick={() => navigate("templating")}>
+            {t('emails.templating')}
+          </button>
         </div>
-        <div className='md:w-[25%]'>
+        <div className='md:w-[25%] bg-white'>
           <SearchField
             variant="templateSearch"
             extra=""

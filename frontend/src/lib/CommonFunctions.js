@@ -69,3 +69,11 @@ export const handleSort = (field, data, sortField, sortOrder, setSortOrder, setS
     });
     setData(sortedData);
 };
+
+
+
+export const handleNumberkeyPress = (e) => {
+    if (e.key == "e" || e.key == ".") {
+        e.preventDefault();
+    }
+}

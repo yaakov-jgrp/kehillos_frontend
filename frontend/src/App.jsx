@@ -45,6 +45,7 @@ import RouteGuard from "./component/common/RouteGuard";
 import { IoLogoBuffer } from "react-icons/io";
 import Logs from "./views/Logs";
 import Users from "./views/Users";
+import EmailTemplating from "./views/EmailTemplating";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -139,6 +140,13 @@ function App() {
       type: "menu",
       icon: <MdOutlineSettings className="h-6 w-6" />,
       component: <Emails />,
+    },
+    {
+      name: t('sidebar.templating'),
+      path: "settings/emails/templating",
+      type: "menu",
+      icon: <MdOutlineSettings className="h-6 w-6" />,
+      component: <EmailTemplating />,
     },
     {
       name: t('sidebar.logs'),

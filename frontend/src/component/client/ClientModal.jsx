@@ -243,7 +243,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netf
                                         </button>
                                     </div>
                                     <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
-                                        <div className="mb-6 flex w-full items-center">
+                                        <div className="mb-6 flex w-full items-start">
                                             <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
                                                 {t('netfree.netfreeProfile')}
                                             </FieldLabel>
@@ -271,7 +271,7 @@ const ClientModal = ({ showModal, setShowModal, client, newClient, onClick, netf
                                                 const isDate = DateFieldConstants.includes(field.data_type.value);
                                                 const isFile = field?.data_type?.value === "file";
                                                 return (
-                                                    <div className={`mb-6 flex w-full items-center`} key={index}>
+                                                    <div className={`mb-6 flex w-full items-start`} key={index}>
                                                         <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
                                                             {lang === 'he' ? field.field_name_language.he : field?.field_name}
                                                         </FieldLabel>

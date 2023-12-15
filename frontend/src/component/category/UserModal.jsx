@@ -21,11 +21,11 @@ function UserModal({ showModal, setShowModal, user, newUser, onClick, userTypes 
     });
 
     const schema = yup.object().shape({
-        name: yup.string().min(3, "Name must contain atleast 3 characters").required(),
-        email: yup.string().email(`Email must be a valid mail`).required(`Email is required`),
+        name: yup.string().min(3, `${t("netfree.name")} ${t("messages.mustContain")} 3 ${t("messages.characters")}`).required(`${t("netfree.name")} ${t("clients.is")} ${t("clients.required")}`),
+        email: yup.string().email(`${t("netfree.email")} ${t("messages.mustBeValid")}`).required(`${t("netfree.email")} ${t("clients.is")} ${t("clients.required")}`),
         password: yup.lazy((value) => {
             if (newUser) {
-                return yup.string().min(6, "Password must contain atleast 6 characters").required()
+                return yup.string().min(6, `${t("auth.password")} ${t("messages.mustContain")} 6 ${t("messages.characters")}`).required(`${t("auth.password")} ${t("clients.is")} ${t("clients.required")}`)
             }
             return yup.string().notRequired();
         }),
@@ -99,7 +99,7 @@ function UserModal({ showModal, setShowModal, user, newUser, onClick, userTypes 
                                         </button>
                                     </div>
                                     <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
-                                        <div className="mb-6 flex w-full items-center">
+                                        <div className="mb-6 flex w-full items-start">
                                             <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
                                                 {t('netfree.name')}
                                             </FieldLabel>
@@ -118,7 +118,7 @@ function UserModal({ showModal, setShowModal, user, newUser, onClick, userTypes 
                                                 {errors.name && <ErrorMessage message={errors.name.message} />}
                                             </div>
                                         </div>
-                                        <div className="mb-6 flex w-full items-center">
+                                        <div className="mb-6 flex w-full items-start">
                                             <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
                                                 {t('netfree.email')}
                                             </FieldLabel>
@@ -137,7 +137,7 @@ function UserModal({ showModal, setShowModal, user, newUser, onClick, userTypes 
                                                 {errors.email && <ErrorMessage message={errors.email.message} />}
                                             </div>
                                         </div>
-                                        <div className="mb-6 flex w-full items-center">
+                                        <div className="mb-6 flex w-full items-start">
                                             <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
                                                 {t('auth.password')}
                                             </FieldLabel>
@@ -156,7 +156,7 @@ function UserModal({ showModal, setShowModal, user, newUser, onClick, userTypes 
                                                 {errors.password && <ErrorMessage message={errors.password.message} />}
                                             </div>
                                         </div>
-                                        <div className="mb-6 flex w-full items-center">
+                                        <div className="mb-6 flex w-full items-start">
                                             <FieldLabel className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}>
                                                 {t('users.userType')}
                                             </FieldLabel>

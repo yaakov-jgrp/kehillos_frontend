@@ -12,7 +12,7 @@ function SearchField(props) {
     <div className={`${extra} ${(i18n.dir() === 'rtl') ? 'text-right' : 'text-left'}`}>
       {label && <label
         htmlFor={id}
-        className={`text-[10px] flex p-1 truncate md:text-[14px] text-navy-700 ${variant === "auth" ? "font-medium" : "font-bold"
+        className={`text-[10px] capitalize flex p-1 truncate md:text-[14px] text-navy-700 ${variant === "auth" ? "font-medium" : "font-bold"
           }`}
       >
         {label}

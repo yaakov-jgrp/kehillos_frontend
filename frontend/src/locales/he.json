@@ -44,7 +44,8 @@
     "clients": "לקוחות",
     "details": "פרטים",
     "logs": "יומן",
-    "users": "משתמשים"
+    "users": "משתמשים",
+    "templating": "תבנית"
   },
   "requests": {
     "title": "פניות",
@@ -128,7 +129,8 @@
     "users": "משתמשים",
     "netfree": "נטוחינם",
     "emails": "מיילים",
-    "logs": "יומנים"
+    "logs": "יומנים",
+    "templating": "תבנית"
   },
   "emails": {
     "templates": "תבניות",
@@ -148,7 +150,21 @@
     "deleteTemplateSuccess": "התבנית נמחקה בהצלחה",
     "deleteTemplateFailed": "מחיקת התבנית נכשלה",
     "duplicateTemplateSuccess": "התבנית שוכפלה בהצלחה",
-    "duplicateTemplateFailed": "שכפול התבנית נכשלה"
+    "duplicateTemplateFailed": "שכפול התבנית נכשלה",
+    "templating": "תבנית",
+    "pre_text": "אֲמַתלָה",
+    "after_text": "אחרי טקסט",
+    "open_url": "פתח כתובת אתר",
+    "open_domain": "דומיין פתוח",
+    "open_url_temporary": "פתח את כתובת האתר זמנית",
+    "open_domain_temporary": "דומיין פתוח זמני",
+    "netfree_block": "בלוק חינם נטו",
+    "newText": "טקסט תבנית חדש",
+    "editText": "ערוך טקסט של תבנית",
+    "text_type": "סוג טקסט",
+    "start_hour": "שעת התחלה",
+    "end_hour": "שעת סיום",
+    "website": "אתר אינטרנט"
   },
   "netfree": {
     "categories": "קטגוריות",
