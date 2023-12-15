@@ -13,7 +13,17 @@ export function SidebarLinks(props) {
 
   // verifies if routeName is the one active (in browser input)
   const activeRoute = (route) => {
-    return location.pathname.includes(route.path) || location.pathname.includes(route?.children?.[0]?.path) || location.pathname.includes(route?.children?.[1]?.path);
+    let isActive = false;
+    if (route?.children?.length > 0) {
+      for (const routeChild of route.children) {
+        if (location.pathname.includes(routeChild?.path)) {
+          isActive = true;
+        }
+      }
+    } else {
+      isActive = location.pathname.includes(route.path)
+    }
+    return isActive;
   };
 
   const { i18n } = useTranslation();
@@ -44,7 +54,7 @@ export function SidebarLinks(props) {
               : "font-medium text-gray-600"
               }`}
           >
-            {route.icon ? route.icon : <DashIcon />}{" "}
+            {route.icon ? route.icon : <DashIcon />}
           </span>
           <p
             className={`leading-1 mx-4 flex ${activeRoute(route) === true

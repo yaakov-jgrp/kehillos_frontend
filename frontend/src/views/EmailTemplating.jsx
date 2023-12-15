@@ -211,10 +211,10 @@ function EmailTemplating() {
                                                                     </p>
                                                                 </td>
                                                                 <td>
-                                                                    {templateTextTypes.filter((type) => type === el.text_type)[0]}
+                                                                    {t(`emails.${templateTextTypes.filter((type) => type === el.text_type)[0]}`)}
                                                                 </td>
                                                                 <td>
-                                                                    {websiteChoices.filter((choice) => choice === el.website)[0]}
+                                                                    {t(`emails.${websiteChoices.filter((choice) => choice === el.website)[0]}`)}
                                                                 </td>
                                                                 <td>
                                                                     {el.start_hour}

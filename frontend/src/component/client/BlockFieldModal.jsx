@@ -40,9 +40,9 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     const [formLoading, setFormLoading] = useState(false);
 
     const schema = block ? yup.object().shape({
-        name: yup.string().min(3, `${t("netfree.name")} ${t("messages.mustContain")} 3 ${t("messages.characters")}`).required(),
+        name: yup.string().min(3, `${t("netfree.name")} ${t("messages.mustContain")} 3 ${t("messages.characters")}`).required(`${t("netfree.name")} ${t("clients.is")} ${t("clients.required")}`),
     }) : yup.object().shape({
-        name: yup.string().min(3, `${t("netfree.name")} ${t("messages.mustContain")} 3 ${t("messages.characters")}`).required(),
+        name: yup.string().min(3, `${t("netfree.name")} ${t("messages.mustContain")} 3 ${t("messages.characters")}`).required(`${t("netfree.name")} ${t("clients.is")} ${t("clients.required")}`),
         block_id: yup.string().required(),
         data_type: yup.string().required(`${t('clients.dataType')} ${t("clients.is")} ${t("clients.required")}`),
         value: yup.string().when('data_type', {

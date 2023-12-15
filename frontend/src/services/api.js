@@ -26,12 +26,12 @@ api.interceptors.response.use((res) => {
   return res;
 }, (err) => {
   if (err.response.status === 401) {
-    const originalRequest = err.config;
-    if (err.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      api.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem(REFRESH_TOKEN_KEY);
-      return api(originalRequest);
-    }
+    // const originalRequest = err.config;
+    // if (err.response.status === 401 && !originalRequest._retry) {
+    //   originalRequest._retry = true;
+    //   api.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem(REFRESH_TOKEN_KEY);
+    //   return api(originalRequest);
+    // }
     localStorage.clear();
     window.location = '/signin'
   }
