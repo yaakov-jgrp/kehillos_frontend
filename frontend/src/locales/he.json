@@ -107,7 +107,8 @@
     "field": "שדה",
     "enterNumber": "הכנס מספר טלפון",
     "appliedFilter": "הוחל מסנן",
-    "download": "הורד"
+    "download": "הורד",
+    "sampleFormat": "פורמט לדוגמא"
   },
   "dataTypes": {
     "text": "טֶקסט",

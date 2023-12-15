@@ -107,7 +107,8 @@
     "field": "Field",
     "enterNumber": "Enter phone number",
     "appliedFilter": "Applied filter",
-    "download": "Download"
+    "download": "Download",
+    "sampleFormat": "Sample format"
   },
   "dataTypes": {
     "text": "text",

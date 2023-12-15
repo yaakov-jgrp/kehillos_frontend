@@ -224,7 +224,10 @@ const Clients = () => {
                         <FiSettings className={`rounded-full text-white  ${lang === "he" ? "ml-1" : "mr-1"} w-3 h-3 hover:cursor-pointer`} />
                         {t("clients.visibility")}
                     </label>
-                    <CsvImporter formFields={fullFormData} fetchClientsData={fetchClientsData} />
+                    <CsvImporter
+                        formFields={fullFormData}
+                        fetchClientsData={fetchClientsData}
+                    />
                     <button className={`w-full rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
                         onClick={exportClientsHandler}>
                         {t("clients.export")}
