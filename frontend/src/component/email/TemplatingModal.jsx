@@ -99,6 +99,8 @@ function TemplatingModal({
     }
   }, []);
 
+  console.log(textData);
+
   return (
     <>
       {showModal && (
@@ -200,13 +202,14 @@ function TemplatingModal({
                         <Controller
                           name="website"
                           control={control}
-                          render={({ field: { onChange, onBlur } }) => (
+                          render={({ field: { value, onChange, onBlur } }) => (
                             <Select
                               MenuProps={{
                                 sx: {
                                   maxHeight: "250px",
                                 },
                               }}
+                              value={value}
                               className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
                               onBlur={onBlur}
                               onChange={(e) => {
