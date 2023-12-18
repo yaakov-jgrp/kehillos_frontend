@@ -4,7 +4,6 @@ import clientsService from "../services/clients";
 export const errorsToastHandler = (errors) => {
     if (typeof errors === "object") {
         for (const err in errors) {
-            console.log(err)
             toast.error(errors[err]);
         }
     } else {

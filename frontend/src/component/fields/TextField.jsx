@@ -2,7 +2,18 @@
 import React from "react";
 
 function TextField(props) {
-  const { label, id, extra, placeholder, cols, rows, state, disabled, onChange, value } = props;
+  const {
+    label,
+    id,
+    extra,
+    placeholder,
+    cols,
+    rows,
+    state,
+    disabled,
+    onChange,
+    value,
+  } = props;
 
   return (
     <div className={`${extra}`}>

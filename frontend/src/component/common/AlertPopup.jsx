@@ -8,7 +8,9 @@ const AlertPopup = () => {
   if (text && type) {
     return (
       <div
-        className={`z-[9999] absolute ${i18n.dir() === 'rtl' ? 'left-[20px]' :  'right-[20px]'} bottom-[20px] px-4 py-2 text-[14px] rounded-lg shadow-md ${type}`}
+        className={`z-[9999] absolute ${
+          i18n.dir() === "rtl" ? "left-[20px]" : "right-[20px]"
+        } bottom-[20px] px-4 py-2 text-[14px] rounded-lg shadow-md ${type}`}
       >
         {text}
       </div>

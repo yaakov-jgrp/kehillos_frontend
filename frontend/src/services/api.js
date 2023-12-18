@@ -29,11 +29,13 @@ api.interceptors.response.use((res) => {
     // const originalRequest = err.config;
     // if (err.response.status === 401 && !originalRequest._retry) {
     //   originalRequest._retry = true;
-    //   api.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem(REFRESH_TOKEN_KEY);
+    //   axios.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
     //   return api(originalRequest);
     // }
     localStorage.clear();
-    window.location = '/signin'
+    if (!window.location.pathname.includes("/signin")) {
+      window.location = '/signin'
+    }
   }
   if (Object.keys(err?.response?.data?.errors).length > 0) {
     errorsToastHandler(err.response.data.errors);
