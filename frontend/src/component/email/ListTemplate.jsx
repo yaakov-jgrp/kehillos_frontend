@@ -140,7 +140,7 @@ const ListTemplate = ({ newTemplate, onEdit }) => {
   }, [lang]);
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full overflow-y-auto">
       <div className="w-full flex justify-between gap-2 items-center [&_div]:px-1 [&_div]:py-1 [&_div]:rounded-2xl">
         <div className="dark:!bg-navy-800 flex w-1/2">
           <button
