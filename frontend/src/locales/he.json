@@ -240,6 +240,7 @@
     "from": "מאת",
     "requestType": "סוג פניה",
     "requestdetail": "פרטי פניה",
+    "status": "סטָטוּס",
     "actionsDone": "פעולות שבוצעו",
     "user": "משתמש",
     "changes": "שינויים",

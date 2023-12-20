@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import SearchField from "../component/fields/SearchField";
 import requestService from "../services/request";
 import Loader from "../component/common/Loader";
-import { TablePagination } from "@mui/material";
+import { MenuItem, Select, TablePagination } from "@mui/material";
 import NoDataFound from "../component/common/NoDataFound";
 import { paginationRowOptions, searchFields } from "../lib/FieldConstants";
 import { formateDateTime, handleSort } from "../lib/CommonFunctions";
@@ -18,7 +18,7 @@ const Request = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [totalCount, setTotalCount] = useState(100);
   const [searchParams, setSearchParams] = useState(searchFields);
-
+  const [requestStatuses, setRequestStatuses] = useState(null);
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
 
@@ -41,6 +41,16 @@ const Request = () => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  const fetchRequestStatuses = async () => {
+    try {
+      const params = `?lang=${lang}`;
+      const res = await requestService.getRequestStatuses(params);
+      setRequestStatuses(res?.data?.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const fetchRequestData = async () => {
@@ -80,6 +90,21 @@ const Request = () => {
     }
     setSearchParams((prev) => ({ ...prev, ...values }));
   };
+
+  const changeStatusHandler = async (data) => {
+    try {
+      const formData = new FormData();
+      formData.append("status_id", data.status_id);
+      formData.append("email_request_id", data.email_request_id);
+      const res = await requestService.updateRequestStatus(formData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRequestStatuses();
+  }, [lang]);
 
   useEffect(() => {
     const searchTimer = setTimeout(() => fetchRequestData(), 500);
@@ -243,6 +268,34 @@ const Request = () => {
                   extra="mb-2"
                   label={
                     <p
+                      onClick={() => handleSortHandler("status")}
+                      className="flex cursor-pointer items-center justify-between w-full"
+                    >
+                      {t("searchbox.status")}
+                      {sortField === "status" ? (
+                        sortOrder === "asc" ? (
+                          <FaArrowUp className="ml-1" />
+                        ) : (
+                          <FaArrowDown className="ml-1" />
+                        )
+                      ) : (
+                        <FaArrowUp className="ml-1" />
+                      )}
+                    </p>
+                  }
+                  id="status"
+                  type="text"
+                  placeholder={t("searchbox.placeHolder")}
+                  onChange={(e) => searchResult("status", e.target.value)}
+                  name="status"
+                />
+              </th>
+              <th className="pr-3">
+                <SearchField
+                  variant="auth"
+                  extra="mb-2"
+                  label={
+                    <p
                       onClick={() => handleSortHandler("action_done")}
                       className="flex cursor-pointer items-center justify-between w-full"
                     >
@@ -322,6 +375,35 @@ const Request = () => {
                             <p className="line-clamp-4 break-words">
                               {el.text}
                             </p>
+                          </td>
+                          <td className="px-2">
+                            <Select
+                              MenuProps={{
+                                sx: {
+                                  maxHeight: "250px",
+                                },
+                              }}
+                              className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-1 text-black bg-white"
+                              onChange={(e) => {
+                                const updateData = {
+                                  status_id: e.target.value,
+                                  email_request_id: el.id,
+                                };
+                                changeStatusHandler(updateData);
+                              }}
+                              defaultValue={el?.status?.value || ""}
+                              placeholder="Select Profile"
+                            >
+                              {requestStatuses &&
+                                requestStatuses.length > 0 &&
+                                requestStatuses?.map((status, id) => {
+                                  return status ? (
+                                    <MenuItem key={id} value={status?.value}>
+                                      {status?.label}
+                                    </MenuItem>
+                                  ) : null;
+                                })}
+                            </Select>
                           </td>
                           <td className="flex justify-center gap-4 px-2">
                             <div className="bg-[#F4F7FE] px-2 py-1">

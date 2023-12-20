@@ -15,6 +15,7 @@ export const searchFields = {
     text: '',
     request_type: '',
     requested_website: '',
+    status: '',
     action_done: ''
 };
 export const paginationRowOptions = [25, 50, 100, 500];

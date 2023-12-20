@@ -235,6 +235,7 @@
     "from": "From",
     "requestType": "Request Type",
     "requestdetail": "Request Details",
+    "status": "Status",
     "actionsDone": "Actions Done",
     "user": "User",
     "changes": "Changes",
