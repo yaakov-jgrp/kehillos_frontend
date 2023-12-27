@@ -1,42 +1,26 @@
-
 import React from "react";
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import "./App.css";
 import { useTranslation } from "react-i18next";
 import i18next from "i18next";
 import SignIn from "./views/auth/SignIn";
-import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Outlet,
   Navigate,
-  useLocation,
 } from "react-router-dom";
 import { DEFAULT_LANGUAGE } from "./constants";
 import DefaultLayout from "./layout/DefaultLayout";
-// import authService from "./services/auth";
 import { ACCESS_TOKEN_KEY } from "./constants";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import * as locales from '@mui/material/locale';
-
-// Admin Imports
-// import Dashboard from "./views/Dashboard";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import * as locales from "@mui/material/locale";
 import Request from "./views/Request";
 import Emails from "./views/Emails";
-import NetfreeIcon from './assets/netfree.svg';
-import {
-  MdHome,
-  MdOutlineContactSupport,
-  MdOutlineSettings,
-  MdOutlineEmail
-  // MdBarChart,
-  // MdPerson,
-  // MdLock,
-} from "react-icons/md";
-import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2"
+import { MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
+import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
 import NetFree from "./views/NetFree";
 import Clients from "./views/Clients";
 import ClientDetails from "./views/ClientDetails";
@@ -45,48 +29,47 @@ import RouteGuard from "./component/common/RouteGuard";
 import { IoLogoBuffer } from "react-icons/io";
 import Logs from "./views/Logs";
 import Users from "./views/Users";
+import EmailTemplating from "./views/EmailTemplating";
 
 function App() {
   const { t, i18n } = useTranslation();
   document.body.dir = i18n.dir();
-  const [locale, setLocale] = React.useState('heIL');
+  const [locale, setLocale] = React.useState("heIL");
   const lang = localStorage.getItem(DEFAULT_LANGUAGE);
 
   useEffect(() => {
     if (localStorage.getItem(DEFAULT_LANGUAGE)) {
       const defaultLanguageValue = localStorage.getItem(DEFAULT_LANGUAGE);
-      if (defaultLanguageValue === 'he') {
-        document.body.dir = 'rtl'
-        i18next.changeLanguage('he');
-        setLocale("heIL")
+      if (defaultLanguageValue === "he") {
+        document.body.dir = "rtl";
+        i18next.changeLanguage("he");
+        setLocale("heIL");
       } else {
-        document.body.dir = 'ltr'
-        i18next.changeLanguage('en');
-        setLocale("enUS")
+        document.body.dir = "ltr";
+        i18next.changeLanguage("en");
+        setLocale("enUS");
       }
     } else {
-      document.body.dir = 'rtl'
-      i18next.changeLanguage('he');
-      setLocale("heIL")
+      document.body.dir = "rtl";
+      i18next.changeLanguage("he");
+      setLocale("heIL");
     }
-  }, [lang])
-
+  }, [lang]);
 
   const theme = createTheme({
     palette: {
       primary: {
-        main: '#3f51b5',
+        main: "#3f51b5",
       },
       secondary: {
-        main: '#f50057',
+        main: "#f50057",
       },
     },
   });
 
-
   const themeWithLocale = useMemo(
     () => createTheme(theme, locales[locale]),
-    [locale, theme],
+    [locale, theme]
   );
 
   const routes = [
@@ -97,51 +80,58 @@ function App() {
     //   component: <Dashboard />,
     // },
     {
-      name: t('sidebar.clients'),
+      name: t("sidebar.clients"),
       path: "clients",
       type: "menu",
       icon: <HiOutlineUserGroup className="h-6 w-6" />,
       component: <Clients />,
     },
     {
-      name: t('sidebar.users'),
+      name: t("sidebar.users"),
       path: "settings/users",
       type: "menu",
       icon: <HiOutlineUsers className="h-6 w-6" />,
       component: <Users />,
     },
     {
-      name: t('clients.clientDetails'),
+      name: t("clients.clientDetails"),
       path: "clients/:id",
       component: <ClientDetails />,
     },
     {
-      name: t('clients.clientFormSettings'),
+      name: t("clients.clientFormSettings"),
       path: "settings/formSettings",
       component: <ClientsForm />,
     },
     {
-      name: t('sidebar.request'),
+      name: t("sidebar.request"),
       path: "request",
       icon: <MdOutlineContactSupport className="h-6 w-6" />,
       component: <Request />,
     },
     {
-      name: t('sidebar.netfree'),
+      name: t("sidebar.netfree"),
       path: "settings/netfree",
       type: "menu",
       icon: <MdOutlineSettings className="h-6 w-6" />,
       component: <NetFree />,
     },
     {
-      name: t('sidebar.emails'),
+      name: t("sidebar.emails"),
       path: "settings/emails",
       type: "menu",
       icon: <MdOutlineSettings className="h-6 w-6" />,
       component: <Emails />,
     },
     {
-      name: t('sidebar.logs'),
+      name: t("sidebar.templating"),
+      path: "settings/emails/templating",
+      type: "menu",
+      icon: <MdOutlineSettings className="h-6 w-6" />,
+      component: <EmailTemplating />,
+    },
+    {
+      name: t("sidebar.logs"),
       path: "settings/logs",
       type: "menu",
       icon: <IoLogoBuffer className="h-6 w-6" />,
@@ -155,7 +145,6 @@ function App() {
     // }
   ];
 
-
   return (
     <>
       <ThemeProvider theme={themeWithLocale}>
@@ -163,21 +152,32 @@ function App() {
           <Routes>
             <Route exact path="/signin" element={<SignIn />} />
 
-            <Route element={<RouteGuard token={ACCESS_TOKEN_KEY} routeRedirect="/signin" />}>
-              <Route path="/*" element={<Navigate to={routes[0].path} replace />} />
-              {
-                routes.map((prop, key) => {
-                  return (
-                    <Route path={`/${prop.path}`} element={<DefaultLayout route={prop}>{prop.component}</DefaultLayout>} key={key} />
-                  );
-                })
+            <Route
+              element={
+                <RouteGuard token={ACCESS_TOKEN_KEY} routeRedirect="/signin" />
               }
+            >
+              <Route
+                path="/*"
+                element={<Navigate to={routes[0].path} replace />}
+              />
+              {routes.map((prop, key) => {
+                return (
+                  <Route
+                    path={`/${prop.path}`}
+                    element={
+                      <DefaultLayout route={prop}>
+                        {prop.component}
+                      </DefaultLayout>
+                    }
+                    key={key}
+                  />
+                );
+              })}
             </Route>
           </Routes>
         </Router>
-        <ToastContainer
-          autoClose={2000}
-        />
+        <ToastContainer autoClose={2000} />
       </ThemeProvider>
     </>
   );

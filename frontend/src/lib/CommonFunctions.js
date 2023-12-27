@@ -3,10 +3,8 @@ import clientsService from "../services/clients";
 
 export const errorsToastHandler = (errors) => {
     if (typeof errors === "object") {
-        for (const err of errors) {
-            for (const errMessage in err) {
-                toast.error(err[errMessage]);
-            }
+        for (const err in errors) {
+            toast.error(errors[err]);
         }
     } else {
         toast.error(errors);
@@ -70,3 +68,11 @@ export const handleSort = (field, data, sortField, sortOrder, setSortOrder, setS
     });
     setData(sortedData);
 };
+
+
+
+export const handleNumberkeyPress = (e) => {
+    if (e.key == "e" || e.key == ".") {
+        e.preventDefault();
+    }
+}

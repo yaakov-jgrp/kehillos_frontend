@@ -5,7 +5,17 @@ const getRequests = (params) => {
     .get(`/api/crm/requests/${params}`)
 }
 
+const getRequestStatuses = (params) => {
+  return api.get(`/api/crm/requests-status/${params}`)
+}
+
+const updateRequestStatus = (data) => {
+  return api.put(`/api/crm/requests/`, data)
+}
+
 const requestService = {
-  getRequests
+  getRequests,
+  getRequestStatuses,
+  updateRequestStatus
 }
 export default requestService;

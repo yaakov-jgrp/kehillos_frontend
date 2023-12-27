@@ -2,8 +2,19 @@
 import React from "react";
 
 function InputField(props) {
-  const { label, id, extra, type, placeholder, variant, state, disabled,onChange, name, value } =
-    props;
+  const {
+    label,
+    id,
+    extra,
+    type,
+    placeholder,
+    variant,
+    state,
+    disabled,
+    onChange,
+    name,
+    value,
+  } = props;
 
   return (
     <div className={`${extra} text-center`}>

@@ -79,6 +79,10 @@ const updateFilterGroup = (data) => {
     return api.put(`/api/client/filters/`, data)
 }
 
+const exportSampleFormat = () => {
+    return api.get("/api/client/export/?sample=true");
+}
+
 const clientsService = {
     getClients,
     getClient,
@@ -95,6 +99,7 @@ const clientsService = {
     getClientFilterOptions,
     createFilter,
     deleteFilter,
-    updateFilterGroup
+    updateFilterGroup,
+    exportSampleFormat
 }
 export default clientsService;

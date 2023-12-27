@@ -9,20 +9,28 @@ const Emails = () => {
   const onEdit = (templateId) => {
     setEditTemplateId(templateId);
     setShowAddEditTemplate(true);
-  }
+  };
 
   const closeAddEditView = () => {
     setEditTemplateId(null);
     setShowAddEditTemplate(false);
-  }
+  };
 
-  return(
+  return (
     <>
-      {
-        showAddEditTemplate ? <NewTemplate editableTemplateId={editTemplateId} onSave={closeAddEditView} /> : <ListTemplate onEdit={onEdit} newTemplate={() => setShowAddEditTemplate(true)} />
-      }
+      {showAddEditTemplate ? (
+        <NewTemplate
+          editableTemplateId={editTemplateId}
+          onSave={closeAddEditView}
+        />
+      ) : (
+        <ListTemplate
+          onEdit={onEdit}
+          newTemplate={() => setShowAddEditTemplate(true)}
+        />
+      )}
     </>
   );
-}
+};
 
 export default Emails;

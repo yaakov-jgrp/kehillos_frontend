@@ -10,7 +10,8 @@
     "viewMore": "View more",
     "viewLess": "View less",
     "fileViewer": "File Viewer",
-    "fileNotSupported": "File not supported"
+    "fileNotSupported": "File not supported",
+    "select": "select"
   },
   "messages": {
     "mustBeValid": "must be a valid mail",
@@ -20,7 +21,8 @@
     "one": "one",
     "value": "value",
     "andConditionsMessage": "All Conditions  ( All conditions must be met )",
-    "orConditionsMessage": "Any Conditions  ( At least one of the conditions must be met )"
+    "orConditionsMessage": "Any Conditions  ( At least one of the conditions must be met )",
+    "importClientsError": "The import data has errors. Click the below link to download the data with errors."
   },
   "auth": {
     "email": "Email",
@@ -42,7 +44,8 @@
     "clients": "Clients",
     "details": "Details",
     "logs": "Logs",
-    "users": "Users"
+    "users": "Users",
+    "templating": "Templating"
   },
   "requests": {
     "title": "Requests",
@@ -103,7 +106,32 @@
     "condition": "Condition",
     "field": "Field",
     "enterNumber": "Enter phone number",
-    "appliedFilter": "Applied filter"
+    "appliedFilter": "Applied filter",
+    "download": "Download",
+    "sampleFormat": "Sample format"
+  },
+  "dataTypes": {
+    "text": "text",
+    "email": "email",
+    "number": "number",
+    "phone": "phone",
+    "date": "date",
+    "select": "select",
+    "checkbox": "checkbox",
+    "file": "file",
+    "true": "true",
+    "false": "false"
+  },
+  "routes": {
+    "clients": "Clients",
+    "request": "Request",
+    "settings": "settings",
+    "formSettings": "formSettings",
+    "users": "users",
+    "netfree": "netfree",
+    "emails": "emails",
+    "logs": "logs",
+    "templating": "templating"
   },
   "emails": {
     "templates": "Templates",
@@ -123,7 +151,21 @@
     "deleteTemplateSuccess": "Deleted Template Successfully",
     "deleteTemplateFailed": "Deleting Template Failed",
     "duplicateTemplateSuccess": "Duplicated Template Successfully",
-    "duplicateTemplateFailed": "Duplicating Template Failed"
+    "duplicateTemplateFailed": "Duplicating Template Failed",
+    "templating": "Templating",
+    "pre_text": "Pre-text",
+    "after_text": "After-text",
+    "open_url": "Open url",
+    "open_domain": "Open domain",
+    "open_url_temporary": "Open url temporary",
+    "open_domain_temporary": "Open domain temporary",
+    "netfree_block": "Netfree block",
+    "newText": "New Template text",
+    "editText": "Edit Template text",
+    "text_type": "Text type",
+    "start_hour": "Start hour",
+    "end_hour": "End hour",
+    "website": "Website"
   },
   "netfree": {
     "categories": "Categories",
@@ -193,6 +235,7 @@
     "from": "From",
     "requestType": "Request Type",
     "requestdetail": "Request Details",
+    "status": "Status",
     "actionsDone": "Actions Done",
     "user": "User",
     "changes": "Changes",

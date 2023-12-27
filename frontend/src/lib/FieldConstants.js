@@ -15,9 +15,12 @@ export const searchFields = {
     text: '',
     request_type: '',
     requested_website: '',
+    status: '',
     action_done: ''
 };
 export const paginationRowOptions = [25, 50, 100, 500];
 export const linkTypes = ["phone", "email"];
 export const imageTypes = ["jpeg", "png", "jpg"];
 export const docTypes = ["pdf", "doc", "docx", "csv", "xls", "xlsx", "txt"];
+export const templateTextTypes = ["pre_text", "after_text"];
+export const websiteChoices = ["open_url", "open_domain", "open_url_temporary", "open_domain_temporary", "netfree_block"];

@@ -10,7 +10,8 @@
     "viewMore": "ראה עוד",
     "viewLess": "ראה פחות",
     "fileViewer": "מציג קבצים",
-    "fileNotSupported": "הקובץ אינו נתמך"
+    "fileNotSupported": "הקובץ אינו נתמך",
+    "select": "נבחר"
   },
   "messages": {
     "mustBeValid": "חייב להיות דואר חוקי",
@@ -20,7 +21,8 @@
     "one": "אחד",
     "value": "ערך",
     "andConditionsMessage": "כל התנאים (יש לעמוד בכל התנאים)",
-    "orConditionsMessage": "כל תנאי (יש לעמוד באחד מהתנאים לפחות)"
+    "orConditionsMessage": "כל תנאי (יש לעמוד באחד מהתנאים לפחות)",
+    "importClientsError": "בנתוני הייבוא ​​יש שגיאות. לחץ על הקישור למטה כדי להוריד את הנתונים עם שגיאות."
   },
   "auth": {
     "email": "אימייל",
@@ -42,7 +44,8 @@
     "clients": "לקוחות",
     "details": "פרטים",
     "logs": "יומן",
-    "users": "משתמשים"
+    "users": "משתמשים",
+    "templating": "תבנית"
   },
   "requests": {
     "title": "פניות",
@@ -103,7 +106,32 @@
     "condition": "תנאי",
     "field": "שדה",
     "enterNumber": "הכנס מספר טלפון",
-    "appliedFilter": "הוחל מסנן"
+    "appliedFilter": "הוחל מסנן",
+    "download": "הורד",
+    "sampleFormat": "פורמט לדוגמא"
+  },
+  "dataTypes": {
+    "text": "טֶקסט",
+    "email": "אימייל",
+    "number": "מספר",
+    "phone": "טלפון",
+    "date": "תַאֲרִיך",
+    "select": "נבחר",
+    "checkbox": "תיבת סימון",
+    "file": "קבצים",
+    "true": "נָכוֹן",
+    "false": "שֶׁקֶר"
+  },
+  "routes": {
+    "clients": "לקוחות",
+    "request": "בַּקָשָׁה",
+    "settings": "הגדרות",
+    "formSettings": "הגדרות צורה",
+    "users": "משתמשים",
+    "netfree": "נטוחינם",
+    "emails": "מיילים",
+    "logs": "יומנים",
+    "templating": "תבנית"
   },
   "emails": {
     "templates": "תבניות",
@@ -123,7 +151,21 @@
     "deleteTemplateSuccess": "התבנית נמחקה בהצלחה",
     "deleteTemplateFailed": "מחיקת התבנית נכשלה",
     "duplicateTemplateSuccess": "התבנית שוכפלה בהצלחה",
-    "duplicateTemplateFailed": "שכפול התבנית נכשלה"
+    "duplicateTemplateFailed": "שכפול התבנית נכשלה",
+    "templating": " תגי תבנית הקלטות תעבורה",
+    "pre_text": "טקסט לפני",
+    "after_text": "טקסט אחרי",
+    "open_url": "פתח כתובת אתר",
+    "open_domain": "פתח דומיין",
+    "open_url_temporary": "פתח כתובת אתר זמני",
+    "open_domain_temporary": "פתח דומיין אתר זמני",
+    "netfree_block": "חסום בנטפרי",
+    "newText": "טקסט תבנית חדש",
+    "editText": "ערוך טקסט של תבנית",
+    "text_type": "סוג טקסט",
+    "start_hour": "שעת התחלה",
+    "end_hour": "שעת סיום",
+    "website": "אתר אינטרנט"
   },
   "netfree": {
     "categories": "קטגוריות",
@@ -198,6 +240,7 @@
     "from": "מאת",
     "requestType": "סוג פניה",
     "requestdetail": "פרטי פניה",
+    "status": "סטָטוּס",
     "actionsDone": "פעולות שבוצעו",
     "user": "משתמש",
     "changes": "שינויים",

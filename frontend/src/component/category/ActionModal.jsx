@@ -2,32 +2,39 @@ import { useEffect, useState } from "react";
 import categoryService from "../../services/category";
 import emailService from "../../services/email";
 import { useTranslation } from "react-i18next";
-import {
-  AiTwotoneDelete,
-} from "react-icons/ai";
-import { toast } from 'react-toastify';
+import { AiTwotoneDelete } from "react-icons/ai";
+import { toast } from "react-toastify";
+import { MenuItem, Select } from "@mui/material";
 const initialSatte = {
   Admin: false,
   Client: false,
   Custom: false,
-}
-const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDefaultAction, isDefault, editActionID, setEditActionId, trafficAction, setTrafficAction }) => {
+};
+const ActionModal = ({
+  showModal,
+  setShowModal,
+  updateAction,
+  categoryId,
+  setDefaultAction,
+  isDefault,
+  editActionID,
+  setEditActionId,
+  trafficAction,
+}) => {
   const [actionsList, setActionsList] = useState([]);
   const { t } = useTranslation();
   const [templateList, setTemplateList] = useState([]);
   const [selectedAction, setSelectedAction] = useState("selectAction");
   const [timeAmount, setTimeAmount] = useState("");
   const [timePeriod, setTimePeriod] = useState("Hours");
-  const [selectedTemplate, setSelectedTemplate] = useState('selectTemplate');
+  const [selectedTemplate, setSelectedTemplate] = useState("selectTemplate");
   const [actionNeedsOtherFields, setActionNeedsOtherFields] = useState([]);
-  const [templateActions, setTemplateActions] = useState([])
   const [sendEmailTypes, setSendEmailTypes] = useState(initialSatte);
-  const [inputValues, setInputValues] = useState(['']);
+  const [inputValues, setInputValues] = useState([""]);
   const [deleteButtonsVisible, setDeleteButtonsVisible] = useState([false]);
-  // const [error, setError] = useState('')
   const notify = (error) => toast.error(error);
   const handleAddInput = () => {
-    setInputValues([...inputValues, '']);
+    setInputValues([...inputValues, ""]);
     setDeleteButtonsVisible([...deleteButtonsVisible, true]);
   };
 
@@ -50,7 +57,6 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   };
 
   const handleCheckboxChange = (event, type) => {
-
     setSendEmailTypes({
       ...sendEmailTypes,
       [type]: event.target.checked,
@@ -58,66 +64,69 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   };
 
   const getCustomValues = () => {
-    const nonEmptyValues = inputValues.filter((value) => value.trim() !== '');
-    const customEmailValue = sendEmailTypes.Custom ? nonEmptyValues.join(', ') : '';
+    const nonEmptyValues = inputValues.filter((value) => value.trim() !== "");
+    const customEmailValue = sendEmailTypes.Custom
+      ? nonEmptyValues.join(", ")
+      : "";
     return customEmailValue;
   };
 
+  const periods = [
+    { label: t("netfree.minutes"), value: "Minutes" },
+    { label: t("netfree.hours"), value: "Hours" },
+    { label: t("netfree.days"), value: "Days" },
+    { label: t("netfree.weeks"), value: "Weeks" },
+  ];
 
-  const onOptionChange = (e) => {
-    setSendEmailTypes({
-      Admin: e.target.value === 'Admin',
-      Client: e.target.value === 'Client',
-      Custom: e.target.value === 'Custom',
-    });
-  };
-
-
-  const periods = [{ label: t('netfree.minutes'), value: "Minutes" }, { label: t('netfree.hours'), value: "Hours" }, { label: t('netfree.days'), value: "Days" }, { label: t('netfree.weeks'), value: "Weeks" }];
-  const templateActionsData = [t('netfree.adminEmail'), t('netfree.clientEmail'), t('netfree.customEmail')];
   const getActionsList = async () => {
     const response = await categoryService.getActions();
     if (trafficAction) {
-      const trafficActions = response.data.data.filter((action) => action.id === 1);
+      const trafficActions = response.data.data.filter(
+        (action) => action.id === 1
+      );
       setActionsList(trafficActions);
     } else {
       setActionsList(response.data.data);
     }
-  }
+  };
 
   const getTemplates = async () => {
     const response = await emailService.getTemplates();
     setTemplateList(response.data.data);
-  }
+  };
 
   const setActionValue = (e) => {
     const actionId = e.target.value;
-    const selected = actionsList.find(el => el.id == actionId);
-    const isNeeded = selected.label.split('').filter(el => el === 'X');
+    const selected = actionsList.find((el) => el.id == actionId);
+    const isNeeded = selected.label.split("").filter((el) => el === "X");
     setActionNeedsOtherFields(isNeeded);
-    setSelectedAction(actionId)
-  }
+    setSelectedAction(actionId);
+  };
 
   const submitForm = async () => {
     let data;
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     const areEmailsValid = inputValues.every((value) => emailRegex.test(value));
-    if (selectedAction === 'selectAction') {
-      notify('Please select action!!')
+    if (selectedAction === "selectAction") {
+      notify("Please select action!!");
       return;
     }
     if (selectedAction == 1) {
-      if (selectedTemplate === 'selectTemplate') {
-        notify('Please select template!!')
+      if (selectedTemplate === "selectTemplate") {
+        notify("Please select template!!");
         return;
       }
-      if (!sendEmailTypes.Admin && !sendEmailTypes.Client && !sendEmailTypes.Custom) {
-        notify('Please select at least one action!!');
+      if (
+        !sendEmailTypes.Admin &&
+        !sendEmailTypes.Client &&
+        !sendEmailTypes.Custom
+      ) {
+        notify("Please select at least one action!!");
         return;
       }
-      if (sendEmailTypes.Custom && inputValues[0] === '') {
-        notify('Please enter email address!!')
-        return
+      if (sendEmailTypes.Custom && inputValues[0] === "") {
+        notify("Please enter email address!!");
+        return;
       }
       if (sendEmailTypes.Custom && !areEmailsValid) {
         notify("Invalid email detected.");
@@ -129,12 +138,22 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
         inputs: {
           email_to_admin: sendEmailTypes?.Admin,
           email_to_client: sendEmailTypes?.Client,
-          custom_email: getCustomValues()
+          custom_email: getCustomValues(),
         },
-        template_id: selectedTemplate
+        template_id: selectedTemplate,
       };
     } else {
-      data = { id: categoryId?.categories_id, to_add: selectedAction, inputs: selectedAction == 4 || selectedAction == 5 ? { amount: timeAmount === "" ? "1" : timeAmount, openfor: timePeriod } : {} }
+      data = {
+        id: categoryId?.categories_id,
+        to_add: selectedAction,
+        inputs:
+          selectedAction == 4 || selectedAction == 5
+            ? {
+                amount: timeAmount === "" ? "1" : timeAmount,
+                openfor: timePeriod,
+              }
+            : {},
+      };
     }
 
     if (isDefault) {
@@ -150,19 +169,18 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
     setSelectedAction("selectAction");
     setSelectedTemplate("selectTemplate");
     setActionNeedsOtherFields([]);
-    setTimeAmount('');
-    setTimePeriod('Hours');
-    setSendEmailTypes(initialSatte)
-    setInputValues([''])
-    setDeleteButtonsVisible([false])
-    setEditActionId(null)
+    setTimeAmount("");
+    setTimePeriod("Hours");
+    setSendEmailTypes(initialSatte);
+    setInputValues([""]);
+    setDeleteButtonsVisible([false]);
+    setEditActionId(null);
     setShowModal(false);
-  }
-
+  };
 
   function findPartialMatch(searchString, arr, text) {
     for (const item of arr) {
-      if (text === 'label') {
+      if (text === "label") {
         if (searchString.includes(item.label)) {
           return item.id;
         }
@@ -176,47 +194,54 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
   }
 
   const getActionUpdateValue = () => {
-
-    let obj = categoryId?.actions?.find(val => val.id === editActionID)
-    if (obj?.label.includes('Send email template') || obj?.label.includes('שלח תבנית אימייל')) {
-      const emailArray = obj?.custom_email?.split(',').map((email) => email.trim());
-      setInputValues(emailArray)
+    let obj = categoryId?.actions?.find((val) => val.id === editActionID);
+    if (
+      obj?.label.includes("Send email template") ||
+      obj?.label.includes("שלח תבנית אימייל")
+    ) {
+      const emailArray = obj?.custom_email
+        ?.split(",")
+        .map((email) => email.trim());
+      setInputValues(emailArray);
       const updatedState = {
         ...initialSatte,
         Admin: obj.email_to_admin,
         Client: obj.email_to_client,
         Custom: obj.custom_email !== "",
       };
-      setSendEmailTypes(updatedState)
-      const matchedId = findPartialMatch(obj?.label, actionsList, 'label');
-      const matchedIdTemplate = findPartialMatch(obj?.label, templateList, 'name');
-      setSelectedAction(matchedId)
-      setSelectedTemplate(matchedIdTemplate)
+      setSendEmailTypes(updatedState);
+      const matchedId = findPartialMatch(obj?.label, actionsList, "label");
+      const matchedIdTemplate = findPartialMatch(
+        obj?.label,
+        templateList,
+        "name"
+      );
+      setSelectedAction(matchedId);
+      setSelectedTemplate(matchedIdTemplate);
       setDeleteButtonsVisible([...deleteButtonsVisible, true]);
     } else {
-      setInputValues([''])
-      setSendEmailTypes(initialSatte)
+      setInputValues([""]);
+      setSendEmailTypes(initialSatte);
       setSelectedAction("selectAction");
-      setSelectedTemplate('selectTemplate')
+      setSelectedTemplate("selectTemplate");
       setDeleteButtonsVisible([false]);
     }
-  }
-
+  };
 
   useEffect(() => {
     getActionsList();
     getTemplates();
-  }, [trafficAction])
+  }, [trafficAction]);
 
   useEffect(() => {
-    getActionUpdateValue()
-  }, [categoryId, editActionID])
+    getActionUpdateValue();
+  }, [categoryId, editActionID]);
 
   useEffect(() => {
     if (!sendEmailTypes.Custom) {
-      setInputValues([''])
+      setInputValues([""]);
     }
-  }, [sendEmailTypes])
+  }, [sendEmailTypes]);
 
   return (
     <>
@@ -226,10 +251,15 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
               <div className="min-w-300px border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                  <h3 className="text-2xl font-semibold">{t('netfree.addAction')}</h3>
+                  <h3 className="text-2xl font-semibold">
+                    {t("netfree.addAction")}
+                  </h3>
                   <button
                     className="bg-transparent border-0 text-black float-right"
-                    onClick={() => { setShowModal(false); setEditActionId(null) }}
+                    onClick={() => {
+                      setShowModal(false);
+                      setEditActionId(null);
+                    }}
                   >
                     <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
                       x
@@ -239,103 +269,196 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                 <div className="relative p-6 flex-auto">
                   <div className="bg-gray-200 shadow-md rounded px-8 pt-6 pb-8 w-full">
                     <label className="block text-black text-sm font-bold mb-1">
-                      {t('netfree.actions')}
+                      {t("netfree.actions")}
                     </label>
-                    <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={(e) => setActionValue(e)} value={selectedAction} placeholder="Select Action">
-                      <option value={'selectAction'} disabled>{t('netfree.selectAction')}</option>
-                      {
-                        actionsList?.map(el => {
-                          return (
-                            el ? <option key={el.id} value={el.id}>{el.label}</option> : null
-                          );
-                        })
-                      }
-                    </select>
-                    {
-                      actionNeedsOtherFields.length >= 2 ?
-                        <>
-                          <label className="block text-black text-sm font-bold mb-1">
-                            {t('netfree.amount')}
-                          </label>
-                          <input className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black" required type="number" min={1} onChange={(e) => setTimeAmount(e.target.value)} />
-                          <label className="block text-black text-sm font-bold mb-1">
-                            {t('netfree.openfor')}
-                          </label>
-                          <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={(e) => setTimePeriod(e.target.value)} value={timePeriod} placeholder="Select period">
-                            {
-                              periods?.map((el, i) => {
-                                return (
-                                  el ? <option key={i} value={el.value}>{el.label}</option> : null
-                                );
-                              })
-                            }
-                          </select>
-                        </>
-                        : null
-                    }
-                    {
-                      selectedAction == 1 &&
+                    <Select
+                      MenuProps={{
+                        sx: {
+                          maxHeight: "250px",
+                          zIndex: 9999,
+                        },
+                      }}
+                      className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                      onChange={(e) => setActionValue(e)}
+                      value={selectedAction}
+                      placeholder="Select Action"
+                    >
+                      <MenuItem value={"selectAction"} disabled>
+                        {t("netfree.selectAction")}
+                      </MenuItem>
+                      {actionsList?.map((el) => {
+                        return el ? (
+                          <MenuItem key={el.id} value={el.id}>
+                            {el.label}
+                          </MenuItem>
+                        ) : null;
+                      })}
+                    </Select>
+                    {actionNeedsOtherFields.length >= 2 ? (
                       <>
                         <label className="block text-black text-sm font-bold mb-1">
-                          {t('netfree.template')}
+                          {t("netfree.amount")}
                         </label>
-                        <select className="shadow appearance-none border rounded outline-none w-full py-2 px-1 text-black bg-white" onChange={(e) => setSelectedTemplate(e.target.value)} value={selectedTemplate} placeholder="Select Action">
-                          <option value={'selectTemplate'} disabled>{t('netfree.selectTemplate')}</option>
-                          {
-                            templateList?.map(el => {
-                              return (
-                                el ? <option key={el.id} value={el.id}>{el.name}</option> : null
-                              );
-                            })
-                          }
-                        </select>
-                        {selectedTemplate !== 'selectTemplate' &&
+                        <input
+                          className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
+                          required
+                          type="number"
+                          min={1}
+                          onChange={(e) => setTimeAmount(e.target.value)}
+                        />
+                        <label className="block text-black text-sm font-bold mb-1">
+                          {t("netfree.openfor")}
+                        </label>
+                        <Select
+                          MenuProps={{
+                            sx: {
+                              maxHeight: "250px",
+                              zIndex: 9999,
+                            },
+                          }}
+                          className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                          onChange={(e) => setTimePeriod(e.target.value)}
+                          value={timePeriod}
+                          placeholder="Select period"
+                        >
+                          {periods?.map((el, i) => {
+                            return el ? (
+                              <MenuItem key={i} value={el.value}>
+                                {el.label}
+                              </MenuItem>
+                            ) : null;
+                          })}
+                        </Select>
+                      </>
+                    ) : null}
+                    {selectedAction == 1 && (
+                      <>
+                        <label className="block text-black text-sm font-bold mb-1">
+                          {t("netfree.template")}
+                        </label>
+                        <Select
+                          MenuProps={{
+                            sx: {
+                              maxHeight: "250px",
+                              zIndex: 9999,
+                            },
+                          }}
+                          className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                          onChange={(e) => setSelectedTemplate(e.target.value)}
+                          value={selectedTemplate}
+                          placeholder="Select Action"
+                        >
+                          <MenuItem value={"selectTemplate"} disabled>
+                            {t("netfree.selectTemplate")}
+                          </MenuItem>
+                          {templateList?.map((el) => {
+                            return el ? (
+                              <MenuItem key={el.id} value={el.id}>
+                                {el.name}
+                              </MenuItem>
+                            ) : null;
+                          })}
+                        </Select>
+                        {selectedTemplate !== "selectTemplate" && (
                           <>
-                            <div className="" style={{ display: 'grid' }}>
-                              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                            <div className="" style={{ display: "grid" }}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  gap: "10px",
+                                  marginTop: "10px",
+                                }}
+                              >
                                 <input
                                   type="checkbox"
                                   name="sendEmailTypeAdmin"
                                   checked={sendEmailTypes.Admin}
-                                  onChange={(e) => handleCheckboxChange(e, 'Admin')}
+                                  onChange={(e) =>
+                                    handleCheckboxChange(e, "Admin")
+                                  }
                                 />
-                                <label htmlFor="Admin">{t('netfree.SendtoAdmin')}</label>
+                                <label htmlFor="Admin">
+                                  {t("netfree.SendtoAdmin")}
+                                </label>
                               </div>
-                              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  gap: "10px",
+                                  marginTop: "10px",
+                                }}
+                              >
                                 <input
                                   type="checkbox"
                                   name="sendEmailTypeClient"
                                   checked={sendEmailTypes.Client}
-                                  onChange={(e) => handleCheckboxChange(e, 'Client')}
+                                  onChange={(e) =>
+                                    handleCheckboxChange(e, "Client")
+                                  }
                                 />
-                                <label htmlFor="Client">{t('netfree.SendtoClien')}</label>
+                                <label htmlFor="Client">
+                                  {t("netfree.SendtoClien")}
+                                </label>
                               </div>
-                              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  gap: "10px",
+                                  marginTop: "10px",
+                                }}
+                              >
                                 <input
                                   type="checkbox"
                                   name="sendEmailTypeCustom"
                                   checked={sendEmailTypes.Custom}
-                                  onChange={(e) => handleCheckboxChange(e, 'Custom')}
+                                  onChange={(e) =>
+                                    handleCheckboxChange(e, "Custom")
+                                  }
                                 />
-                                <label htmlFor="Custom">{t('netfree.CustomEmail')}</label>
+                                <label htmlFor="Custom">
+                                  {t("netfree.CustomEmail")}
+                                </label>
                               </div>
                             </div>
-                            {sendEmailTypes.Custom &&
-                              <div style={{ marginTop: '10px', display: 'grid', gap: '10px', justifyContent: 'center' }}>
+                            {sendEmailTypes.Custom && (
+                              <div
+                                style={{
+                                  marginTop: "10px",
+                                  display: "grid",
+                                  gap: "10px",
+                                  justifyContent: "center",
+                                }}
+                              >
                                 {inputValues.map((value, index) => (
-                                  <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                  <div
+                                    key={index}
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: "10px",
+                                    }}
+                                  >
                                     <input
                                       className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
                                       required
                                       value={value}
-                                      onChange={(e) => handleInputChange(index, e.target.value)}
-                                      placeholder={t('netfree.Enteremail')}
+                                      onChange={(e) =>
+                                        handleInputChange(index, e.target.value)
+                                      }
+                                      placeholder={t("netfree.Enteremail")}
                                     />
-                                    {deleteButtonsVisible[index] &&
-                                      <div onClick={() => handleDeleteInput(index)}>
-                                        <AiTwotoneDelete style={{ width: '20px', height: '20px' }} />
+                                    {deleteButtonsVisible[index] && (
+                                      <div
+                                        onClick={() => handleDeleteInput(index)}
+                                      >
+                                        <AiTwotoneDelete
+                                          style={{
+                                            width: "20px",
+                                            height: "20px",
+                                          }}
+                                        />
                                       </div>
-                                    }
+                                    )}
                                   </div>
                                 ))}
                                 <button
@@ -343,14 +466,14 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                                   type="button"
                                   onClick={handleAddInput}
                                 >
-                                  {t('netfree.Addmore')}
+                                  {t("netfree.Addmore")}
                                 </button>
                               </div>
-                            }
+                            )}
                           </>
-                        }
+                        )}
                       </>
-                    }
+                    )}
                   </div>
                 </div>
                 {/* <div style={{ textAlign: 'center', color: 'red' }} >
@@ -360,16 +483,19 @@ const ActionModal = ({ showModal, setShowModal, updateAction, categoryId, setDef
                   <button
                     className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
                     type="button"
-                    onClick={() => { setShowModal(false); setEditActionId(null) }}
+                    onClick={() => {
+                      setShowModal(false);
+                      setEditActionId(null);
+                    }}
                   >
-                    {t('netfree.close')}
+                    {t("netfree.close")}
                   </button>
                   <button
                     className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                     type="button"
                     onClick={submitForm}
                   >
-                    {t('netfree.save')}
+                    {t("netfree.save")}
                   </button>
                 </div>
               </div>

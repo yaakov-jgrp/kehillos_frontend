@@ -1,24 +1,31 @@
-import { useState } from "react";
 import { FiAlignJustify } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import { RiMoonFill, RiSunFill } from "react-icons/ri";
 import LanguageSelect from "./LanguageSelect";
 import { useTranslation } from "react-i18next";
 
 const Navbar = (props) => {
   const { onOpenSidenav, brandText, brandName } = props;
-
   const { t, i18n } = useTranslation();
+  const routeTextArray = brandText.split("/").map((item) => {
+    if (isNaN(Number(item))) {
+      return t(`routes.${item}`);
+    }
+    return item;
+  });
 
   return (
-    <nav className={`sticky flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d] ${i18n.dir() === 'rtl' ? 'xl:mr-3' : 'xl:ml-3'}`}>
+    <nav
+      className={`sticky flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d] ${
+        i18n.dir() === "rtl" ? "xl:mr-3" : "xl:ml-3"
+      }`}
+    >
       <div className="ms-[6px]">
         <div className="h-6 w-auto pt-1">
           <a
             className="text-sm font-normal text-navy-700 hover:underline dark:text-white dark:hover:text-white"
             href=" "
           >
-            {t('common.pages')}
+            {t("common.pages")}
             <span className="mx-1 text-sm text-navy-700 hover:text-navy-700 dark:text-white">
               {" "}
               /{" "}
@@ -28,7 +35,7 @@ const Navbar = (props) => {
             className="text-sm font-normal capitalize text-navy-700 hover:underline dark:text-white dark:hover:text-white"
             to="#"
           >
-            {brandText.split('/').join(' / ')}
+            {routeTextArray.join(" / ")}
           </Link>
         </div>
         <p className="shrink text-[28px] capitalize text-navy-700 dark:text-white">
@@ -48,7 +55,9 @@ const Navbar = (props) => {
         >
           <FiAlignJustify className="h-5 w-5" />
         </span>
-        <LanguageSelect customClass={`p-1 rounded-sm bg-white dark:!bg-navy-800 dark:text-white outline-0`} />
+        <LanguageSelect
+          customClass={`p-1 rounded-sm bg-white dark:!bg-navy-800 dark:text-white outline-0`}
+        />
       </div>
     </nav>
   );

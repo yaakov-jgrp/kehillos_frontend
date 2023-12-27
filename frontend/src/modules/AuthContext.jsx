@@ -1,9 +1,9 @@
-import { createContext, useState } from 'react';
+import { createContext, useState } from "react";
 
 const ALERT_TIME = 3500;
 const initialState = {
-  text: '',
-  type: '',
+  text: "",
+  type: "",
 };
 
 const AlertContext = createContext({
@@ -12,16 +12,16 @@ const AlertContext = createContext({
 });
 
 export const AlertProvider = ({ children }) => {
-  const [text, setText] = useState('');
-  const [type, setType] = useState('');
+  const [text, setText] = useState("");
+  const [type, setType] = useState("");
 
   const setAlert = (text, type) => {
     setText(text);
     setType(type);
 
     setTimeout(() => {
-      setText('');
-      setType('');
+      setText("");
+      setType("");
     }, ALERT_TIME);
   };
 

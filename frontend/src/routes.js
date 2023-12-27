@@ -1,23 +1,15 @@
 import React from "react";
-
-// Admin Imports
-// import Dashboard from "./views/Dashboard";
 import Request from "./views/Request";
 import Emails from "./views/Emails";
-import NetfreeIcon from './assets/netfree.svg';
 import {
-  MdHome,
   MdOutlineContactSupport,
   MdOutlineSettings,
-  MdOutlineEmail
-  // MdBarChart,
-  // MdPerson,
-  // MdLock,
 } from "react-icons/md";
 import { HiOutlineUserGroup } from "react-icons/hi2"
 import NetFree from "./views/NetFree";
 import Clients from "./views/Clients";
 import ClientDetails from "./views/ClientDetails";
+import EmailTemplating from "./views/EmailTemplating";
 
 const routes = [
   // {
@@ -63,6 +55,13 @@ const routes = [
     icon: <MdOutlineSettings className="h-6 w-6" />,
     component: <Emails />,
   },
+  {
+    name: t('sidebar.templating'),
+    path: "settings/emails/templating",
+    type: "menu",
+    icon: <MdOutlineSettings className="h-6 w-6" />,
+    component: <EmailTemplating />,
+  }
   // {
   //   name: t('sidebar.profile'),
   //   path: "profile",
