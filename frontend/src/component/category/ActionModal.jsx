@@ -124,7 +124,49 @@ const ActionModal = ({
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     const areEmailsValid = inputValues.every((value) => emailRegex.test(value));
     if (selectedAction === "selectAction") {
-      notify("Please select action!!");
+      if (isDefault) {
+        const defaultStatusData = {
+          is_default: true,
+          email_request_status: selectedStatus,
+        };
+        if (defaultStatus) {
+          const res = await categoryService.updateNetfreeStatus(
+            defaultStatusData,
+            defaultStatus?.id,
+            profile.id
+          );
+        } else {
+          const res = await categoryService.setNetfreeStatus(
+            defaultStatusData,
+            profile.id
+          );
+        }
+      } else {
+        if (categoryId?.request_status) {
+          const categoryStatusData = {
+            email_request_status: selectedStatus,
+          };
+          const res = await categoryService.updateNetfreeStatus(
+            categoryStatusData,
+            categoryId?.request_status?.id,
+            profile.id
+          );
+        } else {
+          const categoryStatusData = {
+            is_default: false,
+            category: categoryId.id,
+            email_request_status: selectedStatus,
+          };
+          const res = await categoryService.setNetfreeStatus(
+            categoryStatusData,
+            profile.id
+          );
+        }
+      }
+      setShowModal(false);
+      if (selectedStatus === "selectStatus") {
+        notify("Please select action!!");
+      }
       return;
     }
     if (selectedAction == 1) {
