@@ -10,12 +10,27 @@ const getRequestStatuses = (params) => {
 }
 
 const updateRequestStatus = (data) => {
-  return api.put(`/api/crm/requests/`, data)
+  return api.put(`/api/crm/requests/`, data);
+}
+
+const createRequestStatus = (data) => {
+  return api.post("/api/crm/requests-status/", data);
+}
+
+const updateStatus = (id, data) => {
+  return api.put(`/api/crm/requests-status/${id}/`, data);
+}
+
+const deleteStatus = (id) => {
+  return api.delete(`/api/crm/requests-status/${id}/`)
 }
 
 const requestService = {
   getRequests,
   getRequestStatuses,
-  updateRequestStatus
+  updateRequestStatus,
+  createRequestStatus,
+  updateStatus,
+  deleteStatus
 }
 export default requestService;

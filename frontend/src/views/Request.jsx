@@ -8,6 +8,7 @@ import NoDataFound from "../component/common/NoDataFound";
 import { paginationRowOptions, searchFields } from "../lib/FieldConstants";
 import { formateDateTime, handleSort } from "../lib/CommonFunctions";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+import RequestStatusModal from "../component/request/RequestStatusModal";
 
 const Request = () => {
   const { t } = useTranslation();
@@ -113,8 +114,12 @@ const Request = () => {
 
   return (
     <div className="w-full bg-white rounded-3xl">
-      <div className="flex py-4 px-7 font-bold text-[#2B3674]">
+      <div className="flex py-4 px-7 font-bold text-[#2B3674] justify-between">
         {t("requests.title")}
+        <RequestStatusModal
+          requestStatuses={requestStatuses}
+          fetchRequestStatuses={fetchRequestStatuses}
+        />
       </div>
       <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2">
         <table className="!table text-[12px] md:text-[14px] mb-3">

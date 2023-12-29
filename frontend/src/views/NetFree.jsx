@@ -40,6 +40,7 @@ const NetFree = () => {
   const [newProfile, setNewProfile] = useState(true);
   const [trafficAction, setTrafficAction] = useState(false);
   const [defaultTrafficActions, setDefaultTrafficActions] = useState([]);
+  const [defaultStatus, setDefaultStatus] = useState(null);
   const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
   moment().locale(defaultLanguageValue);
 
@@ -92,14 +93,16 @@ const NetFree = () => {
   const deleteDefaultAction = async (actionId) => {
     setIsLoading(true);
     await categoryService.deleteDefaultAction(actionId);
-    await getActionsList();
     await getDefaultTrafficActions();
     getCategoryData();
+    await getActionsList();
     setIsLoading(false);
   };
 
   const getActionsList = async () => {
     getDefaultActions().then(async () => {
+      const res = await categoryService.getDefaultStatus();
+      setDefaultStatus(res.data.data[0]);
       const response = await categoryService.getActions();
       setActionsList(response.data.data);
     });
@@ -227,10 +230,10 @@ const NetFree = () => {
       { actions: [...actionsPayload, actionId], ...data },
       params
     );
-    await getActionsList();
     await getDefaultTrafficActions();
     getCategoryData();
     setIsDefaultActionSelectOpen(false);
+    await getActionsList();
     setIsLoading(false);
   };
 
@@ -346,27 +349,33 @@ const NetFree = () => {
 
   return (
     <div className="md:h-full w-full flex-col-reverse md:flex-row flex gap-4">
-      <ActionModal
-        showModal={showActionModal}
-        setShowModal={setShowActionModal}
-        updateAction={updateAction}
-        categoryId={currentSelectedCategoryId}
-        setDefaultAction={setDefaultAction}
-        isDefault={isDefaultActionSelectOpen}
-        editActionID={editActionID}
-        setEditActionId={setEditActionId}
-        trafficAction={trafficAction}
-        setTrafficAction={setTrafficAction}
-      />
-      {profilesList && activeProfile && (
-        <ProfileModal
-          showModal={showProfileModal}
-          setShowModal={() => setShowProfileModal(!showProfileModal)}
-          profile={activeProfile}
-          newProfile={newProfile}
-          profilesList={profilesList}
-          onClick={getAllProfilesListHandler}
-        />
+      {profilesList && activeProfile && defaultStatus && (
+        <>
+          <ActionModal
+            showModal={showActionModal}
+            setShowModal={setShowActionModal}
+            updateAction={updateAction}
+            categoryId={currentSelectedCategoryId}
+            setDefaultAction={setDefaultAction}
+            isDefault={isDefaultActionSelectOpen}
+            editActionID={editActionID}
+            setEditActionId={setEditActionId}
+            trafficAction={trafficAction}
+            setTrafficAction={setTrafficAction}
+            profile={
+              profilesList.filter((item, i) => i == profileActiveIndex)[0]
+            }
+            defaultStatus={defaultStatus}
+          />
+          <ProfileModal
+            showModal={showProfileModal}
+            setShowModal={() => setShowProfileModal(!showProfileModal)}
+            profile={activeProfile}
+            newProfile={newProfile}
+            profilesList={profilesList}
+            onClick={getAllProfilesListHandler}
+          />
+        </>
       )}
       <div className="bg-white rounded-3xl overflow-x-auto overflow-y-hidden relative w-full md:w-[calc(100%-260px)]">
         <div className="m-5 px-2">
@@ -583,6 +592,7 @@ const NetFree = () => {
                           onClick={() => {
                             setTrafficAction(false);
                             enableActionUpdate(el);
+                            setIsDefaultActionSelectOpen(false);
                           }}
                         />
                       }
