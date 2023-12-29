@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { AiTwotoneDelete } from "react-icons/ai";
 import { toast } from "react-toastify";
 import { MenuItem, Select } from "@mui/material";
+import requestService from "../../services/request";
 const initialSatte = {
   Admin: false,
   Client: false,
@@ -20,18 +21,23 @@ const ActionModal = ({
   editActionID,
   setEditActionId,
   trafficAction,
+  profile,
+  defaultStatus,
 }) => {
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [actionsList, setActionsList] = useState([]);
   const { t } = useTranslation();
   const [templateList, setTemplateList] = useState([]);
   const [selectedAction, setSelectedAction] = useState("selectAction");
   const [timeAmount, setTimeAmount] = useState("");
   const [timePeriod, setTimePeriod] = useState("Hours");
+  const [selectedStatus, setSelectedStatus] = useState("selectStatus");
   const [selectedTemplate, setSelectedTemplate] = useState("selectTemplate");
   const [actionNeedsOtherFields, setActionNeedsOtherFields] = useState([]);
   const [sendEmailTypes, setSendEmailTypes] = useState(initialSatte);
   const [inputValues, setInputValues] = useState([""]);
   const [deleteButtonsVisible, setDeleteButtonsVisible] = useState([false]);
+  const [requestStatuses, setRequestStatuses] = useState([]);
   const notify = (error) => toast.error(error);
   const handleAddInput = () => {
     setInputValues([...inputValues, ""]);
@@ -87,6 +93,16 @@ const ActionModal = ({
       setActionsList(trafficActions);
     } else {
       setActionsList(response.data.data);
+    }
+  };
+
+  const getRequestStatusList = async () => {
+    try {
+      const params = `?lang=${lang}`;
+      const res = await requestService.getRequestStatuses(params);
+      setRequestStatuses(res.data.data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -147,7 +163,7 @@ const ActionModal = ({
         id: categoryId?.categories_id,
         to_add: selectedAction,
         inputs:
-          selectedAction == 4 || selectedAction == 5
+          actionNeedsOtherFields.length > 0
             ? {
                 amount: timeAmount === "" ? "1" : timeAmount,
                 openfor: timePeriod,
@@ -158,11 +174,47 @@ const ActionModal = ({
 
     if (isDefault) {
       await setDefaultAction(selectedAction, data);
+      const defaultStatusData = {
+        is_default: true,
+        email_request_status: selectedStatus,
+      };
+      if (defaultStatus) {
+        const res = await categoryService.updateNetfreeStatus(
+          defaultStatusData,
+          defaultStatus?.id,
+          profile.id
+        );
+      } else {
+        const res = await categoryService.setNetfreeStatus(
+          defaultStatusData,
+          profile.id
+        );
+      }
     } else {
       if (editActionID) {
         await updateAction(data, editActionID);
       } else {
         await updateAction(data, null);
+      }
+      if (categoryId?.request_status) {
+        const categoryStatusData = {
+          email_request_status: selectedStatus,
+        };
+        const res = await categoryService.updateNetfreeStatus(
+          categoryStatusData,
+          categoryId?.request_status?.id,
+          profile.id
+        );
+      } else {
+        const categoryStatusData = {
+          is_default: false,
+          category: categoryId.id,
+          email_request_status: selectedStatus,
+        };
+        const res = await categoryService.setNetfreeStatus(
+          categoryStatusData,
+          profile.id
+        );
       }
     }
 
@@ -231,11 +283,25 @@ const ActionModal = ({
   useEffect(() => {
     getActionsList();
     getTemplates();
+    getRequestStatusList();
   }, [trafficAction]);
 
   useEffect(() => {
     getActionUpdateValue();
-  }, [categoryId, editActionID]);
+    if (isDefault) {
+      setSelectedStatus(defaultStatus?.email_request_status?.value);
+    } else {
+      setSelectedStatus(
+        categoryId?.request_status?.email_request_status?.value ||
+          "selectStatus"
+      );
+    }
+  }, [
+    editActionID,
+    JSON.stringify(defaultStatus),
+    JSON.stringify(categoryId),
+    isDefault,
+  ]);
 
   useEffect(() => {
     if (!sendEmailTypes.Custom) {
@@ -274,7 +340,6 @@ const ActionModal = ({
                     <Select
                       MenuProps={{
                         sx: {
-                          maxHeight: "250px",
                           zIndex: 9999,
                         },
                       }}
@@ -294,6 +359,32 @@ const ActionModal = ({
                         ) : null;
                       })}
                     </Select>
+                    <label className="block text-black text-sm font-bold mb-1">
+                      {t("netfree.changeStatus")}
+                    </label>
+                    <Select
+                      MenuProps={{
+                        sx: {
+                          zIndex: 9999,
+                        },
+                      }}
+                      className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                      value={selectedStatus}
+                      placeholder="Select status"
+                    >
+                      <MenuItem value={"selectStatus"} disabled>
+                        {t("netfree.selectStatus")}
+                      </MenuItem>
+                      {requestStatuses.length > 0 &&
+                        requestStatuses?.map((el) => {
+                          return el ? (
+                            <MenuItem key={el.value} value={el.value}>
+                              {el.label}
+                            </MenuItem>
+                          ) : null;
+                        })}
+                    </Select>
                     {actionNeedsOtherFields.length >= 2 ? (
                       <>
                         <label className="block text-black text-sm font-bold mb-1">
@@ -312,7 +403,6 @@ const ActionModal = ({
                         <Select
                           MenuProps={{
                             sx: {
-                              maxHeight: "250px",
                               zIndex: 9999,
                             },
                           }}
@@ -339,7 +429,7 @@ const ActionModal = ({
                         <Select
                           MenuProps={{
                             sx: {
-                              maxHeight: "250px",
+                              maxHeight: "300px",
                               zIndex: 9999,
                             },
                           }}

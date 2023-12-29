@@ -53,7 +53,8 @@
     "$clinetName": "שם לקוח",
     "$clientEmail": "אימייל לקוח",
     "$domainRequested": "אתר מבוקש",
-    "$adminEmail": "אימייל מנהל"
+    "$adminEmail": "אימייל מנהל",
+    "status": "סטָטוּס"
   },
   "logs": {
     "old": "ערך ישן",
@@ -152,14 +153,14 @@
     "deleteTemplateFailed": "מחיקת התבנית נכשלה",
     "duplicateTemplateSuccess": "התבנית שוכפלה בהצלחה",
     "duplicateTemplateFailed": "שכפול התבנית נכשלה",
-    "templating": " תגי תבנית הקלטות תעבורה",
-    "pre_text": "טקסט לפני",
-    "after_text": "טקסט אחרי",
+    "templating": "תבנית",
+    "pre_text": "אֲמַתלָה",
+    "after_text": "אחרי טקסט",
     "open_url": "פתח כתובת אתר",
-    "open_domain": "פתח דומיין",
-    "open_url_temporary": "פתח כתובת אתר זמני",
-    "open_domain_temporary": "פתח דומיין אתר זמני",
-    "netfree_block": "חסום בנטפרי",
+    "open_domain": "דומיין פתוח",
+    "open_url_temporary": "פתח את כתובת האתר זמנית",
+    "open_domain_temporary": "דומיין פתוח זמני",
+    "netfree_block": "בלוק חינם נטו",
     "newText": "טקסט תבנית חדש",
     "editText": "ערוך טקסט של תבנית",
     "text_type": "סוג טקסט",
@@ -225,7 +226,9 @@
     "clientActions": "פעולות הלקוח",
     "buyerReviewNotification": "הודעות ביקורת קונה",
     "addUser": "הוסף משתמש",
-    "editUser": "ערוך משתמש"
+    "editUser": "ערוך משתמש",
+    "selectStatus": "בחר סטטוס",
+    "changeStatus": "לשנות סטטוס"
   },
   "searchbox": {
     "placeHolder": "חיפוש",

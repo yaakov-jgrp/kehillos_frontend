@@ -53,7 +53,8 @@
     "$clinetName": "$client_name",
     "$clientEmail": "$client_email",
     "$domainRequested": "$domain_requested",
-    "$adminEmail": "$admin_email"
+    "$adminEmail": "$admin_email",
+    "status": "Status"
   },
   "logs": {
     "old": "Old",
@@ -220,7 +221,9 @@
     "clientActions": "Client Actions",
     "buyerReviewNotification": "Buyer Review Notifications",
     "addUser": "Add User",
-    "editUser": "Edit User"
+    "editUser": "Edit User",
+    "selectStatus": "Select status",
+    "changeStatus": "Change Status"
   },
   "searchbox": {
     "placeHolder": "Search",

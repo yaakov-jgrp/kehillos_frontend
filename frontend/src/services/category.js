@@ -29,6 +29,12 @@ const getDefaultAction = () => {
   return api.get(`/api/crm/actions/?get_default=true&lang=${lang}&profile=${filterProfileID ? filterProfileID : "1"}`);
 };
 
+const getDefaultStatus = () => {
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
+  return api.get(`api/crm/actions/?get_default_request_status=true&lang=${lang}&profile=${filterProfileID ? filterProfileID : "1"}`)
+}
+
 const getDefaultTrafficActions = () => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
@@ -83,6 +89,14 @@ const duplicateProfile = (data) => {
   return api.post("/api/crm/netfree-categories-profile-clone/", data);
 }
 
+const setNetfreeStatus = (data, profileID) => {
+  return api.post(`/api/crm/category-request-status/?profile=${profileID}`, data);
+}
+
+const updateNetfreeStatus = (data, statusId, profileID) => {
+  return api.put(`/api/crm/category-request-status/${statusId}/?profile=${profileID}`, data);
+}
+
 const categoryService = {
   getCategories,
   getActions,
@@ -99,6 +113,9 @@ const categoryService = {
   getDefaultTrafficActions,
   deleteDefaultAction,
   deleteProfile,
-  duplicateProfile
+  duplicateProfile,
+  setNetfreeStatus,
+  updateNetfreeStatus,
+  getDefaultStatus
 };
 export default categoryService;
