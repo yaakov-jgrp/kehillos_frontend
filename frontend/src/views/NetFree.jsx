@@ -349,7 +349,7 @@ const NetFree = () => {
 
   return (
     <div className="md:h-full w-full flex-col-reverse md:flex-row flex gap-4">
-      {profilesList && activeProfile && defaultStatus.length && (
+      {profilesList && activeProfile && (
         <>
           <ActionModal
             showModal={showActionModal}
