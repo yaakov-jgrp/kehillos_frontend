@@ -23,6 +23,8 @@ const ActionModal = ({
   trafficAction,
   profile,
   defaultStatus,
+  getDefaultTrafficActions,
+  getCategoryData,
 }) => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [actionsList, setActionsList] = useState([]);
@@ -119,54 +121,32 @@ const ActionModal = ({
     setSelectedAction(actionId);
   };
 
+  const statusUpdateHandler = async (type, data, id) => {
+    const isStatusChange = actionsList.filter(
+      (el) => el.id == selectedAction
+    )[0]?.is_request_status;
+    if (!isStatusChange) {
+      return;
+    }
+    if (type === "new") {
+      const res = await categoryService.setNetfreeStatus(data, profile.id);
+    } else {
+      const res = await categoryService.updateNetfreeStatus(
+        data,
+        id,
+        profile.id
+      );
+    }
+    getDefaultTrafficActions();
+    getCategoryData();
+  };
+
   const submitForm = async () => {
     let data;
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     const areEmailsValid = inputValues.every((value) => emailRegex.test(value));
     if (selectedAction === "selectAction") {
-      if (isDefault) {
-        const defaultStatusData = {
-          is_default: true,
-          email_request_status: selectedStatus,
-        };
-        if (defaultStatus) {
-          const res = await categoryService.updateNetfreeStatus(
-            defaultStatusData,
-            defaultStatus?.id,
-            profile.id
-          );
-        } else {
-          const res = await categoryService.setNetfreeStatus(
-            defaultStatusData,
-            profile.id
-          );
-        }
-      } else {
-        if (categoryId?.request_status) {
-          const categoryStatusData = {
-            email_request_status: selectedStatus,
-          };
-          const res = await categoryService.updateNetfreeStatus(
-            categoryStatusData,
-            categoryId?.request_status?.id,
-            profile.id
-          );
-        } else {
-          const categoryStatusData = {
-            is_default: false,
-            category: categoryId.id,
-            email_request_status: selectedStatus,
-          };
-          const res = await categoryService.setNetfreeStatus(
-            categoryStatusData,
-            profile.id
-          );
-        }
-      }
-      setShowModal(false);
-      if (selectedStatus === "selectStatus") {
-        notify("Please select action!!");
-      }
+      notify("Please select action!!");
       return;
     }
     if (selectedAction == 1) {
@@ -213,39 +193,42 @@ const ActionModal = ({
             : {},
       };
     }
-
     if (isDefault) {
-      await setDefaultAction(selectedAction, data);
+      if (
+        !actionsList.filter((el) => el.id == selectedAction)[0]
+          ?.is_request_status
+      ) {
+        await setDefaultAction(selectedAction, data);
+      }
       const defaultStatusData = {
         is_default: true,
         email_request_status: selectedStatus,
       };
       if (defaultStatus) {
-        const res = await categoryService.updateNetfreeStatus(
-          defaultStatusData,
-          defaultStatus?.id,
-          profile.id
-        );
+        statusUpdateHandler("update", defaultStatusData, defaultStatus?.id);
       } else {
-        const res = await categoryService.setNetfreeStatus(
-          defaultStatusData,
-          profile.id
-        );
+        statusUpdateHandler("new", defaultStatusData);
       }
     } else {
-      if (editActionID) {
-        await updateAction(data, editActionID);
-      } else {
-        await updateAction(data, null);
+      if (
+        !actionsList.filter((el) => el.id == selectedAction)[0]
+          ?.is_request_status
+      ) {
+        if (editActionID) {
+          await updateAction(data, editActionID);
+        } else {
+          await updateAction(data, null);
+        }
       }
+
       if (categoryId?.request_status) {
         const categoryStatusData = {
           email_request_status: selectedStatus,
         };
-        const res = await categoryService.updateNetfreeStatus(
+        statusUpdateHandler(
+          "update",
           categoryStatusData,
-          categoryId?.request_status?.id,
-          profile.id
+          categoryId?.request_status?.id
         );
       } else {
         const categoryStatusData = {
@@ -253,10 +236,7 @@ const ActionModal = ({
           category: categoryId.id,
           email_request_status: selectedStatus,
         };
-        const res = await categoryService.setNetfreeStatus(
-          categoryStatusData,
-          profile.id
-        );
+        statusUpdateHandler("new", categoryStatusData);
       }
     }
 
@@ -401,32 +381,37 @@ const ActionModal = ({
                         ) : null;
                       })}
                     </Select>
-                    <label className="block text-black text-sm font-bold mb-1">
-                      {t("netfree.changeStatus")}
-                    </label>
-                    <Select
-                      MenuProps={{
-                        sx: {
-                          zIndex: 9999,
-                        },
-                      }}
-                      className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                      onChange={(e) => setSelectedStatus(e.target.value)}
-                      value={selectedStatus}
-                      placeholder="Select status"
-                    >
-                      <MenuItem value={"selectStatus"} disabled>
-                        {t("netfree.selectStatus")}
-                      </MenuItem>
-                      {requestStatuses.length > 0 &&
-                        requestStatuses?.map((el) => {
-                          return el ? (
-                            <MenuItem key={el.value} value={el.value}>
-                              {el.label}
-                            </MenuItem>
-                          ) : null;
-                        })}
-                    </Select>
+                    {actionsList.filter((el) => el.id == selectedAction)[0]
+                      ?.is_request_status && (
+                      <>
+                        <label className="block text-black text-sm font-bold mb-1">
+                          {t("netfree.changeStatus")}
+                        </label>
+                        <Select
+                          MenuProps={{
+                            sx: {
+                              zIndex: 9999,
+                            },
+                          }}
+                          className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                          onChange={(e) => setSelectedStatus(e.target.value)}
+                          value={selectedStatus}
+                          placeholder="Select status"
+                        >
+                          <MenuItem value={"selectStatus"} disabled>
+                            {t("netfree.selectStatus")}
+                          </MenuItem>
+                          {requestStatuses.length > 0 &&
+                            requestStatuses?.map((el) => {
+                              return el ? (
+                                <MenuItem key={el.value} value={el.value}>
+                                  {el.label}
+                                </MenuItem>
+                              ) : null;
+                            })}
+                        </Select>
+                      </>
+                    )}
                     {actionNeedsOtherFields.length >= 2 ? (
                       <>
                         <label className="block text-black text-sm font-bold mb-1">

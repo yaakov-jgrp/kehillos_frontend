@@ -362,6 +362,8 @@ const NetFree = () => {
             setEditActionId={setEditActionId}
             trafficAction={trafficAction}
             setTrafficAction={setTrafficAction}
+            getDefaultTrafficActions={getDefaultTrafficActions}
+            getCategoryData={getCategoryData}
             profile={
               profilesList.filter((item, i) => i == profileActiveIndex)[0]
             }
