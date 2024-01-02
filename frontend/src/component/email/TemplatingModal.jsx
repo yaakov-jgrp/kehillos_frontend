@@ -1,15 +1,26 @@
+// React imports
 import React, { useEffect, useState } from "react";
+
+// UI Imports
+import { MenuItem, Select } from "@mui/material";
+
+// UI Components Imports
+import ErrorMessage from "../common/ErrorMessage";
+import FieldLabel from "../fields/FormLabel";
+import CustomCheckBox from "../fields/checkbox";
+
+// Third part Imports
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import ErrorMessage from "../common/ErrorMessage";
-import FieldLabel from "../fields/FormLabel";
+
+// API services
+import emailService from "../../services/email";
+
+// Utils imports
 import { templateTextTypes, websiteChoices } from "../../lib/FieldConstants";
 import { handleNumberkeyPress } from "../../lib/CommonFunctions";
-import CustomCheckBox from "../fields/checkbox";
-import emailService from "../../services/email";
-import { MenuItem, Select } from "@mui/material";
 
 function TemplatingModal({
   showModal,

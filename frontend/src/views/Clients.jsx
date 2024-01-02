@@ -1,29 +1,42 @@
+// React imports
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+
+// UI Imports
+import { TablePagination } from "@mui/material";
+
+// UI Components Imports
 import Loader from "../component/common/Loader";
-import clientsService from "../services/clients";
 import AddButtonIcon from "../component/common/AddButton";
-import categoryService from "../services/category";
 import ClientModal from "../component/client/ClientModal";
 import CsvImporter from "../component/client/CsvImporter";
-import { FiSettings } from "react-icons/fi";
+import DisplayFieldsModal from "../component/client/DisplayFieldsModal";
+import SearchField from "../component/fields/SearchField";
+import FilterModal from "../component/client/FilterModal";
+import NoDataFound from "../component/common/NoDataFound";
+import CustomField from "../component/fields/CustomField";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import DisplayFieldsModal from "../component/client/DisplayFieldsModal";
+
+// API services
+import clientsService from "../services/clients";
+import categoryService from "../services/category";
+
+// Icon imports
+import { FiSettings } from "react-icons/fi";
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+
+// Utils imports
+import { handleSort } from "../lib/CommonFunctions";
 import {
   NumberFieldConstants,
   dateRegex,
   linkTypes,
   paginationRowOptions,
 } from "../lib/FieldConstants";
-import SearchField from "../component/fields/SearchField";
-import { TablePagination } from "@mui/material";
-import FilterModal from "../component/client/FilterModal";
-import NoDataFound from "../component/common/NoDataFound";
-import { FaArrowUp, FaArrowDown } from "react-icons/fa";
-import { handleSort } from "../lib/CommonFunctions";
-import CustomField from "../component/fields/CustomField";
 
 const Clients = () => {
   const { t } = useTranslation();

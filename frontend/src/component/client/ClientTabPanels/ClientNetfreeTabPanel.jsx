@@ -1,11 +1,22 @@
-import { Box, MenuItem, Select } from "@mui/material";
+// React imports
 import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
+
+// UI Imports
+import { Box, MenuItem, Select } from "@mui/material";
+
+// UI Components Imports
 import Loader from "../../common/Loader";
 import FieldLabel from "../../fields/FormLabel";
 import EditButtonIcon from "../../common/EditButton";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
+
+// API services
 import clientsService from "../../../services/clients";
+
+// Utils imports
 import { errorsToastHandler } from "../../../lib/CommonFunctions";
 
 function ClientNetfreeTabPanel(props) {

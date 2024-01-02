@@ -1,16 +1,29 @@
+// React imports
 import React, { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+
+// UI Imports
+import { TablePagination } from "@mui/material";
+
+// UI Components Imports
 import AddButtonIcon from "../component/common/AddButton";
-import authService from "../services/auth";
 import SearchField from "../component/fields/SearchField";
 import Loader from "../component/common/Loader";
-import { TablePagination } from "@mui/material";
 import NoDataFound from "../component/common/NoDataFound";
-import { paginationRowOptions } from "../lib/FieldConstants";
-import { MdDelete, MdEdit } from "react-icons/md";
 import UserModal from "../component/category/UserModal";
 import DeleteConfirmationModal from "../component/common/DeleteConfirmationModal";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+
+// API services
+import authService from "../services/auth";
+
+// Icon imports
+import { MdDelete, MdEdit } from "react-icons/md";
+
+// Utils imports
+import { paginationRowOptions } from "../lib/FieldConstants";
 
 function Users() {
   const { t, i18n } = useTranslation();

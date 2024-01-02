@@ -1,8 +1,13 @@
+// React imports
 import React, { useEffect } from "react";
+
+// Third part Imports
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+
+// API services
 import categoryService from "../../services/category";
 
 const ProfileModal = ({

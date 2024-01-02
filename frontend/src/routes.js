@@ -1,15 +1,20 @@
+// React imports
 import React from "react";
+
+// UI Components Imports
 import Request from "./views/Request";
 import Emails from "./views/Emails";
+import NetFree from "./views/NetFree";
+import Clients from "./views/Clients";
+import ClientDetails from "./views/ClientDetails";
+import EmailTemplating from "./views/EmailTemplating";
+
+// Icon imports
 import {
   MdOutlineContactSupport,
   MdOutlineSettings,
 } from "react-icons/md";
 import { HiOutlineUserGroup } from "react-icons/hi2"
-import NetFree from "./views/NetFree";
-import Clients from "./views/Clients";
-import ClientDetails from "./views/ClientDetails";
-import EmailTemplating from "./views/EmailTemplating";
 
 const routes = [
   // {

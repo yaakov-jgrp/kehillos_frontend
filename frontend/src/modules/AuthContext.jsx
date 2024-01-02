@@ -1,3 +1,4 @@
+// React imports
 import { createContext, useState } from "react";
 
 const ALERT_TIME = 3500;

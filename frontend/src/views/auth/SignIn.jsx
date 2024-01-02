@@ -1,10 +1,21 @@
-import InputField from "../../component/fields/InputField";
-import { useNavigate } from "react-router-dom";
+// React imports
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+
+// UI Components Imports
+import InputField from "../../component/fields/InputField";
 import LanguageSelect from "../../component/common/LanguageSelect";
+
+// Third part Imports
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+// API services
 import authService from "../../services/auth";
+
+// Utils imports
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "../../constants/index";
+
+// Custom hooks imports
 import useAlert from "../../Hooks/useAlert";
 
 export default function SignIn() {

@@ -1,4 +1,7 @@
+// React imports
 import React from "react";
+
+// Third part Imports
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 function RouteGuard({ token, routeRedirect }) {

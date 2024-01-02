@@ -1,4 +1,7 @@
+// React imports
 import React from "react";
+
+// Third part Imports
 import { useTranslation } from "react-i18next";
 
 function DeleteConfirmationModal({ showModal, setShowModal, onClick }) {

@@ -1,20 +1,33 @@
+// React imports
 import React, { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import emailService from "../services/email";
+
+// UI Imports
+import { TablePagination } from "@mui/material";
+
+// UI Components Imports
 import AddButtonIcon from "../component/common/AddButton";
 import SearchField from "../component/fields/SearchField";
 import Loader from "../component/common/Loader";
-import { TablePagination } from "@mui/material";
 import NoDataFound from "../component/common/NoDataFound";
+import DeleteConfirmationModal from "../component/common/DeleteConfirmationModal";
+import TemplatingModal from "../component/email/TemplatingModal";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+
+// API services
+import emailService from "../services/email";
+
+// Icon imports
+import { MdDelete, MdEdit } from "react-icons/md";
+
+// Utils imports
 import {
   paginationRowOptions,
   templateTextTypes,
   websiteChoices,
 } from "../lib/FieldConstants";
-import { MdDelete, MdEdit } from "react-icons/md";
-import DeleteConfirmationModal from "../component/common/DeleteConfirmationModal";
-import { toast } from "react-toastify";
-import TemplatingModal from "../component/email/TemplatingModal";
 
 function EmailTemplating() {
   const { t, i18n } = useTranslation();

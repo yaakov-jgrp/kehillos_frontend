@@ -1,19 +1,32 @@
+// React imports
 import React, { useEffect, useState } from "react";
+
+// UI Imports
+import { MenuItem, Select } from "@mui/material";
+
+// UI Components Imports
+import ErrorMessage from "../common/ErrorMessage";
+import CustomCheckBox from "../fields/checkbox";
+import Loader from "../common/Loader";
+
+// Third part Imports
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import ErrorMessage from "../common/ErrorMessage";
+
+// API services
 import clientsService from "../../services/clients";
+
+// Icon imports
+import { MdCancel } from "react-icons/md";
+
+// Utils imports
 import {
   BlockFieldCheckValues,
   checkBoxValues,
   dataTypes,
 } from "../../lib/FieldConstants";
-import { MdCancel } from "react-icons/md";
-import CustomCheckBox from "../fields/checkbox";
-import Loader from "../common/Loader";
-import { MenuItem, Select } from "@mui/material";
 
 function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
   const { t } = useTranslation();

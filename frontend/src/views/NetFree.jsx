@@ -1,18 +1,26 @@
-import { useTranslation } from "react-i18next";
+// React imports
+import { useEffect, useState } from "react";
+
+// UI Components Imports
 import SearchField from "../component/fields/SearchField";
 import ToggleSwitch from "../component/common/ToggleSwitch";
 import AddButtonIcon from "../component/common/AddButton";
-import categoryService from "../services/category";
-import { useEffect, useState } from "react";
-import { MdExpandMore } from "react-icons/md";
-import Loader from "../component/common/Loader";
-import { debounce } from "lodash";
 import ActionModal from "../component/category/ActionModal";
 import EditButtonIcon from "../component/common/EditButton";
-import moment from "moment";
-import ProfileModal from "../component/category/ProfileModal";
-import "moment/locale/he";
 import TooltipButtonIcon from "../component/common/TootltipButton";
+import ProfileModal from "../component/category/ProfileModal";
+import Loader from "../component/common/Loader";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
+import { debounce } from "lodash";
+
+// API services
+import categoryService from "../services/category";
+
+// Icon imports
+import { MdExpandMore } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import { HiDuplicate } from "react-icons/hi";
 
@@ -42,7 +50,6 @@ const NetFree = () => {
   const [defaultTrafficActions, setDefaultTrafficActions] = useState([]);
   const [defaultStatus, setDefaultStatus] = useState(null);
   const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
-  moment().locale(defaultLanguageValue);
 
   const setResponseDataToState = (res) => {
     const response = res.data.data.map((el) => {
@@ -439,7 +446,9 @@ const NetFree = () => {
               <p className="text-xs text-gray-600">
                 {t("netfree.lastUpdatedAt") +
                   " " +
-                  moment(activeProfile.updated_at).format("lll")}
+                  dayjs(activeProfile.updated_at).format(
+                    "MMM DD, YYYY HH:mm A"
+                  )}
               </p>
             </div>
             <div className="h-auto flex flex-col justify-between">

@@ -1,18 +1,29 @@
+// React imports
 import React, { useEffect, useState } from "react";
+
+// UI Components Imports
 import EditButtonIcon from "../common/EditButton";
-import { DateFieldConstants, linkTypes } from "../../lib/FieldConstants";
+import CustomField from "../fields/CustomField";
+import ErrorMessage from "../common/ErrorMessage";
+import FileViewModal from "../common/FileViewModal";
+
+// Third part Imports
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
-import CustomField from "../fields/CustomField";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import ErrorMessage from "../common/ErrorMessage";
-import clientsService from "../../services/clients";
-import { errorsToastHandler } from "../../lib/CommonFunctions";
 import utc from "dayjs/plugin/utc";
+
+// API services
+import clientsService from "../../services/clients";
+
+// Icon imports
 import { FaEye } from "react-icons/fa";
-import FileViewModal from "../common/FileViewModal";
+
+// Utils imports
+import { DateFieldConstants, linkTypes } from "../../lib/FieldConstants";
+import { errorsToastHandler } from "../../lib/CommonFunctions";
 
 function IndividualEditField({ field, clientData, setClientData }) {
   const { t } = useTranslation();

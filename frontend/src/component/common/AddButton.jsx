@@ -1,4 +1,7 @@
+// React imports
 import React from "react";
+
+// Icon imports
 import { BsPlusCircleFill } from "react-icons/bs";
 
 const AddButtonIcon = (props) => {

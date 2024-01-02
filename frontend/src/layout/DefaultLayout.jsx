@@ -1,9 +1,13 @@
+// React imports
 import React, { useEffect, useState } from "react";
-import Sidebar from "../component/common/Sidebar";
-import { useTranslation } from "react-i18next";
-import Navbar from "../component/common/Navbar";
 
+// UI Components Imports
+import Sidebar from "../component/common/Sidebar";
+import Navbar from "../component/common/Navbar";
 import AlertPopup from "../component/common/AlertPopup";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
 
 const DefaultLayout = ({ children, route }) => {
   const [open, setOpen] = useState(true);

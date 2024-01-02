@@ -1,12 +1,21 @@
+// React imports
 import React, { useEffect, useState } from "react";
+
+// UI Imports
+import { MenuItem, Select } from "@mui/material";
+
+// UI Components Imports
+import ErrorMessage from "../common/ErrorMessage";
+import FieldLabel from "../fields/FormLabel";
+
+// Third part Imports
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import ErrorMessage from "../common/ErrorMessage";
-import FieldLabel from "../fields/FormLabel";
+
+// API services
 import authService from "../../services/auth";
-import { MenuItem, Select } from "@mui/material";
 
 function UserModal({
   showModal,

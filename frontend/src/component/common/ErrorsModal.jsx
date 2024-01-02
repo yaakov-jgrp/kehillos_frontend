@@ -1,6 +1,11 @@
+// React imports
 import React from "react";
-import { useTranslation } from "react-i18next";
+
+// UI Components Imports
 import ErrorMessage from "../common/ErrorMessage";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
 
 const ErrorsModal = ({ errors, showModal, setShowModal }) => {
   const { t } = useTranslation();

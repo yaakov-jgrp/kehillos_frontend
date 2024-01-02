@@ -1,7 +1,14 @@
+// React imports
 import React from "react";
-import { useTranslation } from "react-i18next";
+
+// UI Components Imports
 import ToggleSwitch from "../common/ToggleSwitch";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
+
+// API services
 import clientsService from "../../services/clients";
 
 const DisplayFieldsModal = ({

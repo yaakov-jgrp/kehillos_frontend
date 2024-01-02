@@ -1,13 +1,25 @@
-import { useTranslation } from "react-i18next";
-import SearchField from "../fields/SearchField";
-import emailService from "../../services/email";
+// React imports
 import { useEffect, useState } from "react";
+
+// UI Components Imports
+import SearchField from "../fields/SearchField";
 import Loader from "../common/Loader";
-import { MdDelete, MdEdit } from "react-icons/md";
-import { HiDuplicate } from "react-icons/hi";
-import useAlert from "../../Hooks/useAlert";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
+// API services
+import emailService from "../../services/email";
+
+// Icon imports
+import { MdDelete, MdEdit } from "react-icons/md";
+import { HiDuplicate } from "react-icons/hi";
+
+// Custom hooks imports
+import useAlert from "../../Hooks/useAlert";
+
+// initial state data
 const smtpFormObject = {
   email: "",
   password: "",

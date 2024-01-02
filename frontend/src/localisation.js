@@ -1,5 +1,8 @@
+// Third part Imports
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+
+// Utils imports
 import translationsEN from "./locales/en.json";
 import translationsHE from "./locales/he.json";
 

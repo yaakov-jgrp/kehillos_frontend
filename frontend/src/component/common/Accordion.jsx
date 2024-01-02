@@ -1,4 +1,7 @@
+// React imports
 import React from "react";
+
+// UI Imports
 import {
   AccordionItem,
   AccordionButton,
@@ -6,6 +9,8 @@ import {
   AccordionIcon,
   AccordionPanel,
 } from "@chakra-ui/react";
+
+// UI Components Imports
 import AddButtonIcon from "./AddButton";
 
 function CustomAccordion({ title, children, onClick, showAddButton }) {

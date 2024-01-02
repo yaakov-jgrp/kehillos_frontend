@@ -1,5 +1,7 @@
-import axios from 'axios'
-import.meta.env.VITE_API_URL
+// Third part Imports
+import axios from 'axios';
+
+// Utils imports
 import { ACCESS_TOKEN_KEY } from '../constants';
 import { errorsToastHandler } from '../lib/CommonFunctions';
 

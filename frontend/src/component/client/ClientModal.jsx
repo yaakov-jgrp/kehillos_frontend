@@ -1,18 +1,29 @@
+// React imports
 import React, { useEffect, useState } from "react";
+
+// UI Imports
+import { MenuItem, Select } from "@mui/material";
+
+// UI Components Imports
+import ErrorMessage from "../common/ErrorMessage";
+import CustomField from "../fields/CustomField";
+import FieldLabel from "../fields/FormLabel";
+
+// Third part Imports
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import clientsService from "../../services/clients";
-import ErrorMessage from "../common/ErrorMessage";
-import { errorsToastHandler } from "../../lib/CommonFunctions";
-import CustomField from "../fields/CustomField";
-import { DateFieldConstants } from "../../lib/FieldConstants";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import FieldLabel from "../fields/FormLabel";
 import { toast } from "react-toastify";
-import { MenuItem, Select } from "@mui/material";
+
+// API services
+import clientsService from "../../services/clients";
+
+// Utils imports
+import { errorsToastHandler } from "../../lib/CommonFunctions";
+import { DateFieldConstants } from "../../lib/FieldConstants";
 
 const ClientModal = ({
   showModal,

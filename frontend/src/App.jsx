@@ -1,35 +1,47 @@
-import React from "react";
-import { useEffect, useMemo } from "react";
+// React imports
+import React, { useEffect, useMemo } from "react";
+
+// UI Imports
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import * as locales from "@mui/material/locale";
+
+// UI Components Imports
+import SignIn from "./views/auth/SignIn";
+import DefaultLayout from "./layout/DefaultLayout";
+import Request from "./views/Request";
+import Emails from "./views/Emails";
+import NetFree from "./views/NetFree";
+import Clients from "./views/Clients";
+import ClientDetails from "./views/ClientDetails";
+import ClientsForm from "./views/ClientsForm";
+import Logs from "./views/Logs";
+import Users from "./views/Users";
+import EmailTemplating from "./views/EmailTemplating";
+import RouteGuard from "./component/common/RouteGuard";
+
+// CSS imports
 import "./App.css";
+import "react-toastify/dist/ReactToastify.css";
+
+// Third part Imports
 import { useTranslation } from "react-i18next";
 import i18next from "i18next";
-import SignIn from "./views/auth/SignIn";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import { DEFAULT_LANGUAGE } from "./constants";
-import DefaultLayout from "./layout/DefaultLayout";
-import { ACCESS_TOKEN_KEY } from "./constants";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import * as locales from "@mui/material/locale";
-import Request from "./views/Request";
-import Emails from "./views/Emails";
+
+// Icon imports
 import { MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
-import NetFree from "./views/NetFree";
-import Clients from "./views/Clients";
-import ClientDetails from "./views/ClientDetails";
-import ClientsForm from "./views/ClientsForm";
-import RouteGuard from "./component/common/RouteGuard";
 import { IoLogoBuffer } from "react-icons/io";
-import Logs from "./views/Logs";
-import Users from "./views/Users";
-import EmailTemplating from "./views/EmailTemplating";
+
+// Utils imports
+import { DEFAULT_LANGUAGE } from "./constants";
+import { ACCESS_TOKEN_KEY } from "./constants";
 
 function App() {
   const { t, i18n } = useTranslation();

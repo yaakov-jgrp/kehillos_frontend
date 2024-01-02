@@ -1,14 +1,24 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+// React imports
+import React, { useEffect, useState } from "react";
+
+// UI Imports
+import { TablePagination } from "@mui/material";
+
+// UI Components Imports
 import SearchField from "../component/fields/SearchField";
 import Loader from "../component/common/Loader";
-import { TablePagination } from "@mui/material";
 import NoDataFound from "../component/common/NoDataFound";
-import { paginationRowOptions, searchFields } from "../lib/FieldConstants";
-import logsService from "../services/logs";
-import dayjs from "dayjs";
 import LogChanges from "../component/LogsComponents/changes";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
+
+// API services
+import logsService from "../services/logs";
+
+// Utils imports
+import { paginationRowOptions, searchFields } from "../lib/FieldConstants";
 
 function Logs() {
   const { t } = useTranslation();
