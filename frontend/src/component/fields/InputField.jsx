@@ -1,4 +1,4 @@
-// Custom components
+// React imports
 import React from "react";
 
 function InputField(props) {

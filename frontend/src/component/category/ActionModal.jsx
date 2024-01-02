@@ -1,16 +1,28 @@
+// React imports
 import { useEffect, useState } from "react";
+
+// UI Imports
+import { MenuItem, Select } from "@mui/material";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+
+// API services
 import categoryService from "../../services/category";
 import emailService from "../../services/email";
-import { useTranslation } from "react-i18next";
-import { AiTwotoneDelete } from "react-icons/ai";
-import { toast } from "react-toastify";
-import { MenuItem, Select } from "@mui/material";
 import requestService from "../../services/request";
-const initialSatte = {
+
+// Icon imports
+import { AiTwotoneDelete } from "react-icons/ai";
+
+// Initial state data
+const initialState = {
   Admin: false,
   Client: false,
   Custom: false,
 };
+
 const ActionModal = ({
   showModal,
   setShowModal,
@@ -36,7 +48,7 @@ const ActionModal = ({
   const [selectedStatus, setSelectedStatus] = useState("selectStatus");
   const [selectedTemplate, setSelectedTemplate] = useState("selectTemplate");
   const [actionNeedsOtherFields, setActionNeedsOtherFields] = useState([]);
-  const [sendEmailTypes, setSendEmailTypes] = useState(initialSatte);
+  const [sendEmailTypes, setSendEmailTypes] = useState(initialState);
   const [inputValues, setInputValues] = useState([""]);
   const [deleteButtonsVisible, setDeleteButtonsVisible] = useState([false]);
   const [requestStatuses, setRequestStatuses] = useState([]);
@@ -245,7 +257,7 @@ const ActionModal = ({
     setActionNeedsOtherFields([]);
     setTimeAmount("");
     setTimePeriod("Hours");
-    setSendEmailTypes(initialSatte);
+    setSendEmailTypes(initialState);
     setInputValues([""]);
     setDeleteButtonsVisible([false]);
     setEditActionId(null);
@@ -278,7 +290,7 @@ const ActionModal = ({
         .map((email) => email.trim());
       setInputValues(emailArray);
       const updatedState = {
-        ...initialSatte,
+        ...initialState,
         Admin: obj.email_to_admin,
         Client: obj.email_to_client,
         Custom: obj.custom_email !== "",
@@ -295,7 +307,7 @@ const ActionModal = ({
       setDeleteButtonsVisible([...deleteButtonsVisible, true]);
     } else {
       setInputValues([""]);
-      setSendEmailTypes(initialSatte);
+      setSendEmailTypes(initialState);
       setSelectedAction("selectAction");
       setSelectedTemplate("selectTemplate");
       setDeleteButtonsVisible([false]);

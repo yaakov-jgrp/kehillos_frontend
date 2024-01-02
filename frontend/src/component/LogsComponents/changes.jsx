@@ -1,4 +1,7 @@
+// React imports
 import React, { useState } from "react";
+
+// Third part Imports
 import { useTranslation } from "react-i18next";
 
 function LogChanges({ changes }) {

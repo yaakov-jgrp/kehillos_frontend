@@ -1,11 +1,22 @@
+// React imports
 import { useState } from "react";
+
+// CSS imports
+import "react-csv-importer/dist/index.css";
+
+// Third part Imports
 import { useTranslation } from "react-i18next";
 import { Importer, ImporterField, enUS } from "react-csv-importer";
-import "react-csv-importer/dist/index.css";
-import { heIL } from "../../locales/reactCsvImporterHe";
-import clientsService from "../../services/clients";
 import { CSVLink } from "react-csv";
+
+// API services
+import clientsService from "../../services/clients";
+
+// Icon imports
 import { FaDownload } from "react-icons/fa";
+
+// Utils imports
+import { heIL } from "../../locales/reactCsvImporterHe";
 
 function CsvImporter({ formFields, fetchClientsData }) {
   const { t } = useTranslation();

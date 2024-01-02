@@ -1,4 +1,7 @@
+// React imports
 import React from "react";
+
+// Icon imports
 import { BsInfoCircle } from "react-icons/bs";
 
 const TooltipButtonIcon = (props) => {

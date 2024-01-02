@@ -1,22 +1,32 @@
+// React imports
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+
+// UI Imports
+import { Select, MenuItem, FormControl, Popover } from "@mui/material";
+
+// UI Components Imports
 import NoDataFound from "../common/NoDataFound";
 import EditButtonIcon from "../common/EditButton";
-import { MdDelete } from "react-icons/md";
 import AddButtonIcon from "../common/AddButton";
-import clientsService from "../../services/clients";
 import Loader from "../common/Loader";
-import { IoIosAdd } from "react-icons/io";
-import { Select, MenuItem, FormControl } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 import ErrorMessage from "../common/ErrorMessage";
 import CustomCheckBox from "../fields/checkbox";
 import FieldLabel from "../fields/FormLabel";
-import Popover from "@mui/material/Popover";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
+import { useForm, Controller } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+// API services
+import clientsService from "../../services/clients";
+
+// Icon imports
 import { FaFilter } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 import { HiDotsVertical } from "react-icons/hi";
+import { IoIosAdd } from "react-icons/io";
 
 function FilterModal({
   showModal,

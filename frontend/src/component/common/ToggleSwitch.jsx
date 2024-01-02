@@ -1,3 +1,4 @@
+// React imports
 import React, { useEffect, useState } from "react";
 
 const ToggleSwitch = (props) => {

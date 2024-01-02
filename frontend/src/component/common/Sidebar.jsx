@@ -1,10 +1,20 @@
 /* eslint-disable */
 
-import { HiX } from "react-icons/hi";
+// UI Components Imports
 import SidebarLinks from "./SidebarLinks";
-import { useTranslation } from "react-i18next";
 import Request from "../../views/Request";
 import Emails from "../../views/Emails";
+import NetFree from "../../views/NetFree";
+import Clients from "../../views/Clients";
+import ClientsForm from "../../views/ClientsForm";
+import Logs from "../../views/Logs";
+import Users from "../../views/Users";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
+
+// Icon imports
+import { HiX } from "react-icons/hi";
 import {
   MdOutlineContactSupport,
   MdOutlineEmail,
@@ -12,13 +22,7 @@ import {
   MdOutlineSettings,
 } from "react-icons/md";
 import { IoLogoBuffer } from "react-icons/io";
-
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
-import NetFree from "../../views/NetFree";
-import Clients from "../../views/Clients";
-import ClientsForm from "../../views/ClientsForm";
-import Logs from "../../views/Logs";
-import Users from "../../views/Users";
 import NetfreeIcon from "../../constants/icons/NetfreeIcon";
 
 const Sidebar = ({ open, onClose }) => {

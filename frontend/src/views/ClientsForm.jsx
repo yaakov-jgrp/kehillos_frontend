@@ -1,22 +1,34 @@
+// React imports
 import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import clientsService from "../services/clients";
+
+// UI Imports
+import { Accordion } from "@chakra-ui/react";
+
+// UI Components Imports
 import Loader from "../component/common/Loader";
 import BlockButton from "../component/client/BlockButton";
-import { Accordion, Show } from "@chakra-ui/react";
 import CustomAccordion from "../component/common/Accordion";
 import BlockFieldModal from "../component/client/BlockFieldModal";
 import AddButtonIcon from "../component/common/AddButton";
 import CustomField from "../component/fields/CustomField";
-import { checkBoxConstants, dataTypes } from "../lib/FieldConstants";
-import { MdDelete } from "react-icons/md";
-import EditButtonIcon from "../component/common/EditButton";
-import { Draggable } from "react-drag-reorder";
-import { PiDotsSixVerticalBold } from "react-icons/pi";
-import { fetchFullformDataHandler } from "../lib/CommonFunctions";
 import DeleteConfirmationModal from "../component/common/DeleteConfirmationModal";
+import EditButtonIcon from "../component/common/EditButton";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
+import { Draggable } from "react-drag-reorder";
 import { toast } from "react-toastify";
-import { tableBodyClasses } from "@mui/material";
+
+// API services
+import clientsService from "../services/clients";
+
+// Icon imports
+import { MdDelete } from "react-icons/md";
+import { PiDotsSixVerticalBold } from "react-icons/pi";
+
+// Utils imports
+import { checkBoxConstants } from "../lib/FieldConstants";
+import { fetchFullformDataHandler } from "../lib/CommonFunctions";
 
 const ClientsForm = () => {
   const { t } = useTranslation();

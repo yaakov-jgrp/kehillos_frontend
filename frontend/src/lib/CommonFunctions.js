@@ -1,4 +1,7 @@
+// Third part Imports
 import { toast } from "react-toastify"
+
+// API services
 import clientsService from "../services/clients";
 
 export const errorsToastHandler = (errors) => {

@@ -1,10 +1,17 @@
+// React imports
 import React from "react";
+
+// UI Imports
 import Box from "@mui/material/Box";
-import CustomAccordion from "../../common/Accordion";
-import { useTranslation } from "react-i18next";
 import { Accordion } from "@chakra-ui/react";
-import Loader from "../../common/Loader";
+
+// UI Components Imports
+import CustomAccordion from "../../common/Accordion";
 import IndividualEditField from "../IndividualEditField";
+import Loader from "../../common/Loader";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
 
 function DetailsTabPanel(props) {
   const {

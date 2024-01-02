@@ -1,16 +1,27 @@
+// React imports
 import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import requestService from "../../services/request";
-import NoDataFound from "../common/NoDataFound";
+
+// UI Imports
 import { Popover } from "@mui/material";
+
+// UI Components Imports
+import NoDataFound from "../common/NoDataFound";
 import AddButtonIcon from "../common/AddButton";
-import { HiDotsVertical } from "react-icons/hi";
-import * as yup from "yup";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import ErrorMessage from "../common/ErrorMessage";
 import FieldLabel from "../fields/FormLabel";
 import EditButtonIcon from "../common/EditButton";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
+import * as yup from "yup";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+// API services
+import requestService from "../../services/request";
+
+// Icon imports
+import { HiDotsVertical } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 
 function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {

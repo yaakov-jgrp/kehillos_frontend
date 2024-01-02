@@ -1,6 +1,9 @@
+// React imports
+import { useState } from "react";
+
+// UI Components Imports
 import NewTemplate from "../component/email/NewTemplate";
 import ListTemplate from "../component/email/ListTemplate";
-import { useState } from "react";
 
 const Emails = () => {
   const [showAddEditTemplate, setShowAddEditTemplate] = useState(false);

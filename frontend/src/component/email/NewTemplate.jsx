@@ -1,11 +1,20 @@
-import { useTranslation } from "react-i18next";
+// React imports
 import { useEffect, useRef, useState } from "react";
-import emailService from "../../services/email";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
 import EmailEditor from "react-email-editor";
-import useAlert from "../../Hooks/useAlert";
+
+// API services
+import emailService from "../../services/email";
+import clientsService from "../../services/clients";
+
+// Utils imports
 import { DEFAULT_LANGUAGE } from "../../constants";
 import emailEditorHe from "../../locales/emailEditorHe.json";
-import clientsService from "../../services/clients";
+
+// Custom hooks imports
+import useAlert from "../../Hooks/useAlert";
 
 const NewTemplate = ({ editableTemplateId, onSave }) => {
   const formObject = {

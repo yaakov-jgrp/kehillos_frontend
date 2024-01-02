@@ -1,8 +1,14 @@
 /* eslint-disable */
+
+// React imports
 import { useEffect, useState } from "react";
+
+// Third part Imports
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import DashIcon from "../icons/DashIcon";
 import { useTranslation } from "react-i18next";
+
+// Icon imports
+import DashIcon from "../icons/DashIcon";
 
 export function SidebarLinks(props) {
   const { i18n } = useTranslation();

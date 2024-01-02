@@ -1,16 +1,29 @@
+// React imports
 import React, { useEffect, useState } from "react";
+
+// UI Imports
 import { Box, TablePagination } from "@mui/material";
+
+// UI Components Imports
+import Loader from "../../common/Loader";
+import NoDataFound from "../../common/NoDataFound";
+import SearchField from "../../fields/SearchField";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
+
+// API services
+import clientsService from "../../../services/clients";
+
+// Icon imports
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+
+// Utils imports
 import {
   paginationRowOptions,
   searchFields,
 } from "../../../lib/FieldConstants";
-import clientsService from "../../../services/clients";
-import Loader from "../../common/Loader";
-import NoDataFound from "../../common/NoDataFound";
-import SearchField from "../../fields/SearchField";
-import { useTranslation } from "react-i18next";
 import { formateDateTime, handleSort } from "../../../lib/CommonFunctions";
-import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 function RequestsTabPanel(props) {
   const { children, value, index, id, ...other } = props;

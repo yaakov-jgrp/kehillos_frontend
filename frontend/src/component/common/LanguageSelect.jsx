@@ -1,6 +1,11 @@
-import i18next from "i18next";
-import { DEFAULT_LANGUAGE } from "../../constants/index";
+// React imports
 import { useEffect, useState } from "react";
+
+// Third part Imports
+import i18next from "i18next";
+
+// Utils imports
+import { DEFAULT_LANGUAGE } from "../../constants/index";
 
 const LanguageSelect = ({ customClass }) => {
   const [selectedLanguage, setSelectedLanguage] = useState("");

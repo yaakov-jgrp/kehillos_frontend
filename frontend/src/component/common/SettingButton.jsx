@@ -1,4 +1,7 @@
+// React imports
 import React from "react";
+
+// Icon imports
 import { FiSettings } from "react-icons/fi";
 
 const SettingButtonIcon = (props) => {

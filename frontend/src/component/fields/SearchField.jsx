@@ -1,6 +1,11 @@
+// React imports
 import React from "react";
-import { FiSearch } from "react-icons/fi";
+
+// Third part Imports
 import { useTranslation } from "react-i18next";
+
+// Icon imports
+import { FiSearch } from "react-icons/fi";
 
 function SearchField(props) {
   const {

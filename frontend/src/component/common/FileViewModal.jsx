@@ -1,8 +1,15 @@
+// React imports
 import React, { useEffect, useState, useRef } from "react";
-import { useTranslation } from "react-i18next";
-import { docTypes, imageTypes } from "../../lib/FieldConstants";
+
+// UI Components Imports
 import Loader from "./Loader";
 import NoDataFound from "./NoDataFound";
+
+// Third part Imports
+import { useTranslation } from "react-i18next";
+
+// Utils imports
+import { docTypes, imageTypes } from "../../lib/FieldConstants";
 
 const FileViewModal = ({ field, setShowModal }) => {
   const { t } = useTranslation();

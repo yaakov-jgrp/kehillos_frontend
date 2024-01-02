@@ -1,7 +1,12 @@
-import { FiAlignJustify } from "react-icons/fi";
-import { Link } from "react-router-dom";
+// UI Components Imports
 import LanguageSelect from "./LanguageSelect";
+
+// Third part Imports
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
+// Icon imports
+import { FiAlignJustify } from "react-icons/fi";
 
 const Navbar = (props) => {
   const { onOpenSidenav, brandText, brandName } = props;

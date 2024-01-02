@@ -1,23 +1,36 @@
+// React imports
 import React from "react";
+
+// UI Imports
+import { Select, MenuItem } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
+// UI Components Imports
+import CustomCheckBox from "./checkbox";
+
+// CSS imports
+import "react-phone-number-input/style.css";
+
+// Third part Imports
+import dayjs from "dayjs";
+import PhoneInput from "react-phone-number-input";
+import en from "react-phone-number-input/locale/en";
+import he from "react-phone-number-input/locale/he";
+import { useTranslation } from "react-i18next";
+
+// Icon imports
+import { MdOutlineUploadFile } from "react-icons/md";
+
+// Utils imports
 import {
   DateFieldConstants,
   NumberFieldConstants,
   TextFieldConstants,
   checkBoxConstants,
 } from "../../lib/FieldConstants";
-import dayjs from "dayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import CustomCheckBox from "./checkbox";
-import "react-phone-number-input/style.css";
-import PhoneInput from "react-phone-number-input";
-import en from "react-phone-number-input/locale/en";
-import he from "react-phone-number-input/locale/he";
-import { MdOutlineUploadFile } from "react-icons/md";
-import { useTranslation } from "react-i18next";
 import { handleNumberkeyPress } from "../../lib/CommonFunctions";
-import { Select, MenuItem } from "@mui/material";
 
 function CustomField(props) {
   const { t } = useTranslation();

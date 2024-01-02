@@ -1,4 +1,7 @@
+// Third part Imports
 import { useTranslation } from "react-i18next";
+
+// Custom hooks imports
 import useAlert from "../../Hooks/useAlert";
 
 const AlertPopup = () => {

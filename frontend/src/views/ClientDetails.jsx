@@ -1,20 +1,29 @@
+// React imports
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import clientsService from "../services/clients";
-import { useTranslation } from "react-i18next";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Box from "@mui/material/Box";
+
+// UI Imports
+import { Tabs, Tab, Box } from "@mui/material";
+
+// UI Components Imports
 import DetailsTabPanel from "../component/client/ClientTabPanels/DetailsTabPanel";
 import RequestsTabPanel from "../component/client/ClientTabPanels/RequestsTabPanel";
 import ClientNetfreeTabPanel from "../component/client/ClientTabPanels/ClientNetfreeTabPanel";
-import { FaUser } from "react-icons/fa";
-import categoryService from "../services/category";
 import Loader from "../component/common/Loader";
-import { MdDelete } from "react-icons/md";
 import ClientModal from "../component/client/ClientModal";
-import { toast } from "react-toastify";
 import DeleteConfirmationModal from "../component/common/DeleteConfirmationModal";
+
+// Third part Imports
+import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+
+// API services
+import clientsService from "../services/clients";
+import categoryService from "../services/category";
+
+// Icon imports
+import { MdDelete } from "react-icons/md";
+import { FaUser } from "react-icons/fa";
 
 function ClientDetails() {
   const { id } = useParams();
