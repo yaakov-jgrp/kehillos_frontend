@@ -134,7 +134,6 @@ const NetFree = () => {
     } else {
       getCategoryData();
     }
-
     setIsLoading(false);
   };
 
@@ -245,7 +244,10 @@ const NetFree = () => {
   };
 
   const getAllProfilesListHandler = async () => {
-    localStorage.setItem("FILTER_PROFILE_ID", 1);
+    const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
+    if (!filterProfileID) {
+      localStorage.setItem("FILTER_PROFILE_ID", 1);
+    }
     const profilesListData = await categoryService.getProfilesList();
     const defaultProfile = profilesListData.data.data.filter(
       (profile) => profile.is_default
@@ -290,6 +292,7 @@ const NetFree = () => {
     const activeIndex = profilesList.findIndex(
       (profile) => profile.id === activeProfile.id
     );
+    profileClickHandler(activeIndex - 1);
     setProfilesList(updatedProfiles);
     setProfileActiveIndex(activeIndex - 1);
     setActiveprofile(updatedProfiles[activeIndex - 1]);

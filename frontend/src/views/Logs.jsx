@@ -186,7 +186,9 @@ function Logs() {
                           <td className="capitalize">{el?.action}</td>
                           <td className="capitalize">{el?.entity_type}</td>
                           <td>
-                            {dayjs(el.created_at).format("MMM , YYYY hh:mm A")}
+                            {dayjs(el.created_at).format(
+                              "DD MMM , YYYY hh:mm A"
+                            )}
                           </td>
                         </tr>
                       );
