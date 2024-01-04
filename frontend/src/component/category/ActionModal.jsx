@@ -33,10 +33,7 @@ const ActionModal = ({
   editActionID,
   setEditActionId,
   trafficAction,
-  profile,
   defaultStatus,
-  getDefaultTrafficActions,
-  getCategoryData,
 }) => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [actionsList, setActionsList] = useState([]);
@@ -133,26 +130,6 @@ const ActionModal = ({
     setSelectedAction(actionId);
   };
 
-  const statusUpdateHandler = async (type, data, id) => {
-    const isStatusChange = actionsList.filter(
-      (el) => el.id == selectedAction
-    )[0]?.is_request_status;
-    if (!isStatusChange) {
-      return;
-    }
-    if (type === "new") {
-      const res = await categoryService.setNetfreeStatus(data, profile.id);
-    } else {
-      const res = await categoryService.updateNetfreeStatus(
-        data,
-        id,
-        profile.id
-      );
-    }
-    getDefaultTrafficActions();
-    getCategoryData();
-  };
-
   const submitForm = async () => {
     let data;
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -204,51 +181,25 @@ const ActionModal = ({
               }
             : {},
       };
+      if (
+        actionsList.filter((el) => el.id == selectedAction)[0]
+          ?.is_request_status
+      ) {
+        data = {
+          ...data,
+          inputs: { ...data.inputs, email_request_status: selectedStatus },
+          is_status: true,
+        };
+      }
     }
-    if (isDefault) {
-      if (
-        !actionsList.filter((el) => el.id == selectedAction)[0]
-          ?.is_request_status
-      ) {
-        await setDefaultAction(selectedAction, data);
-      }
-      const defaultStatusData = {
-        is_default: true,
-        email_request_status: selectedStatus,
-      };
-      if (defaultStatus) {
-        statusUpdateHandler("update", defaultStatusData, defaultStatus?.id);
-      } else {
-        statusUpdateHandler("new", defaultStatusData);
-      }
-    } else {
-      if (
-        !actionsList.filter((el) => el.id == selectedAction)[0]
-          ?.is_request_status
-      ) {
-        if (editActionID) {
-          await updateAction(data, editActionID);
-        } else {
-          await updateAction(data, null);
-        }
-      }
 
-      if (categoryId?.request_status) {
-        const categoryStatusData = {
-          email_request_status: selectedStatus,
-        };
-        statusUpdateHandler(
-          "update",
-          categoryStatusData,
-          categoryId?.request_status?.id
-        );
+    if (isDefault) {
+      await setDefaultAction(selectedAction, data);
+    } else {
+      if (editActionID) {
+        await updateAction(data, editActionID);
       } else {
-        const categoryStatusData = {
-          is_default: false,
-          category: categoryId.id,
-          email_request_status: selectedStatus,
-        };
-        statusUpdateHandler("new", categoryStatusData);
+        await updateAction(data, null);
       }
     }
 

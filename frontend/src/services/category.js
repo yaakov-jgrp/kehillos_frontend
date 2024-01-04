@@ -89,14 +89,6 @@ const duplicateProfile = (data) => {
   return api.post("/api/crm/netfree-categories-profile-clone/", data);
 }
 
-const setNetfreeStatus = (data, profileID) => {
-  return api.post(`/api/crm/category-request-status/?profile=${profileID}`, data);
-}
-
-const updateNetfreeStatus = (data, statusId, profileID) => {
-  return api.put(`/api/crm/category-request-status/${statusId}/?profile=${profileID}`, data);
-}
-
 const categoryService = {
   getCategories,
   getActions,
@@ -114,8 +106,6 @@ const categoryService = {
   deleteDefaultAction,
   deleteProfile,
   duplicateProfile,
-  setNetfreeStatus,
-  updateNetfreeStatus,
   getDefaultStatus
 };
 export default categoryService;
