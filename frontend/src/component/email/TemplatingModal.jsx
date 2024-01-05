@@ -38,7 +38,7 @@ function TemplatingModal({
     end_hour: null,
     text_type: templateTextTypes[0],
     website: websiteChoices[0],
-    is_default: false,
+    is_default: true,
   });
 
   const hoursWebsiteChoices = ["open_url_temporary", "open_domain_temporary"];
@@ -59,12 +59,12 @@ function TemplatingModal({
     text_type: yup.string().required(),
     start_hour: yup.string().when("website", {
       is: (val) => hoursWebsiteChoices.includes(val),
-      then: (schema) => schema.required(),
+      then: (schema) => schema.notRequired(),
       otherwise: (schema) => schema.notRequired(),
     }),
     end_hour: yup.string().when("website", {
       is: (val) => hoursWebsiteChoices.includes(val),
-      then: (schema) => schema.required(),
+      then: (schema) => schema.notRequired(),
       otherwise: (schema) => schema.notRequired(),
     }),
     is_default: yup.boolean().notRequired(),

@@ -10,6 +10,7 @@ import EditButtonIcon from "../component/common/EditButton";
 import TooltipButtonIcon from "../component/common/TootltipButton";
 import ProfileModal from "../component/category/ProfileModal";
 import Loader from "../component/common/Loader";
+import StatusOption from "../component/category/StatusOption";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
@@ -23,6 +24,9 @@ import categoryService from "../services/category";
 import { MdExpandMore } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import { HiDuplicate } from "react-icons/hi";
+
+// Utils imports
+import { deleteNetfreeStatus } from "../lib/CommonFunctions";
 
 const NetFree = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -595,6 +599,12 @@ const NetFree = () => {
                           )
                         ) : null;
                       })}
+                      {el.request_status && (
+                        <StatusOption
+                          getCategoryData={getCategoryData}
+                          category={el}
+                        />
+                      )}
                       {
                         <AddButtonIcon
                           extra={""}
@@ -671,6 +681,19 @@ const NetFree = () => {
                 </div>
               );
             })}
+            {defaultStatus && (
+              <div className="px-3 w-full w-fit whitespace-break-spaces text-left text-[13px] mb-2 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap">
+                {defaultStatus.email_request_status.label}
+                <div
+                  className="text-[13px] text-[#fc3232] cursor-pointer"
+                  onClick={() =>
+                    deleteNetfreeStatus(defaultStatus.id, getActionsList)
+                  }
+                >
+                  x
+                </div>
+              </div>
+            )}
           </div>
           <AddButtonIcon
             extra={""}

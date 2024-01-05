@@ -3,6 +3,7 @@ import { toast } from "react-toastify"
 
 // API services
 import clientsService from "../services/clients";
+import requestService from "../services/request";
 
 export const errorsToastHandler = (errors) => {
     if (typeof errors === "object") {
@@ -79,3 +80,12 @@ export const handleNumberkeyPress = (e) => {
         e.preventDefault();
     }
 }
+
+export const deleteNetfreeStatus = async (id, onDelete) => {
+    try {
+        const res = await requestService.deleteCategoryStatus(id);
+        onDelete();
+    } catch (error) {
+        console.log(error);
+    }
+};
