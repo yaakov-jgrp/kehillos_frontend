@@ -274,7 +274,9 @@ const ActionModal = ({
   useEffect(() => {
     getActionUpdateValue();
     if (isDefault) {
-      setSelectedStatus(defaultStatus?.email_request_status?.value);
+      setSelectedStatus(
+        defaultStatus?.email_request_status?.value || "selectStatus"
+      );
     } else {
       setSelectedStatus(
         categoryId?.request_status?.email_request_status?.value ||

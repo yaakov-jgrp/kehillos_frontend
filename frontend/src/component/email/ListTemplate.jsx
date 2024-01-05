@@ -12,12 +12,9 @@ import { useNavigate } from "react-router-dom";
 // API services
 import emailService from "../../services/email";
 
-// Icon imports
-import { MdDelete, MdEdit } from "react-icons/md";
-import { HiDuplicate } from "react-icons/hi";
-
 // Custom hooks imports
 import useAlert from "../../Hooks/useAlert";
+import TemplateCard from "./TemplateCard";
 
 // initial state data
 const smtpFormObject = {
@@ -194,28 +191,12 @@ const ListTemplate = ({ newTemplate, onEdit }) => {
           <div className="w-full flex flex-wrap gap-4">
             {filterdTemplateList.map((template) => {
               return (
-                <div
-                  className="bg-white relative h-[120px] md:h-[160px] px-5 py-5 rounded-[20px] w-full md:w-[30%] break-words text-center"
-                  key={template.id}
-                >
-                  <div className="text-[#2B3674] text-[20px] md:text-[24px] font-bold">
-                    {template.name}
-                  </div>
-                  <div className="w-full absolute bottom-[20px] left-0 flex justify-center gap-5">
-                    <MdDelete
-                      className="text-blueSecondary w-5 h-5 hover:cursor-pointer"
-                      onClick={() => deleteTemplate(template.id)}
-                    />
-                    <HiDuplicate
-                      className="text-blueSecondary w-5 h-5 hover:cursor-pointer"
-                      onClick={() => duplicateTemplate(template.id)}
-                    />
-                    <MdEdit
-                      className="text-blueSecondary w-5 h-5 hover:cursor-pointer"
-                      onClick={() => onEdit(template.id)}
-                    />
-                  </div>
-                </div>
+                <TemplateCard
+                  template={template}
+                  onEdit={onEdit}
+                  duplicateTemplate={duplicateTemplate}
+                  deleteTemplate={deleteTemplate}
+                />
               );
             })}
           </div>

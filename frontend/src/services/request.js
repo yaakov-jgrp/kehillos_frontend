@@ -22,7 +22,11 @@ const updateStatus = (id, data) => {
 }
 
 const deleteStatus = (id) => {
-  return api.delete(`/api/crm/requests-status/${id}/`)
+  return api.delete(`/api/crm/requests-status/${id}/`);
+}
+
+const deleteCategoryStatus = (id) => {
+  return api.delete(`/api/crm/category-request-status/${id}/`);
 }
 
 const requestService = {
@@ -31,6 +35,7 @@ const requestService = {
   updateRequestStatus,
   createRequestStatus,
   updateStatus,
-  deleteStatus
+  deleteStatus,
+  deleteCategoryStatus
 }
 export default requestService;
