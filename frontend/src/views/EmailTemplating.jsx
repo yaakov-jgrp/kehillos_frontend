@@ -100,7 +100,11 @@ function EmailTemplating() {
   };
 
   useEffect(() => {
-    getTemplatingHandler();
+    const timer = setTimeout(() => {
+      getTemplatingHandler();
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [lang, page, rowsPerPage, JSON.stringify(searchParams)]);
 
   return (
@@ -174,24 +178,12 @@ function EmailTemplating() {
                 <SearchField
                   variant="auth"
                   extra="mb-2"
-                  label={t("emails.start_hour")}
-                  id="start_hour"
+                  label={t("emails.default")}
+                  id="default"
                   type="text"
                   placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) => searchResult("start_hour", e.target.value)}
-                  name="start_hour"
-                />
-              </th>
-              <th className="pr-3">
-                <SearchField
-                  variant="auth"
-                  extra="mb-2"
-                  label={t("emails.end_hour")}
-                  id="end_hour"
-                  type="text"
-                  placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) => searchResult("end_hour", e.target.value)}
-                  name="end_hour"
+                  onChange={(e) => searchResult("is_default", e.target.value)}
+                  name="default"
                 />
               </th>
               <th className="pr-3">
@@ -249,8 +241,7 @@ function EmailTemplating() {
                               }`
                             )}
                           </td>
-                          <td>{el.start_hour}</td>
-                          <td>{el.end_hour}</td>
+                          <td>{JSON.stringify(el.is_default)}</td>
                           <td>
                             <div className="h-auto w-full flex items-center justify-around">
                               <MdEdit

@@ -166,7 +166,8 @@
     "text_type": "Text type",
     "start_hour": "Start hour",
     "end_hour": "End hour",
-    "website": "Website"
+    "website": "Website",
+    "default": "Default"
   },
   "netfree": {
     "categories": "Categories",

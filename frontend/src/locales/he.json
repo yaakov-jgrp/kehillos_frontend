@@ -166,7 +166,8 @@
     "text_type": "סוג טקסט",
     "start_hour": "שעת התחלה",
     "end_hour": "שעת סיום",
-    "website": "אתר אינטרנט"
+    "website": "אתר אינטרנט",
+    "default": "בְּרִירַת מֶחדָל"
   },
   "netfree": {
     "categories": "קטגוריות",
