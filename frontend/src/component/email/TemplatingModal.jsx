@@ -20,7 +20,6 @@ import emailService from "../../services/email";
 
 // Utils imports
 import { templateTextTypes, websiteChoices } from "../../lib/FieldConstants";
-import { handleNumberkeyPress } from "../../lib/CommonFunctions";
 
 function TemplatingModal({
   showModal,
@@ -34,11 +33,9 @@ function TemplatingModal({
 
   const [defaultValues, setDefaultValues] = useState({
     text: "",
-    start_hour: null,
-    end_hour: null,
     text_type: templateTextTypes[0],
     website: websiteChoices[0],
-    is_default: true,
+    is_default: false,
   });
 
   const hoursWebsiteChoices = ["open_url_temporary", "open_domain_temporary"];
@@ -57,16 +54,6 @@ function TemplatingModal({
       ),
     website: yup.string().required(),
     text_type: yup.string().required(),
-    start_hour: yup.string().when("website", {
-      is: (val) => hoursWebsiteChoices.includes(val),
-      then: (schema) => schema.notRequired(),
-      otherwise: (schema) => schema.notRequired(),
-    }),
-    end_hour: yup.string().when("website", {
-      is: (val) => hoursWebsiteChoices.includes(val),
-      then: (schema) => schema.notRequired(),
-      otherwise: (schema) => schema.notRequired(),
-    }),
     is_default: yup.boolean().notRequired(),
   });
 
@@ -109,8 +96,6 @@ function TemplatingModal({
       setValue("is_default", textData?.is_default);
     }
   }, []);
-
-  console.log(textData);
 
   return (
     <>
@@ -255,66 +240,6 @@ function TemplatingModal({
                         )}
                       </div>
                     </div>
-                    {hoursWebsiteChoices.includes(watch("website")) && (
-                      <>
-                        <div className="mb-6 flex w-full items-start">
-                          <FieldLabel
-                            className={`w-[30%] ${
-                              lang === "he" ? "ml-6" : "mr-6"
-                            }`}
-                          >
-                            {t("emails.start_hour")}
-                          </FieldLabel>
-                          <div className="w-[60%]">
-                            <Controller
-                              name="start_hour"
-                              control={control}
-                              render={({ field }) => (
-                                <input
-                                  type="number"
-                                  min="0"
-                                  onKeyDown={handleNumberkeyPress}
-                                  className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
-                                  {...field}
-                                />
-                              )}
-                            />
-                            {errors.start_hour && (
-                              <ErrorMessage
-                                message={errors.start_hour.message}
-                              />
-                            )}
-                          </div>
-                        </div>
-                        <div className="mb-6 flex w-full items-start">
-                          <FieldLabel
-                            className={`w-[30%] ${
-                              lang === "he" ? "ml-6" : "mr-6"
-                            }`}
-                          >
-                            {t("emails.end_hour")}
-                          </FieldLabel>
-                          <div className="w-[60%]">
-                            <Controller
-                              name="end_hour"
-                              control={control}
-                              render={({ field }) => (
-                                <input
-                                  type="number"
-                                  min="0"
-                                  onKeyDown={handleNumberkeyPress}
-                                  className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
-                                  {...field}
-                                />
-                              )}
-                            />
-                            {errors.end_hour && (
-                              <ErrorMessage message={errors.end_hour.message} />
-                            )}
-                          </div>
-                        </div>
-                      </>
-                    )}
                     <div className="mb-6 flex w-full items-center">
                       <FieldLabel
                         className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}
