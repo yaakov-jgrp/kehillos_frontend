@@ -35,6 +35,12 @@ const getDefaultStatus = () => {
   return api.get(`api/crm/actions/?get_default_request_status=true&lang=${lang}&profile=${filterProfileID ? filterProfileID : "1"}`)
 }
 
+const getTrafficStatus = () => {
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
+  return api.get(`api/crm/actions/?get_netfree_traffic_status=true&lang=${lang}&profile=${filterProfileID ? filterProfileID : "1"}`)
+}
+
 const getDefaultTrafficActions = () => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
@@ -106,6 +112,7 @@ const categoryService = {
   deleteDefaultAction,
   deleteProfile,
   duplicateProfile,
-  getDefaultStatus
+  getDefaultStatus,
+  getTrafficStatus
 };
 export default categoryService;
