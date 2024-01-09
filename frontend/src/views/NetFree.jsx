@@ -53,6 +53,7 @@ const NetFree = () => {
   const [trafficAction, setTrafficAction] = useState(false);
   const [defaultTrafficActions, setDefaultTrafficActions] = useState([]);
   const [defaultStatus, setDefaultStatus] = useState(null);
+  const [trafficStatus, setTrafficStatus] = useState(null);
   const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
 
   const setResponseDataToState = (res) => {
@@ -112,8 +113,10 @@ const NetFree = () => {
 
   const getActionsList = async () => {
     getDefaultActions().then(async () => {
-      const res = await categoryService.getDefaultStatus();
-      setDefaultStatus(res.data.data[0]);
+      const defaultStatusResponse = await categoryService.getDefaultStatus();
+      const trafficStatusResponse = await categoryService.getTrafficStatus();
+      setDefaultStatus(defaultStatusResponse.data.data[0]);
+      setTrafficStatus(trafficStatusResponse.data.data[0]);
       const response = await categoryService.getActions();
       setActionsList(response.data.data);
     });
@@ -230,12 +233,7 @@ const NetFree = () => {
   const setDefaultAction = async (actionId, data) => {
     setIsLoading(true);
     const actionsPayload = defaultActionList.map((el) => el.id);
-    let params;
-    if (trafficAction) {
-      params = "&is_netfree_traffic=true";
-    } else {
-      params = "";
-    }
+    const params = trafficAction ? "&is_netfree_traffic=true" : "";
     await categoryService.setDefaultAction(
       { actions: [...actionsPayload, actionId], ...data },
       params
@@ -377,6 +375,7 @@ const NetFree = () => {
             trafficAction={trafficAction}
             setTrafficAction={setTrafficAction}
             defaultStatus={defaultStatus}
+            trafficStatus={trafficStatus}
           />
           <ProfileModal
             showModal={showProfileModal}
@@ -732,6 +731,19 @@ const NetFree = () => {
                   </div>
                 );
               })}
+              {trafficStatus && (
+                <div className="px-3 w-full w-fit whitespace-break-spaces text-left text-[13px] mb-2 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap">
+                  {trafficStatus.email_request_status.label}
+                  <div
+                    className="text-[13px] text-[#fc3232] cursor-pointer"
+                    onClick={() =>
+                      deleteNetfreeStatus(trafficStatus.id, getActionsList)
+                    }
+                  >
+                    x
+                  </div>
+                </div>
+              )}
             </div>
             <div className="pl-2">
               <AddButtonIcon

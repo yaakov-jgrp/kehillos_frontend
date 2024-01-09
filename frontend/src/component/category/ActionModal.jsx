@@ -34,6 +34,7 @@ const ActionModal = ({
   setEditActionId,
   trafficAction,
   defaultStatus,
+  trafficStatus,
 }) => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [actionsList, setActionsList] = useState([]);
@@ -99,7 +100,7 @@ const ActionModal = ({
     const response = await categoryService.getActions();
     if (trafficAction) {
       const trafficActions = response.data.data.filter(
-        (action) => action.id === 1
+        (action) => action.id === 1 || action.id === 9999999
       );
       setActionsList(trafficActions);
     } else {
@@ -273,19 +274,23 @@ const ActionModal = ({
 
   useEffect(() => {
     getActionUpdateValue();
+    let status = "selectStatus";
     if (isDefault) {
-      setSelectedStatus(
-        defaultStatus?.email_request_status?.value || "selectStatus"
-      );
+      status = defaultStatus?.email_request_status?.value || "selectStatus";
+      if (trafficAction) {
+        status = trafficStatus?.email_request_status?.value || "selectStatus";
+      }
     } else {
-      setSelectedStatus(
+      status =
         categoryId?.request_status?.email_request_status?.value ||
-          "selectStatus"
-      );
+        "selectStatus";
     }
+    setSelectedStatus(status);
   }, [
     editActionID,
     JSON.stringify(defaultStatus),
+    JSON.stringify(trafficStatus),
+    trafficAction,
     JSON.stringify(categoryId),
     isDefault,
   ]);
