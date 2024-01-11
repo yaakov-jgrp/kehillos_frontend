@@ -33,7 +33,7 @@
     "loginFailed": "הכניסה נכשלה, נסה שוב!!!"
   },
   "sidebar": {
-    "title": "מערכת קהילות",
+    "title": "שמרם קהילות",
     "dashboard": "דשבורד",
     "request": "פניות",
     "settings": "הגדרות",
@@ -125,9 +125,9 @@
   },
   "routes": {
     "clients": "לקוחות",
-    "request": "בקשה",
+    "request": "פניות",
     "settings": "הגדרות",
-    "formSettings": "הגדרות לקוחות",
+    "formSettings": "לקוחות",
     "users": "משתמשים",
     "netfree": "נטפרי",
     "emails": "אימייל",
@@ -178,7 +178,7 @@
     "customEmail": "אימייל מותאם אישית",
     "adminEmail": "דוא\"ל מנהל",
     "clientEmail": "אימייל ללקוח",
-    "searchSiteSetting": "מצא הגדרות אתר",
+    "searchSiteSetting": "חפש קטוגורית אתר",
     "updateCategoryButton": "לחץ לעדכן רשימת הקטגוריות",
     "defaultAction": "פעולות ברירת מחדל",
     "trafficRecord": "טיפול בהקלטות תעבורה",
@@ -214,7 +214,7 @@
     "addFilterProfile": "+ הוסיף פרופיל",
     "description": "תיאור",
     "filterProfile": ":פרופיל סינון",
-    "lastUpdatedAt": "עודכן לאחרונה ב",
+    "lastUpdatedAt": "עודכן לאחרונה בתאריך",
     "addClient": "הוסף לקוחות",
     "editClient": "ערוך לקוח",
     "userID": "זהות המשתמש",
