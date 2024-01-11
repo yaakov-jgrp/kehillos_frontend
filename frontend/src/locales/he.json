@@ -49,7 +49,7 @@
   },
   "requests": {
     "title": "פניות",
-    "$requestId": "מספר פניה",
+    "$requestId": "מזהה פניה",
     "$clinetName": "שם לקוח",
     "$clientEmail": "אימייל לקוח",
     "$domainRequested": "אתר מבוקש",
@@ -233,7 +233,7 @@
   },
   "searchbox": {
     "placeHolder": "חיפוש",
-    "requestId": "מספר פניה",
+    "requestId": "מזהה פניה",
     "clientUserID": "זהות המשתמש",
     "name": "שם",
     "email": "אימייל",
