@@ -49,12 +49,12 @@
   },
   "requests": {
     "title": "פניות",
-    "$requestId": "מספר פניה",
+    "$requestId": "מזהה פניה",
     "$clinetName": "שם לקוח",
     "$clientEmail": "אימייל לקוח",
     "$domainRequested": "אתר מבוקש",
     "$adminEmail": "אימייל מנהל",
-    "status": "סטָטוּס"
+    "status": "סטטוס"
   },
   "logs": {
     "old": "ערך ישן",
@@ -233,7 +233,7 @@
   },
   "searchbox": {
     "placeHolder": "חיפוש",
-    "requestId": "מספר פניה",
+    "requestId": "מזהה פניה",
     "clientUserID": "זהות המשתמש",
     "name": "שם",
     "email": "אימייל",
@@ -244,7 +244,7 @@
     "from": "מאת",
     "requestType": "סוג פניה",
     "requestdetail": "פרטי פניה",
-    "status": "סטָטוּס",
+    "status": "סטטוס",
     "actionsDone": "פעולות שבוצעו",
     "user": "משתמש",
     "changes": "שינויים",
