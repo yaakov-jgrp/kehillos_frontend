@@ -45,7 +45,7 @@
     "details": "פרטים",
     "logs": "יומן",
     "users": "משתמשים",
-    "templating": "תבנית"
+    "templating": "תגים"
   },
   "requests": {
     "title": "פניות",
@@ -127,11 +127,11 @@
     "clients": "לקוחות",
     "request": "בקשה",
     "settings": "הגדרות",
-    "formSettings": "הגדרות צורה",
+    "formSettings": "הגדרות לקוחות",
     "users": "משתמשים",
-    "netfree": "נטוחינם",
-    "emails": "מיילים",
-    "logs": "יומנים",
+    "netfree": "נטפרי",
+    "emails": "אימייל",
+    "logs": "יומן",
     "templating": "תבנית"
   },
   "emails": {
@@ -153,7 +153,7 @@
     "deleteTemplateFailed": "מחיקת התבנית נכשלה",
     "duplicateTemplateSuccess": "התבנית שוכפלה בהצלחה",
     "duplicateTemplateFailed": "שכפול התבנית נכשלה",
-    "templating": "תבנית",
+    "templating": "תגים",
     "pre_text": "טקסט קודם",
     "after_text": "טקסט אחרי",
     "open_url": "פתח כתובת אתר",
@@ -163,10 +163,10 @@
     "netfree_block": "חסום בנטפרי",
     "newText": "טקסט תבנית חדש",
     "editText": "ערוך טקסט של תבנית",
-    "text_type": "סוג טקסט",
+    "text_type": "סוג תג",
     "start_hour": "שעת התחלה",
     "end_hour": "שעת סיום",
-    "website": "אתר אינטרנט",
+    "website": "פעולת תג",
     "default": "ברירת מחדל"
   },
   "netfree": {
