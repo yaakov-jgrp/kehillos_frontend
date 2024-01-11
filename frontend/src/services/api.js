@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // Utils imports
-import { ACCESS_TOKEN_KEY } from '../constants';
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants';
 import { errorsToastHandler } from '../lib/CommonFunctions';
 
 const api = axios.create({
@@ -11,6 +11,23 @@ const api = axios.create({
     "Content-Type": "application/json;charset=utf-8",
   },
 });
+
+const refreshAccessToken = async () => {
+  try {
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+    const res = await axios.post(import.meta.env.VITE_API_URL + "/api/auth/token/refresh/", { refresh: refreshToken });
+    if (res.status === 200) {
+      localStorage.setItem(ACCESS_TOKEN_KEY, res.data.access);
+      return res.data.access;
+    }
+  } catch (error) {
+    console.log(error);
+    localStorage.clear();
+    if (!window.location.pathname.includes("/signin")) {
+      window.location = '/signin'
+    }
+  }
+}
 
 
 const requestSuccessInterceptor = (config) => {
@@ -26,17 +43,14 @@ api.interceptors.request.use(requestSuccessInterceptor);
 
 api.interceptors.response.use((res) => {
   return res;
-}, (err) => {
-  if (err.response.status === 401) {
-    // const originalRequest = err.config;
-    // if (err.response.status === 401 && !originalRequest._retry) {
-    //   originalRequest._retry = true;
-    //   axios.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
-    //   return api(originalRequest);
-    // }
-    localStorage.clear();
-    if (!window.location.pathname.includes("/signin")) {
-      window.location = '/signin'
+}, async (err) => {
+  if (err.response.status > 400) {
+    const originalRequest = err.config;
+    if (err.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const access_token = await refreshAccessToken();
+      axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
+      return api(originalRequest);
     }
   }
   if (Object.keys(err?.response?.data?.errors).length > 0) {
