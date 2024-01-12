@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - frontend-prod
-  pull_request:
-    branches:
-      - frontend-prod
-    types: [closed]
 
 jobs:
   run-script:
