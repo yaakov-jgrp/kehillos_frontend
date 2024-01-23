@@ -110,13 +110,7 @@ export function SidebarLinks(props) {
             {isSettingsOpen
               ? route.children.map((subMenu, subIndex) => {
                   return (
-                    <div
-                      key={subMenu.name + subIndex}
-                      className="px-10"
-                      onClick={() => {
-                        localStorage.removeItem("PROFILE_INDEX");
-                      }}
-                    >
+                    <div key={subMenu.name + subIndex} className="px-10">
                       <Link to={"/" + subMenu.path}>
                         <GenerateMenuLink
                           index={subIndex}
