@@ -118,7 +118,7 @@ const Websites = () => {
       setDomainsData(response);
     } else if (currentSearchTerm) {
       let filteredData = [];
-      if (type === "name") {
+      if (type === "domain") {
         filteredData = response?.filter((el) =>
           el[type].toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -428,16 +428,20 @@ const Websites = () => {
               <tr className=" pr-3 bg-lightPrimary rounded-lg">
                 <th className="pb-2 px-1 w-[15rem]">
                   <h5 className="text-start text-[10px] md:text-[14px] font-bold text-[#2B3674] w-[15rem]">
-                    {t("netfree.name")}
+                    {t("websites.domain")}
                   </h5>
                   <SearchField
                     variant="auth"
                     type="text"
                     placeholder={t("searchbox.placeHolder")}
                     onChange={(e) =>
-                      searchCategories(e.target.value, domainsDataCopy, "name")
+                      searchCategories(
+                        e.target.value,
+                        domainsDataCopy,
+                        "domain"
+                      )
                     }
-                    name="name"
+                    name="domain"
                   />
                 </th>
                 <th className="pl-5">
