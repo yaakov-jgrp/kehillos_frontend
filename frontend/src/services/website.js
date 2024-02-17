@@ -51,7 +51,9 @@ const websiteActions = (data, id) => {
 };
 
 const deleteWebsiteStatus = (id) => {
-  return api.delete(`/api/crm/requests-status/${id}/?request_type=domain`);
+  return api.delete(
+    `/api/crm/category-request-status/${id}/?request_type=domain`
+  );
 };
 
 const websiteServices = {
