@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 // UI Components Imports
 import SearchField from "../component/fields/SearchField";
 import AddButtonIcon from "../component/common/AddButton";
-import ActionModal from "../component/category/ActionModal";
 import EditButtonIcon from "../component/common/EditButton";
 import TooltipButtonIcon from "../component/common/TootltipButton";
 import ProfileModal from "../component/category/ProfileModal";
@@ -14,7 +13,6 @@ import StatusOption from "../component/category/StatusOption";
 // Third part Imports
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
-import { debounce } from "lodash";
 
 // API services
 import categoryService from "../services/category";
@@ -25,11 +23,10 @@ import { MdDelete } from "react-icons/md";
 import { HiDuplicate } from "react-icons/hi";
 
 // Utils imports
-import { deleteNetfreeStatus } from "../lib/CommonFunctions";
 import WebsiteModal from "../component/Websites/WebsiteModal";
 import websiteServices from "../services/website";
 import DeleteConfirmationModal from "../component/common/DeleteConfirmationModal";
-import WebsiteActionModal from "../component/Websites/WebsiteACtionModal";
+import WebsiteActionModal from "../component/Websites/WebsiteActionModal";
 
 const Websites = () => {
   const [isLoading, setIsLoading] = useState(false);
