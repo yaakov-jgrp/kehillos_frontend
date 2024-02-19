@@ -9,6 +9,7 @@ import Clients from "../../views/Clients";
 import ClientsForm from "../../views/ClientsForm";
 import Logs from "../../views/Logs";
 import Users from "../../views/Users";
+import Websites from "../../views/Websites";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
@@ -24,6 +25,7 @@ import {
 import { IoLogoBuffer } from "react-icons/io";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
 import NetfreeIcon from "../../constants/icons/NetfreeIcon";
+import { CiGlobe } from "react-icons/ci";
 
 const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
@@ -67,6 +69,13 @@ const Sidebar = ({ open, onClose }) => {
           type: "menu",
           icon: <HiOutlineUsers className="h-6 w-6" />,
           component: <Users />,
+        },
+        {
+          name: t("sidebar.websites"),
+          path: "settings/websites",
+          type: "menu",
+          icon: <CiGlobe className="h-6 w-6" />,
+          component: <Websites />,
         },
         {
           name: t("sidebar.netfree"),

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 // UI Components Imports
 import SearchField from "../component/fields/SearchField";
-import ToggleSwitch from "../component/common/ToggleSwitch";
 import AddButtonIcon from "../component/common/AddButton";
 import ActionModal from "../component/category/ActionModal";
 import EditButtonIcon from "../component/common/EditButton";
@@ -27,35 +26,31 @@ import { HiDuplicate } from "react-icons/hi";
 
 // Utils imports
 import { deleteNetfreeStatus } from "../lib/CommonFunctions";
-import requestService from "../services/request";
+import WebsiteModal from "../component/Websites/WebsiteModal";
+import websiteServices from "../services/website";
+import DeleteConfirmationModal from "../component/common/DeleteConfirmationModal";
+import WebsiteActionModal from "../component/Websites/WebsiteACtionModal";
 
-const NetFree = () => {
+const Websites = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [categoriesData, setCategoriesData] = useState([]);
-  const [categoriesDataCopy, setCategoriesDataCopy] = useState([]);
-  const [actionsList, setActionsList] = useState([]);
-  const [defaultActionList, setDefaultActionList] = useState([]);
-  const [searchResult, setSearchResult] = useState([]);
-  const [isDefaultActionSelectOpen, setIsDefaultActionSelectOpen] =
-    useState(false);
+  const [domainsData, setDomainsData] = useState([]);
+  const [domainsDataCopy, setDomainsDataCopy] = useState([]);
   const { t, i18n } = useTranslation();
   const [showActionModal, setShowActionModal] = useState(false);
+  const [editActionID, setEditActionId] = useState(null);
   const [clickedAction, setClickedAction] = useState(null);
-  const [currentSelectedCategoryId, setCurrentSelectedCategoryId] = useState(0);
   const [currentSearchTerm, setCurrentSearchTerm] = useState("");
   const [siteSearch, setSiteSearch] = useState("");
-  const [editActionID, setEditActionId] = useState(null);
-  const [defaultTraffic, setDefaultTraffic] = useState(null);
   const [profilesList, setProfilesList] = useState(null);
   const [profileActiveIndex, setProfileActiveIndex] = useState(0);
   const [activeProfile, setActiveprofile] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [newProfile, setNewProfile] = useState(true);
-  const [trafficAction, setTrafficAction] = useState(false);
-  const [defaultTrafficActions, setDefaultTrafficActions] = useState([]);
-  const [defaultStatus, setDefaultStatus] = useState(null);
-  const [trafficStatus, setTrafficStatus] = useState(null);
   const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
+  const [confirmationModal, setConfirmationModal] = useState(false);
+  const [domain, setDomain] = useState(null);
+  const [currentDomain, setCurrentDomain] = useState(null);
 
   const setResponseDataToState = (res) => {
     const response = res.data.data.map((el) => {
@@ -65,8 +60,8 @@ const NetFree = () => {
       });
       return el;
     });
-    setCategoriesData(response);
-    setCategoriesDataCopy(response);
+    setDomainsData(response);
+    setDomainsDataCopy(response);
     if (siteSearch) {
       searchCategories(siteSearch, response);
     } else {
@@ -74,93 +69,45 @@ const NetFree = () => {
     }
   };
 
-  const getCategoryData = async () => {
+  const actionsHandler = async (data, id) => {
+    try {
+      const res = await websiteServices.websiteActions(data, id);
+      getDomainsData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getDomainsData = async () => {
     setIsLoading(true);
-    const response = await categoryService.getCategories();
+    const response = await websiteServices.getDomains();
     setResponseDataToState(response);
     setIsLoading(false);
   };
 
-  const getDefaultActions = async () => {
-    const response = await categoryService.getDefaultAction();
-    setDefaultActionList(response.data.data);
-  };
-  const getDefaultTraffic = async () => {
-    const response = await categoryService.getDefaultTraffic();
-    setDefaultTraffic(response.data.data.is_active);
-  };
-
-  const getDefaultTrafficActions = async () => {
-    const response = await categoryService.getDefaultTrafficActions();
-    setDefaultTrafficActions(response.data.data);
-  };
-
-  const updateDefaultTrafficHandler = async () => {
-    const data = {
-      status: !defaultTraffic,
-    };
-    const response = await categoryService.updateNetfreeTraffic(data);
-    setDefaultTraffic(response.data.data.is_active);
-  };
-
-  const deleteDefaultAction = async (actionId) => {
-    setIsLoading(true);
-    await categoryService.deleteDefaultAction(actionId);
-    await getDefaultTrafficActions();
-    getCategoryData();
-    await getActionsList();
-    setIsLoading(false);
-  };
-
-  const getActionsList = async () => {
-    getDefaultActions().then(async () => {
-      const defaultStatusResponse = await categoryService.getDefaultStatus();
-      const trafficStatusResponse = await categoryService.getTrafficStatus();
-      setDefaultStatus(defaultStatusResponse.data.data[0]);
-      setTrafficStatus(trafficStatusResponse.data.data[0]);
-      const response = await categoryService.getActions();
-      setActionsList(response.data.data);
-    });
-  };
-
-  const handleUpdateCategory = () => {
-    categoryService.updateCategories();
-  };
-
   const enableActionUpdate = (element) => {
     if (element) {
-      setCurrentSelectedCategoryId(element);
+      setCurrentDomain(element);
     }
     setShowActionModal(true);
   };
 
-  const updateAction = async (data, id) => {
+  const deleteAction = (domainId, actionToRemove) => {
     setIsLoading(true);
-    await categoryService.updateActionInCategory(data, id);
-    if (siteSearch) {
-      searchSetting(siteSearch);
-    } else {
-      getCategoryData();
-    }
-    setIsLoading(false);
-  };
-
-  const deleteAction = (categoryId, actionToRemove) => {
-    setIsLoading(true);
-    updateAction({ id: categoryId, to_remove: actionToRemove }, null);
+    actionsHandler({ id: domainId, to_remove: actionToRemove }, null);
     setIsLoading(false);
   };
 
   // update/edit action value
-  const editAction = (categoryId, currentActions, actionToRemove, newValue) => {
+  const editAction = (domainId, currentActions, actionToRemove, newValue) => {
     setIsLoading(true);
-    updateAction({ id: categoryId, to_add: newValue }, null);
+    actionsHandler({ id: domainId, to_add: newValue }, null);
     setIsLoading(false);
   };
 
   //make current action editable
-  const editSelectedAction = (categoyId, action) => {
-    setCurrentSelectedCategoryId(categoyId);
+  const editSelectedAction = (domain, action) => {
+    setCurrentDomain(domain);
     setEditActionId(action.id);
     setShowActionModal(true);
   };
@@ -168,10 +115,10 @@ const NetFree = () => {
   const searchCategories = (searchTerm, response, type) => {
     setCurrentSearchTerm(searchTerm);
     if (siteSearch) {
-      setCategoriesData(response);
+      setDomainsData(response);
     } else if (currentSearchTerm) {
       let filteredData = [];
-      if (type === "name") {
+      if (type === "domain") {
         filteredData = response?.filter((el) =>
           el[type].toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -186,9 +133,9 @@ const NetFree = () => {
       if (searchTerm === "") {
         filteredData = response;
       }
-      setCategoriesData(filteredData);
+      setDomainsData(filteredData);
     } else {
-      setCategoriesData(response);
+      setDomainsData(response);
     }
   };
 
@@ -205,8 +152,6 @@ const NetFree = () => {
     setIsLoading(false);
   };
 
-  const handleSiteSearch = debounce((e) => searchSetting(e.target.value), 500);
-
   const handleClickedAction = (id) => {
     if (clickedAction && clickedAction === id) {
       setClickedAction(null);
@@ -216,7 +161,7 @@ const NetFree = () => {
   };
 
   const openActionOptions = (categoyIndex, action) => {
-    let updatedCategoryData = JSON.parse(JSON.stringify(categoriesData));
+    let updatedCategoryData = JSON.parse(JSON.stringify(domainsData));
     updatedCategoryData.forEach((el, ind) => {
       if (ind === categoyIndex) {
         el.actions = el.actions.map((item) => {
@@ -228,22 +173,7 @@ const NetFree = () => {
       }
     });
 
-    setCategoriesData(updatedCategoryData);
-  };
-
-  const setDefaultAction = async (actionId, data) => {
-    setIsLoading(true);
-    const actionsPayload = defaultActionList.map((el) => el.id);
-    const params = trafficAction ? "&is_netfree_traffic=true" : "";
-    await categoryService.setDefaultAction(
-      { actions: [...actionsPayload, actionId], ...data },
-      params
-    );
-    await getDefaultTrafficActions();
-    getCategoryData();
-    setIsDefaultActionSelectOpen(false);
-    await getActionsList();
-    setIsLoading(false);
+    setDomainsData(updatedCategoryData);
   };
 
   const getAllProfilesListHandler = async () => {
@@ -276,7 +206,7 @@ const NetFree = () => {
     setActiveprofile(newActiveProfile[0]);
     setProfileActiveIndex(index);
     setNewProfile(false);
-    getCategoryData();
+    getDomainsData();
     getActionsList();
     getDefaultTraffic();
     getDefaultTrafficActions();
@@ -306,18 +236,27 @@ const NetFree = () => {
     getAllProfilesListHandler();
   };
 
+  const deleteDomain = async (id) => {
+    try {
+      const res = await websiteServices.deleteDomain(id);
+      if (res.status === 204) {
+        setDomain(null);
+        getDomainsData();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getAllProfilesListHandler();
-    getCategoryData();
-    getActionsList();
-    getDefaultTrafficActions();
-    getDefaultTraffic();
+    getDomainsData();
   }, [defaultLanguageValue]);
 
   const ActionSelectBox = ({
     options,
-    categoryName,
-    categoryId,
+    domainName,
+    domainId,
     currentActions,
     operationType,
     previousValue,
@@ -328,13 +267,13 @@ const NetFree = () => {
           onChange={(e) =>
             operationType === "edit"
               ? editAction(
-                  categoryId,
+                  domainId,
                   currentActions,
                   previousValue,
                   e.target.value
                 )
-              : updateAction(
-                  { id: categoryId, to_add: Number(e.target.value) },
+              : actionsHandler(
+                  { id: domainId, to_add: Number(e.target.value) },
                   null
                 )
           }
@@ -342,7 +281,7 @@ const NetFree = () => {
           value={"selectAction"}
           className="bg-white border-[1px] py-1 px-2 outline-none rounded-md"
           onBlur={() =>
-            editSelectedAction(categoryId, { label: "close edit options" })
+            editSelectedAction(domainId, { label: "close edit options" })
           }
         >
           <option value={"selectAction"} disabled>
@@ -350,7 +289,7 @@ const NetFree = () => {
           </option>
           {options?.map((el) => {
             return el ? (
-              <option key={categoryName + el.id} value={el.id}>
+              <option key={domainName + el.id} value={el.id}>
                 {el.label}
               </option>
             ) : null;
@@ -364,19 +303,13 @@ const NetFree = () => {
     <div className="md:h-full w-full flex-col-reverse md:flex-row flex gap-4">
       {profilesList && activeProfile && (
         <>
-          <ActionModal
+          <WebsiteActionModal
             showModal={showActionModal}
             setShowModal={setShowActionModal}
-            updateAction={updateAction}
-            categoryId={currentSelectedCategoryId}
-            setDefaultAction={setDefaultAction}
-            isDefault={isDefaultActionSelectOpen}
+            actionHandler={actionsHandler}
+            currentData={currentDomain}
             editActionID={editActionID}
             setEditActionId={setEditActionId}
-            trafficAction={trafficAction}
-            setTrafficAction={setTrafficAction}
-            defaultStatus={defaultStatus}
-            trafficStatus={trafficStatus}
           />
           <ProfileModal
             showModal={showProfileModal}
@@ -386,9 +319,16 @@ const NetFree = () => {
             profilesList={profilesList}
             onClick={getAllProfilesListHandler}
           />
+          {showWebsiteModal && (
+            <WebsiteModal
+              showModal={showWebsiteModal}
+              setShowModal={() => setShowWebsiteModal(!showWebsiteModal)}
+              onClick={getDomainsData}
+            />
+          )}
         </>
       )}
-      <div className="bg-white rounded-3xl overflow-x-auto overflow-y-hidden relative w-full md:w-[calc(100%-260px)]">
+      <div className="bg-white rounded-3xl overflow-x-auto overflow-y-hidden relative w-full">
         <div className="m-5 px-2">
           <ul
             className={`${
@@ -473,12 +413,22 @@ const NetFree = () => {
           </div>
         )}
         <div className="h-[calc(100%-190px)] max-w-[100%] overflow-x-auto overflow-y-auto mx-5 px-2">
+          <div className="flex items-center justify-end">
+            <button
+              className={`w-fit mb-2 ml-auto rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
+              onClick={() => {
+                setShowWebsiteModal(!showWebsiteModal);
+              }}
+            >
+              {t("websites.addDomain")}
+            </button>
+          </div>
           <table className="!table text-[12px] overflow-y-auto w-full">
             <thead className="sticky top-0 z-10">
               <tr className=" pr-3 bg-lightPrimary rounded-lg">
                 <th className="pb-2 px-1 w-[15rem]">
                   <h5 className="text-start text-[10px] md:text-[14px] font-bold text-[#2B3674] w-[15rem]">
-                    {t("netfree.name")}
+                    {t("websites.domain")}
                   </h5>
                   <SearchField
                     variant="auth"
@@ -487,11 +437,11 @@ const NetFree = () => {
                     onChange={(e) =>
                       searchCategories(
                         e.target.value,
-                        categoriesDataCopy,
-                        "name"
+                        domainsDataCopy,
+                        "domain"
                       )
                     }
-                    name="name"
+                    name="domain"
                   />
                 </th>
                 <th className="pl-5">
@@ -505,7 +455,7 @@ const NetFree = () => {
                     onChange={(e) =>
                       searchCategories(
                         e.target.value,
-                        categoriesDataCopy,
+                        domainsDataCopy,
                         "actions"
                       )
                     }
@@ -515,22 +465,32 @@ const NetFree = () => {
               </tr>
             </thead>
             <tbody className="pt-5">
-              {categoriesData.map((el, currentIndex) => {
+              {domainsData.map((el, currentIndex) => {
                 return (
                   <tr
                     className="h-[20px] border-t bottom-b border-sky-500 w-[100%]"
-                    key={el.categories_id}
+                    key={el.id}
                   >
                     <td>
-                      <h5 className="font-bold text-[#2B3674] break-words w-[15rem]">
-                        {el.name}
-                      </h5>
+                      <div className="flex justify-between">
+                        <h5 className="font-bold text-[#2B3674] break-words w-[15rem]">
+                          {el.domain}
+                        </h5>
+                        <MdDelete
+                          onClick={() => {
+                            setDomain(el);
+                            setConfirmationModal(!confirmationModal);
+                          }}
+                          className="text-lg text-red-600 cursor-pointer"
+                        />
+                      </div>
                     </td>
                     <td className="pl-5 pr-5 flex gap-2 py-[6px]">
                       {el.actions.map((action, index) => {
                         return action.label.length ? (
                           action.isActionEditOn ? (
                             <ActionSelectBox
+                              key={action + index}
                               options={actionsList.map((item) =>
                                 !el.actions.some(
                                   (el) => el.label === item.label
@@ -538,8 +498,8 @@ const NetFree = () => {
                                   ? item
                                   : null
                               )}
-                              categoryName={el.name}
-                              categoryId={el.categories_id}
+                              domainName={el.domain}
+                              domainId={el.id}
                               currentActions={actionsList.map((item, index) =>
                                 el.actions.some((el) => el.label === item.label)
                                   ? item.id
@@ -588,7 +548,7 @@ const NetFree = () => {
                                   <div
                                     className="py-1 px-3 hover:bg-[#f2f3f5]"
                                     onClick={() =>
-                                      deleteAction(el.categories_id, action.id)
+                                      deleteAction(el.id, action.id)
                                     }
                                   >
                                     {t("netfree.remove")}
@@ -601,10 +561,10 @@ const NetFree = () => {
                       })}
                       {el.request_status && (
                         <StatusOption
-                          getData={getCategoryData}
+                          getData={getDomainsData}
                           dataValue={el}
                           deleteStatusFn={(statusId) =>
-                            requestService.deleteCategoryStatus(statusId)
+                            websiteServices.deleteWebsiteStatus(statusId)
                           }
                         />
                       )}
@@ -612,9 +572,7 @@ const NetFree = () => {
                         <AddButtonIcon
                           extra={""}
                           onClick={() => {
-                            setTrafficAction(false);
                             enableActionUpdate(el);
-                            setIsDefaultActionSelectOpen(false);
                           }}
                         />
                       }
@@ -626,164 +584,15 @@ const NetFree = () => {
           </table>
         </div>
       </div>
-      <div className="flex flex-col gap-3 max-h-[100%] overflow-y-auto w-full md:!min-w-[250px] md:!w-[250px]">
-        <div className="bg-white min-h-[160px] max-h-[160px] rounded-3xl text-center text-[#2B3674]">
-          <h3 className="p-3 text-[22px] font-bold">
-            {t("netfree.searchSiteSetting")}
-          </h3>
-          <SearchField
-            variant="auth"
-            extra="mb-[10px] -mt-[14px] px-3"
-            id="dateCreated"
-            type="text"
-            placeholder={t("searchbox.placeHolder")}
-            onChange={handleSiteSearch}
-            name="dateCreated"
-            noUnderline="true"
-            borderRadius="30"
-          />
-          <div className="max-h-[calc(100%-100px)] overflow-y-auto">
-            {searchResult.map((result) => {
-              return (
-                <p
-                  key={result.categories_id}
-                  className="text-[13px] text-left px-3"
-                >
-                  {result.name}
-                </p>
-              );
-            })}
-          </div>
-        </div>
-        <div className="flex justify-center items-center rounded-3xl text-center text-[#2B3674]">
-          <button
-            onClick={handleUpdateCategory}
-            className={`linear p-1 w-[90%] rounded-full py-[4px] text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
-          >
-            {t("netfree.updateCategoryButton")}
-          </button>
-        </div>
-        <div className="flex flex-col px-3 py-3 overflow-x-hidden items-start bg-white max-h-[200px] min-h-[200px] rounded-3xl text-center text-[#2B3674]">
-          <h5 className="font-bold text-[20px]">
-            {t("netfree.defaultAction")}
-          </h5>
-          <div className="max-h-[calc(100%-30px)] w-full overflow-y-auto mb-2">
-            {defaultActionList.map((el) => {
-              return (
-                <div
-                  key={el.id}
-                  className="px-3 w-full w-fit whitespace-break-spaces text-left text-[13px] mb-2 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap"
-                >
-                  {el.label}{" "}
-                  <div
-                    className="text-[13px] text-[#fc3232] cursor-pointer"
-                    onClick={() => deleteDefaultAction(el.id)}
-                  >
-                    x
-                  </div>
-                </div>
-              );
-            })}
-            {defaultStatus && (
-              <div className="px-3 w-full w-fit whitespace-break-spaces text-left text-[13px] mb-2 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap">
-                {defaultStatus.email_request_status.label}
-                <div
-                  className="text-[13px] text-[#fc3232] cursor-pointer"
-                  onClick={() =>
-                    deleteNetfreeStatus(defaultStatus.id, getActionsList)
-                  }
-                >
-                  x
-                </div>
-              </div>
-            )}
-          </div>
-          <AddButtonIcon
-            extra={""}
-            onClick={() => {
-              setIsDefaultActionSelectOpen(true);
-              setTrafficAction(false);
-              enableActionUpdate();
-            }}
-          />
-        </div>
-        {defaultTraffic !== null && (
-          <div className="max-h-[150px] min-h-[150px] flex flex-col items-start py-1 px-2 overflow-hidden bg-white rounded-3xl text-center text-[#2B3674]">
-            <div className="flex justify-around items-center w-full mb-2">
-              <h5 className="font-bold ml-2 text-[14px]">
-                {t("netfree.trafficRecord")}
-              </h5>
-              <ToggleSwitch
-                clickHandler={updateDefaultTrafficHandler}
-                selected={defaultTraffic}
-              />
-            </div>
-            <div className="max-h-[calc(100%-30px)] w-full overflow-y-auto mb-2">
-              {defaultTrafficActions.map((el) => {
-                return (
-                  <div
-                    key={el.id}
-                    className="px-3 w-full w-fit whitespace-break-spaces text-left text-[13px] mb-2 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap"
-                  >
-                    {el.label}{" "}
-                    <div
-                      className="text-[13px] text-[#fc3232] cursor-pointer"
-                      onClick={() => deleteDefaultAction(el.id)}
-                    >
-                      x
-                    </div>
-                  </div>
-                );
-              })}
-              {trafficStatus && (
-                <div className="px-3 w-full w-fit whitespace-break-spaces text-left text-[13px] mb-2 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap">
-                  {trafficStatus.email_request_status.label}
-                  <div
-                    className="text-[13px] text-[#fc3232] cursor-pointer"
-                    onClick={() =>
-                      deleteNetfreeStatus(trafficStatus.id, getActionsList)
-                    }
-                  >
-                    x
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="pl-2">
-              <AddButtonIcon
-                extra={""}
-                onClick={() => {
-                  setIsDefaultActionSelectOpen(true);
-                  setTrafficAction(true);
-                  enableActionUpdate();
-                }}
-              />
-            </div>
-          </div>
-        )}
-        <div className="py-3 bg-white h-[23%] rounded-3xl text-center text-[#2B3674]">
-          <div className="flex items-center justify-center">
-            <p className="p-2 text-xs">
-              {t("netfree.buyerReviewNotification")}
-            </p>
-            <ToggleSwitch selected={true} />
-          </div>
-          <div className="flex items-center justify-center">
-            <p className="p-2 text-xs">
-              {t("netfree.buyerReviewNotification")}
-            </p>
-            <ToggleSwitch selected={true} />
-          </div>
-          <div className="flex items-center justify-center">
-            <p className="p-2 text-xs">
-              {t("netfree.buyerReviewNotification")}
-            </p>
-            <ToggleSwitch selected={true} />
-          </div>
-        </div>
-      </div>
+      {confirmationModal && domain && (
+        <DeleteConfirmationModal
+          showModal={confirmationModal}
+          setShowModal={setConfirmationModal}
+          onClick={() => deleteDomain(domain.id)}
+        />
+      )}
     </div>
   );
 };
 
-export default NetFree;
+export default Websites;

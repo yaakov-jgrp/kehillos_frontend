@@ -7,16 +7,22 @@ import { useTranslation } from "react-i18next";
 // Icon imports
 import { MdExpandMore } from "react-icons/md";
 
-// Utils imports
-import { deleteNetfreeStatus } from "../../lib/CommonFunctions";
-
-function StatusOption({ category, getCategoryData }) {
+function StatusOption({ dataValue, getData, deleteStatusFn }) {
   const [clicked, setClicked] = useState(false);
   const { t, i18n } = useTranslation();
 
+  const deleteStatus = async (id) => {
+    try {
+      const res = await deleteStatusFn(id);
+      getData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="px-3 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap">
-      {category.request_status.email_request_status.label}
+      {dataValue.request_status.email_request_status.label}
       <MdExpandMore
         onClick={() => setClicked((prev) => !prev)}
         className="h-5 w-5 text-blueSecondary cursor-pointer"
@@ -29,9 +35,7 @@ function StatusOption({ category, getCategoryData }) {
         >
           <div
             className="py-1 px-3 hover:bg-[#f2f3f5]"
-            onClick={() =>
-              deleteNetfreeStatus(category.request_status.id, getCategoryData)
-            }
+            onClick={() => deleteStatus(dataValue.request_status.id)}
           >
             {t("netfree.remove")}
           </div>
