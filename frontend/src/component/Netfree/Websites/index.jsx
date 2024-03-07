@@ -2,20 +2,24 @@
 import { useEffect, useState } from "react";
 
 // UI Components Imports
-import SearchField from "../component/fields/SearchField";
-import AddButtonIcon from "../component/common/AddButton";
-import EditButtonIcon from "../component/common/EditButton";
-import TooltipButtonIcon from "../component/common/TootltipButton";
-import ProfileModal from "../component/category/ProfileModal";
-import Loader from "../component/common/Loader";
-import StatusOption from "../component/category/StatusOption";
+import SearchField from "../../fields/SearchField";
+import AddButtonIcon from "../../common/AddButton";
+import EditButtonIcon from "../../common/EditButton";
+import TooltipButtonIcon from "../../common/TootltipButton";
+import ProfileModal from "../category/ProfileModal";
+import Loader from "../../common/Loader";
+import StatusOption from "../category/StatusOption";
+import DeleteConfirmationModal from "../../common/DeleteConfirmationModal";
+import WebsiteActionModal from "./WebsiteActionModal";
+import WebsiteModal from "./WebsiteModal";
+import NetfreeTabs from "../NetfreeTabs";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 
 // API services
-import categoryService from "../services/category";
+import categoryService from "../../../services/category";
 
 // Icon imports
 import { MdExpandMore } from "react-icons/md";
@@ -23,12 +27,9 @@ import { MdDelete } from "react-icons/md";
 import { HiDuplicate } from "react-icons/hi";
 
 // Utils imports
-import WebsiteModal from "../component/Websites/WebsiteModal";
-import websiteServices from "../services/website";
-import DeleteConfirmationModal from "../component/common/DeleteConfirmationModal";
-import WebsiteActionModal from "../component/Websites/WebsiteActionModal";
+import websiteServices from "../../../services/website";
 
-const Websites = () => {
+const Websites = ({ currentTab, handleTabChange }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [domainsData, setDomainsData] = useState([]);
   const [domainsDataCopy, setDomainsDataCopy] = useState([]);
@@ -326,6 +327,10 @@ const Websites = () => {
         </>
       )}
       <div className="bg-white rounded-3xl overflow-x-auto overflow-y-hidden relative w-full">
+        <NetfreeTabs
+          currentTab={currentTab}
+          handleTabChange={handleTabChange}
+        />
         <div className="m-5 px-2">
           <ul
             className={`${
@@ -459,6 +464,20 @@ const Websites = () => {
                     name="actions"
                   />
                 </th>
+                {/* <th className="pl-5">
+                  <h5 className="text-start text-[10px] md:text-[14px] font-bold text-[#2B3674]">
+                    {t("netfree.note")}
+                  </h5>
+                  <SearchField
+                    variant="auth"
+                    type="text"
+                    placeholder={t("searchbox.placeHolder")}
+                    onChange={(e) =>
+                      searchCategories(e.target.value, domainsDataCopy, "note")
+                    }
+                    name="note"
+                  />
+                </th> */}
               </tr>
             </thead>
             <tbody className="pt-5">

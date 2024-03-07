@@ -177,6 +177,8 @@
   },
   "netfree": {
     "categories": "Categories",
+    "websites": "Websites",
+    "note": "note",
     "name": "Name",
     "nameHe": "Name in Hebrew",
     "actions": "Actions",

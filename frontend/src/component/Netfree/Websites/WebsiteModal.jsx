@@ -6,8 +6,12 @@ import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import ErrorMessage from "../common/ErrorMessage";
-import websiteServices from "../../services/website";
+
+// UI Components
+import ErrorMessage from "../../common/ErrorMessage";
+
+// API Services
+import websiteServices from "../../../services/website";
 
 function WebsiteModal({ showModal, setShowModal, onClick }) {
   const { t } = useTranslation();

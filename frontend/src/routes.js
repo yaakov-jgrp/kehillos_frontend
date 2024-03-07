@@ -8,12 +8,10 @@ import NetFree from "./views/NetFree";
 import Clients from "./views/Clients";
 import ClientDetails from "./views/ClientDetails";
 import EmailTemplating from "./views/EmailTemplating";
-import Websites from "./views/Websites";
 
 // Icon imports
 import { MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
 import { HiOutlineUserGroup } from "react-icons/hi2";
-import { CiGlobe } from "react-icons/ci";
 
 const routes = [
   // {
@@ -44,13 +42,6 @@ const routes = [
     path: "request",
     icon: <MdOutlineContactSupport className="h-6 w-6" />,
     component: <Request />,
-  },
-  {
-    name: t("sidebar.websites"),
-    path: "settings/websites",
-    type: "menu",
-    icon: <CiGlobe className="h-6 w-6" />,
-    component: <Websites />,
   },
   {
     name: t("sidebar.netfree"),

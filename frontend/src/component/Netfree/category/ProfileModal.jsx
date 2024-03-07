@@ -8,7 +8,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 // API services
-import categoryService from "../../services/category";
+import categoryService from "../../../services/category";
 
 const ProfileModal = ({
   showModal,

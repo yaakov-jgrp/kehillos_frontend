@@ -9,9 +9,9 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // API services
-import categoryService from "../../services/category";
-import emailService from "../../services/email";
-import requestService from "../../services/request";
+import categoryService from "../../../services/category";
+import emailService from "../../../services/email";
+import requestService from "../../../services/request";
 
 // Icon imports
 import { AiTwotoneDelete } from "react-icons/ai";
@@ -23,19 +23,14 @@ const initialState = {
   Custom: false,
 };
 
-const ActionModal = ({
+function WebsiteActionModal({
   showModal,
   setShowModal,
-  updateAction,
-  categoryId,
-  setDefaultAction,
-  isDefault,
+  currentData,
   editActionID,
   setEditActionId,
-  trafficAction,
-  defaultStatus,
-  trafficStatus,
-}) => {
+  actionHandler,
+}) {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [actionsList, setActionsList] = useState([]);
   const { t } = useTranslation();
@@ -97,14 +92,11 @@ const ActionModal = ({
   ];
 
   const getActionsList = async () => {
-    const response = await categoryService.getActions();
-    if (trafficAction) {
-      const trafficActions = response.data.data.filter(
-        (action) => action.id === 1 || action.id === 9999999
-      );
-      setActionsList(trafficActions);
-    } else {
+    try {
+      const response = await categoryService.getActions();
       setActionsList(response.data.data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -130,7 +122,6 @@ const ActionModal = ({
     setActionNeedsOtherFields(isNeeded);
     setSelectedAction(actionId);
   };
-
   const submitForm = async () => {
     let data;
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -161,7 +152,7 @@ const ActionModal = ({
         return;
       }
       data = {
-        id: categoryId?.categories_id,
+        id: currentData.id,
         to_add: selectedAction,
         inputs: {
           email_to_admin: sendEmailTypes?.Admin,
@@ -172,7 +163,7 @@ const ActionModal = ({
       };
     } else {
       data = {
-        id: categoryId?.categories_id,
+        id: currentData.id,
         to_add: selectedAction,
         inputs:
           actionNeedsOtherFields.length > 0
@@ -188,20 +179,19 @@ const ActionModal = ({
       ) {
         data = {
           ...data,
-          inputs: { ...data.inputs, email_request_status: selectedStatus },
+          inputs: {
+            ...data.inputs,
+            email_request_status: selectedStatus,
+          },
           is_status: true,
         };
       }
     }
 
-    if (isDefault) {
-      await setDefaultAction(selectedAction, data);
+    if (editActionID) {
+      await actionHandler(data, editActionID);
     } else {
-      if (editActionID) {
-        await updateAction(data, editActionID);
-      } else {
-        await updateAction(data, null);
-      }
+      await actionHandler(data, null);
     }
 
     setSelectedAction("selectAction");
@@ -215,7 +205,6 @@ const ActionModal = ({
     setEditActionId(null);
     setShowModal(false);
   };
-
   function findPartialMatch(searchString, arr, text) {
     for (const item of arr) {
       if (text === "label") {
@@ -230,9 +219,9 @@ const ActionModal = ({
     }
     return null;
   }
-
   const getActionUpdateValue = () => {
-    let obj = categoryId?.actions?.find((val) => val.id === editActionID);
+    let obj = currentData?.actions?.find((val) => val.id === editActionID);
+
     if (
       obj?.label.includes("Send email template") ||
       obj?.label.includes("שלח תבנית אימייל")
@@ -270,37 +259,18 @@ const ActionModal = ({
     getActionsList();
     getTemplates();
     getRequestStatusList();
-  }, [trafficAction]);
-
+  }, []);
   useEffect(() => {
     getActionUpdateValue();
     let status = "selectStatus";
-    if (isDefault) {
-      status = defaultStatus?.email_request_status?.value || "selectStatus";
-      if (trafficAction) {
-        status = trafficStatus?.email_request_status?.value || "selectStatus";
-      }
-    } else {
-      status =
-        categoryId?.request_status?.email_request_status?.value ||
-        "selectStatus";
-    }
     setSelectedStatus(status);
-  }, [
-    editActionID,
-    JSON.stringify(defaultStatus),
-    JSON.stringify(trafficStatus),
-    trafficAction,
-    JSON.stringify(categoryId),
-    isDefault,
-  ]);
+  }, [editActionID]);
 
   useEffect(() => {
     if (!sendEmailTypes.Custom) {
       setInputValues([""]);
     }
   }, [sendEmailTypes]);
-
   return (
     <>
       {showModal ? (
@@ -592,6 +562,6 @@ const ActionModal = ({
       ) : null}
     </>
   );
-};
+}
 
-export default ActionModal;
+export default WebsiteActionModal;

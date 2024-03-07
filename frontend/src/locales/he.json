@@ -177,6 +177,8 @@
   },
   "netfree": {
     "categories": "קטגוריות",
+    "websites": "אתרי אינטרנט",
+    "note": "הערה",
     "name": "שם",
     "nameHe": "שם בעברית",
     "actions": "פעולות",

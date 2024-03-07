@@ -16,7 +16,6 @@ import ClientDetails from "./views/ClientDetails";
 import ClientsForm from "./views/ClientsForm";
 import Logs from "./views/Logs";
 import Users from "./views/Users";
-import Websites from "./views/Websites";
 import EmailTemplating from "./views/EmailTemplating";
 import RouteGuard from "./component/common/RouteGuard";
 
@@ -39,7 +38,6 @@ import { ToastContainer } from "react-toastify";
 import { MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
 import { IoLogoBuffer } from "react-icons/io";
-import { CiGlobe } from "react-icons/ci";
 
 // Utils imports
 import { DEFAULT_LANGUAGE } from "./constants";
@@ -122,13 +120,6 @@ function App() {
       path: "request",
       icon: <MdOutlineContactSupport className="h-6 w-6" />,
       component: <Request />,
-    },
-    {
-      name: t("sidebar.websites"),
-      path: "settings/websites",
-      type: "menu",
-      icon: <CiGlobe className="h-6 w-6" />,
-      component: <Websites />,
     },
     {
       name: t("sidebar.netfree"),
