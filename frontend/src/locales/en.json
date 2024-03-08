@@ -173,10 +173,13 @@
   },
   "websites": {
     "addDomain": "+ Add Domain",
-    "domain": "Domain"
+    "domain": "Domain",
+    "note": "Note"
   },
   "netfree": {
     "categories": "Categories",
+    "websites": "Websites",
+    "note": "note",
     "name": "Name",
     "nameHe": "Name in Hebrew",
     "actions": "Actions",

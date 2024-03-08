@@ -2,20 +2,24 @@
 import { useEffect, useState } from "react";
 
 // UI Components Imports
-import SearchField from "../component/fields/SearchField";
-import AddButtonIcon from "../component/common/AddButton";
-import EditButtonIcon from "../component/common/EditButton";
-import TooltipButtonIcon from "../component/common/TootltipButton";
-import ProfileModal from "../component/category/ProfileModal";
-import Loader from "../component/common/Loader";
-import StatusOption from "../component/category/StatusOption";
+import SearchField from "../../fields/SearchField";
+import AddButtonIcon from "../../common/AddButton";
+import EditButtonIcon from "../../common/EditButton";
+import TooltipButtonIcon from "../../common/TootltipButton";
+import ProfileModal from "../category/ProfileModal";
+import Loader from "../../common/Loader";
+import StatusOption from "../category/StatusOption";
+import DeleteConfirmationModal from "../../common/DeleteConfirmationModal";
+import WebsiteActionModal from "./WebsiteACtionModal";
+import WebsiteModal from "./WebsiteModal";
+import NetfreeTabs from "../NetfreeTabs";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 
 // API services
-import categoryService from "../services/category";
+import categoryService from "../../../services/category";
 
 // Icon imports
 import { MdExpandMore } from "react-icons/md";
@@ -23,16 +27,15 @@ import { MdDelete } from "react-icons/md";
 import { HiDuplicate } from "react-icons/hi";
 
 // Utils imports
-import WebsiteModal from "../component/Websites/WebsiteModal";
-import websiteServices from "../services/website";
-import DeleteConfirmationModal from "../component/common/DeleteConfirmationModal";
-import WebsiteActionModal from "../component/Websites/WebsiteActionModal";
+import websiteServices from "../../../services/website";
 
-const Websites = () => {
+const Websites = ({ currentTab, handleTabChange }) => {
+  const { t, i18n } = useTranslation();
+  const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
+
   const [isLoading, setIsLoading] = useState(false);
   const [domainsData, setDomainsData] = useState([]);
   const [domainsDataCopy, setDomainsDataCopy] = useState([]);
-  const { t, i18n } = useTranslation();
   const [showActionModal, setShowActionModal] = useState(false);
   const [editActionID, setEditActionId] = useState(null);
   const [clickedAction, setClickedAction] = useState(null);
@@ -44,10 +47,10 @@ const Websites = () => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [newProfile, setNewProfile] = useState(true);
-  const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [domain, setDomain] = useState(null);
   const [currentDomain, setCurrentDomain] = useState(null);
+  const [editDomain, setEditDomain] = useState(null);
 
   const setResponseDataToState = (res) => {
     const response = res.data.data.map((el) => {
@@ -60,9 +63,9 @@ const Websites = () => {
     setDomainsData(response);
     setDomainsDataCopy(response);
     if (siteSearch) {
-      searchCategories(siteSearch, response);
+      searchWebsites(siteSearch, response);
     } else {
-      searchCategories(currentSearchTerm, response);
+      searchWebsites(currentSearchTerm, response);
     }
   };
 
@@ -109,13 +112,13 @@ const Websites = () => {
     setShowActionModal(true);
   };
 
-  const searchCategories = (searchTerm, response, type) => {
+  const searchWebsites = (searchTerm, response, type) => {
     setCurrentSearchTerm(searchTerm);
     if (siteSearch) {
       setDomainsData(response);
     } else if (currentSearchTerm) {
       let filteredData = [];
-      if (type === "domain") {
+      if (type === "domain" || type === "note") {
         filteredData = response?.filter((el) =>
           el[type].toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -319,6 +322,8 @@ const Websites = () => {
           {showWebsiteModal && (
             <WebsiteModal
               showModal={showWebsiteModal}
+              editDomain={editDomain}
+              setEditDomain={setEditDomain}
               setShowModal={() => setShowWebsiteModal(!showWebsiteModal)}
               onClick={getDomainsData}
             />
@@ -326,6 +331,10 @@ const Websites = () => {
         </>
       )}
       <div className="bg-white rounded-3xl overflow-x-auto overflow-y-hidden relative w-full">
+        <NetfreeTabs
+          currentTab={currentTab}
+          handleTabChange={handleTabChange}
+        />
         <div className="m-5 px-2">
           <ul
             className={`${
@@ -409,17 +418,18 @@ const Websites = () => {
             <Loader />
           </div>
         )}
+        <div className="flex items-center justify-end w-full px-5">
+          <button
+            className={`w-fit mb-2 ml-auto rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
+            onClick={() => {
+              setEditDomain(null);
+              setShowWebsiteModal(!showWebsiteModal);
+            }}
+          >
+            {t("websites.addDomain")}
+          </button>
+        </div>
         <div className="h-[calc(100%-190px)] max-w-[100%] overflow-x-auto overflow-y-auto mx-5 px-2">
-          <div className="flex items-center justify-end">
-            <button
-              className={`w-fit mb-2 ml-auto rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
-              onClick={() => {
-                setShowWebsiteModal(!showWebsiteModal);
-              }}
-            >
-              {t("websites.addDomain")}
-            </button>
-          </div>
           <table className="!table text-[12px] overflow-y-auto w-full">
             <thead className="sticky top-0 z-10">
               <tr className=" pr-3 bg-lightPrimary rounded-lg">
@@ -432,13 +442,23 @@ const Websites = () => {
                     type="text"
                     placeholder={t("searchbox.placeHolder")}
                     onChange={(e) =>
-                      searchCategories(
-                        e.target.value,
-                        domainsDataCopy,
-                        "domain"
-                      )
+                      searchWebsites(e.target.value, domainsDataCopy, "domain")
                     }
                     name="domain"
+                  />
+                </th>
+                <th className="pl-5">
+                  <h5 className="text-start capitalize text-[10px] md:text-[14px] font-bold text-[#2B3674]">
+                    {t("netfree.note")}
+                  </h5>
+                  <SearchField
+                    variant="auth"
+                    type="text"
+                    placeholder={t("searchbox.placeHolder")}
+                    onChange={(e) =>
+                      searchWebsites(e.target.value, domainsDataCopy, "note")
+                    }
+                    name="note"
                   />
                 </th>
                 <th className="pl-5">
@@ -450,18 +470,14 @@ const Websites = () => {
                     type="text"
                     placeholder={t("searchbox.placeHolder")}
                     onChange={(e) =>
-                      searchCategories(
-                        e.target.value,
-                        domainsDataCopy,
-                        "actions"
-                      )
+                      searchWebsites(e.target.value, domainsDataCopy, "actions")
                     }
                     name="actions"
                   />
                 </th>
               </tr>
             </thead>
-            <tbody className="pt-5">
+            <tbody className="pt-5 ">
               {domainsData.map((el, currentIndex) => {
                 return (
                   <tr
@@ -473,16 +489,28 @@ const Websites = () => {
                         <h5 className="font-bold text-[#2B3674] break-words w-[15rem]">
                           {el.domain}
                         </h5>
-                        <MdDelete
-                          onClick={() => {
-                            setDomain(el);
-                            setConfirmationModal(!confirmationModal);
-                          }}
-                          className="text-lg text-red-600 cursor-pointer"
-                        />
+                        <div className="flex items-center justify-center">
+                          <EditButtonIcon
+                            extra="mr-2 justify-self-end"
+                            onClick={() => {
+                              setEditDomain(el);
+                              setShowWebsiteModal(true);
+                            }}
+                          />
+                          <MdDelete
+                            onClick={() => {
+                              setDomain(el);
+                              setConfirmationModal(!confirmationModal);
+                            }}
+                            className="text-lg text-red-600 cursor-pointer"
+                          />
+                        </div>
                       </div>
                     </td>
-                    <td className="pl-5 pr-5 flex gap-2 py-[6px]">
+                    <td className="px-5 min-w-[9rem] max-w-[18rem]">
+                      {el.note}
+                    </td>
+                    <td className="px-5 flex gap-2 py-[6px]">
                       {el.actions.map((action, index) => {
                         return action.label.length ? (
                           action.isActionEditOn ? (

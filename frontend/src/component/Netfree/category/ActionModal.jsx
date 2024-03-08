@@ -9,9 +9,9 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // API services
-import categoryService from "../../services/category";
-import emailService from "../../services/email";
-import requestService from "../../services/request";
+import categoryService from "../../../services/category";
+import emailService from "../../../services/email";
+import requestService from "../../../services/request";
 
 // Icon imports
 import { AiTwotoneDelete } from "react-icons/ai";
@@ -23,14 +23,19 @@ const initialState = {
   Custom: false,
 };
 
-function WebsiteActionModal({
+const ActionModal = ({
   showModal,
   setShowModal,
-  currentData,
+  updateAction,
+  categoryId,
+  setDefaultAction,
+  isDefault,
   editActionID,
   setEditActionId,
-  actionHandler,
-}) {
+  trafficAction,
+  defaultStatus,
+  trafficStatus,
+}) => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [actionsList, setActionsList] = useState([]);
   const { t } = useTranslation();
@@ -92,11 +97,14 @@ function WebsiteActionModal({
   ];
 
   const getActionsList = async () => {
-    try {
-      const response = await categoryService.getActions();
+    const response = await categoryService.getActions();
+    if (trafficAction) {
+      const trafficActions = response.data.data.filter(
+        (action) => action.id === 1 || action.id === 9999999
+      );
+      setActionsList(trafficActions);
+    } else {
       setActionsList(response.data.data);
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -122,6 +130,7 @@ function WebsiteActionModal({
     setActionNeedsOtherFields(isNeeded);
     setSelectedAction(actionId);
   };
+
   const submitForm = async () => {
     let data;
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -152,7 +161,7 @@ function WebsiteActionModal({
         return;
       }
       data = {
-        id: currentData.id,
+        id: categoryId?.categories_id,
         to_add: selectedAction,
         inputs: {
           email_to_admin: sendEmailTypes?.Admin,
@@ -163,7 +172,7 @@ function WebsiteActionModal({
       };
     } else {
       data = {
-        id: currentData.id,
+        id: categoryId?.categories_id,
         to_add: selectedAction,
         inputs:
           actionNeedsOtherFields.length > 0
@@ -179,19 +188,20 @@ function WebsiteActionModal({
       ) {
         data = {
           ...data,
-          inputs: {
-            ...data.inputs,
-            email_request_status: selectedStatus,
-          },
+          inputs: { ...data.inputs, email_request_status: selectedStatus },
           is_status: true,
         };
       }
     }
 
-    if (editActionID) {
-      await actionHandler(data, editActionID);
+    if (isDefault) {
+      await setDefaultAction(selectedAction, data);
     } else {
-      await actionHandler(data, null);
+      if (editActionID) {
+        await updateAction(data, editActionID);
+      } else {
+        await updateAction(data, null);
+      }
     }
 
     setSelectedAction("selectAction");
@@ -205,6 +215,7 @@ function WebsiteActionModal({
     setEditActionId(null);
     setShowModal(false);
   };
+
   function findPartialMatch(searchString, arr, text) {
     for (const item of arr) {
       if (text === "label") {
@@ -219,9 +230,9 @@ function WebsiteActionModal({
     }
     return null;
   }
-  const getActionUpdateValue = () => {
-    let obj = currentData?.actions?.find((val) => val.id === editActionID);
 
+  const getActionUpdateValue = () => {
+    let obj = categoryId?.actions?.find((val) => val.id === editActionID);
     if (
       obj?.label.includes("Send email template") ||
       obj?.label.includes("שלח תבנית אימייל")
@@ -259,18 +270,37 @@ function WebsiteActionModal({
     getActionsList();
     getTemplates();
     getRequestStatusList();
-  }, []);
+  }, [trafficAction]);
+
   useEffect(() => {
     getActionUpdateValue();
     let status = "selectStatus";
+    if (isDefault) {
+      status = defaultStatus?.email_request_status?.value || "selectStatus";
+      if (trafficAction) {
+        status = trafficStatus?.email_request_status?.value || "selectStatus";
+      }
+    } else {
+      status =
+        categoryId?.request_status?.email_request_status?.value ||
+        "selectStatus";
+    }
     setSelectedStatus(status);
-  }, [editActionID]);
+  }, [
+    editActionID,
+    JSON.stringify(defaultStatus),
+    JSON.stringify(trafficStatus),
+    trafficAction,
+    JSON.stringify(categoryId),
+    isDefault,
+  ]);
 
   useEffect(() => {
     if (!sendEmailTypes.Custom) {
       setInputValues([""]);
     }
   }, [sendEmailTypes]);
+
   return (
     <>
       {showModal ? (
@@ -562,6 +592,6 @@ function WebsiteActionModal({
       ) : null}
     </>
   );
-}
+};
 
-export default WebsiteActionModal;
+export default ActionModal;

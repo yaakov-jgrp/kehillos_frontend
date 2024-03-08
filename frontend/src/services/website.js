@@ -20,6 +20,16 @@ const createDomain = (formData) => {
     formData
   );
 };
+const editDomain = (formData, id) => {
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
+  return api.put(
+    `/api/crm/domain-list/${id}/?lang=${lang}&profile=${
+      filterProfileID ? filterProfileID : "1"
+    }`,
+    formData
+  );
+};
 
 const deleteDomain = (domain_id) => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -59,6 +69,7 @@ const deleteWebsiteStatus = (id) => {
 const websiteServices = {
   getDomains,
   createDomain,
+  editDomain,
   deleteDomain,
   websiteActions,
   deleteWebsiteStatus,

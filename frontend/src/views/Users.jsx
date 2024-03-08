@@ -9,7 +9,7 @@ import AddButtonIcon from "../component/common/AddButton";
 import SearchField from "../component/fields/SearchField";
 import Loader from "../component/common/Loader";
 import NoDataFound from "../component/common/NoDataFound";
-import UserModal from "../component/category/UserModal";
+import UserModal from "../component/Netfree/category/UserModal";
 import DeleteConfirmationModal from "../component/common/DeleteConfirmationModal";
 
 // Third part Imports
