@@ -173,7 +173,8 @@
   },
   "websites": {
     "addDomain": "+ הוסף דומיין",
-    "domain": "תְחוּם"
+    "domain": "תְחוּם",
+    "note": "הערה"
   },
   "netfree": {
     "categories": "קטגוריות",

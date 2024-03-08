@@ -173,7 +173,8 @@
   },
   "websites": {
     "addDomain": "+ Add Domain",
-    "domain": "Domain"
+    "domain": "Domain",
+    "note": "Note"
   },
   "netfree": {
     "categories": "Categories",

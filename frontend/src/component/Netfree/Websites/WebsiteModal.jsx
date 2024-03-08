@@ -13,13 +13,21 @@ import ErrorMessage from "../../common/ErrorMessage";
 // API Services
 import websiteServices from "../../../services/website";
 
-function WebsiteModal({ showModal, setShowModal, onClick }) {
+function WebsiteModal({
+  showModal,
+  setShowModal,
+  editDomain,
+  setEditDomain,
+  onClick,
+}) {
   const { t } = useTranslation();
   const defaultValues = {
     domain: "",
+    note: "",
   };
   const schema = yup.object().shape({
     domain: yup.string().required(t("messages.domainAddError")),
+    note: yup.string().notRequired(),
   });
   const {
     control,
@@ -32,22 +40,35 @@ function WebsiteModal({ showModal, setShowModal, onClick }) {
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
+
   const submitForm = async (data, e) => {
     e.preventDefault();
-    console.log(data);
     try {
       const formData = new FormData();
       formData.append("domain", data.domain);
-      const res = await websiteServices.createDomain(formData);
-      if (res.status === 200) {
+      formData.append("note", data.note);
+      const res = editDomain
+        ? await websiteServices.editDomain(formData, editDomain.id)
+        : await websiteServices.createDomain(formData);
+
+      if (res.status >= 200 && res.status < 300) {
         reset();
         setShowModal(!showModal);
         onClick();
+        setEditDomain(null);
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (editDomain) {
+      setValue("domain", editDomain.domain);
+      setValue("note", editDomain.note);
+    }
+  }, [editDomain]);
+
   return (
     <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
       <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
@@ -76,7 +97,7 @@ function WebsiteModal({ showModal, setShowModal, onClick }) {
                   </span>
                 </button>
               </div>
-              <div className="relative p-6 flex-auto">
+              <div className="relative px-6 py-3 flex-auto">
                 <label className="block text-black text-sm font-bold mb-1">
                   {t("websites.domain")}
                 </label>
@@ -97,6 +118,26 @@ function WebsiteModal({ showModal, setShowModal, onClick }) {
                 {errors.domain && (
                   <ErrorMessage message={errors.domain.message} />
                 )}
+              </div>
+              <div className="relative px-6 py-3 flex-auto">
+                <label className="block text-black text-sm font-bold mb-1">
+                  {t("websites.note")}
+                </label>
+                <Controller
+                  name="note"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <input
+                      value={value}
+                      className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
+                      required
+                      onChange={onChange}
+                      onBlur={onBlur}
+                    />
+                  )}
+                />
+                {errors.note && <ErrorMessage message={errors.note.message} />}
               </div>
               <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                 <button
