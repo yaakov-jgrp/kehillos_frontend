@@ -10,9 +10,9 @@ import ProfileModal from "../category/ProfileModal";
 import Loader from "../../common/Loader";
 import StatusOption from "../category/StatusOption";
 import DeleteConfirmationModal from "../../common/DeleteConfirmationModal";
-import WebsiteActionModal from "./WebsiteACtionModal";
 import WebsiteModal from "./WebsiteModal";
 import NetfreeTabs from "../NetfreeTabs";
+import WebsiteActionModal from "./WebsiteActionModal";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
