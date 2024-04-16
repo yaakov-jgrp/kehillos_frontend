@@ -140,7 +140,7 @@ const ActionModal = ({
       notify("Please select action!!");
       return;
     }
-    if (selectedAction == 1) {
+    if (showEmailTemplate) {
       if (selectedTemplate === "selectTemplate") {
         notify("Please select template!!");
         return;
@@ -215,6 +215,7 @@ const ActionModal = ({
     setDeleteButtonsVisible([false]);
     setEditActionId(null);
     setShowModal(false);
+    setShowEmailTemplate(false);
   };
 
   function findPartialMatch(searchString, arr, text) {
