@@ -50,6 +50,7 @@ const ActionModal = ({
   const [inputValues, setInputValues] = useState([""]);
   const [deleteButtonsVisible, setDeleteButtonsVisible] = useState([false]);
   const [requestStatuses, setRequestStatuses] = useState([]);
+  const [showEmailTemplate, setShowEmailTemplate] = useState(false);
   const notify = (error) => toast.error(error);
   const handleAddInput = () => {
     setInputValues([...inputValues, ""]);
@@ -336,7 +337,17 @@ const ActionModal = ({
                         },
                       }}
                       className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                      onChange={(e) => setActionValue(e)}
+                      onChange={(e) => {
+                        setActionValue(e);
+                        const isTemplateAction = actionsList.filter(
+                          (el) => el.id === e.target.value
+                        )[0]?.is_template_action;
+                        if (isTemplateAction) {
+                          setShowEmailTemplate(true);
+                        } else {
+                          setShowEmailTemplate(false);
+                        }
+                      }}
                       value={selectedAction}
                       placeholder="Select Action"
                     >
@@ -418,7 +429,7 @@ const ActionModal = ({
                         </Select>
                       </>
                     ) : null}
-                    {selectedAction == 1 && (
+                    {showEmailTemplate && (
                       <>
                         <label className="block text-black text-sm font-bold mb-1">
                           {t("netfree.template")}
