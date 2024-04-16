@@ -101,7 +101,7 @@ const ActionModal = ({
     const response = await categoryService.getActions();
     if (trafficAction) {
       const trafficActions = response.data.data.filter(
-        (action) => action.id === 1 || action.id === 9999999
+        (action) => action.is_template_action || action.id === 9999999
       );
       setActionsList(trafficActions);
     } else {
@@ -302,7 +302,7 @@ const ActionModal = ({
       setInputValues([""]);
     }
   }, [sendEmailTypes]);
-
+  console.log(trafficAction);
   return (
     <>
       {showModal ? (
