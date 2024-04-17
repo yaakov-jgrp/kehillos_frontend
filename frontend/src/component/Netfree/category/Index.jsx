@@ -463,7 +463,7 @@ const Categories = ({ currentTab, handleTabChange }) => {
                 className="text-blueSecondary w-5 h-5 hover:cursor-pointer"
                 onClick={duplicateProfileHandler}
               />
-              {activeProfile.id != "1" && (
+              {!activeProfile.is_default && (
                 <MdDelete
                   className="text-blueSecondary w-5 h-5 hover:cursor-pointer"
                   onClick={deleteProfileHandler}
