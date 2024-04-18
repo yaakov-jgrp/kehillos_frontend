@@ -50,6 +50,7 @@ const ActionModal = ({
   const [inputValues, setInputValues] = useState([""]);
   const [deleteButtonsVisible, setDeleteButtonsVisible] = useState([false]);
   const [requestStatuses, setRequestStatuses] = useState([]);
+  const [showEmailTemplate, setShowEmailTemplate] = useState(false);
   const notify = (error) => toast.error(error);
   const handleAddInput = () => {
     setInputValues([...inputValues, ""]);
@@ -100,7 +101,7 @@ const ActionModal = ({
     const response = await categoryService.getActions();
     if (trafficAction) {
       const trafficActions = response.data.data.filter(
-        (action) => action.id === 1 || action.id === 9999999
+        (action) => action.is_template_action || action.id === 9999999
       );
       setActionsList(trafficActions);
     } else {
@@ -139,7 +140,7 @@ const ActionModal = ({
       notify("Please select action!!");
       return;
     }
-    if (selectedAction == 1) {
+    if (showEmailTemplate) {
       if (selectedTemplate === "selectTemplate") {
         notify("Please select template!!");
         return;
@@ -214,6 +215,7 @@ const ActionModal = ({
     setDeleteButtonsVisible([false]);
     setEditActionId(null);
     setShowModal(false);
+    setShowEmailTemplate(false);
   };
 
   function findPartialMatch(searchString, arr, text) {
@@ -300,7 +302,7 @@ const ActionModal = ({
       setInputValues([""]);
     }
   }, [sendEmailTypes]);
-
+  console.log(trafficAction);
   return (
     <>
       {showModal ? (
@@ -336,7 +338,17 @@ const ActionModal = ({
                         },
                       }}
                       className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                      onChange={(e) => setActionValue(e)}
+                      onChange={(e) => {
+                        setActionValue(e);
+                        const isTemplateAction = actionsList.filter(
+                          (el) => el.id === e.target.value
+                        )[0]?.is_template_action;
+                        if (isTemplateAction) {
+                          setShowEmailTemplate(true);
+                        } else {
+                          setShowEmailTemplate(false);
+                        }
+                      }}
                       value={selectedAction}
                       placeholder="Select Action"
                     >
@@ -418,7 +430,7 @@ const ActionModal = ({
                         </Select>
                       </>
                     ) : null}
-                    {selectedAction == 1 && (
+                    {showEmailTemplate && (
                       <>
                         <label className="block text-black text-sm font-bold mb-1">
                           {t("netfree.template")}

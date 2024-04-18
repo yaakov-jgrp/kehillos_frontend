@@ -249,13 +249,13 @@ const Categories = ({ currentTab, handleTabChange }) => {
 
   const getAllProfilesListHandler = async () => {
     const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
-    if (!filterProfileID) {
-      localStorage.setItem("FILTER_PROFILE_ID", 1);
-    }
     const profilesListData = await categoryService.getProfilesList();
     const defaultProfile = profilesListData.data.data.filter(
       (profile) => profile.is_default
     );
+    if (!filterProfileID) {
+      localStorage.setItem("FILTER_PROFILE_ID", defaultProfile[0]?.id ?? 1);
+    }
     const nonDefaultProfiles = profilesListData.data.data.filter(
       (profile) => !profile.is_default
     );
@@ -463,7 +463,7 @@ const Categories = ({ currentTab, handleTabChange }) => {
                 className="text-blueSecondary w-5 h-5 hover:cursor-pointer"
                 onClick={duplicateProfileHandler}
               />
-              {activeProfile.id != "1" && (
+              {!activeProfile.is_default && (
                 <MdDelete
                   className="text-blueSecondary w-5 h-5 hover:cursor-pointer"
                   onClick={deleteProfileHandler}
