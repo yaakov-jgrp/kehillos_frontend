@@ -71,7 +71,7 @@ const Categories = ({ currentTab, handleTabChange }) => {
     if (siteSearch) {
       searchCategories(siteSearch, response);
     } else {
-      searchCategories(currentSearchTerm, response);
+      searchCategories(currentSearchTerm, response, "name");
     }
   };
 
@@ -228,7 +228,6 @@ const Categories = ({ currentTab, handleTabChange }) => {
         });
       }
     });
-
     setCategoriesData(updatedCategoryData);
   };
 
