@@ -21,6 +21,9 @@ import authService from "../services/auth";
 
 // Icon imports
 import { MdDelete, MdEdit } from "react-icons/md";
+import AddIcon from "../assets/images/add.svg";
+import BinIcon from "../assets/images/bin.svg";
+import PencilIcon from "../assets/images/pencil.svg";
 
 // Utils imports
 import { paginationRowOptions } from "../lib/FieldConstants";
@@ -113,25 +116,27 @@ function Users() {
   }, [lang, page, rowsPerPage, JSON.stringify(searchParams)]);
 
   return (
-    <div className="w-full bg-white rounded-3xl">
-      <div className="flex justify-between py-4 px-7 font-bold text-[#2B3674]">
+    <div className="w-full bg-white rounded-3xl shadow-custom">
+      <div className="flex justify-between items-center py-4 px-7 text-gray-11 font-medium text-2xl">
         {t("sidebar.users")}
-        <div className="flex max-w-[150px]">
-          <AddButtonIcon
-            extra={""}
-            onClick={() => {
-              setUserModal(true);
-              setNewUser(true);
-              setEditUser(null);
-            }}
-          />
-        </div>
+        <button
+          className={`w-[128px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+          onClick={() => {
+            setUserModal(true);
+            setNewUser(true);
+            setEditUser(null);
+          }}
+        >
+          <img src={AddIcon} alt="add_icon" />
+          {t("clients.AddNewUser")}
+        </button>
       </div>
       <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2">
         <table className="!table w-full text-[12px] md:text-[14px] mb-3">
-          <thead className="sticky top-0 z-10 [&_th]:min-w-[8.5rem]">
-            <tr className="tracking-[-2%] mb-5 bg-lightPrimary">
-              <th className="pr-3">
+          <thead className="sticky top-0 z-10 [&_th]:min-w-[8.5rem] bg-[#F9FBFC]">
+            <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
+            <tr className="tracking-[-2%] mb-5">
+              <th className="pr-3 pl-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -143,7 +148,7 @@ function Users() {
                   name="id"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2 pt-1">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -155,7 +160,7 @@ function Users() {
                   name="name"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2 pt-1">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -167,7 +172,7 @@ function Users() {
                   name="email"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2 pt-1">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -179,9 +184,9 @@ function Users() {
                   name="user_type"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2 pt-1">
                 <div
-                  className={` ${
+                  className={`-mt-11 ${
                     i18n.dir() === "rtl" ? "text-right" : "text-left"
                   }`}
                 >
@@ -209,7 +214,10 @@ function Users() {
                   <>
                     {allUsers.map((el) => {
                       return (
-                        <tr className="h-[75px]" key={el.id}>
+                        <tr
+                          className="h-[75px] border-b border-b-[#F2F2F2] py-12"
+                          key={el.id}
+                        >
                           <td>#{el.id}</td>
                           <td>{el.name}</td>
                           <td>{el.email}</td>
@@ -221,15 +229,19 @@ function Users() {
                             }
                           </td>
                           <td>
-                            <div className="h-auto w-full flex items-center justify-around">
-                              <MdEdit
-                                className="text-blueSecondary w-5 h-5 hover:cursor-pointer"
+                            <div className="h-auto w-full flex items-center justify-center gap-2">
+                              <img
+                                src={PencilIcon}
+                                alt="PencilIcon"
+                                className="hover:cursor-pointer"
                                 onClick={() => {
                                   editUserHandler(el);
                                 }}
                               />
-                              <MdDelete
-                                className="text-blueSecondary w-5 h-5 hover:cursor-pointer"
+                              <img
+                                src={BinIcon}
+                                alt="BinIcon"
+                                className="hover:cursor-pointer"
                                 onClick={() => {
                                   setEditUser(el);
                                   setConfirmationModal(true);

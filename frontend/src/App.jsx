@@ -77,6 +77,27 @@ function App() {
         main: "#f50057",
       },
     },
+
+    components: {
+      MuiTabs: {
+        styleOverrides: {
+          indicator: {
+            backgroundColor: "#0B99FF",
+            height: "2.5px",
+          },
+        },
+      },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            color: "#5C5C5C",
+            "&.Mui-selected": {
+              color: "#1C1C1C",
+            },
+          },
+        },
+      },
+    },
   });
 
   const themeWithLocale = useMemo(

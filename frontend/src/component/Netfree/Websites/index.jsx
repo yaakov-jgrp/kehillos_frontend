@@ -331,10 +331,6 @@ const Websites = ({ currentTab, handleTabChange }) => {
         </>
       )}
       <div className="bg-white rounded-3xl overflow-x-auto overflow-y-hidden relative w-full">
-        <NetfreeTabs
-          currentTab={currentTab}
-          handleTabChange={handleTabChange}
-        />
         <div className="m-5 px-2">
           <ul
             className={`${

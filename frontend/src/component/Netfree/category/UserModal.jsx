@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import CrossIcon from "../../../assets/images/cross.svg";
 
 // API services
 import authService from "../../../services/auth";
@@ -114,7 +115,7 @@ function UserModal({
         <div className="fixed left-0 bottom-0 z-[99] h-screen w-screen bg-[#00000080] flex justify-center items-center">
           <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-7xl">
-              <div className="w-[100%] min-w-[80vw] md:min-w-[70vw] lg:min-w-[60vw] overflow-y-auto border-0 rounded-2xl shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+              <div className="w-full min-w-[80vw] md:min-w-[70vw] lg:min-w-[60vw] overflow-y-auto border-0 rounded-2xl shadow-lg relative flex flex-col bg-white outline-none focus:outline-none">
                 <form
                   style={{
                     width: "100%",
@@ -125,8 +126,8 @@ function UserModal({
                   autoComplete="off"
                   onSubmit={handleSubmit((data, e) => submitForm(data, e))}
                 >
-                  <div className="flex items-start justify-between p-5 shadow-md rounded-t">
-                    <h3 className="text-xl font-bold">
+                  <div className="flex items-center border-b border-b-[#E3E5E6] justify-between p-5 rounded-t">
+                    <h3 className="text-lg font-medium">
                       {newUser ? t("netfree.addUser") : t("netfree.editUser")}
                     </h3>
                     <button
@@ -134,27 +135,27 @@ function UserModal({
                       onClick={() => setShowModal(false)}
                       type="button"
                     >
-                      <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
-                        x
-                      </span>
+                      <img src={CrossIcon} alt="cross-icon" />
                     </button>
                   </div>
-                  <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
-                    <div className="mb-6 flex w-full items-start">
+
+                  <div className="relative p-6 flex flex-col max-h-[calc(90vh-170px)] overflow-y-auto">
+                    <div className="mb-6 flex flex-col gap-1 w-full">
                       <FieldLabel
-                        className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}
+                        className={`${lang === "he" ? "ml-6" : "mr-6"}`}
                       >
                         {t("netfree.name")}
                       </FieldLabel>
-                      <div className="w-[60%]">
+                      <div className="">
                         <Controller
                           name="name"
                           control={control}
                           render={({ field }) => (
                             <input
                               type="text"
-                              className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
+                              className="appearance-none outline-none border rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10"
                               {...field}
+                              placeholder={t("auth.namePlaceholder")}
                             />
                           )}
                         />
@@ -163,21 +164,23 @@ function UserModal({
                         )}
                       </div>
                     </div>
-                    <div className="mb-6 flex w-full items-start">
+
+                    <div className="mb-6 flex flex-col gap-1 w-full">
                       <FieldLabel
-                        className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}
+                        className={`${lang === "he" ? "ml-6" : "mr-6"}`}
                       >
                         {t("netfree.email")}
                       </FieldLabel>
-                      <div className="w-[60%]">
+                      <div className="">
                         <Controller
                           name="email"
                           control={control}
                           render={({ field }) => (
                             <input
                               type="text"
-                              className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
+                              className="appearance-none outline-none border rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10"
                               {...field}
+                              placeholder={t("auth.emailPlaceholder")}
                             />
                           )}
                         />
@@ -186,21 +189,23 @@ function UserModal({
                         )}
                       </div>
                     </div>
-                    <div className="mb-6 flex w-full items-start">
+
+                    <div className="mb-6 flex flex-col gap-1 w-full">
                       <FieldLabel
-                        className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}
+                        className={`${lang === "he" ? "ml-6" : "mr-6"}`}
                       >
                         {t("auth.password")}
                       </FieldLabel>
-                      <div className="w-[60%]">
+                      <div className="">
                         <Controller
                           name="password"
                           control={control}
                           render={({ field }) => (
                             <input
                               type="text"
-                              className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
+                              className="appearance-none outline-none border rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10"
                               {...field}
+                              placeholder={t("auth.passwordPlaceholder")}
                             />
                           )}
                         />
@@ -209,13 +214,14 @@ function UserModal({
                         )}
                       </div>
                     </div>
-                    <div className="mb-6 flex w-full items-start">
+
+                    <div className="mb-6 flex flex-col gap-1 w-full">
                       <FieldLabel
-                        className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}
+                        className={`${lang === "he" ? "ml-6" : "mr-6"}`}
                       >
                         {t("users.userType")}
                       </FieldLabel>
-                      <div className="w-[60%]">
+                      <div className="">
                         <Controller
                           name="user_type"
                           control={control}
@@ -227,7 +233,7 @@ function UserModal({
                                   maxHeight: "250px",
                                 },
                               }}
-                              className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                              className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-gray-11 bg-white"
                               placeholder="Select"
                             >
                               {userTypes?.map((el, i) => {
@@ -246,16 +252,17 @@ function UserModal({
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-end p-4 border-t border-solid border-blueGray-200 rounded-b">
+
+                  <div className="flex items-center justify-center gap-2 mb-6">
                     <button
-                      className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
+                      className="text-gray-11 background-transparent font-normal py-2 text-sm outline-none w-[136px] focus:outline-none border border-gray-11 rounded-lg"
                       type="button"
                       onClick={() => setShowModal(false)}
                     >
                       {t("netfree.close")}
                     </button>
                     <button
-                      className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                      className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                       type="submit"
                     >
                       {t("netfree.save")}

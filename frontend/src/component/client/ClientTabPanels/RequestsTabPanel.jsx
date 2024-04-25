@@ -120,9 +120,10 @@ function RequestsTabPanel(props) {
         <Box sx={{ py: 3 }}>
           <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto px-2">
             <table className="!table text-[12px] md:text-[14px] mb-3">
-              <thead className="sticky top-0 z-10 [&_th]:min-w-[8.5rem]">
-                <tr className="tracking-[-2%] mb-5 bg-lightPrimary">
-                  <th className="pr-3">
+              <thead className="sticky top-0 z-10 [&_th]:min-w-[8.5rem] bg-[#F9FBFC]">
+                <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
+                <tr className="tracking-[-2%] mb-5">
+                  <th className="px-3 pb-3">
                     <SearchField
                       variant="auth"
                       extra="mb-2"
@@ -150,7 +151,7 @@ function RequestsTabPanel(props) {
                       name="id"
                     />
                   </th>
-                  <th className="pr-3">
+                  <th className="pr-3 pb-3">
                     <SearchField
                       variant="auth"
                       extra="mb-2"
@@ -180,7 +181,7 @@ function RequestsTabPanel(props) {
                       name="created_at"
                     />
                   </th>
-                  <th className="pr-3">
+                  <th className="pr-3 pb-3">
                     <SearchField
                       variant="auth"
                       extra="mb-2"
@@ -208,7 +209,7 @@ function RequestsTabPanel(props) {
                       name="from"
                     />
                   </th>
-                  <th className="pr-3">
+                  <th className="pr-3 pb-3">
                     <SearchField
                       variant="auth"
                       extra="mb-2"
@@ -238,7 +239,7 @@ function RequestsTabPanel(props) {
                       name="request_type"
                     />
                   </th>
-                  <th className="pr-3">
+                  <th className="pr-3 pb-3">
                     <SearchField
                       variant="auth"
                       extra="mb-2"
@@ -268,7 +269,7 @@ function RequestsTabPanel(props) {
                       name="requestdetail"
                     />
                   </th>
-                  <th className="pr-3">
+                  <th className="pr-3 pb-3">
                     <SearchField
                       variant="auth"
                       extra="mb-2"
@@ -316,8 +317,8 @@ function RequestsTabPanel(props) {
                         {" "}
                         {requests.data.map((el) => {
                           return (
-                            <tr className="h-[75px]" key={el.id}>
-                              <td>#{el.id}</td>
+                            <tr className="h-[75px] border-b border-b-[#F2F2F2]" key={el.id}>
+                              <td className="py-12">#{el.id}</td>
                               <td>
                                 {formateDateTime(el.created_at).date}
                                 <br />
@@ -328,7 +329,7 @@ function RequestsTabPanel(props) {
                                   href={`https://netfree.link/app/#/sectors/user-filter-settings/${el.customer_id}`}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="text-[#2B3674] hover:text-[#2B3674] font-bold"
+                                  className="text-gray-11 hover:text-gray-10 font-medium"
                                 >
                                   #{el.customer_id}
                                   <br />
@@ -337,29 +338,28 @@ function RequestsTabPanel(props) {
                                 <br />
                                 <a
                                   href={`mailto:${el.sender_email}`}
-                                  className="text-[#2B3674] hover:text-[#2B3674] font-bold"
+                                  className="text-brand-500 hover:text-brand-600 font-medium"
                                 >
                                   {el.sender_email}
                                 </a>
                               </td>
                               <td>{el.request_type}</td>
-                              <td>
+                              <td className="my-6">
                                 <a
                                   href={el.requested_website}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="text-[#2B3674] hover:text-[#2B3674] font-bold line-clamp-2 break-words"
+                                  className="text-brand-500 hover:text-brand-600 font-medium line-clamp-2 break-words"
                                 >
                                   {el.requested_website}
                                 </a>
-                                <br />
                                 <p className="line-clamp-4 break-words">
                                   {el.text}
                                 </p>
-                                {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />                  */}
+                                {/* <div dangerouslySetInnerHTML={{ __html: el.text }} />*/}
                               </td>
                               <td className="flex justify-center gap-4 px-2">
-                                <div className="bg-[#F4F7FE] px-2 py-1">
+                                <div className="bg-[#F2F2F2] px-2 py-1 rounded-lg my-6">
                                   {el.action_done}
                                 </div>
                               </td>

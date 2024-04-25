@@ -16,6 +16,7 @@ import DeleteConfirmationModal from "../component/common/DeleteConfirmationModal
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import WhiteBin from "../assets/images/white_bin.svg";
 
 // API services
 import clientsService from "../services/clients";
@@ -118,7 +119,7 @@ function ClientDetails() {
 
   return (
     <>
-      <div className="w-full h-full bg-white rounded-3xl p-5">
+      <div className="w-full h-full bg-white rounded-3xl p-5 shadow-custom">
         {isLoading ? (
           <div className="h-[calc(100vh-210px)] w-full flex justify-center items-center">
             <Loader />
@@ -127,41 +128,55 @@ function ClientDetails() {
           <>
             {clientData && !isLoading ? (
               <Box sx={{ width: "100%", height: "100%", overflow: "auto" }}>
-                <div className="flex p-2">
-                  <div className="p-2 mx-2 rounded-lg shadow-md">
-                    <FaUser color="lightgrey" size={80} />
-                  </div>
-                  <div className="mx-2 flex flex-col w-[80%] text-sm">
-                    <div className={`mb-1 flex w-full items-start`}>
-                      <span className="font-semibold w-1/6  w-[120px]">
-                        {t("clients.id")}
-                      </span>
-                      <p> : {clientData?.client_id}</p>
+                <div className="flex p-2 gap-4">
+                  <div className="flex-[0.1]">
+                    <div className="rounded-lg shadow-md w-[116px] h-[116px] flex justify-center items-center">
+                      <FaUser color="lightgrey" size={80} />
                     </div>
-                    <div className={`mb-1 flex w-full items-start`}>
-                      <span className="font-semibold w-1/6  w-[120px]">
-                        {t("netfree.netfreeProfile")}
-                      </span>
-                      :
-                      <div className="mx-1">
-                        <p className="capitalize">{netfreeprofile?.name}</p>
-                        {netfreeprofile?.description !== "" && (
-                          <p className="capitalize text-gray-700">
-                            ({netfreeprofile?.description})
-                          </p>
-                        )}
+                  </div>
+
+                  <div className="flex items-center justify-between flex-[0.9] text-md">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-32">
+                        <span className="font-normal text-gray-10 uppercase">
+                          {t("clients.id")}
+                        </span>
+                        <p className="text-gray-11">
+                          : {clientData?.client_id}
+                        </p>
+                      </div>
+
+                      <div className="flex gap-11">
+                        <span className="font-normal text-gray-10 capitalize">
+                          {t("netfree.netfreeProfile")}
+                        </span>
+                        <div>
+                          <p className="capitalize">: {netfreeprofile?.name}</p>
+                          {netfreeprofile?.description !== "" && (
+                            <p className="capitalize text-gray-11">
+                              ({netfreeprofile?.description})
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="h-auto w-full flex items-center justify-end">
-                    {/* <MdEdit className="text-blueSecondary mx-2 w-5 h-5 hover:cursor-pointer" onClick={() => editClientHandler(clientData)} /> */}
-                    <MdDelete
-                      className="text-blueSecondary mx-2 w-5 h-5 hover:cursor-pointer"
-                      onClick={() => setConfirmationModal(true)}
-                    />
+                    <div>
+                      {/* <MdEdit
+                        className="text-blueSecondary mx-2 w-5 h-5 hover:cursor-pointer"
+                        onClick={() => editClientHandler(clientData)}
+                      /> */}
+                      <button
+                        className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none flex justify-center gap-2"
+                        onClick={() => setConfirmationModal(true)}
+                      >
+                        <img src={WhiteBin} alt="WhiteBin" />
+                        {t("netfree.deleteUser")}
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+
+                <Box sx={{ borderBottom: 1, borderColor: "#E3E5E6" }}>
                   <Tabs
                     value={value}
                     onChange={handleChange}
@@ -175,7 +190,7 @@ function ClientDetails() {
                           key={i}
                           label={
                             <>
-                              <h5 className="text-start text-[12px] capitalize py-2 md:text-[16px] font-bold text-[#2B3674] w-[100%] flex items-center justify-between">
+                              <h5 className="text-start text-[12px] capitalize md:text-[16px] -mb-1 font-normal w-[100%] flex items-center justify-between">
                                 {tabItem}
                               </h5>
                             </>
@@ -185,6 +200,7 @@ function ClientDetails() {
                     })}
                   </Tabs>
                 </Box>
+
                 {value === 0 && (
                   <DetailsTabPanel
                     isLoading={isLoading}
@@ -194,6 +210,7 @@ function ClientDetails() {
                     index={0}
                   />
                 )}
+
                 {value === 1 && netfreeprofiles && (
                   <ClientNetfreeTabPanel
                     isLoading={isLoading}
@@ -206,6 +223,7 @@ function ClientDetails() {
                     index={1}
                   />
                 )}
+
                 {value === 2 && (
                   <RequestsTabPanel id={id} value={value} index={2} />
                 )}

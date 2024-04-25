@@ -34,7 +34,8 @@ import { handleNumberkeyPress } from "../../lib/CommonFunctions";
 
 function CustomField(props) {
   const { t } = useTranslation();
-  const { data_type, required, enum_values, defaultvalue } = props.field;
+  const { data_type, required, enum_values, defaultvalue, field_slug } =
+    props.field;
   const { onChange, onBlur, value, disabled } = props;
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
 
@@ -43,13 +44,13 @@ function CustomField(props) {
       {TextFieldConstants.includes(data_type.value) && (
         <input
           type={data_type.value}
-          className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
+          className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
           required={required}
           onChange={onChange}
           onBlur={onBlur}
           value={value ? value : ""}
           disabled={disabled}
-          placeholder={defaultvalue}
+          placeholder={t(`clients.${field_slug}`)}
         />
       )}
       {NumberFieldConstants.includes(data_type.value) && (
@@ -57,19 +58,19 @@ function CustomField(props) {
           type="number"
           min="0"
           onKeyDown={handleNumberkeyPress}
-          className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
+          className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
           required={required}
           onChange={onChange}
           onBlur={onBlur}
           value={value ? value : ""}
           disabled={disabled}
-          placeholder={defaultvalue}
+          placeholder={t(`clients.${field_slug}`)}
         />
       )}
       {data_type.value === "phone" && (
         <PhoneInput
           labels={lang === "en" ? en : he}
-          className="shadow appearance-none outline-none border rounded w-full p-2 text-black [&>input]:outline-none [&>input]:bg-white"
+          className="appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2 text-gray-11 [&>input]:outline-none [&>input]:bg-white placeholder:text-gray-10 dark:placeholder:!text-gray-10"
           placeholder={t("clients.enterNumber")}
           defaultCountry={"IL"}
           value={value ? value : ""}
@@ -79,7 +80,7 @@ function CustomField(props) {
         />
       )}
       {data_type.value === "file" && (
-        <label className="shadow text-md flex items-center w-full appearance-none outline-none border rounded p-2.5 text-black">
+        <label className="text-md flex items-center w-full appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2.5 text-gray-11">
           <MdOutlineUploadFile
             style={{
               marginRight: "5px",
@@ -99,7 +100,7 @@ function CustomField(props) {
       )}
       {data_type.value === "select" && (
         <Select
-          className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+          className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
           required={required}
           onChange={onChange}
           onBlur={onBlur}
@@ -131,7 +132,7 @@ function CustomField(props) {
       {DateFieldConstants.includes(data_type.value) && (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
-            className="shadow appearance-none outline-none border-0 rounded w-full p-0 text-black"
+            className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-0 text-black"
             format="DD/MM/YYYY"
             onChange={onChange}
             onBlur={onBlur}

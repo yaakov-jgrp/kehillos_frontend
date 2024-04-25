@@ -15,6 +15,9 @@ import authService from "../../services/auth";
 // Utils imports
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "../../constants/index";
 
+// Images imports
+import Logo from "../../assets/images/Kehillos_Logo.svg";
+
 // Custom hooks imports
 import useAlert from "../../Hooks/useAlert";
 
@@ -63,49 +66,57 @@ export default function SignIn() {
     return true;
   };
   return (
-    <div className="relative w-screen h-screen">
-      <LanguageSelect
-        customClass={`absolute top-[1rem] md:top-[2rem] right-[1rem] md:right-[2rem] p-2 border-[1px] border-[#E0E5F2] rounded-md`}
-      />
-      <div className="w-[20rem] absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
-        <form onSubmit={handleLogin}>
-          <InputField
-            variant="auth"
-            extra="mb-3"
-            label={t("auth.email")}
-            id="email"
-            type="text"
-            onChange={handleInput}
-            name="email"
-          />
-          <InputField
-            variant="auth"
-            extra="mb-3"
-            label={t("auth.password")}
-            id="password"
-            type="password"
-            name="password"
-            onChange={handleInput}
-          />
-          <div className="mb-4 flex items-center justify-between px-2">
+    <div className="relative w-screen h-screen bg-[#F9FBFC]">
+      <div className="absolute top-0 left-0  bg-white shadow-custom py-2 w-screen px-4 flex items-center justify-between">
+        <img src={Logo} className="h-[44px] md:h-[65px]" alt="Logo" />
+        <LanguageSelect />
+      </div>
+      <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
+        <div className="flex justify-center mt-32 md:mt-0 mb-12">
+          <img src={Logo} alt="Logo" />
+        </div>
+        <div className="w-screen md:w-[24rem] px-6 py-4 rounded-lg bg-white">
+          <form onSubmit={handleLogin}>
+            <InputField
+              variant="auth"
+              extra="mb-3"
+              label={t("auth.email")}
+              id="email"
+              type="text"
+              onChange={handleInput}
+              name="email"
+              placeholder={t("auth.emailPlaceholder")}
+            />
+            <InputField
+              variant="auth"
+              extra="mb-3"
+              label={t("auth.password")}
+              id="password"
+              name="password"
+              onChange={handleInput}
+              placeholder={t("auth.passwordPlaceholder")}
+              isPasswordInput
+            />
+            {/* <div className="mb-4 flex items-center justify-between px-2">
             <a
               className="text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-white"
               href=" "
             >
               {t("auth.forgotPassword")}
             </a>
-          </div>
-          <button
-            type="submit"
-            className={`linear mt-2 w-full rounded-xl py-[12px] text-base font-medium transition duration-200 ${
-              formValidate()
-                ? "bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
-                : "bg-gray-300"
-            }`}
-          >
-            {t("auth.signin")}
-          </button>
-        </form>
+          </div> */}
+            <button
+              type="submit"
+              className={`linear mt-2 w-full rounded-xl py-[12px] text-base font-medium transition duration-200 ${
+                formValidate()
+                  ? "bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
+                  : "bg-gray-300"
+              }`}
+            >
+              {t("auth.signin")}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

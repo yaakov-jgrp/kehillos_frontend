@@ -86,6 +86,7 @@ const Categories = ({ currentTab, handleTabChange }) => {
     const response = await categoryService.getDefaultAction();
     setDefaultActionList(response.data.data);
   };
+
   const getDefaultTraffic = async () => {
     const response = await categoryService.getDefaultTraffic();
     setDefaultTraffic(response.data.data.is_active);
@@ -390,10 +391,6 @@ const Categories = ({ currentTab, handleTabChange }) => {
         </>
       )}
       <div className="bg-white rounded-3xl overflow-x-auto overflow-y-hidden relative w-full md:w-[calc(100%-260px)]">
-        <NetfreeTabs
-          currentTab={currentTab}
-          handleTabChange={handleTabChange}
-        />
         <div className="m-5 px-2">
           <ul
             className={`${
