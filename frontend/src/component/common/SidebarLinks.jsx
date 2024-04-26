@@ -46,33 +46,37 @@ export function SidebarLinks(props) {
 
   const GenerateMenuLink = ({ route, index, type }) => {
     return (
-      <div className="relative mb-3 flex hover:cursor-pointer">
+      <div className="relative flex hover:cursor-pointer">
         <li
-          className={`my-[3px] flex cursor-pointer items-center ${
+          className={`w-full m-2 h-8 md:h-12 rounded-full my-[3px] flex cursor-pointer items-center ${
             type === "sub-menu" ? "px-3" : "px-8"
+          } ${
+            activeRoute(route) === true && type !== "sub-menu"
+              ? "bg-brand-500"
+              : ""
           }`}
           key={route.name + index}
         >
           <span
             className={`${
-              activeRoute(route) === true
-                ? "font-bold text-brand-500 dark:text-white"
-                : "font-medium text-gray-600"
+              activeRoute(route) === true && type !== "sub-menu"
+                ? "text-white"
+                : "text-gray-10"
             }`}
           >
             {route.icon ? route.icon : <DashIcon />}
           </span>
           <p
             className={`leading-1 mx-4 flex ${
-              activeRoute(route) === true
-                ? "font-bold text-navy-700 dark:text-white"
-                : "font-medium text-gray-600"
+              activeRoute(route) === true && type !== "sub-menu"
+                ? "text-white dark:text-white"
+                : "text-gray-10"
             }`}
           >
             {route.name}
           </p>
         </li>
-        {activeRoute(route) ? (
+        {activeRoute(route) && type === "sub-menu" ? (
           <div
             className={`absolute bottom-px h-9 w-1 rounded-lg bg-brand-500 dark:bg-brand-400 ${
               i18n.dir() === "rtl"
@@ -97,7 +101,7 @@ export function SidebarLinks(props) {
     };
     return routes.map((route, index) => {
       return route.type === "top-menu" ? (
-        <div key={route.name + index}>
+        <div key={route.name + index} className="">
           <div onClick={toggleSettings}>
             <GenerateMenuLink
               key={route.name + index}
@@ -143,6 +147,7 @@ export function SidebarLinks(props) {
       );
     });
   };
+
   // BRAND
   return createLinks(routes);
 }

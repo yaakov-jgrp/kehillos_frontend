@@ -170,6 +170,8 @@
     "save": "שמור",
     "templateName": "שם התבנית",
     "edit": "ערוך",
+    "duplicate": "לְשַׁכְפֵּל",
+    "delete": "לִמְחוֹק",
     "cancel": "ביטול",
     "connect": "חיבור",
     "connected": "מחובר",
@@ -195,7 +197,8 @@
     "start_hour": "שעת התחלה",
     "end_hour": "שעת סיום",
     "website": "פעולת תג",
-    "default": "ברירת מחדל"
+    "default": "ברירת מחדל",
+    "emailTemplate": "תבניות אימייל"
   },
   "websites": {
     "addDomain": "+ הוסף דומיין",
@@ -203,6 +206,7 @@
     "note": "הערה"
   },
   "netfree": {
+    "title": "נטו חינם",
     "categories": "קטגוריות",
     "websites": "אתרי אינטרנט",
     "note": "הערה",
@@ -268,7 +272,9 @@
     "changeStatus": "לשנות סטטוס",
     "First_Name_Owner": "שדה",
     "Equals": "שווים",
-    "deleteUser": "מחק משתמש"
+    "deleteUser": "מחק משתמש",
+    "addProfile": "הוסף פרופיל",
+    "searchUrl": "חפש כתובת אתר"
   },
   "searchbox": {
     "placeHolder": "חיפוש",

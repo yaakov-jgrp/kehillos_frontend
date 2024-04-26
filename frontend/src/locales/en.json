@@ -167,9 +167,11 @@
     "smtp": "Connect Email Account",
     "subject": "Subject",
     "newTemplate": "New Template",
-    "save": "SAVE",
+    "save": "Save",
     "templateName": "Template Name",
     "edit": "Edit",
+    "duplicate": "Duplicate",
+    "delete": "Delete",
     "cancel": "Cancel",
     "connect": "CONNECT",
     "connected": "Connected",
@@ -195,7 +197,8 @@
     "start_hour": "Start hour",
     "end_hour": "End hour",
     "website": "Website",
-    "default": "Default"
+    "default": "Default",
+    "emailTemplate": "Email Templates"
   },
   "websites": {
     "addDomain": "+ Add Domain",
@@ -203,6 +206,7 @@
     "note": "Note"
   },
   "netfree": {
+    "title": "NetFree",
     "categories": "Categories",
     "websites": "Websites",
     "note": "note",
@@ -241,7 +245,7 @@
     "to": "to",
     "admin": "Admin",
     "client": "Client",
-    "addFilterProfile": "+ Add Profile",
+    "addFilterProfile": "Add Profile",
     "description": "Description",
     "filterProfile": "Filter Profile",
     "lastUpdatedAt": "Last Updated at",
@@ -263,7 +267,9 @@
     "changeStatus": "Change Status",
     "First_Name_Owner": "Field",
     "Equals": "Equals",
-    "deleteUser": "Delete User"
+    "deleteUser": "Delete User",
+    "addProfile": "Add Profile",
+    "searchUrl": "Search URL"
   },
   "searchbox": {
     "placeHolder": "Search",

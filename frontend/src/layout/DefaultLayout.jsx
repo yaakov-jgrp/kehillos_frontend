@@ -21,7 +21,7 @@ const DefaultLayout = ({ children, route }) => {
   }, []);
 
   return (
-    <div className="flex gap-4 max-h-[100vh] md:overflow-y-hidden h-full w-full">
+    <div className="flex gap-4 max-h-[100vh] scrollbar-hide h-full w-full">
       <AlertPopup />
       <Sidebar open={open} onClose={() => setOpen(false)} />
       <div className="h-full w-full bg-[#F9FBFC] pb-12">

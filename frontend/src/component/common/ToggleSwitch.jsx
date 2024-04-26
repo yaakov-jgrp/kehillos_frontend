@@ -1,4 +1,5 @@
 // React imports
+import i18next from "i18next";
 import React, { useEffect, useState } from "react";
 
 const ToggleSwitch = ({ selected, clickHandler }) => {
@@ -28,11 +29,19 @@ const ToggleSwitch = ({ selected, clickHandler }) => {
         onChange={handleChange}
       />
       <span
-        className={`${
-          checked ? "translate-x-[19px]" : "translate-x-1"
-        } inline-block -mt-0.4 w-[10px] h-[10px] transform ${
-          checked ? "bg-[#0B99FF]" : "bg-[#E3E5E6]"
-        } rounded-full transition-transform`}
+        className={
+          i18next.dir() === "rtl"
+            ? ` ${
+                checked ? "translate-x-[-19px]" : "-translate-x-1"
+              } inline-block -mt-0.4 w-[10px] h-[10px] transform ${
+                checked ? "bg-[#0B99FF]" : "bg-[#E3E5E6]"
+              } rounded-full transition-transform`
+            : ` ${
+                checked ? "translate-x-[19px]" : "translate-x-1"
+              } inline-block -mt-0.4 w-[10px] h-[10px] transform ${
+                checked ? "bg-[#0B99FF]" : "bg-[#E3E5E6]"
+              } rounded-full transition-transform`
+        }
       />
     </label>
   );
