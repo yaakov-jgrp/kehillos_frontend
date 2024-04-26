@@ -48,6 +48,279 @@ const Categories = ({
   categoriesDataCopy,
 }) => {
   const { t, i18n } = useTranslation();
+  const [showActionModal, setShowActionModal] = useState(false);
+  const [clickedAction, setClickedAction] = useState(null);
+  const [currentSelectedCategoryId, setCurrentSelectedCategoryId] = useState(0);
+  const [currentSearchTerm, setCurrentSearchTerm] = useState("");
+  const [siteSearch, setSiteSearch] = useState("");
+  const [editActionID, setEditActionId] = useState(null);
+  const [defaultTraffic, setDefaultTraffic] = useState(null);
+  const [profilesList, setProfilesList] = useState(null);
+  const [profileActiveIndex, setProfileActiveIndex] = useState(0);
+  const [activeProfile, setActiveprofile] = useState(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [newProfile, setNewProfile] = useState(true);
+  const [trafficAction, setTrafficAction] = useState(false);
+  const [defaultTrafficActions, setDefaultTrafficActions] = useState([]);
+  const [defaultStatus, setDefaultStatus] = useState(null);
+  const [trafficStatus, setTrafficStatus] = useState(null);
+  const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
+
+  const setResponseDataToState = (res) => {
+    const response = res.data.data.map((el) => {
+      el.isActionUpdateEnabled = false;
+      el.actions = el.actions.map((item) => {
+        return { isClicked: false, isActionEditOn: false, ...item };
+      });
+      return el;
+    });
+    setCategoriesData(response);
+    setCategoriesDataCopy(response);
+    if (siteSearch) {
+      searchCategories(siteSearch, response);
+    } else {
+      searchCategories(currentSearchTerm, response, "name");
+    }
+  };
+
+  const getCategoryData = async () => {
+    setIsLoading(true);
+    const response = await categoryService.getCategories();
+    setResponseDataToState(response);
+    setIsLoading(false);
+  };
+
+  const getDefaultActions = async () => {
+    const response = await categoryService.getDefaultAction();
+    setDefaultActionList(response.data.data);
+  };
+  const getDefaultTraffic = async () => {
+    const response = await categoryService.getDefaultTraffic();
+    setDefaultTraffic(response.data.data.is_active);
+  };
+
+  const getDefaultTrafficActions = async () => {
+    const response = await categoryService.getDefaultTrafficActions();
+    setDefaultTrafficActions(response.data.data);
+  };
+
+  const updateDefaultTrafficHandler = async () => {
+    const data = {
+      status: !defaultTraffic,
+    };
+    const response = await categoryService.updateNetfreeTraffic(data);
+    setDefaultTraffic(response.data.data.is_active);
+  };
+
+  const deleteDefaultAction = async (actionId) => {
+    setIsLoading(true);
+    await categoryService.deleteDefaultAction(actionId);
+    await getDefaultTrafficActions();
+    getCategoryData();
+    await getActionsList();
+    setIsLoading(false);
+  };
+
+  const getActionsList = async () => {
+    getDefaultActions().then(async () => {
+      const defaultStatusResponse = await categoryService.getDefaultStatus();
+      const trafficStatusResponse = await categoryService.getTrafficStatus();
+      setDefaultStatus(defaultStatusResponse.data.data[0]);
+      setTrafficStatus(trafficStatusResponse.data.data[0]);
+      const response = await categoryService.getActions();
+      setActionsList(response.data.data);
+    });
+  };
+
+  const handleUpdateCategory = () => {
+    categoryService.updateCategories();
+  };
+
+  const enableActionUpdate = (element) => {
+    if (element) {
+      setCurrentSelectedCategoryId(element);
+    }
+    setShowActionModal(true);
+  };
+
+  const updateAction = async (data, id) => {
+    setIsLoading(true);
+    await categoryService.updateActionInCategory(data, id);
+    if (siteSearch) {
+      searchSetting(siteSearch);
+    } else {
+      getCategoryData();
+    }
+    setIsLoading(false);
+  };
+
+  const deleteAction = (categoryId, actionToRemove) => {
+    setIsLoading(true);
+    updateAction({ id: categoryId, to_remove: actionToRemove }, null);
+    setIsLoading(false);
+  };
+
+  // update/edit action value
+  const editAction = (categoryId, currentActions, actionToRemove, newValue) => {
+    setIsLoading(true);
+    updateAction({ id: categoryId, to_add: newValue }, null);
+    setIsLoading(false);
+  };
+
+  //make current action editable
+  const editSelectedAction = (categoyId, action) => {
+    setCurrentSelectedCategoryId(categoyId);
+    setEditActionId(action.id);
+    setShowActionModal(true);
+  };
+
+  const searchCategories = (searchTerm, response, type) => {
+    setCurrentSearchTerm(searchTerm);
+    if (siteSearch) {
+      setCategoriesData(response);
+    } else if (currentSearchTerm) {
+      let filteredData = [];
+      if (type === "name") {
+        filteredData = response?.filter((el) =>
+          el[type].toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      } else {
+        filteredData = response?.filter(
+          (el) =>
+            el.actions?.filter((action) =>
+              action.label.toLowerCase().includes(searchTerm.toLowerCase())
+            ).length > 0
+        );
+      }
+      if (searchTerm === "") {
+        filteredData = response;
+      }
+      setCategoriesData(filteredData);
+    } else {
+      setCategoriesData(response);
+    }
+  };
+
+  const searchSetting = async (query) => {
+    setIsLoading(true);
+    setSiteSearch(query);
+    const response = await categoryService.searchSiteSetting(query);
+    if (query.length) {
+      setSearchResult(response.data.data);
+    } else {
+      setSearchResult([]);
+    }
+    setResponseDataToState(response);
+    setIsLoading(false);
+  };
+
+  const handleSiteSearch = debounce((e) => searchSetting(e.target.value), 500);
+
+  const handleClickedAction = (id) => {
+    if (clickedAction && clickedAction === id) {
+      setClickedAction(null);
+    } else {
+      setClickedAction(id);
+    }
+  };
+
+  const openActionOptions = (categoyIndex, action) => {
+    let updatedCategoryData = JSON.parse(JSON.stringify(categoriesData));
+    updatedCategoryData.forEach((el, ind) => {
+      if (ind === categoyIndex) {
+        el.actions = el.actions.map((item) => {
+          item.label === action.label
+            ? (item.isClicked = !item.isClicked)
+            : (item.isClicked = false);
+          return item;
+        });
+      }
+    });
+    setCategoriesData(updatedCategoryData);
+  };
+
+  const setDefaultAction = async (actionId, data) => {
+    setIsLoading(true);
+    const actionsPayload = defaultActionList.map((el) => el.id);
+    const params = trafficAction ? "&is_netfree_traffic=true" : "";
+    await categoryService.setDefaultAction(
+      { actions: [...actionsPayload, actionId], ...data },
+      params
+    );
+    await getDefaultTrafficActions();
+    getCategoryData();
+    setIsDefaultActionSelectOpen(false);
+    await getActionsList();
+    setIsLoading(false);
+  };
+
+  const getAllProfilesListHandler = async () => {
+    const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
+    const profilesListData = await categoryService.getProfilesList();
+    const defaultProfile = profilesListData.data.data.filter(
+      (profile) => profile.is_default
+    );
+    if (!filterProfileID) {
+      localStorage.setItem("FILTER_PROFILE_ID", defaultProfile[0]?.id ?? 1);
+    }
+    const nonDefaultProfiles = profilesListData.data.data.filter(
+      (profile) => !profile.is_default
+    );
+    const listsData = [...defaultProfile, ...nonDefaultProfiles];
+    const profileIndex = localStorage.getItem("PROFILE_INDEX");
+    setProfilesList(listsData);
+    if (profileIndex && profileIndex < listsData.length) {
+      setProfileActiveIndex(profileIndex);
+      setActiveprofile(listsData[profileIndex]);
+    } else {
+      setActiveprofile(listsData[0]);
+    }
+  };
+
+  const profileClickHandler = (index) => {
+    const newActiveProfile = profilesList?.filter((profile, i) => i === index);
+    localStorage.setItem("FILTER_PROFILE_ID", newActiveProfile[0].id);
+    localStorage.setItem("PROFILE_INDEX", index);
+    setActiveprofile(newActiveProfile[0]);
+    setProfileActiveIndex(index);
+    setNewProfile(false);
+    getCategoryData();
+    getActionsList();
+    getDefaultTraffic();
+    getDefaultTrafficActions();
+  };
+
+  const editProfileHandler = () => {
+    setNewProfile(false);
+    setShowProfileModal(!showProfileModal);
+  };
+
+  const deleteProfileHandler = async () => {
+    const res = await categoryService.deleteProfile(activeProfile.id);
+    const updatedProfiles = profilesList.filter(
+      (profile) => profile.id !== activeProfile.id
+    );
+    const activeIndex = profilesList.findIndex(
+      (profile) => profile.id === activeProfile.id
+    );
+    profileClickHandler(activeIndex - 1);
+    setProfilesList(updatedProfiles);
+    setProfileActiveIndex(activeIndex - 1);
+    setActiveprofile(updatedProfiles[activeIndex - 1]);
+  };
+
+  const duplicateProfileHandler = async () => {
+    const res = await categoryService.duplicateProfile(activeProfile);
+    getAllProfilesListHandler();
+  };
+
+  useEffect(() => {
+    getAllProfilesListHandler();
+    getCategoryData();
+    getActionsList();
+    getDefaultTrafficActions();
+    getDefaultTraffic();
+  }, [defaultLanguageValue]);
 
   const ActionSelectBox = ({
     options,
