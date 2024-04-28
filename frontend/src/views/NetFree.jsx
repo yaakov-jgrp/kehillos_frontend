@@ -634,6 +634,7 @@ const NetFree = () => {
             deleteAction={deleteAction}
             searchCategories={searchCategories}
             categoriesDataCopy={categoriesDataCopy}
+            actionsList={actionsList}
           />
         )}
 
