@@ -2,8 +2,25 @@
 import { Checkbox } from "@mui/material";
 
 const CustomCheckBox = (props) => {
-  const { ...rest } = props;
-  return <Checkbox {...rest} className="!p-0 [&>svg]:h-5" />;
+  const { disabled, ...rest } = props;
+  return (
+    <Checkbox
+      {...rest}
+      disabled={disabled}
+      style={{
+        color: "#0B99FF",
+        "&:hover": {
+          backgroundColor: "#0B99FF",
+        },
+        "& .MuiSvgIcon-root": {
+          color: "white",
+        },
+        "& .Mui-checked": {
+          color: "white",
+        },
+      }}
+    />
+  );
 };
 
 export default CustomCheckBox;

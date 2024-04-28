@@ -119,9 +119,11 @@ const Navbar = (props) => {
         </span>
         <div className="relative cursor-pointer">
           <img src={Notification} alt="Notification" />
-          <div className="bg-[#FF0031] absolute -top-4 left-2 px-1 rounded-full flex justify-center items-center">
+
+          {/* Notifications Container */}
+          {/* <div className="bg-[#FF0031] absolute -top-4 left-2 px-1 rounded-full flex justify-center items-center">
             <p className="font-semibold text-white text-[12px]">20</p>
-          </div>
+          </div> */}
         </div>
         <LanguageSelect />
         <div className="flex items-center gap-2">

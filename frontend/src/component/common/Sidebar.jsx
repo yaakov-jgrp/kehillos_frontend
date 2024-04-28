@@ -109,7 +109,7 @@ const Sidebar = ({ open, onClose }) => {
 
   return (
     <div
-      className={`sm:none duration-175 xl:min-w-[250px] fixed linear !z-50 flex flex-col bg-white pb-10 shadow-2xl shadow-white/5 transition-all md:!z-50 lg:!z-50 xl:!z-0 ${
+      className={`h-full px-5 sm:none duration-175 w-[250px] fixed linear !z-50 flex flex-col bg-white pb-10 shadow-custom transition-all md:!z-50 lg:!z-50 xl:!z-0 ${
         open
           ? i18n.dir() === "ltr"
             ? `left-0`
@@ -126,7 +126,7 @@ const Sidebar = ({ open, onClose }) => {
         <HiX />
       </span>
 
-      <div className={`mx-auto my-6 flex items-center`}>
+      <div className="mx-auto my-6 flex items-center">
         <img src={Logo} alt="Logo" className="h-[44px] md:h-[65px]" />
       </div>
       {/* <div className={`mb-5 mt-[40px] h-px bg-gray-300 dark:bg-white/30`} /> */}

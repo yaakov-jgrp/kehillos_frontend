@@ -120,12 +120,12 @@ function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
 
   return (
     <div>
-      <label
+      <button
+        className={`w-[75px] rounded-lg py-1 text-[14px] font-medium text-gray-11 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6]`}
         onClick={handleStatusClick}
-        className={`w-fit rounded-full flex items-center py-1 px-3 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
       >
         {t("requests.status")}
-      </label>
+      </button>
       <Popover
         open={open}
         anchorEl={anchorEl}

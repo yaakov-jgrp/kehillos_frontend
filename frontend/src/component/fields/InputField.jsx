@@ -62,7 +62,7 @@ function InputField(props) {
         {isPasswordInput && (
           <div
             className={`absolute inset-y-0 ${
-              lang === "he" ? "left-1" : "right-0"
+              lang === "he" ? "left-2" : "right-0"
             } flex items-center pr-3 cursor-pointer`}
             onClick={togglePasswordVisibility}
           >

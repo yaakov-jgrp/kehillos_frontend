@@ -48,7 +48,7 @@ export function SidebarLinks(props) {
     return (
       <div className="relative flex hover:cursor-pointer">
         <li
-          className={`w-full h-8 md:h-12 rounded-full my-[3px] flex cursor-pointer items-center ${
+          className={`w-full h-10 md:h-12 rounded-full my-[3px] flex cursor-pointer items-center gap-2 ${
             type === "sub-menu" ? "px-3" : "px-8"
           } ${
             activeRoute(route) === true && type !== "sub-menu"
@@ -67,7 +67,7 @@ export function SidebarLinks(props) {
             {route.icon ? route.icon : <DashIcon />}
           </span>
           <p
-            className={`leading-1 mx-4 flex ${
+            className={`leading-1 flex ${
               activeRoute(route) === true && type !== "sub-menu"
                 ? "text-white dark:text-white"
                 : "text-gray-10"
