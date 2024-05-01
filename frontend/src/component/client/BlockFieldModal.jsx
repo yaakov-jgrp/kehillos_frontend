@@ -20,6 +20,7 @@ import clientsService from "../../services/clients";
 
 // Icon imports
 import { MdCancel } from "react-icons/md";
+import CrossIcon from "../../assets/images/cross.svg";
 
 // Utils imports
 import {
@@ -279,8 +280,8 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
               autoComplete="off"
               onSubmit={handleSubmit((data, e) => submitForm(data, e))}
             >
-              <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                <h3 className="text-2xl font-semibold">
+              <div className="flex items-center justify-between p-5 border-b border-solid border-[#E3E5E6] rounded-t ">
+                <h3 className="text-lg font-medium text-gray-11">
                   {editData
                     ? t(block ? "clients.editBlock" : "clients.editField")
                     : t(block ? "clients.addBlock" : "clients.addField")}
@@ -289,75 +290,80 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                   className="bg-transparent border-0 text-black float-right"
                   onClick={() => setShowModal(false)}
                 >
-                  <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
-                    x
-                  </span>
+                  <img src={CrossIcon} alt="CrossIcon" />
                 </button>
               </div>
               {!formLoading ? (
-                <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
-                  <label className="block text-black text-sm font-bold my-1">
-                    {t("netfree.name")}
-                  </label>
-                  <Controller
-                    name="name"
-                    control={control}
-                    render={({ field: { value, onChange, onBlur } }) => (
-                      <input
-                        value={value}
-                        className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
-                        onChange={onChange}
-                        onBlur={onBlur}
-                      />
-                    )}
-                  />
+                <div className="relative p-6 flex flex-col gap-2 max-h-[calc(90vh-170px)] overflow-y-auto">
+                  <div className="my-1">
+                    <label className="block text-gray-11 text-md font-normal my-1">
+                      {t("netfree.name")}
+                    </label>
+                    <Controller
+                      name="name"
+                      control={control}
+                      render={({ field: { value, onChange, onBlur } }) => (
+                        <input
+                          value={value}
+                          className="appearance-none outline-none border rounded-lg w-full py-2 px-3 text-gray-11 placeholder:text-gray-10 text-md"
+                          onChange={onChange}
+                          onBlur={onBlur}
+                          placeholder={`${t(
+                            "clients.addBlockInputPlaceholder"
+                          )}`}
+                        />
+                      )}
+                    />
+                  </div>
                   {errors.name && (
                     <ErrorMessage message={errors.name.message} />
                   )}
                   {!block && (
                     <>
-                      <label className="block text-black text-sm font-bold my-1">
-                        {t("clients.dataType")}
-                      </label>
-                      <Controller
-                        name="data_type"
-                        control={control}
-                        render={({ field: { value, onChange, onBlur } }) => (
-                          <Select
-                            MenuProps={{
-                              sx: {
-                                maxHeight: "250px",
-                              },
-                            }}
-                            className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                            onChange={onChange}
-                            onBlur={onBlur}
-                            value={value}
-                            disabled={editData ? true : false}
-                            placeholder="Select Data Type"
-                          >
-                            {dataTypes?.map((el) => {
-                              return el ? (
-                                <MenuItem key={el} value={el}>
-                                  {t(`dataTypes.${el}`)}
-                                </MenuItem>
-                              ) : null;
-                            })}
-                          </Select>
-                        )}
-                      />
+                      <div className="my-1">
+                        <label className="block text-gray-11 text-md font-normal my-1">
+                          {t("clients.dataType")}
+                        </label>
+                        <Controller
+                          name="data_type"
+                          control={control}
+                          render={({ field: { value, onChange, onBlur } }) => (
+                            <Select
+                              MenuProps={{
+                                sx: {
+                                  maxHeight: "250px",
+                                },
+                              }}
+                              className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded-lg outline-none w-full p-2 text-black bg-white"
+                              onChange={onChange}
+                              onBlur={onBlur}
+                              value={value}
+                              disabled={editData ? true : false}
+                              placeholder="Select Data Type"
+                            >
+                              {dataTypes?.map((el) => {
+                                return el ? (
+                                  <MenuItem key={el} value={el}>
+                                    {t(`dataTypes.${el}`)}
+                                  </MenuItem>
+                                ) : null;
+                              })}
+                            </Select>
+                          )}
+                        />
+                      </div>
                       {errors.data_type && (
                         <ErrorMessage message={errors.data_type.message} />
                       )}
                       {watch("data_type") === "select" ? (
-                        <>
-                          <label className="block text-black text-sm font-bold my-1">
+                        <div className="my-1">
+                          <label className="block text-gray-11 text-md font-normal my-1">
                             {t("clients.value")}
                           </label>
                           <div className="w-full flex justify-between items-center mb-2">
                             <input
                               value={selectValue}
-                              className="shadow appearance-none outline-none border rounded w-3/4 py-2 px-1 text-black"
+                              className="shadow appearance-none outline-none border rounded w-3/4 py-2 px-2 text-black"
                               onChange={addSelectValueHandler}
                             />
                             <button
@@ -389,7 +395,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                           </div>
                           {selectedValues.length > 0 && (
                             <>
-                              <label className="block text-black text-sm font-bold my-1">
+                              <label className="block text-gray-11 text-md font-normal my-1">
                                 {t("clients.defaultValue")}
                               </label>
                               <Controller
@@ -422,12 +428,12 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                               />
                             </>
                           )}
-                        </>
+                        </div>
                       ) : (
                         <>
                           {watch("data_type") === "checkbox" ? (
-                            <>
-                              <label className="block text-black text-sm my-1 font-bold">
+                            <div className="my-1">
+                              <label className="block text-gray-11 text-md font-normal my-1">
                                 {t("clients.defaultValue")}
                               </label>
                               <Controller
@@ -461,14 +467,14 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                   </Select>
                                 )}
                               />
-                            </>
+                            </div>
                           ) : (
                             <>
                               {["date", "file"].includes(
                                 watch("data_type")
                               ) ? null : (
-                                <>
-                                  <label className="block text-black text-sm font-bold my-1">
+                                <div className="my-1">
+                                  <label className="block text-gray-11 text-md font-normal my-1">
                                     {t("clients.defaultValue")}
                                   </label>
                                   <Controller
@@ -479,51 +485,54 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                     }) => (
                                       <input
                                         value={value}
-                                        className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
+                                        className="appearance-none outline-none border rounded-lg w-full py-2 px-3 text-black"
                                         onChange={onChange}
                                         onBlur={onBlur}
+                                        placeholder="Enter"
                                       />
                                     )}
                                   />
-                                </>
+                                </div>
                               )}
                             </>
                           )}
                         </>
                       )}
-                      <div className="flex my-2">
-                        <Controller
-                          name="required"
-                          control={control}
-                          render={({ field: { value, onChange, name } }) => {
-                            return (
+                      <div className="flex flex-col mt-2">
+                        <div className="flex my-2 gap-6">
+                          <Controller
+                            name="required"
+                            control={control}
+                            render={({ field: { value, onChange, name } }) => {
+                              return (
+                                <CustomCheckBox
+                                  className="mr-2"
+                                  checked={value}
+                                  onChange={onChange}
+                                />
+                              );
+                            }}
+                          />
+                          <label className="block text-gray-11 text-md font-normal">
+                            {t("clients.required")}
+                          </label>
+                        </div>
+                        <div className="flex my-2 gap-6">
+                          <Controller
+                            name="unique"
+                            control={control}
+                            render={({ field: { value, onChange } }) => (
                               <CustomCheckBox
                                 className="mr-2"
                                 checked={value}
                                 onChange={onChange}
                               />
-                            );
-                          }}
-                        />
-                        <label className="block text-black text-sm font-bold">
-                          {t("clients.required")}
-                        </label>
-                      </div>
-                      <div className="flex my-2">
-                        <Controller
-                          name="unique"
-                          control={control}
-                          render={({ field: { value, onChange } }) => (
-                            <CustomCheckBox
-                              className="mr-2"
-                              checked={value}
-                              onChange={onChange}
-                            />
-                          )}
-                        />
-                        <label className="block text-black text-sm font-bold">
-                          {t("clients.unique")}
-                        </label>
+                            )}
+                          />
+                          <label className="block text-gray-11 text-md font-normal">
+                            {t("clients.unique")}
+                          </label>
+                        </div>
                       </div>
                     </>
                   )}
@@ -533,16 +542,16 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                   <Loader />
                 </div>
               )}
-              <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+              <div className="flex items-center justify-center gap-2 pb-6">
                 <button
-                  className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
+                  className="text-gray-11 background-transparent font-normal py-2 text-sm outline-none w-[136px] focus:outline-none border border-gray-11 rounded-lg"
                   type="button"
                   onClick={() => setShowModal(false)}
                 >
                   {t("netfree.close")}
                 </button>
                 <button
-                  className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                  className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                   type="submit"
                 >
                   {t("netfree.save")}

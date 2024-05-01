@@ -23,6 +23,8 @@ import requestService from "../../services/request";
 // Icon imports
 import { HiDotsVertical } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
+import CrossIcon from "../../assets/images/cross.svg";
+import BinIcon from "../../assets/images/bin.svg";
 
 function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
   const { t } = useTranslation();
@@ -118,12 +120,12 @@ function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
 
   return (
     <div>
-      <label
+      <button
+        className={`w-[75px] rounded-lg py-1 text-[14px] font-medium text-gray-11 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6]`}
         onClick={handleStatusClick}
-        className={`w-fit rounded-full flex items-center py-1 px-3 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
       >
         {t("requests.status")}
-      </label>
+      </button>
       <Popover
         open={open}
         anchorEl={anchorEl}
@@ -147,7 +149,7 @@ function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
       >
         <>
           <div className="flex items-start justify-between px-2 p-1 shadow-md rounded-t ">
-            <h3 className="text-md font-semibold">{t("requests.status")}</h3>
+            <h3 className="text-md font-medium">{t("requests.status")}</h3>
             <AddButtonIcon
               onClick={() => {
                 showFormHandler(null);
@@ -198,8 +200,10 @@ function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
                             setValue("name", status.label);
                           }}
                         />
-                        <MdDelete
-                          className="mx-1 text-blueSecondary h-[22px] w-[22px] hover:cursor-pointer"
+                        <img
+                          src={BinIcon}
+                          alt="BinIcon"
+                          className="mx-1 hover:cursor-pointer"
                           onClick={() => deleteStatusHandler(status.value)}
                         />
                       </div>
@@ -218,10 +222,10 @@ function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
           <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
             <div className="relative flex items-center justify-center w-auto my-6 mx-auto min-w-[90vw] max-w-[90vw]">
               <div
-                className={`w-[100%] max-w-[400px] overflow-y-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none`}
+                className={`w-full max-w-[400px] overflow-y-auto border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none`}
               >
-                <div className="flex items-start justify-between p-5 shadow-md rounded-t ">
-                  <h3 className="text-2xl font-semibold">
+                <div className="flex items-center justify-between p-5 rounded-t border-b border-b-[#E3E5E6]">
+                  <h3 className="text-xl font-medium">
                     {t("requests.status")}
                   </h3>
                   <button
@@ -229,9 +233,7 @@ function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
                     onClick={() => setShowForm(false)}
                     type="button"
                   >
-                    <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
-                      x
-                    </span>
+                    <img src={CrossIcon} alt="CrossIcon" />
                   </button>
                 </div>
                 <form
@@ -255,7 +257,7 @@ function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
                         render={({ field: { value, onChange, onBlur } }) => (
                           <input
                             value={value}
-                            className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
+                            className="appearance-none outline-none border rounded-lg w-full py-2 px-1 text-gray-11 font-normal text-md"
                             onChange={onChange}
                             onBlur={onBlur}
                           />
@@ -266,16 +268,16 @@ function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center justify-end p-4 border-t border-solid border-blueGray-200 rounded-b">
+                  <div className="flex items-center justify-center p-4 rounded-b gap-4">
                     <button
-                      className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
+                      className="text-gray-11 background-transparent font-normal py-2 text-sm outline-none w-[136px] focus:outline-none border border-gray-11 rounded-lg"
                       type="button"
-                      onClick={() => setShowForm(false)}
+                      onClick={() => setShowModal(false)}
                     >
                       {t("netfree.close")}
                     </button>
                     <button
-                      className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                      className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                       type="submit"
                     >
                       {t("netfree.save")}

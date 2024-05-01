@@ -1,40 +1,41 @@
 import React from "react";
 
 // Utils imports
-import { NetfreePageTabs } from "../../lib/FieldConstants";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
+import { Box, Tab, Tabs } from "@mui/material";
 
 const NetfreeTabs = ({ currentTab, handleTabChange }) => {
-  const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
   const { t } = useTranslation();
+  const NetfreePageTabs = [t("netfree.categories"), t("netfree.websites")];
+  const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
 
   return (
-    <div className="m-5 px-2">
-      <ul
-        className={`${
-          defaultLanguageValue === "he" ? "pl-[150px]" : "pr-[150px]"
-        } pb-1 overflow-x-auto flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400`}
+    <Box sx={{ borderBottom: 1, borderColor: "#E3E5E6" }}>
+      <Tabs
+        value={currentTab}
+        onChange={handleTabChange}
+        variant="scrollable"
+        scrollButtons="auto"
+        aria-label="basic tabs example"
       >
-        {NetfreePageTabs.map((tabValue, index) => {
+        {NetfreePageTabs.map((tabItem, i) => {
           return (
-            <li key={index}>
-              <a
-                onClick={() => handleTabChange(tabValue)}
-                className={`mr-1 w-max inline-block cursor-pointer capitalize p-1 px-2 text-[#2B3674] rounded-t-sm ${
-                  tabValue == currentTab
-                    ? "dark:bg-gray-800 bg-gray-100 dark:text-blue-500"
-                    : "hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-                }`}
-              >
-                {t(`netfree.${tabValue}`)}
-              </a>
-            </li>
+            <Tab
+              key={i}
+              label={
+                <>
+                  <h5 className="text-start text-[12px] capitalize md:text-[16px] -mb-1 font-normal w-[100%] flex items-center justify-between">
+                    {tabItem}
+                  </h5>
+                </>
+              }
+            />
           );
         })}
-      </ul>
-    </div>
+      </Tabs>
+    </Box>
   );
 };
 

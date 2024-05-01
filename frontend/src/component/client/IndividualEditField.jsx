@@ -161,13 +161,12 @@ function IndividualEditField({ field, clientData, setClientData }) {
   }, [JSON.stringify(field)]);
 
   return (
-    <div className={`mb-2 ${lang === "he" ? "pr-6" : "pl-6"}`}>
+    <div className={`mb-2 ${lang === "he" ? "pr-2" : "pl-2"}`}>
       <div className={`flex items-center justify-between mb-1`}>
-        <div className="flex w-full">
-          <label className={`block text-black text-md kvfont-semibold w-1/5`}>
+        <div className="flex w-full items-center">
+          <label className={`block text-gray-10 text-[15px] font-normal w-1/5`}>
             {lang === "he" ? field?.field_name_language.he : field?.field_name}
           </label>
-          :
           <div className="flex items-center justify-between w-full px-2">
             {edit ? (
               <form
@@ -220,14 +219,14 @@ function IndividualEditField({ field, clientData, setClientData }) {
                   </div>
                   <div className="flex items-center justify-end rounded-b">
                     <button
-                      className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
+                      className="text-[#EB5757] background-transparent font-normal capitalize px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
                       type="button"
                       onClick={editShowHandler}
                     >
                       {t("netfree.close")}
                     </button>
                     <button
-                      className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                      className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 capitalize px-3 py-1 rounded-lg hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                       type="submit"
                     >
                       {t("netfree.save")}
@@ -240,7 +239,7 @@ function IndividualEditField({ field, clientData, setClientData }) {
               </form>
             ) : (
               <>
-                <p className="text-sm mx-4 text-gray-900 flex items-center">
+                <p className="text-sm mx-4 text-gray-11 font-medium flex items-center">
                   {emptyValues.includes(fieldValue) ? (
                     ""
                   ) : linkTypes.includes(data_type) ? (
@@ -248,9 +247,9 @@ function IndividualEditField({ field, clientData, setClientData }) {
                       href={
                         data_type !== "phone" ? `mailto:${fieldValue}` : "#"
                       }
-                      className="text-[#2B3674] hover:text-[#2B3674] font-bold"
+                      className="hover:text-gray-10"
                     >
-                      {fieldValue}
+                      : {fieldValue}
                     </a>
                   ) : data_type === "checkbox" ? (
                     <CustomField
@@ -259,7 +258,7 @@ function IndividualEditField({ field, clientData, setClientData }) {
                       disabled={true}
                     />
                   ) : (
-                    fieldValue
+                    `: ${fieldValue}`
                   )}
                   {data_type === "file" &&
                     !emptyValues.includes(fieldValue) && (

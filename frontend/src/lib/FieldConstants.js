@@ -40,4 +40,3 @@ export const websiteChoices = [
   "open_domain_temporary",
   "netfree_block",
 ];
-export const NetfreePageTabs = ["categories", "websites"];

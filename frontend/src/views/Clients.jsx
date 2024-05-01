@@ -14,6 +14,9 @@ import SearchField from "../component/fields/SearchField";
 import FilterModal from "../component/client/FilterModal";
 import NoDataFound from "../component/common/NoDataFound";
 import CustomField from "../component/fields/CustomField";
+import { makeStyles } from "@mui/styles";
+import IconButton from "@mui/material/IconButton";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
@@ -26,7 +29,9 @@ import clientsService from "../services/clients";
 import categoryService from "../services/category";
 
 // Icon imports
-import { FiSettings } from "react-icons/fi";
+import VisibilityIcon from "../assets/images/visibility_icon.svg";
+import AddIcon from "../assets/images/add.svg";
+import ArrowUp from "../assets/images/arrow_upward.svg";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 // Utils imports
@@ -211,7 +216,7 @@ const Clients = () => {
   }, []);
 
   return (
-    <div className="w-full bg-white rounded-3xl">
+    <div className="w-full bg-white rounded-3xl mt-1 shadow-custom">
       {allClients && netfreeprofiles && editClient && clientModal && (
         <ClientModal
           showModal={clientModal}
@@ -221,13 +226,23 @@ const Clients = () => {
           netfreeProfiles={netfreeprofiles}
           fullFormData={fullFormData}
           onClick={() => {
-            setNewClient(true);
-            fetchClientsData();
+            <label
+              className={`w-fit rounded-lg flex items-center justify-center py-1 px-3 text-[14px] font-medium dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 border border-[#E3E5E6]`}
+              onClick={() => setShowDisplayModal(!showDisplayModal)}
+            >
+              {/* <FiSettings
+              className={`rounded-full text-white  ${
+                lang === "he" ? "ml-1" : "mr-1"
+              } w-3 h-3 hover:cursor-pointer`}
+            /> */}
+              {/* <img src="" alt="" /> */}
+              {t("clients.visibility")}
+            </label>;
           }}
         />
       )}
-      <div className="flex justify-between py-4 px-7 font-bold text-[#2B3674]">
-        <p>
+      <div className="flex justify-between py-4 px-7">
+        <p className="text-gray-11 font-medium text-2xl">
           {t("clients.title")}
           {appliedFilter && (
             <span className="text-gray-700 text-sm font-normal mx-2">{`( ${t(
@@ -235,14 +250,7 @@ const Clients = () => {
             )} : ${appliedFilter?.name} )`}</span>
           )}
         </p>
-        <div className="flex max-w-[350px]">
-          <AddButtonIcon
-            extra={""}
-            onClick={() => {
-              setNewClient(true);
-              setClientModal(true);
-            }}
-          />
+        <div className="flex gap-4">
           {fullFormData && (
             <FilterModal
               fetchFiltersHandler={fetchFiltersHandler}
@@ -255,41 +263,48 @@ const Clients = () => {
               setShowModal={setShowFilterModal}
             />
           )}
-          <label
-            className={`w-fit rounded-full flex items-center py-1 px-3 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
+          <button
+            className={`w-[116px] rounded-lg py-1 text-[14px] font-semibold dark:bg-brand-400 text-gray-11 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-2 justify-center items-center border border-[#E3E5E6]`}
             onClick={() => setShowDisplayModal(!showDisplayModal)}
           >
-            <FiSettings
-              className={`rounded-full text-white  ${
-                lang === "he" ? "ml-1" : "mr-1"
-              } w-3 h-3 hover:cursor-pointer`}
-            />
+            <img src={VisibilityIcon} alt="visibility_icon" />
             {t("clients.visibility")}
-          </label>
+          </button>
           <CsvImporter
             formFields={fullFormData}
             fetchClientsData={fetchClientsData}
           />
           <button
-            className={`w-full rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
+            className={`w-[75px] rounded-lg py-1 text-[14px] font-medium text-gray-11 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6]`}
             onClick={exportClientsHandler}
           >
             {t("clients.export")}
           </button>
+          <button
+            className={`w-[172px] rounded-lg py-2 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+            onClick={() => {
+              setNewClient(true);
+              setClientModal(true);
+            }}
+          >
+            <img src={AddIcon} alt="add_icon" />
+            {t("common.AddNewClient")}
+          </button>
         </div>
       </div>
-      <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2">
+      <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2 mt-4">
         <table
           className="!table text-[12px] md:text-[14px] min-w-[100%] mb-3"
           ref={tableRef}
         >
           {fullFormData && fullFormData.length > 0 && (
-            <thead className="sticky top-0 z-10 [&_th]:min-w-[8.5rem]">
-              <tr className="tracking-[-2%] mb-5 bg-lightPrimary">
+            <thead className="sticky top-0 z-10 [&_th]:min-w-[12rem] bg-[#F9FBFC]">
+              <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
+              <tr className="tracking-[-2%] mb-5">
                 <th className="pr-3">
                   <SearchField
                     variant="auth"
-                    extra="mb-2"
+                    extra="mb-4 ml-4"
                     label={
                       <p
                         onClick={() => handleSortHandler("id")}
@@ -298,12 +313,24 @@ const Clients = () => {
                         {t("clients.id")}
                         {sortField === "id" ? (
                           sortOrder === "asc" ? (
-                            <FaArrowUp className="ml-1" />
+                            <img
+                              src={ArrowUp}
+                              alt="arrow-up"
+                              className="ml-1"
+                            />
                           ) : (
-                            <FaArrowDown className="ml-1" />
+                            <img
+                              src={ArrowUp}
+                              alt="arrow-up"
+                              className="rotate-180 ml-1"
+                            />
                           )
                         ) : (
-                          <FaArrowUp className="ml-1" />
+                          <img
+                            src={ArrowUp}
+                            alt="arrow-up"
+                            className="rotate-180 ml-1"
+                          />
                         )}
                       </p>
                     }
@@ -321,7 +348,7 @@ const Clients = () => {
                         <th className="pr-3">
                           <SearchField
                             variant="auth"
-                            extra="mb-2"
+                            extra="mb-4 ml-4"
                             label={
                               <p
                                 onClick={() =>
@@ -337,12 +364,24 @@ const Clients = () => {
                                   : field?.field_name}
                                 {sortField === field?.field_slug ? (
                                   sortOrder === "asc" ? (
-                                    <FaArrowUp className="ml-1" />
+                                    <img
+                                      src={ArrowUp}
+                                      alt="arrow-up"
+                                      className="ml-1"
+                                    />
                                   ) : (
-                                    <FaArrowDown className="ml-1" />
+                                    <img
+                                      src={ArrowUp}
+                                      alt="arrow-up"
+                                      className="rotate-180 ml-1"
+                                    />
                                   )
                                 ) : (
-                                  <FaArrowUp className="ml-1" />
+                                  <img
+                                    src={ArrowUp}
+                                    alt="arrow-up"
+                                    className="rotate-180 ml-1"
+                                  />
                                 )}
                               </p>
                             }
@@ -383,6 +422,7 @@ const Clients = () => {
                             key={client.id}
                           >
                             <td
+                              className="border-b border-b-[#F2F2F2] py-12"
                               onClick={() => {
                                 handleRowClick(client?.id);
                               }}
@@ -423,13 +463,21 @@ const Clients = () => {
                                   <Fragment key={i}>
                                     {field?.display && (
                                       <td
-                                        className="p-1"
+                                        className="p-1 border-b border-b-[#F2F2F2]"
                                         key={i}
                                         onClick={() => {
                                           !linkTypes.includes(data_type) &&
                                             handleRowClick(client?.id);
                                         }}
                                       >
+                                        {emptyValues.includes(value) && (
+                                          <a
+                                            href={"#"}
+                                            className="text-gray-11 hover:text-gray-10 font-normal"
+                                          >
+                                            -
+                                          </a>
+                                        )}
                                         {!emptyValues.includes(value) && (
                                           <>
                                             {isDate ? (
@@ -451,7 +499,7 @@ const Clients = () => {
                                                         ? `mailto:${value}`
                                                         : "#"
                                                     }
-                                                    className="text-[#2B3674] hover:text-[#2B3674] font-bold"
+                                                    className="text-gray-11 hover:text-gray-10 font-normal"
                                                   >
                                                     {value}
                                                   </a>

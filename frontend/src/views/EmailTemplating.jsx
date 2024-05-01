@@ -28,15 +28,20 @@ import {
   templateTextTypes,
   websiteChoices,
 } from "../lib/FieldConstants";
+import TemplateTextCard from "../component/email/TemplateTextCard";
 
-function EmailTemplating() {
+function EmailTemplating({
+  templatingModal,
+  newText,
+  editText,
+  setTemplatingModal,
+  setNewText,
+  setEditText,
+}) {
   const { t, i18n } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [templatingTexts, setTemplatingTexts] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [templatingModal, setTemplatingModal] = useState(false);
-  const [newText, setNewText] = useState(true);
-  const [editText, setEditText] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [totalCount, setTotalCount] = useState(100);
@@ -108,8 +113,8 @@ function EmailTemplating() {
   }, [lang, page, rowsPerPage, JSON.stringify(searchParams)]);
 
   return (
-    <div className="w-full bg-white rounded-3xl">
-      <div className="flex justify-between py-4 px-7 font-bold text-[#2B3674]">
+    <div className="w-full bg-white rounded-3xl pt-2">
+      {/* <div className="flex justify-between py-4 px-7 font-bold text-[#2B3674]">
         {t("sidebar.templating")}
         <div className="flex max-w-[150px]">
           <AddButtonIcon
@@ -121,8 +126,34 @@ function EmailTemplating() {
             }}
           />
         </div>
+      </div> */}
+      <div className="w-full">
+        {isLoading && (
+          <div className="h-[67vh] w-full flex justify-center items-center">
+            <Loader />
+          </div>
+        )}
+        {!isLoading && templatingTexts && templatingTexts.length > 0 && (
+          <div className="w-full flex flex-wrap gap-4 justify-center items-center md:justify-start">
+            {templatingTexts.map((template) => {
+              return (
+                <TemplateTextCard
+                  template={template}
+                  onEdit={() => {
+                    editTextHandler(template);
+                  }}
+                  deleteTemplate={() => {
+                    setEditText(template);
+                    setConfirmationModal(true);
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
-      <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2">
+
+      {/* <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2">
         <table className="!table w-full text-[12px] md:text-[14px] mb-3">
           <thead className="sticky top-0 z-10 [&_th]:min-w-[8.5rem]">
             <tr className="tracking-[-2%] mb-5 bg-lightPrimary">
@@ -274,8 +305,9 @@ function EmailTemplating() {
             )}
           </tbody>
         </table>
-      </div>
-      {templatingTexts && templatingTexts.length > 0 && (
+      </div> */}
+
+      {/* {templatingTexts && templatingTexts.length > 0 && (
         <TablePagination
           component="div"
           count={totalCount}
@@ -285,7 +317,8 @@ function EmailTemplating() {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
-      )}
+      )} */}
+
       {templatingModal && (
         <TemplatingModal
           showModal={templatingModal}
@@ -297,6 +330,7 @@ function EmailTemplating() {
           }}
         />
       )}
+
       {confirmationModal && editText && (
         <DeleteConfirmationModal
           showModal={confirmationModal}

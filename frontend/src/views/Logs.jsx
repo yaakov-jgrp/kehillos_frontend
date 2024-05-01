@@ -76,14 +76,15 @@ function Logs() {
 
   return (
     <div className="w-full bg-white rounded-3xl">
-      <div className="flex py-4 px-7 font-bold text-[#2B3674]">
+      <div className="flex py-4 px-7 text-gray-11 font-medium text-2xl">
         {t("sidebar.logs")}
       </div>
       <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2">
         <table className="!table text-[12px] md:text-[14px] mb-3">
-          <thead className="sticky top-0 z-10 [&_th]:min-w-[8.5rem]">
-            <tr className="tracking-[-2%] mb-5 bg-lightPrimary">
-              <th className="pr-3">
+          <thead className="sticky top-0 z-10 bg-[#F9FBFC]">
+            <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
+            <tr className="tracking-[-2%] mb-5">
+              <th className="pr-3 pl-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -95,7 +96,7 @@ function Logs() {
                   name="id"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -107,7 +108,7 @@ function Logs() {
                   name="user"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -119,7 +120,7 @@ function Logs() {
                   name="changes"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -131,7 +132,7 @@ function Logs() {
                   name="action"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -143,7 +144,7 @@ function Logs() {
                   name="entity"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -157,7 +158,7 @@ function Logs() {
               </th>
             </tr>
           </thead>
-          <tbody className="[&_td]:min-w-[9rem] [&_td]:max-w-[18rem]">
+          <tbody className="">
             {isLoading ? (
               <tr>
                 <td colSpan="6">
@@ -172,15 +173,18 @@ function Logs() {
                   <>
                     {allLogs.map((el) => {
                       return (
-                        <tr className="h-[75px]" key={el.id}>
-                          <td>#{el.id}</td>
+                        <tr
+                          className="h-[75px] border-b border-b-[#F2F2F2]"
+                          key={el.id}
+                        >
+                          <td className="py-12">#{el.id}</td>
                           <td>
                             <div className="flex flex-col">
                               <p className="capitalize">{el?.user?.name}</p>
                               <p className="mt-2">{el?.user.email}</p>
                             </div>
                           </td>
-                          <td>
+                          <td className="py-6">
                             <LogChanges changes={el.changes} />
                           </td>
                           <td className="capitalize">{el?.action}</td>

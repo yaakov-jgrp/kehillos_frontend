@@ -3,34 +3,34 @@
 @tailwind utilities;
 
 /* Firefox */
-* {
+/* * {
   scrollbar-width: 7px;
   scrollbar-color: #4318FF;
 }
 
 /* Chrome, Edge, and Safari */
-*::-webkit-scrollbar {
+/* *::-webkit-scrollbar {
   width: 7px;
 }
 
 *::-webkit-scrollbar-track {
-  background: #E9EDF7;
+  background: #e9edf7;
   border-radius: 5px;
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #4318FF;
+  background-color: #4318ff;
   border-radius: 10px;
-}
+} */
 
 .success {
-  background-color: #22C55E;
+  background-color: #22c55e;
   color: white;
 }
 
 .error {
   color: white;
-  background-color: #EF4444;
+  background-color: #ef4444;
 }
 
 .custom-word-break {
@@ -45,7 +45,7 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 

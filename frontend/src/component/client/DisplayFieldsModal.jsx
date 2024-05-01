@@ -3,6 +3,7 @@ import React from "react";
 
 // UI Components Imports
 import ToggleSwitch from "../common/ToggleSwitch";
+import CrossIcon from "../../assets/images/cross.svg";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
@@ -62,28 +63,28 @@ const DisplayFieldsModal = ({
                   autoComplete="off"
                   onSubmit={handleSubmit((data, e) => submitForm(data, e))}
                 >
-                  <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                    <h3 className="text-2xl font-semibold">
+                  <div className="flex items-center justify-between border-b border-b-[#E3E5E6] p-5 rounded-t">
+                    <h3 className="text-lg font-medium">
                       {t("clients.display")}
                     </h3>
                     <button
-                      className="bg-transparent border-0 text-black float-right"
+                      className=""
                       onClick={() => setShowModal(false)}
+                      type="button"
                     >
-                      <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
-                        x
-                      </span>
+                      <img src={CrossIcon} alt="cross-icon" />
                     </button>
                   </div>
+
                   <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
                     {displayFields.length > 0 &&
                       displayFields.map((fieldData, index) => {
                         return (
                           <div
-                            className="flex items-center justify-between"
+                            className="flex items-center justify-between mb-4"
                             key={index}
                           >
-                            <label className="block text-black text-sm font-bold mb-1">
+                            <label className="block text-gray-10 text-md font-normal">
                               {lang === "he"
                                 ? fieldData?.field_name_language.he
                                 : fieldData?.field_name}
@@ -104,16 +105,17 @@ const DisplayFieldsModal = ({
                         );
                       })}
                   </div>
-                  <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+
+                  <div className="flex items-center justify-center gap-2 my-8">
                     <button
-                      className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
+                      className="text-gray-11 background-transparent font-normal py-2 text-sm outline-none w-[136px] focus:outline-none border border-gray-11 rounded-lg"
                       type="button"
                       onClick={() => setShowModal(false)}
                     >
                       {t("netfree.close")}
                     </button>
                     <button
-                      className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                      className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                       type="submit"
                     >
                       {t("netfree.save")}

@@ -15,6 +15,7 @@ import requestService from "../../../services/request";
 
 // Icon imports
 import { AiTwotoneDelete } from "react-icons/ai";
+import CrossIcon from "../../../assets/images/cross.svg";
 
 // Initial state data
 const initialState = {
@@ -277,9 +278,9 @@ function WebsiteActionModal({
         <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
           <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
-              <div className="min-w-300px border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                  <h3 className="text-2xl font-semibold">
+              <div className="w-[380px] h-[410px] border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none">
+                <div className="flex items-center justify-between px-5 py-4 border-b border-b-[#E3E5E6] rounded-t">
+                  <h3 className="text-lg font-medium">
                     {t("netfree.addAction")}
                   </h3>
                   <button
@@ -289,14 +290,13 @@ function WebsiteActionModal({
                       setEditActionId(null);
                     }}
                   >
-                    <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
-                      x
-                    </span>
+                    <img src={CrossIcon} alt="CrossIcon" />
                   </button>
                 </div>
-                <div className="relative p-6 flex-auto max-h-[70vh] overflow-y-scroll">
-                  <div className="bg-gray-200 shadow-md rounded px-8 pt-6 pb-8 w-full">
-                    <label className="block text-black text-sm font-bold mb-1">
+
+                <div className="relative p-6 flex flex-col gap-3 max-h-[70vh] scroll-hide">
+                  <div>
+                    <label className="block text-gray-11 text-md mb-1">
                       {t("netfree.actions")}
                     </label>
                     <Select
@@ -305,7 +305,7 @@ function WebsiteActionModal({
                           zIndex: 9999,
                         },
                       }}
-                      className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                      className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
                       onChange={(e) => setActionValue(e)}
                       value={selectedAction}
                       placeholder="Select Action"
@@ -321,224 +321,229 @@ function WebsiteActionModal({
                         ) : null;
                       })}
                     </Select>
-                    {actionsList.filter((el) => el.id == selectedAction)[0]
-                      ?.is_request_status && (
-                      <>
-                        <label className="block text-black text-sm font-bold mb-1">
-                          {t("netfree.changeStatus")}
-                        </label>
-                        <Select
-                          MenuProps={{
-                            sx: {
-                              zIndex: 9999,
-                            },
-                          }}
-                          className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                          onChange={(e) => setSelectedStatus(e.target.value)}
-                          value={selectedStatus}
-                          placeholder="Select status"
-                        >
-                          <MenuItem value={"selectStatus"} disabled>
-                            {t("netfree.selectStatus")}
-                          </MenuItem>
-                          {requestStatuses.length > 0 &&
-                            requestStatuses?.map((el) => {
-                              return el ? (
-                                <MenuItem key={el.value} value={el.value}>
-                                  {el.label}
-                                </MenuItem>
-                              ) : null;
-                            })}
-                        </Select>
-                      </>
-                    )}
-                    {actionNeedsOtherFields.length >= 2 ? (
-                      <>
-                        <label className="block text-black text-sm font-bold mb-1">
-                          {t("netfree.amount")}
-                        </label>
-                        <input
-                          className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
-                          required
-                          type="number"
-                          min={1}
-                          onChange={(e) => setTimeAmount(e.target.value)}
-                        />
-                        <label className="block text-black text-sm font-bold mb-1">
-                          {t("netfree.openfor")}
-                        </label>
-                        <Select
-                          MenuProps={{
-                            sx: {
-                              zIndex: 9999,
-                            },
-                          }}
-                          className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                          onChange={(e) => setTimePeriod(e.target.value)}
-                          value={timePeriod}
-                          placeholder="Select period"
-                        >
-                          {periods?.map((el, i) => {
+                  </div>
+
+                  {actionsList.filter((el) => el.id == selectedAction)[0]
+                    ?.is_request_status && (
+                    <div>
+                      <label className="block text-gray-11 text-md mb-1">
+                        {t("netfree.changeStatus")}
+                      </label>
+                      <Select
+                        MenuProps={{
+                          sx: {
+                            zIndex: 9999,
+                          },
+                        }}
+                        className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                        onChange={(e) => setSelectedStatus(e.target.value)}
+                        value={selectedStatus}
+                        placeholder="Select status"
+                      >
+                        <MenuItem value={"selectStatus"} disabled>
+                          {t("netfree.selectStatus")}
+                        </MenuItem>
+                        {requestStatuses.length > 0 &&
+                          requestStatuses?.map((el) => {
                             return el ? (
-                              <MenuItem key={i} value={el.value}>
+                              <MenuItem key={el.value} value={el.value}>
                                 {el.label}
                               </MenuItem>
                             ) : null;
                           })}
-                        </Select>
-                      </>
-                    ) : null}
-                    {selectedAction == 1 && (
-                      <>
-                        <label className="block text-black text-sm font-bold mb-1">
-                          {t("netfree.template")}
-                        </label>
-                        <Select
-                          MenuProps={{
-                            sx: {
-                              maxHeight: "300px",
-                              zIndex: 9999,
-                            },
-                          }}
-                          className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                          onChange={(e) => setSelectedTemplate(e.target.value)}
-                          value={selectedTemplate}
-                          placeholder="Select Action"
-                        >
-                          <MenuItem value={"selectTemplate"} disabled>
-                            {t("netfree.selectTemplate")}
-                          </MenuItem>
-                          {templateList?.map((el) => {
-                            return el ? (
-                              <MenuItem key={el.id} value={el.id}>
-                                {el.name}
-                              </MenuItem>
-                            ) : null;
-                          })}
-                        </Select>
-                        {selectedTemplate !== "selectTemplate" && (
-                          <>
-                            <div className="" style={{ display: "grid" }}>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  gap: "10px",
-                                  marginTop: "10px",
-                                }}
-                              >
-                                <input
-                                  type="checkbox"
-                                  name="sendEmailTypeAdmin"
-                                  checked={sendEmailTypes.Admin}
-                                  onChange={(e) =>
-                                    handleCheckboxChange(e, "Admin")
-                                  }
-                                />
-                                <label htmlFor="Admin">
-                                  {t("netfree.SendtoAdmin")}
-                                </label>
-                              </div>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  gap: "10px",
-                                  marginTop: "10px",
-                                }}
-                              >
-                                <input
-                                  type="checkbox"
-                                  name="sendEmailTypeClient"
-                                  checked={sendEmailTypes.Client}
-                                  onChange={(e) =>
-                                    handleCheckboxChange(e, "Client")
-                                  }
-                                />
-                                <label htmlFor="Client">
-                                  {t("netfree.SendtoClien")}
-                                </label>
-                              </div>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  gap: "10px",
-                                  marginTop: "10px",
-                                }}
-                              >
-                                <input
-                                  type="checkbox"
-                                  name="sendEmailTypeCustom"
-                                  checked={sendEmailTypes.Custom}
-                                  onChange={(e) =>
-                                    handleCheckboxChange(e, "Custom")
-                                  }
-                                />
-                                <label htmlFor="Custom">
-                                  {t("netfree.CustomEmail")}
-                                </label>
-                              </div>
+                      </Select>
+                    </div>
+                  )}
+
+                  {actionNeedsOtherFields.length >= 2 ? (
+                    <div>
+                      <label className="block text-gray-11 text-md mb-1">
+                        {t("netfree.amount")}
+                      </label>
+                      <input
+                        className="appearance-none outline-none border rounded-lg w-full py-2 px-1 text-gray-11"
+                        required
+                        type="number"
+                        min={1}
+                        onChange={(e) => setTimeAmount(e.target.value)}
+                      />
+                      <label className="block text-gray-11 text-md mb-1">
+                        {t("netfree.openfor")}
+                      </label>
+                      <Select
+                        MenuProps={{
+                          sx: {
+                            zIndex: 9999,
+                          },
+                        }}
+                        className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                        onChange={(e) => setTimePeriod(e.target.value)}
+                        value={timePeriod}
+                        placeholder="Select period"
+                      >
+                        {periods?.map((el, i) => {
+                          return el ? (
+                            <MenuItem key={i} value={el.value}>
+                              {el.label}
+                            </MenuItem>
+                          ) : null;
+                        })}
+                      </Select>
+                    </div>
+                  ) : null}
+
+                  {selectedAction == 1 && (
+                    <div>
+                      <label className="block text-gray-11 text-md mb-1">
+                        {t("netfree.template")}
+                      </label>
+                      <Select
+                        MenuProps={{
+                          sx: {
+                            maxHeight: "300px",
+                            zIndex: 9999,
+                          },
+                        }}
+                        className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                        onChange={(e) => setSelectedTemplate(e.target.value)}
+                        value={selectedTemplate}
+                        placeholder="Select Action"
+                      >
+                        <MenuItem value={"selectTemplate"} disabled>
+                          {t("netfree.selectTemplate")}
+                        </MenuItem>
+                        {templateList?.map((el) => {
+                          return el ? (
+                            <MenuItem key={el.id} value={el.id}>
+                              {el.name}
+                            </MenuItem>
+                          ) : null;
+                        })}
+                      </Select>
+                      {selectedTemplate !== "selectTemplate" && (
+                        <>
+                          <div className="" style={{ display: "grid" }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                gap: "10px",
+                                marginTop: "10px",
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                name="sendEmailTypeAdmin"
+                                checked={sendEmailTypes.Admin}
+                                onChange={(e) =>
+                                  handleCheckboxChange(e, "Admin")
+                                }
+                              />
+                              <label htmlFor="Admin">
+                                {t("netfree.SendtoAdmin")}
+                              </label>
                             </div>
-                            {sendEmailTypes.Custom && (
-                              <div
-                                style={{
-                                  marginTop: "10px",
-                                  display: "grid",
-                                  gap: "10px",
-                                  justifyContent: "center",
-                                }}
-                              >
-                                {inputValues.map((value, index) => (
-                                  <div
-                                    key={index}
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: "10px",
-                                    }}
-                                  >
-                                    <input
-                                      className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
-                                      required
-                                      value={value}
-                                      onChange={(e) =>
-                                        handleInputChange(index, e.target.value)
-                                      }
-                                      placeholder={t("netfree.Enteremail")}
-                                    />
-                                    {deleteButtonsVisible[index] && (
-                                      <div
-                                        onClick={() => handleDeleteInput(index)}
-                                      >
-                                        <AiTwotoneDelete
-                                          style={{
-                                            width: "20px",
-                                            height: "20px",
-                                          }}
-                                        />
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                                <button
-                                  className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-                                  type="button"
-                                  onClick={handleAddInput}
+                            <div
+                              style={{
+                                display: "flex",
+                                gap: "10px",
+                                marginTop: "10px",
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                name="sendEmailTypeClient"
+                                checked={sendEmailTypes.Client}
+                                onChange={(e) =>
+                                  handleCheckboxChange(e, "Client")
+                                }
+                              />
+                              <label htmlFor="Client">
+                                {t("netfree.SendtoClien")}
+                              </label>
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                gap: "10px",
+                                marginTop: "10px",
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                name="sendEmailTypeCustom"
+                                checked={sendEmailTypes.Custom}
+                                onChange={(e) =>
+                                  handleCheckboxChange(e, "Custom")
+                                }
+                              />
+                              <label htmlFor="Custom">
+                                {t("netfree.CustomEmail")}
+                              </label>
+                            </div>
+                          </div>
+                          {sendEmailTypes.Custom && (
+                            <div
+                              style={{
+                                marginTop: "10px",
+                                display: "grid",
+                                gap: "10px",
+                                justifyContent: "center",
+                              }}
+                            >
+                              {inputValues.map((value, index) => (
+                                <div
+                                  key={index}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                  }}
                                 >
-                                  {t("netfree.Addmore")}
-                                </button>
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </>
-                    )}
-                  </div>
+                                  <input
+                                    className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
+                                    required
+                                    value={value}
+                                    onChange={(e) =>
+                                      handleInputChange(index, e.target.value)
+                                    }
+                                    placeholder={t("netfree.Enteremail")}
+                                  />
+                                  {deleteButtonsVisible[index] && (
+                                    <div
+                                      onClick={() => handleDeleteInput(index)}
+                                    >
+                                      <AiTwotoneDelete
+                                        style={{
+                                          width: "20px",
+                                          height: "20px",
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                              <button
+                                className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                                type="button"
+                                onClick={handleAddInput}
+                              >
+                                {t("netfree.Addmore")}
+                              </button>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
+
                 {/* <div style={{ textAlign: 'center', color: 'red' }} >
                   {error}
                 </div> */}
-                <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+
+                <div className="flex justify-center gap-2 mb-3 absolute bottom-0 left-[50%] transform -translate-x-1/2">
                   <button
-                    className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
+                    className="text-gray-11 background-transparent font-normal py-2 text-sm outline-none w-[136px] focus:outline-none border border-gray-11 rounded-lg"
                     type="button"
                     onClick={() => {
                       setShowModal(false);
@@ -548,7 +553,7 @@ function WebsiteActionModal({
                     {t("netfree.close")}
                   </button>
                   <button
-                    className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                    className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                     type="button"
                     onClick={submitForm}
                   >
