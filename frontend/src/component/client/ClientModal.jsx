@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 
 // UI Imports
-import { MenuItem, Select } from "@mui/material";
+import { MenuItem, Select, Grid } from "@mui/material";
+import CrossIcon from "../../assets/images/cross.svg";
 
 // UI Components Imports
 import ErrorMessage from "../common/ErrorMessage";
@@ -275,7 +276,7 @@ const ClientModal = ({
         <div className="fixed left-0 bottom-0 z-[99] h-screen w-screen bg-[#00000080] flex justify-center items-center">
           <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-7xl">
-              <div className="w-[100%] min-w-[80vw] md:min-w-[70vw] lg:min-w-[60vw] overflow-y-auto border-0 rounded-2xl shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+              <div className="w-full min-w-[80vw] md:min-w-[70vw] lg:min-w-[60vw] overflow-y-auto border-0 rounded-2xl shadow-lg relative flex flex-col bg-white outline-none focus:outline-none">
                 <form
                   style={{
                     width: "100%",
@@ -286,30 +287,29 @@ const ClientModal = ({
                   autoComplete="off"
                   onSubmit={handleSubmit((data, e) => submitForm(data, e))}
                 >
-                  <div className="flex items-start justify-between p-5 shadow-md rounded-t">
-                    <h3 className="text-xl font-bold">
+                  <div className="flex items-center justify-between border-b border-b-[#E3E5E6] p-5 rounded-t">
+                    <h3 className="text-lg font-medium">
                       {newClient
                         ? t("netfree.addClient")
                         : t("netfree.editClient")}
                     </h3>
                     <button
-                      className="bg-transparent border-0 text-black float-right"
+                      className=""
                       onClick={() => setShowModal(false)}
                       type="button"
                     >
-                      <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
-                        x
-                      </span>
+                      <img src={CrossIcon} alt="cross-icon" />
                     </button>
                   </div>
-                  <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
-                    <div className="mb-6 flex w-full items-start">
+                  {/* 
+                  <div className="relative p-6 max-h-[calc(90vh-170px)] overflow-y-auto bg-red-300">
+                    <div className="mb-6 flex flex-col">
                       <FieldLabel
-                        className={`w-[30%] ${lang === "he" ? "ml-6" : "mr-6"}`}
+                      // className={`${lang === "he" ? "ml-6" : "mr-6"}`}
                       >
                         {t("netfree.netfreeProfile")}
                       </FieldLabel>
-                      <div className="w-[60%]">
+                      <div className="">
                         <Controller
                           name="netfree_profile"
                           control={control}
@@ -320,7 +320,7 @@ const ClientModal = ({
                                   maxHeight: "250px",
                                 },
                               }}
-                              className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                              className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded outline-none w-full p-2 text-black bg-white"
                               onChange={onChange}
                               value={value}
                               placeholder="Select Profile"
@@ -342,26 +342,22 @@ const ClientModal = ({
                         )}
                       </div>
                     </div>
+
                     {fullFormData.map((field, index) => {
                       const isDate = DateFieldConstants.includes(
                         field.data_type.value
                       );
                       const isFile = field?.data_type?.value === "file";
                       return (
-                        <div
-                          className={`mb-6 flex w-full items-start`}
-                          key={index}
-                        >
+                        <div className={`mb-6 flex flex-col`} key={index}>
                           <FieldLabel
-                            className={`w-[30%] ${
-                              lang === "he" ? "ml-6" : "mr-6"
-                            }`}
+                            // className={`${lang === "he" ? "ml-6" : "mr-6"}`}
                           >
                             {lang === "he"
                               ? field.field_name_language.he
                               : field?.field_name}
                           </FieldLabel>
-                          <div className="w-[60%]">
+                          <div className="">
                             <Controller
                               name={field.field_slug}
                               control={control}
@@ -411,17 +407,180 @@ const ClientModal = ({
                         </div>
                       );
                     })}
+                  </div> */}
+
+                  <div className="relative p-6 max-h-[calc(90vh-170px)] overflow-y-auto">
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs={12} sm={6} md={4}>
+                        {/* Netfree Profile Dropdown */}
+                        <div className="flex flex-col mb-6">
+                          <FieldLabel>{t("netfree.netfreeProfile")}</FieldLabel>
+                          <div className="">
+                            <Controller
+                              name="netfree_profile"
+                              control={control}
+                              render={({
+                                field: { value, onChange, onBlur },
+                              }) => (
+                                <Select
+                                  MenuProps={{
+                                    sx: {
+                                      maxHeight: "250px",
+                                    },
+                                  }}
+                                  className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-black bg-white"
+                                  onChange={onChange}
+                                  value={value}
+                                  placeholder="Select Profile"
+                                >
+                                  {netfreeProfiles?.map((el) => {
+                                    return el ? (
+                                      <MenuItem key={el.id} value={el.id}>
+                                        {el.name}
+                                      </MenuItem>
+                                    ) : null;
+                                  })}
+                                </Select>
+                              )}
+                            />
+                            {errors.netfree_profile && (
+                              <ErrorMessage
+                                message={errors.netfree_profile.message}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </Grid>
+
+                      {fullFormData
+                        .filter(
+                          (field) => field?.data_type?.value !== "checkbox"
+                        )
+                        .map((field, index) => {
+                          const isDate = DateFieldConstants.includes(
+                            field.data_type.value
+                          );
+                          const isFile = field?.data_type?.value === "file";
+                          console.log(field);
+                          return (
+                            <Grid item xs={12} sm={6} md={4} key={index}>
+                              <div className="flex flex-col mb-6">
+                                <FieldLabel>
+                                  {lang === "he"
+                                    ? field.field_name_language.he
+                                    : field?.field_name}
+                                </FieldLabel>
+                                <div className="">
+                                  <Controller
+                                    name={field.field_slug}
+                                    control={control}
+                                    render={({
+                                      field: { value, onChange, onBlur },
+                                    }) => {
+                                      return (
+                                        <CustomField
+                                          setValue={setValue}
+                                          disabled={false}
+                                          field={field}
+                                          onChange={(e) => {
+                                            if (isDate) {
+                                              setValue(
+                                                field.field_slug,
+                                                dayjs(e)
+                                                  .utc(true)
+                                                  .toISOString(),
+                                                {
+                                                  shouldDirty: true,
+                                                  shouldValidate: true,
+                                                }
+                                              );
+                                            } else if (isFile) {
+                                              setValue(
+                                                field.field_slug,
+                                                e.target.files[0],
+                                                {
+                                                  shouldDirty: true,
+                                                  shouldValidate: true,
+                                                }
+                                              );
+                                            } else {
+                                              onChange(e);
+                                            }
+                                          }}
+                                          value={value}
+                                          onBlur={onBlur}
+                                        />
+                                      );
+                                    }}
+                                  />
+                                  {errors[field.field_slug] && (
+                                    <ErrorMessage
+                                      message={errors[field.field_slug].message}
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            </Grid>
+                          );
+                        })}
+
+                      {fullFormData
+                        .filter(
+                          (field) => field?.data_type?.value === "checkbox"
+                        )
+                        .map((field, index) => {
+                          return (
+                            <Grid item xs={12} sm={6} md={4} key={index}>
+                              <div className="flex flex-row items-center gap-4">
+                                <div className="">
+                                  <Controller
+                                    name={field.field_slug}
+                                    control={control}
+                                    render={({
+                                      field: { value, onChange, onBlur },
+                                    }) => {
+                                      return (
+                                        <CustomField
+                                          setValue={setValue}
+                                          disabled={false}
+                                          field={field}
+                                          onChange={(e) => {
+                                            onChange(e);
+                                          }}
+                                          value={value}
+                                          onBlur={onBlur}
+                                        />
+                                      );
+                                    }}
+                                  />
+                                  {errors[field.field_slug] && (
+                                    <ErrorMessage
+                                      message={errors[field.field_slug].message}
+                                    />
+                                  )}
+                                </div>
+                                <FieldLabel>
+                                  {lang === "he"
+                                    ? field.field_name_language.he
+                                    : field?.field_name}
+                                </FieldLabel>
+                              </div>
+                            </Grid>
+                          );
+                        })}
+                    </Grid>
                   </div>
-                  <div className="flex items-center justify-end p-4 border-t border-solid border-blueGray-200 rounded-b">
+
+                  <div className="flex items-center justify-center gap-2 my-8">
                     <button
-                      className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
+                      className="text-gray-11 background-transparent font-normal py-2 text-sm outline-none w-[136px] focus:outline-none border border-gray-11 rounded-lg"
                       type="button"
                       onClick={() => setShowModal(false)}
                     >
                       {t("netfree.close")}
                     </button>
                     <button
-                      className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                      className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                       type="submit"
                     >
                       {t("netfree.save")}

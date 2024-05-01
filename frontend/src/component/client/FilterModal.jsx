@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 
 // UI Imports
 import { Select, MenuItem, FormControl, Popover } from "@mui/material";
+import FilterIcon from "../../assets/images/filter_alt.svg";
 
 // UI Components Imports
 import NoDataFound from "../common/NoDataFound";
@@ -18,6 +19,8 @@ import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import BinIcon from "../../assets/images/bin.svg";
+import CrossIcon from "../../assets/images/cross.svg";
 
 // API services
 import clientsService from "../../services/clients";
@@ -251,7 +254,7 @@ function FilterModal({
 
   return (
     <>
-      <label
+      {/* <label
         className={`w-fit rounded-full flex items-center py-1 px-3 mr-1 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
         onClick={handleFilterClick}
       >
@@ -261,7 +264,14 @@ function FilterModal({
           } w-3 h-3 hover:cursor-pointer`}
         />
         {t("clients.filters")}
-      </label>
+      </label> */}
+      <button
+        className={`w-[90px] rounded-lg py-1 text-[14px] font-medium dark:bg-brand-400 text-[#0B99FF] dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-1 justify-center items-center border border-[#0B99FF]`}
+        onClick={handleFilterClick}
+      >
+        <img src={FilterIcon} alt="visibility_icon" />
+        {t("clients.filters")}
+      </button>
       <Popover
         open={open}
         anchorEl={anchorEl}
@@ -269,8 +279,9 @@ function FilterModal({
         slotProps={{
           paper: {
             sx: {
-              minWidth: "180px",
+              minWidth: "320px",
               marginTop: "10px",
+              // boxShadow: "none",
             },
           },
         }}
@@ -284,18 +295,18 @@ function FilterModal({
         }}
       >
         <>
-          <div className="flex items-start justify-between px-2 p-1 shadow-md rounded-t ">
-            <h3 className="text-md font-semibold">{t("clients.filters")}</h3>
+          <div className="flex items-center justify-between px-2 p-1 py-3 shadow-md rounded-t border border-b-[#E3E5E6]">
+            <h3 className="text-lg font-medium">{t("clients.filters")}</h3>
             <AddButtonIcon onClick={openFilterModal} />
           </div>
           {filters.length > 0 ? (
-            <div className=" max-h-[calc(60vh-170px)] overflow-y-auto">
+            <div className="max-h-[calc(60vh-170px)] overflow-y-auto">
               {filters.map((filter, i) => {
                 return (
                   <div
                     className={`group flex ${
                       filter?.fg_default && "bg-gray-200"
-                    } items-center hover:bg-gray-200 cursor-pointer justify-between p-3 border-solid`}
+                    } items-center cursor-pointer justify-between p-3 border-solid`}
                     key={i}
                   >
                     {filter.name}
@@ -312,7 +323,8 @@ function FilterModal({
                           sx: {
                             marginTop: "5px",
                             marginLeft: "10px",
-                            boxShadow: "0 0 10px lightgrey",
+                            boxShadow: "0px 0px 12px 0px #00000014",
+                            padding: "0.2rem 0",
                           },
                         },
                       }}
@@ -325,10 +337,10 @@ function FilterModal({
                         horizontal: "right",
                       }}
                     >
-                      <div className="flex items-center p-2">
+                      <div className="flex items-center p-2 gap-2">
                         {filter?.fg_default ? (
                           <button
-                            className="text-red-500 mx-1 background-transparent font-semibold uppercase px-3 py-1 text-sm outline-none focus:outline-none"
+                            className="text-red-500 background-transparent font-semibold uppercase px-3 py-1 text-sm outline-none focus:outline-none"
                             type="button"
                             onClick={() => {
                               applyFilterHandler(filter, false);
@@ -339,7 +351,7 @@ function FilterModal({
                           </button>
                         ) : (
                           <button
-                            className="text-white mx-1 text-sm transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-2 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none"
+                            className="text-white mx-1 text-sm transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 px-3 py-1 rounded-lg shadow hover:shadow-lg outline-none focus:outline-none"
                             type="button"
                             onClick={() => {
                               applyFilterHandler(filter, true);
@@ -349,12 +361,17 @@ function FilterModal({
                             {t("clients.apply")}
                           </button>
                         )}
+                        {!filter.fg_default && (
+                          <div className="w-[1.3px] h-6 bg-[#CCCCCC]"></div>
+                        )}
                         <EditButtonIcon
                           extra="mx-1 h-[18px] w-[18px]"
                           onClick={() => editFilterHandler(filter)}
                         />
-                        <MdDelete
-                          className="mx-1 text-blueSecondary h-[22px] w-[22px] hover:cursor-pointer"
+                        <img
+                          src={BinIcon}
+                          alt="BinIcon"
+                          className="hover:cursor-pointer"
                           onClick={() => deleteFilterHandler(filter?.id)}
                         />
                       </div>
@@ -379,8 +396,8 @@ function FilterModal({
                     : "min-w-[80vw] md:min-w-[70vw] lg:min-w-[60vw]"
                 }  overflow-y-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none`}
               >
-                <div className="flex items-start justify-between p-5 shadow-md rounded-t ">
-                  <h3 className="text-2xl font-semibold">
+                <div className="flex items-center justify-between p-5 rounded-t border-b border-[#E3E5E6]">
+                  <h3 className="text-xl text-gray-11 font-medium">
                     {t("clients.filters")}
                   </h3>
                   <button
@@ -388,9 +405,7 @@ function FilterModal({
                     onClick={() => setShowModal(false)}
                     type="button"
                   >
-                    <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
-                      x
-                    </span>
+                    <img src={CrossIcon} alt="cross-icon" />
                   </button>
                 </div>
                 {showForm && (
@@ -410,401 +425,9 @@ function FilterModal({
                           submitForm(data, e)
                         )}
                       >
-                        <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
-                          <div className="mb-6 flex w-full">
-                            <FieldLabel
-                              className={`w-[30%] ${
-                                lang === "he" ? "ml-6" : "mr-6"
-                              }`}
-                            >
-                              {t("clients.filterName")}
-                            </FieldLabel>
-                            <div className="w-[60%] mx-2">
-                              <Controller
-                                name="filter_name"
-                                control={control}
-                                render={({
-                                  field: { value, onChange, onBlur },
-                                }) => (
-                                  <input
-                                    className="shadow appearance-none outline-none border rounded w-full p-2 text-black"
-                                    value={value}
-                                    onChange={onChange}
-                                    onBlur={onBlur}
-                                  />
-                                )}
-                              />
-                              {errors?.filter_name && (
-                                <ErrorMessage
-                                  message={errors.filter_name.message}
-                                />
-                              )}
-                            </div>
-                          </div>
-                          <div className="w-full flex mb-6">
-                            <FieldLabel
-                              className={`w-[30%] ${
-                                lang === "he" ? "ml-6" : "mr-6"
-                              }`}
-                            >
-                              {t("clients.conditions")}
-                            </FieldLabel>
-                            <div className="w-[60%]">
-                              <p className="font-normal">
-                                {t("messages.andConditionsMessage")}
-                              </p>
-                              {conditions
-                                ?.filter((item) => item.operator === "AND")
-                                .map((filterCondition, i) => {
-                                  return (
-                                    <div
-                                      className="flex w-full flex-wrap"
-                                      key={i}
-                                    >
-                                      <FormControl
-                                        sx={{ m: 1, minWidth: "200px" }}
-                                        size="small"
-                                      >
-                                        <Select
-                                          labelId="demo-select-small-label"
-                                          id="demo-select-small"
-                                          className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                                          value={filterCondition?.attr_name}
-                                          MenuProps={{
-                                            sx: {
-                                              maxHeight: "250px",
-                                            },
-                                          }}
-                                          onChange={(e) =>
-                                            filterFieldConditionUpdate(
-                                              "attr_name",
-                                              e.target.value,
-                                              filterCondition?.id
-                                            )
-                                          }
-                                        >
-                                          <MenuItem value="" disabled>
-                                            Select
-                                          </MenuItem>
-                                          {fullFormData
-                                            .filter(
-                                              (item) =>
-                                                item?.data_type.value !== "file"
-                                            )
-                                            .map((field, i) => (
-                                              <MenuItem
-                                                value={field?.field_slug}
-                                                key={i}
-                                              >
-                                                {field.field_name}
-                                              </MenuItem>
-                                            ))}
-                                        </Select>
-                                        {errors?.filters?.length > 0 &&
-                                          errors?.filters[0]?.attr_name && (
-                                            <ErrorMessage
-                                              message={
-                                                errors?.filters[0]?.attr_name
-                                                  .message
-                                              }
-                                            />
-                                          )}
-                                      </FormControl>
-                                      <FormControl
-                                        sx={{ m: 1, minWidth: "200px" }}
-                                        size="small"
-                                      >
-                                        <Select
-                                          labelId="demo-select-small-label"
-                                          id="demo-select-small"
-                                          className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                                          value={filterCondition?.condition}
-                                          MenuProps={{
-                                            sx: {
-                                              maxHeight: "250px",
-                                            },
-                                          }}
-                                          onChange={(e) =>
-                                            filterFieldConditionUpdate(
-                                              "condition",
-                                              e.target.value,
-                                              filterCondition?.id
-                                            )
-                                          }
-                                        >
-                                          <MenuItem value="" disabled>
-                                            Select
-                                          </MenuItem>
-                                          {filterOptions
-                                            .filter(
-                                              (filterOption) =>
-                                                filterOption.datatype ===
-                                                fullFormData.filter(
-                                                  (field) =>
-                                                    field?.field_slug ===
-                                                    filterCondition?.attr_name
-                                                )[0]?.data_type.value
-                                            )[0]
-                                            .conditions?.map((condition, i) => (
-                                              <MenuItem
-                                                value={condition?.condition}
-                                                key={i}
-                                              >
-                                                {condition?.label}
-                                              </MenuItem>
-                                            ))}
-                                        </Select>
-                                        {errors?.filters?.length > 0 &&
-                                          errors?.filters[0]?.condition && (
-                                            <ErrorMessage
-                                              message={
-                                                errors?.filters[0]?.condition
-                                                  .message
-                                              }
-                                            />
-                                          )}
-                                      </FormControl>
-                                      <FormControl
-                                        sx={{ m: 1, minWidth: "200px" }}
-                                        size="small"
-                                      >
-                                        <input
-                                          className="shadow pl-2 appearance-none outline-none border rounded w-full py-2 text-black"
-                                          value={filterCondition?.value}
-                                          onChange={(e) =>
-                                            filterFieldConditionUpdate(
-                                              "value",
-                                              e.target.value,
-                                              filterCondition?.id
-                                            )
-                                          }
-                                        />
-                                        {errors?.filters?.length > 0 &&
-                                          errors?.filters[0]?.value && (
-                                            <ErrorMessage
-                                              message={
-                                                errors?.filters[0]?.value
-                                                  .message
-                                              }
-                                            />
-                                          )}
-                                      </FormControl>
-                                      <MdDelete
-                                        className="mx-1 self-center text-blueSecondary h-[22px] w-[22px] hover:cursor-pointer"
-                                        onClick={() =>
-                                          deleteFilterCondition(
-                                            filterCondition?.id
-                                          )
-                                        }
-                                      />
-                                    </div>
-                                  );
-                                })}
-                            </div>
-                          </div>
-                          <div className="w-full flex mb-6">
-                            <FieldLabel
-                              className={`w-[30%] ${
-                                lang === "he" ? "ml-6" : "mr-6"
-                              }`}
-                            />
-                            <div className="w-[60%] mx-2">
-                              <p
-                                className="w-fit p-3 rounded-md flex cursor-pointer items-center bg-gray-200"
-                                onClick={() => addConditionHandler("AND")}
-                              >
-                                <IoIosAdd /> {t("clients.addCondition")}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="w-full flex mb-6">
-                            <FieldLabel
-                              className={`w-[30%] ${
-                                lang === "he" ? "ml-6" : "mr-6"
-                              }`}
-                            />
-                            <div className="w-[60%]">
-                              <p className="font-normal">
-                                {t("messages.orConditionsMessage")}
-                              </p>
-                              {conditions
-                                ?.filter((item) => item.operator === "OR")
-                                .map((filterCondition, i) => {
-                                  return (
-                                    <div
-                                      className="flex w-full flex-wrap"
-                                      key={i}
-                                    >
-                                      <FormControl
-                                        sx={{ m: 1, minWidth: "200px" }}
-                                        size="small"
-                                      >
-                                        <Select
-                                          labelId="demo-select-small-label"
-                                          id="demo-select-small"
-                                          className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                                          value={filterCondition?.attr_name}
-                                          MenuProps={{
-                                            sx: {
-                                              maxHeight: "250px",
-                                            },
-                                          }}
-                                          onChange={(e) =>
-                                            filterFieldConditionUpdate(
-                                              "attr_name",
-                                              e.target.value,
-                                              filterCondition?.id
-                                            )
-                                          }
-                                        >
-                                          <MenuItem value="" disabled>
-                                            Select
-                                          </MenuItem>
-                                          {fullFormData
-                                            .filter(
-                                              (item) =>
-                                                item?.data_type.value !== "file"
-                                            )
-                                            .map((field, i) => (
-                                              <MenuItem
-                                                value={field?.field_slug}
-                                                key={i}
-                                              >
-                                                {field.field_name}
-                                              </MenuItem>
-                                            ))}
-                                        </Select>
-                                        {errors?.filters?.length > 0 &&
-                                          errors?.filters[0]?.attr_name && (
-                                            <ErrorMessage
-                                              message={
-                                                errors?.filters[0]?.attr_name
-                                                  .message
-                                              }
-                                            />
-                                          )}
-                                      </FormControl>
-                                      <FormControl
-                                        sx={{ m: 1, minWidth: "200px" }}
-                                        size="small"
-                                      >
-                                        <Select
-                                          labelId="demo-select-small-label"
-                                          id="demo-select-small"
-                                          className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                                          value={filterCondition?.condition}
-                                          MenuProps={{
-                                            sx: {
-                                              maxHeight: "250px",
-                                            },
-                                          }}
-                                          onChange={(e) =>
-                                            filterFieldConditionUpdate(
-                                              "condition",
-                                              e.target.value,
-                                              filterCondition?.id
-                                            )
-                                          }
-                                        >
-                                          <MenuItem value="" disabled>
-                                            Select
-                                          </MenuItem>
-                                          {filterOptions
-                                            .filter(
-                                              (filterOption) =>
-                                                filterOption.datatype ===
-                                                fullFormData.filter(
-                                                  (field) =>
-                                                    field?.field_slug ===
-                                                    filterCondition?.attr_name
-                                                )[0]?.data_type.value
-                                            )[0]
-                                            .conditions?.map((condition, i) => (
-                                              <MenuItem
-                                                value={condition?.condition}
-                                                key={i}
-                                              >
-                                                {condition?.label}
-                                              </MenuItem>
-                                            ))}
-                                        </Select>
-                                        {errors?.filters?.length > 0 &&
-                                          errors?.filters[0]?.condition && (
-                                            <ErrorMessage
-                                              message={
-                                                errors?.filters[0]?.condition
-                                                  .message
-                                              }
-                                            />
-                                          )}
-                                      </FormControl>
-                                      <FormControl
-                                        sx={{ m: 1, minWidth: "200px" }}
-                                        size="small"
-                                      >
-                                        <input
-                                          className="shadow pl-2 appearance-none outline-none border rounded w-full py-2 text-black"
-                                          value={filterCondition?.value}
-                                          onChange={(e) =>
-                                            filterFieldConditionUpdate(
-                                              "value",
-                                              e.target.value,
-                                              filterCondition?.id
-                                            )
-                                          }
-                                        />
-                                        {errors?.filters?.length > 0 &&
-                                          errors?.filters[0]?.value && (
-                                            <ErrorMessage
-                                              message={
-                                                errors?.filters[0]?.value
-                                                  .message
-                                              }
-                                            />
-                                          )}
-                                      </FormControl>
-                                      <MdDelete
-                                        className="mx-1 self-center text-blueSecondary h-[22px] w-[22px] hover:cursor-pointer"
-                                        onClick={() =>
-                                          deleteFilterCondition(
-                                            filterCondition?.id
-                                          )
-                                        }
-                                      />
-                                    </div>
-                                  );
-                                })}
-                            </div>
-                          </div>
-                          <div className="w-full flex mb-6">
-                            <FieldLabel
-                              className={`w-[30%] ${
-                                lang === "he" ? "ml-6" : "mr-6"
-                              }`}
-                            />
-                            <div className="w-[60%] mx-2">
-                              <p
-                                className="w-fit p-3 rounded-md flex cursor-pointer items-center bg-gray-200"
-                                onClick={() => addConditionHandler("OR")}
-                              >
-                                <IoIosAdd /> {t("clients.addCondition")}
-                              </p>
-                              {errors?.filters && (
-                                <ErrorMessage
-                                  message={errors.filters.message}
-                                />
-                              )}
-                            </div>
-                          </div>
-                          <div className="mb-6 flex w-full items-center">
-                            <FieldLabel
-                              className={`w-[30%] ${
-                                lang === "he" ? "ml-6" : "mr-6"
-                              }`}
-                            >
-                              {t("clients.setAsDefault")}
-                            </FieldLabel>
-                            <div className="w-[60%] mx-2">
+                        <div className="relative p-6 flex flex-col gap-6 max-h-[calc(90vh-170px)] overflow-y-auto">
+                          <div className="flex w-full items-center gap-4">
+                            <div className="-mt-1">
                               <Controller
                                 name="default"
                                 control={control}
@@ -819,18 +442,453 @@ function FilterModal({
                                 )}
                               />
                             </div>
+                            <FieldLabel
+                              className={`${
+                                lang === "he" ? "ml-6" : "mr-6"
+                              } text-[10px]`}
+                            >
+                              {t("clients.setAsDefault")}
+                            </FieldLabel>
+                          </div>
+
+                          <div className="flex flex-col gap-1 w-full">
+                            <FieldLabel
+                              className={`${
+                                lang === "he" ? "ml-6" : "mr-6"
+                              } text-[14px]`}
+                            >
+                              {t("clients.filterName")}
+                            </FieldLabel>
+                            <div className="">
+                              <Controller
+                                name="filter_name"
+                                control={control}
+                                render={({
+                                  field: { value, onChange, onBlur },
+                                }) => (
+                                  <input
+                                    className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 font-normal placeholder:text-gray-10 placeholder:font-normal"
+                                    placeholder="Enter"
+                                    value={value}
+                                    onChange={onChange}
+                                    onBlur={onBlur}
+                                  />
+                                )}
+                              />
+                              {errors?.filter_name && (
+                                <ErrorMessage
+                                  message={errors.filter_name.message}
+                                />
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-3">
+                            <div className="w-full flex flex-col">
+                              <label
+                                className={`block break-words capitalize text-gray-11 text-lg font-medium ${
+                                  lang === "he" ? "ml-6" : "mr-6"
+                                }`}
+                              >
+                                {t("clients.conditions")}
+                              </label>
+                              <div className="">
+                                <p className="font-normal text-lg">
+                                  {t("messages.andConditionsMessage")}
+                                </p>
+                                {conditions
+                                  ?.filter((item) => item.operator === "AND")
+                                  .map((filterCondition, i) => {
+                                    return (
+                                      <div
+                                        className="flex w-full gap-4 my-2 flex-wrap items-center"
+                                        key={i}
+                                      >
+                                        <div className="flex flex-col gap-1">
+                                          <p className="font-normal text-[16px]">
+                                            {t("netfree.First_Name_Owner")}
+                                          </p>
+                                          <FormControl
+                                            sx={{ minWidth: "200px" }}
+                                            size="small"
+                                          >
+                                            <Select
+                                              labelId="demo-select-small-label"
+                                              id="demo-select-small"
+                                              className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded-lg outline-none w-full p-2 text-black bg-white"
+                                              value={filterCondition?.attr_name}
+                                              MenuProps={{
+                                                sx: {
+                                                  maxHeight: "250px",
+                                                },
+                                              }}
+                                              onChange={(e) =>
+                                                filterFieldConditionUpdate(
+                                                  "attr_name",
+                                                  e.target.value,
+                                                  filterCondition?.id
+                                                )
+                                              }
+                                            >
+                                              <MenuItem value="" disabled>
+                                                Select
+                                              </MenuItem>
+                                              {fullFormData
+                                                .filter(
+                                                  (item) =>
+                                                    item?.data_type.value !==
+                                                    "file"
+                                                )
+                                                .map((field, i) => (
+                                                  <MenuItem
+                                                    value={field?.field_slug}
+                                                    key={i}
+                                                  >
+                                                    {field.field_name}
+                                                  </MenuItem>
+                                                ))}
+                                            </Select>
+                                            {errors?.filters?.length > 0 &&
+                                              errors?.filters[0]?.attr_name && (
+                                                <ErrorMessage
+                                                  message={
+                                                    errors?.filters[0]
+                                                      ?.attr_name.message
+                                                  }
+                                                />
+                                              )}
+                                          </FormControl>
+                                        </div>
+
+                                        <div className="flex flex-col gap-1">
+                                          <p className="font-normal text-[16px]">
+                                            {t("netfree.Equals")}
+                                          </p>
+                                          <FormControl
+                                            sx={{ minWidth: "200px" }}
+                                            size="small"
+                                          >
+                                            <Select
+                                              labelId="demo-select-small-label"
+                                              id="demo-select-small"
+                                              className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                                              value={filterCondition?.condition}
+                                              MenuProps={{
+                                                sx: {
+                                                  maxHeight: "250px",
+                                                },
+                                              }}
+                                              onChange={(e) =>
+                                                filterFieldConditionUpdate(
+                                                  "condition",
+                                                  e.target.value,
+                                                  filterCondition?.id
+                                                )
+                                              }
+                                            >
+                                              <MenuItem value="" disabled>
+                                                Select
+                                              </MenuItem>
+                                              {filterOptions
+                                                .filter(
+                                                  (filterOption) =>
+                                                    filterOption.datatype ===
+                                                    fullFormData.filter(
+                                                      (field) =>
+                                                        field?.field_slug ===
+                                                        filterCondition?.attr_name
+                                                    )[0]?.data_type.value
+                                                )[0]
+                                                .conditions?.map(
+                                                  (condition, i) => (
+                                                    <MenuItem
+                                                      value={
+                                                        condition?.condition
+                                                      }
+                                                      key={i}
+                                                    >
+                                                      {condition?.label}
+                                                    </MenuItem>
+                                                  )
+                                                )}
+                                            </Select>
+                                            {errors?.filters?.length > 0 &&
+                                              errors?.filters[0]?.condition && (
+                                                <ErrorMessage
+                                                  message={
+                                                    errors?.filters[0]
+                                                      ?.condition.message
+                                                  }
+                                                />
+                                              )}
+                                          </FormControl>
+                                        </div>
+
+                                        <div className="flex flex-col gap-1">
+                                          <p className="font-normal text-[16px]">
+                                            יצחק יעקב
+                                          </p>
+                                          <FormControl
+                                            sx={{ minWidth: "200px" }}
+                                            size="small"
+                                          >
+                                            <input
+                                              className="pl-2 appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full py-[10px] text-gray-11 font-normal"
+                                              value={filterCondition?.value}
+                                              onChange={(e) =>
+                                                filterFieldConditionUpdate(
+                                                  "value",
+                                                  e.target.value,
+                                                  filterCondition?.id
+                                                )
+                                              }
+                                            />
+                                            {errors?.filters?.length > 0 &&
+                                              errors?.filters[0]?.value && (
+                                                <ErrorMessage
+                                                  message={
+                                                    errors?.filters[0]?.value
+                                                      .message
+                                                  }
+                                                />
+                                              )}
+                                          </FormControl>
+                                        </div>
+
+                                        <img
+                                          src={BinIcon}
+                                          alt="BinIcon"
+                                          className="mx-1 self-center text-blueSecondary h-[22px] w-[22px] hover:cursor-pointer"
+                                          onClick={() =>
+                                            deleteFilterCondition(
+                                              filterCondition?.id
+                                            )
+                                          }
+                                        />
+                                      </div>
+                                    );
+                                  })}
+                              </div>
+                            </div>
+
+                            <button
+                              className="w-fit h-[40px] px-4 rounded-lg flex cursor-pointer items-center text-brand-500 font-normal text-md border border-brand-500"
+                              onClick={() => addConditionHandler("AND")}
+                            >
+                              <IoIosAdd
+                                style={{ color: "#0B99FF" }}
+                                size="1.5rem"
+                              />{" "}
+                              {t("clients.addCondition")}
+                            </button>
+                          </div>
+
+                          <div className="border-b border-[#E3E5E6]"></div>
+
+                          <div className="flex flex-col gap-3">
+                            <div className="w-full flex">
+                              <div className="">
+                                <p className="font-normal text-lg">
+                                  {t("messages.orConditionsMessage")}
+                                </p>
+                                {conditions
+                                  ?.filter((item) => item.operator === "OR")
+                                  .map((filterCondition, i) => {
+                                    return (
+                                      <div
+                                        className="flex w-full gap-4 my-2 flex-wrap items-center"
+                                        key={i}
+                                      >
+                                        <div className="flex flex-col gap-1">
+                                          <p className="font-normal text-[16px]">
+                                            {t("netfree.First_Name_Owner")}
+                                          </p>
+                                          <FormControl
+                                            sx={{ minWidth: "200px" }}
+                                            size="small"
+                                          >
+                                            <Select
+                                              labelId="demo-select-small-label"
+                                              id="demo-select-small"
+                                              className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                                              value={filterCondition?.attr_name}
+                                              MenuProps={{
+                                                sx: {
+                                                  maxHeight: "250px",
+                                                },
+                                              }}
+                                              onChange={(e) =>
+                                                filterFieldConditionUpdate(
+                                                  "attr_name",
+                                                  e.target.value,
+                                                  filterCondition?.id
+                                                )
+                                              }
+                                            >
+                                              <MenuItem value="" disabled>
+                                                Select
+                                              </MenuItem>
+                                              {fullFormData
+                                                .filter(
+                                                  (item) =>
+                                                    item?.data_type.value !==
+                                                    "file"
+                                                )
+                                                .map((field, i) => (
+                                                  <MenuItem
+                                                    value={field?.field_slug}
+                                                    key={i}
+                                                  >
+                                                    {field.field_name}
+                                                  </MenuItem>
+                                                ))}
+                                            </Select>
+                                            {errors?.filters?.length > 0 &&
+                                              errors?.filters[0]?.attr_name && (
+                                                <ErrorMessage
+                                                  message={
+                                                    errors?.filters[0]
+                                                      ?.attr_name.message
+                                                  }
+                                                />
+                                              )}
+                                          </FormControl>
+                                        </div>
+
+                                        <div className="flex flex-col gap-1">
+                                          <p className="font-normal text-[16px]">
+                                            {t("netfree.Equals")}
+                                          </p>
+                                          <FormControl
+                                            sx={{ minWidth: "200px" }}
+                                            size="small"
+                                          >
+                                            <Select
+                                              labelId="demo-select-small-label"
+                                              id="demo-select-small"
+                                              className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                                              value={filterCondition?.condition}
+                                              MenuProps={{
+                                                sx: {
+                                                  maxHeight: "250px",
+                                                },
+                                              }}
+                                              onChange={(e) =>
+                                                filterFieldConditionUpdate(
+                                                  "condition",
+                                                  e.target.value,
+                                                  filterCondition?.id
+                                                )
+                                              }
+                                            >
+                                              <MenuItem value="" disabled>
+                                                Select
+                                              </MenuItem>
+                                              {filterOptions
+                                                .filter(
+                                                  (filterOption) =>
+                                                    filterOption.datatype ===
+                                                    fullFormData.filter(
+                                                      (field) =>
+                                                        field?.field_slug ===
+                                                        filterCondition?.attr_name
+                                                    )[0]?.data_type.value
+                                                )[0]
+                                                .conditions?.map(
+                                                  (condition, i) => (
+                                                    <MenuItem
+                                                      value={
+                                                        condition?.condition
+                                                      }
+                                                      key={i}
+                                                    >
+                                                      {condition?.label}
+                                                    </MenuItem>
+                                                  )
+                                                )}
+                                            </Select>
+                                            {errors?.filters?.length > 0 &&
+                                              errors?.filters[0]?.condition && (
+                                                <ErrorMessage
+                                                  message={
+                                                    errors?.filters[0]
+                                                      ?.condition.message
+                                                  }
+                                                />
+                                              )}
+                                          </FormControl>
+                                        </div>
+
+                                        <div className="flex flex-col gap-1">
+                                          <p className="font-normal text-[16px]">
+                                            יצחק יעקב
+                                          </p>
+                                          <FormControl
+                                            sx={{ minWidth: "200px" }}
+                                            size="small"
+                                          >
+                                            <input
+                                              className="pl-2 appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full py-[10px] text-gray-11 font-normal"
+                                              value={filterCondition?.value}
+                                              onChange={(e) =>
+                                                filterFieldConditionUpdate(
+                                                  "value",
+                                                  e.target.value,
+                                                  filterCondition?.id
+                                                )
+                                              }
+                                            />
+                                            {errors?.filters?.length > 0 &&
+                                              errors?.filters[0]?.value && (
+                                                <ErrorMessage
+                                                  message={
+                                                    errors?.filters[0]?.value
+                                                      .message
+                                                  }
+                                                />
+                                              )}
+                                          </FormControl>
+                                        </div>
+
+                                        <img
+                                          src={BinIcon}
+                                          alt="BinIcon"
+                                          className="mx-1 self-center text-blueSecondary h-[22px] w-[22px] hover:cursor-pointer"
+                                          onClick={() =>
+                                            deleteFilterCondition(
+                                              filterCondition?.id
+                                            )
+                                          }
+                                        />
+                                      </div>
+                                    );
+                                  })}
+                              </div>
+                            </div>
+
+                            <button
+                              className="w-fit h-[40px] px-4 rounded-lg flex cursor-pointer items-center text-brand-500 font-normal text-md border border-brand-500"
+                              onClick={() => addConditionHandler("OR")}
+                            >
+                              <IoIosAdd
+                                style={{ color: "#0B99FF" }}
+                                size="1.5rem"
+                              />{" "}
+                              {t("clients.addCondition")}
+                            </button>
                           </div>
                         </div>
-                        <div className="flex items-center justify-end p-4 border-t border-solid border-blueGray-200 rounded-b">
+
+                        <div className="flex items-center justify-center gap-2 mb-4">
                           <button
-                            className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
+                            className="text-gray-11 background-transparent font-normal py-2 text-sm outline-none w-[136px] focus:outline-none border border-gray-11 rounded-lg"
                             type="button"
                             onClick={handleCloseFilter}
                           >
                             {t("netfree.close")}
                           </button>
                           <button
-                            className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                            className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                             type="submit"
                           >
                             {t("netfree.save")}

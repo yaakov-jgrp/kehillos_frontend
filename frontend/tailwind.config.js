@@ -5,18 +5,18 @@ module.exports = {
   theme: {
     extend: {
       animation: {
-        loader: 'loader 0.6s infinite alternate'
+        loader: "loader 0.6s infinite alternate",
       },
       keyframes: {
         loader: {
           to: {
             opacity: 0.1,
-            transform: 'translate3d(0, -1rem, 0)'
-          }
-        }
+            transform: "translate3d(0, -1rem, 0)",
+          },
+        },
       },
-       minWidth: {
-      '300px': '300px',
+      minWidth: {
+        "300px": "300px",
       },
       width: {
         "1p": "1%",
@@ -127,13 +127,14 @@ module.exports = {
         "3xl": "14px 17px 40px 4px",
         inset: "inset 0px 18px 22px",
         darkinset: "0px 4px 4px inset",
+        custom: "0 0 12px 0 rgba(0, 0, 0, 0.07)",
       },
       borderRadius: {
         primary: "20px",
       },
-      dropShadow:{
-        '0': '0 0 5px #4318FF'
-      }
+      dropShadow: {
+        0: "0 0 5px #4318FF",
+      },
     },
     screens: {
       sm: "576px",
@@ -157,6 +158,8 @@ module.exports = {
       blueSecondary: "#4318FF",
       brandLinear: "#868CFF",
       gray: {
+        10: "#5C5C5C",
+        11: "#1C1C1C",
         50: "#f8f9fa",
         100: "#edf2f7",
         200: "#e9ecef",
@@ -330,9 +333,9 @@ module.exports = {
         200: "#A195FD",
         300: "#8171FC",
         400: "#7551FF",
-        500: "#422AFB",
-        600: "#3311DB",
-        700: "#2111A5",
+        500: "#0B99FF",
+        600: "#0080E6",
+        700: "#0066CC",
         800: "#190793",
         900: "#11047A",
       },

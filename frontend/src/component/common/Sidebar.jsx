@@ -24,6 +24,7 @@ import {
 import { IoLogoBuffer } from "react-icons/io";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
 import NetfreeIcon from "../../constants/icons/NetfreeIcon";
+import Logo from "../../assets/images/Kehillos_Logo.svg";
 
 const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
@@ -108,7 +109,7 @@ const Sidebar = ({ open, onClose }) => {
 
   return (
     <div
-      className={`sm:none duration-175 xl:min-w-[250px] fixed linear !z-50 flex min-h-full flex-col bg-white pb-10 shadow-2xl shadow-white/5 transition-all md:!z-50 lg:!z-50 xl:!z-0 ${
+      className={`h-full px-5 sm:none duration-175 w-[250px] fixed linear !z-50 flex flex-col bg-white pb-10 shadow-custom transition-all md:!z-50 lg:!z-50 xl:!z-0 ${
         open
           ? i18n.dir() === "ltr"
             ? `left-0`
@@ -125,12 +126,10 @@ const Sidebar = ({ open, onClose }) => {
         <HiX />
       </span>
 
-      <div className={`mx-auto mt-5 flex items-center`}>
-        <div className="mt-1 h-2.5 font-poppins text-[18px] font-bold uppercase text-navy-700 ms-1 dark:text-white">
-          {t("sidebar.title")}
-        </div>
+      <div className="mx-auto my-6 flex items-center">
+        <img src={Logo} alt="Logo" className="h-[44px] md:h-[65px]" />
       </div>
-      <div className={`mb-5 mt-[40px] h-px bg-gray-300 dark:bg-white/30`} />
+      {/* <div className={`mb-5 mt-[40px] h-px bg-gray-300 dark:bg-white/30`} /> */}
       <ul className="mb-auto pt-1">
         <SidebarLinks routes={routes} />
       </ul>

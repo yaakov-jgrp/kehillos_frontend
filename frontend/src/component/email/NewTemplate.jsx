@@ -217,29 +217,31 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col-reverse md:flex-row gap-4">
-      <div className="bg-white rounded-3xl w-full">
-        <div className="flex pt-3 px-7 font-bold text-[#2B3674]">
-          {t("emails.templates")}
-        </div>
+    <div className="w-full flex flex-col md:flex-row gap-4">
+      <div className="bg-white rounded-3xl w-full shadow-custom pb-4">
+        <p className="text-gray-11 font-medium text-2xl p-7">
+          {t("emails.emailTemplate")}
+        </p>
         <form onSubmit={saveTemplate}>
-          <div className="px-7 flex gap-4 font-semibold text-[#2B3674] [&_input]:border-[1px] [&_textarea]:border-[1px] [&_input]:outline-none [&_textarea]:outline-0 [&_input]:w-full [&_textarea]:w-full [&_input]:!px-4 [&_textarea]:!px-4 [&_input]:!py-1 [&_textarea]:!py-1">
+          <div className="px-7 flex gap-4 text-gray-11 [&_input]:border-[1px] [&_textarea]:border-[1px] [&_input]:outline-none [&_textarea]:outline-0 [&_input]:w-full [&_textarea]:w-full [&_input]:!px-4 [&_textarea]:!px-4 [&_input]:!py-1 [&_textarea]:!py-1">
             <div className="w-[100%] [&_tr]:h-10">
               <div className="flex my-2 w-full gap-4">
                 <td className="w-1/2 md:w-1/5">{t("emails.templateName")}</td>
                 <input
-                  className="text-[13px]"
+                  className="text-[13px] rounded-md h-[40px]"
                   id="templateName"
                   type="text"
                   value={formdata.name}
                   onChange={handleInput}
                   name="name"
+                  placeholder={t("emails.templateName")}
                 />
               </div>
+
               <div className="flex my-2 w-full gap-4">
                 <td className="w-1/2 md:w-1/5">{t("emails.subject")}</td>
                 <input
-                  className="text-[13px]"
+                  className="text-[13px] rounded-md h-[40px]"
                   id="emailSubject"
                   type="text"
                   placeholder={t("emails.subject")}
@@ -248,6 +250,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
                   name="subject"
                 />
               </div>
+
               <div className="w-full my-5 h-[calc(100vh-330px)] [&_iframe]:!min-w-[100%] [&_iframe]:!h-[calc(100vh-330px)] [&_div]:!max-h-[calc(100vh-330px)]">
                 {!loadingTemplate && !loadingTags ? (
                   <EmailEditor
@@ -257,15 +260,18 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
                   />
                 ) : null}
               </div>
-              <button
-                className={`linear mb-2 px-[30px] rounded-lg py-2 text-base font-medium transition duration-200 ${
-                  formValidate()
-                    ? "bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white"
-                    : "bg-gray-300"
-                }`}
-              >
-                {t("emails.save")}
-              </button>
+
+              <div className="flex justify-center">
+                <button
+                  className={`w-[150px] h-[40px] linear rounded-lg text-base font-medium transition duration-200 ${
+                    formValidate()
+                      ? "bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white"
+                      : "bg-gray-300"
+                  }`}
+                >
+                  {t("emails.save")}
+                </button>
+              </div>
             </div>
           </div>
         </form>

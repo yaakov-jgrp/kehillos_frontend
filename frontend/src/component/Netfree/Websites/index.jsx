@@ -25,6 +25,7 @@ import categoryService from "../../../services/category";
 import { MdExpandMore } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import { HiDuplicate } from "react-icons/hi";
+import BinIcon from "../../../assets/images/bin.svg";
 
 // Utils imports
 import websiteServices from "../../../services/website";
@@ -139,19 +140,6 @@ const Websites = ({ currentTab, handleTabChange }) => {
     }
   };
 
-  const searchSetting = async (query) => {
-    setIsLoading(true);
-    setSiteSearch(query);
-    const response = await categoryService.searchSiteSetting(query);
-    if (query.length) {
-      setSearchResult(response.data.data);
-    } else {
-      setSearchResult([]);
-    }
-    setResponseDataToState(response);
-    setIsLoading(false);
-  };
-
   const handleClickedAction = (id) => {
     if (clickedAction && clickedAction === id) {
       setClickedAction(null);
@@ -210,30 +198,6 @@ const Websites = ({ currentTab, handleTabChange }) => {
     getActionsList();
     getDefaultTraffic();
     getDefaultTrafficActions();
-  };
-
-  const editProfileHandler = () => {
-    setNewProfile(false);
-    setShowProfileModal(!showProfileModal);
-  };
-
-  const deleteProfileHandler = async () => {
-    const res = await categoryService.deleteProfile(activeProfile.id);
-    const updatedProfiles = profilesList.filter(
-      (profile) => profile.id !== activeProfile.id
-    );
-    const activeIndex = profilesList.findIndex(
-      (profile) => profile.id === activeProfile.id
-    );
-    profileClickHandler(activeIndex - 1);
-    setProfilesList(updatedProfiles);
-    setProfileActiveIndex(activeIndex - 1);
-    setActiveprofile(updatedProfiles[activeIndex - 1]);
-  };
-
-  const duplicateProfileHandler = async () => {
-    const res = await categoryService.duplicateProfile(activeProfile);
-    getAllProfilesListHandler();
   };
 
   const deleteDomain = async (id) => {
@@ -330,97 +294,11 @@ const Websites = ({ currentTab, handleTabChange }) => {
           )}
         </>
       )}
-      <div className="bg-white rounded-3xl overflow-x-auto overflow-y-hidden relative w-full">
-        <NetfreeTabs
-          currentTab={currentTab}
-          handleTabChange={handleTabChange}
-        />
-        <div className="m-5 px-2">
-          <ul
-            className={`${
-              defaultLanguageValue === "he" ? "pl-[150px]" : "pr-[150px]"
-            } pb-1 overflow-x-auto flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400`}
-          >
-            {profilesList &&
-              profilesList.length > 0 &&
-              profilesList.map((profile, index) => {
-                return (
-                  <li key={index}>
-                    <a
-                      onClick={() => profileClickHandler(index)}
-                      className={`mr-1 w-max inline-block cursor-pointer capitalize p-1 px-2 text-[#2B3674] rounded-t-sm ${
-                        profileActiveIndex == index
-                          ? "dark:bg-gray-800 bg-gray-100 dark:text-blue-500"
-                          : "hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-                      }`}
-                    >
-                      {profile.name}
-                    </a>
-                  </li>
-                );
-              })}
-            <li
-              className={`absolute ${
-                defaultLanguageValue === "he" ? "left-0" : "right-0"
-              } mr-7`}
-            >
-              <button
-                className={`w-full rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
-                onClick={() => {
-                  setShowProfileModal(!showProfileModal);
-                  setNewProfile(true);
-                }}
-              >
-                {t("netfree.addFilterProfile")}
-              </button>
-            </li>
-          </ul>
-        </div>
-        {activeProfile && (
-          <div className="bg-[#F4F7FE] flex justify-between p-2 rounded-md min-w-[50%] min-h-[50px] max-h-[150px] overflow-y-auto max-w-[50%] mx-6 my-4">
-            <div>
-              <div className="flex">
-                <p className="text-xl text-[#2B3674] capitalize">
-                  {activeProfile.name + " " + t("netfree.filterProfile")}
-                </p>
-                <TooltipButtonIcon extra="mx-2" />
-              </div>
-              <div className="flex">
-                <p className="text-xs text-[#2B3674]">
-                  {activeProfile.description}
-                </p>
-                <EditButtonIcon extra="mx-2" onClick={editProfileHandler} />
-              </div>
-              <p className="text-xs text-gray-600">
-                {t("netfree.lastUpdatedAt") +
-                  " " +
-                  dayjs(activeProfile.updated_at).format(
-                    "MMM DD, YYYY HH:mm A"
-                  )}
-              </p>
-            </div>
-            <div className="h-auto flex flex-col justify-between">
-              <HiDuplicate
-                className="text-blueSecondary w-5 h-5 hover:cursor-pointer"
-                onClick={duplicateProfileHandler}
-              />
-              {activeProfile.id != "1" && (
-                <MdDelete
-                  className="text-blueSecondary w-5 h-5 hover:cursor-pointer"
-                  onClick={deleteProfileHandler}
-                />
-              )}
-            </div>
-          </div>
-        )}
-        {isLoading && (
-          <div className="h-[calc(100%-36px)] w-full flex justify-center items-center">
-            <Loader />
-          </div>
-        )}
+
+      <div className="bg-white rounded-3xl overflow-x-auto relative w-full">
         <div className="flex items-center justify-end w-full px-5">
           <button
-            className={`w-fit mb-2 ml-auto rounded-full py-1 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
+            className={`w-fit mb-2 ml-auto rounded-lg py-2 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
             onClick={() => {
               setEditDomain(null);
               setShowWebsiteModal(!showWebsiteModal);
@@ -429,14 +307,16 @@ const Websites = ({ currentTab, handleTabChange }) => {
             {t("websites.addDomain")}
           </button>
         </div>
-        <div className="h-[calc(100%-190px)] max-w-[100%] overflow-x-auto overflow-y-auto mx-5 px-2">
+
+        <div className="overflow-x-auto overflow-y-auto mb-12 w-full h-[30rem]">
           <table className="!table text-[12px] overflow-y-auto w-full">
-            <thead className="sticky top-0 z-10">
-              <tr className=" pr-3 bg-lightPrimary rounded-lg">
-                <th className="pb-2 px-1 w-[15rem]">
-                  <h5 className="text-start text-[10px] md:text-[14px] font-bold text-[#2B3674] w-[15rem]">
+            <thead className="sticky top-0 z-10 bg-[#F9FBFC]">
+              <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
+              <tr className=" pr-3 rounded-lg mb-5">
+                <th className="px-1 w-[15rem] pl-2 pt-2 pb-4">
+                  <p className="text-start text-gray-11 font-medium text-sm">
                     {t("websites.domain")}
-                  </h5>
+                  </p>
                   <SearchField
                     variant="auth"
                     type="text"
@@ -447,10 +327,10 @@ const Websites = ({ currentTab, handleTabChange }) => {
                     name="domain"
                   />
                 </th>
-                <th className="pl-5">
-                  <h5 className="text-start capitalize text-[10px] md:text-[14px] font-bold text-[#2B3674]">
+                <th className="pl-5 pt-2 pb-4">
+                  <p className="text-start text-gray-11 font-medium text-sm">
                     {t("netfree.note")}
-                  </h5>
+                  </p>
                   <SearchField
                     variant="auth"
                     type="text"
@@ -461,10 +341,10 @@ const Websites = ({ currentTab, handleTabChange }) => {
                     name="note"
                   />
                 </th>
-                <th className="pl-5">
-                  <h5 className="text-start text-[10px] md:text-[14px] font-bold text-[#2B3674]">
+                <th className="pl-5 pt-2 pb-4">
+                  <p className="text-start text-gray-11 font-medium text-sm">
                     {t("netfree.actions")}
-                  </h5>
+                  </p>
                   <SearchField
                     variant="auth"
                     type="text"
@@ -477,18 +357,18 @@ const Websites = ({ currentTab, handleTabChange }) => {
                 </th>
               </tr>
             </thead>
-            <tbody className="pt-5 ">
+            <tbody className="pt-5">
               {domainsData.map((el, currentIndex) => {
                 return (
                   <tr
                     className="h-[20px] border-t bottom-b border-sky-500 w-[100%]"
                     key={el.id}
                   >
-                    <td>
+                    <td className="py-5">
                       <div className="flex justify-between">
-                        <h5 className="font-bold text-[#2B3674] break-words w-[15rem]">
+                        <p className="font-normal text-gray-11 break-words w-[18rem]">
                           {el.domain}
-                        </h5>
+                        </p>
                         <div className="flex items-center justify-center">
                           <EditButtonIcon
                             extra="mr-2 justify-self-end"
@@ -497,20 +377,22 @@ const Websites = ({ currentTab, handleTabChange }) => {
                               setShowWebsiteModal(true);
                             }}
                           />
-                          <MdDelete
+                          <img
+                            src={BinIcon}
+                            alt="BinIcon"
                             onClick={() => {
                               setDomain(el);
                               setConfirmationModal(!confirmationModal);
                             }}
-                            className="text-lg text-red-600 cursor-pointer"
+                            className="cursor-pointer"
                           />
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 min-w-[9rem] max-w-[18rem]">
+                    <td className="px-5 min-w-[16rem] max-w-[24rem]">
                       {el.note}
                     </td>
-                    <td className="px-5 flex gap-2 py-[6px]">
+                    <td className="px-5 flex gap-2 py-4">
                       {el.actions.map((action, index) => {
                         return action.label.length ? (
                           action.isActionEditOn ? (
@@ -536,7 +418,7 @@ const Websites = ({ currentTab, handleTabChange }) => {
                           ) : (
                             <div
                               key={action + index}
-                              className="px-3 relative py-1 bg-[#F4F7FE] rounded-full flex gap-2 whitespace-nowrap"
+                              className="px-3 relative py-1 bg-[#F2F8FB] text-gray-10 font-medium rounded-full flex gap-2 whitespace-nowrap"
                             >
                               {action.label}
                               <span
@@ -545,7 +427,7 @@ const Websites = ({ currentTab, handleTabChange }) => {
                                   handleClickedAction(action?.id);
                                 }}
                               >
-                                <MdExpandMore className="h-5 w-5 text-blueSecondary cursor-pointer" />
+                                <MdExpandMore className="h-5 w-5 text-gray-10 cursor-pointer" />
                               </span>
                               {clickedAction == action?.id && (
                                 <div
@@ -609,6 +491,7 @@ const Websites = ({ currentTab, handleTabChange }) => {
           </table>
         </div>
       </div>
+
       {confirmationModal && domain && (
         <DeleteConfirmationModal
           showModal={confirmationModal}

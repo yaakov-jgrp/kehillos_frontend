@@ -2,7 +2,8 @@
   "common": {
     "pages": "בית",
     "noDataFound": "לא נמצאו נתונים",
-    "deleteConfirmation": "?בטוח",
+    "deleteConfirmation": "לִמְחוֹק",
+    "deletePermission": "האם אתה בטוח שברצונך למחוק?",
     "delete": "כן, מחק",
     "no": "לא",
     "deleteNote": "הנתונים יימחקו לצמיתות",
@@ -11,7 +12,8 @@
     "viewLess": "ראה פחות",
     "fileViewer": "מציג קבצים",
     "fileNotSupported": "הקובץ אינו נתמך",
-    "select": "נבחר"
+    "select": "נבחר",
+    "AddNewClient": "הוסף לקוח חדש"
   },
   "messages": {
     "mustBeValid": "חייב להיות דואר חוקי",
@@ -27,11 +29,14 @@
   },
   "auth": {
     "email": "אימייל",
+    "emailPlaceholder": "הזן אימייל",
     "password": "סיסמה",
+    "passwordPlaceholder": "הזן את הסיסמה",
     "forgotPassword": "שכחתי את הסיסמה",
     "signin": "כניסה",
     "loginSuccess": "התחבר בהצלחה",
-    "loginFailed": "הכניסה נכשלה, נסה שוב!!!"
+    "loginFailed": "הכניסה נכשלה, נסה שוב!!!",
+    "namePlaceholder": "הכנס שם"
   },
   "sidebar": {
     "title": "שמרם קהילות",
@@ -45,13 +50,13 @@
     "logout": "התנתק",
     "clients": "לקוחות",
     "details": "פרטים",
-    "logs": "יומן",
+    "logs": "היסטוריית יומנים",
     "users": "משתמשים",
     "templating": "תגים"
   },
   "requests": {
     "title": "פניות",
-    "$requestId": "מזהה פניה",
+    "$requestId": "תְעוּדַת זֶהוּת",
     "$clinetName": "שם לקוח",
     "$clientEmail": "אימייל לקוח",
     "$domainRequested": "אתר מבוקש",
@@ -109,9 +114,30 @@
     "condition": "תנאי",
     "field": "שדה",
     "enterNumber": "הכנס מספר טלפון",
+    "last_name": "הזן שם משפחה",
+    "b.r.": "הזן BR",
+    "first_name_-_woman": "הזן אישה ראשונה",
+    "first_name_-_owner": "הזן שם פרטי - בעלים",
+    "email": "הזן אימייל",
+    "personnel_id_plus": "הזן זיהוי כוח אדם",
+    "street": "נכנסים לרחוב",
+    "city": "להיכנס לעיר",
+    "house_number": "היכנסו לבית מס.",
+    "parent_id_number": "הזן את זיהוי ההורה",
+    "שווער_-_חתן": " קשה-וחתן Enter",
     "appliedFilter": "הוחל מסנן",
+    "mom_id_number": "הזן את זיהוי אמא",
+    "zip_code": "הזן מיקוד",
+    "children_at_home": "הזן ילדים בבית",
+    "married_children": "הכנס ילדים נשואים",
+    "husband's_occupation": "היכנסו למקצוע הבעל",
+    "woman's_occupation": "הכנס לעיסוק אישה",
     "download": "הורד",
-    "sampleFormat": "פורמט לדוגמא"
+    "sampleFormat": "פורמט לדוגמא",
+    "formSettings": "הגדרות טופס לקוח",
+    "blocks": "בלוקים",
+    "addBlockInputPlaceholder": "Enter block name",
+    "AddNewUser": "הוסף משתמש"
   },
   "dataTypes": {
     "text": "טקסט",
@@ -144,6 +170,8 @@
     "save": "שמור",
     "templateName": "שם התבנית",
     "edit": "ערוך",
+    "duplicate": "לְשַׁכְפֵּל",
+    "delete": "לִמְחוֹק",
     "cancel": "ביטול",
     "connect": "חיבור",
     "connected": "מחובר",
@@ -169,7 +197,8 @@
     "start_hour": "שעת התחלה",
     "end_hour": "שעת סיום",
     "website": "פעולת תג",
-    "default": "ברירת מחדל"
+    "default": "ברירת מחדל",
+    "emailTemplate": "תבניות אימייל"
   },
   "websites": {
     "addDomain": "+ הוסף דומיין",
@@ -177,6 +206,7 @@
     "note": "הערה"
   },
   "netfree": {
+    "title": "נטו חינם",
     "categories": "קטגוריות",
     "websites": "אתרי אינטרנט",
     "note": "הערה",
@@ -224,7 +254,8 @@
     "description": "תיאור",
     "filterProfile": ":פרופיל סינון",
     "lastUpdatedAt": "עודכן לאחרונה בתאריך",
-    "addClient": "הוסף לקוחות",
+    "addClient": "הוסף לקוח חדש",
+    "Client": "הוסף לקוח",
     "editClient": "ערוך לקוח",
     "userID": "זהות המשתמש",
     "firstName": "שם פרטי",
@@ -238,7 +269,12 @@
     "addUser": "הוסף משתמש",
     "editUser": "ערוך משתמש",
     "selectStatus": "בחר סטטוס",
-    "changeStatus": "לשנות סטטוס"
+    "changeStatus": "לשנות סטטוס",
+    "First_Name_Owner": "שדה",
+    "Equals": "שווים",
+    "deleteUser": "מחק משתמש",
+    "addProfile": "הוסף פרופיל",
+    "searchUrl": "חפש כתובת אתר"
   },
   "searchbox": {
     "placeHolder": "חיפוש",

@@ -2,16 +2,18 @@
   "common": {
     "pages": "Pages",
     "noDataFound": "No Data Found",
-    "deleteConfirmation": "Are you sure",
+    "deleteConfirmation": "Delete",
     "delete": "Yes, Delete",
     "no": "No",
+    "deletePermission": "Are you sure want to delete?",
     "deleteNote": "Data will be permanently deleted",
     "deleteSuccess": "Data deleted successfully",
     "viewMore": "View more",
     "viewLess": "View less",
     "fileViewer": "File Viewer",
     "fileNotSupported": "File not supported",
-    "select": "select"
+    "select": "select",
+    "AddNewClient": "Add New Client"
   },
   "messages": {
     "mustBeValid": "must be a valid mail",
@@ -27,11 +29,14 @@
   },
   "auth": {
     "email": "Email",
+    "emailPlaceholder": "Enter email",
     "password": "Password",
+    "passwordPlaceholder": "Enter password",
     "forgotPassword": "I forgot the password",
     "signin": "Signin",
     "loginSuccess": "Login Successfully",
-    "loginFailed": "Login failed, try again!!!"
+    "loginFailed": "Login failed, try again!!!",
+    "namePlaceholder": "Enter Name"
   },
   "sidebar": {
     "title": "Kehillos",
@@ -45,7 +50,7 @@
     "logout": "Logout",
     "clients": "Clients",
     "details": "Details",
-    "logs": "Logs",
+    "logs": "Logs History",
     "users": "Users",
     "templating": "Templating"
   },
@@ -89,7 +94,7 @@
     "displayOrder": "Display Order",
     "noSections": "No Sections to show",
     "noFields": "No Fields to show",
-    "id": "ID",
+    "id": "Id",
     "clientDetails": "Client Details",
     "noClientFound": "No Client Found with ID :",
     "noValueFound": "No Value Found",
@@ -109,9 +114,30 @@
     "condition": "Condition",
     "field": "Field",
     "enterNumber": "Enter phone number",
+    "last_name": "Enter last name",
+    "b.r.": "Enter BR",
+    "first_name_-_woman": "Enter First Woman",
+    "first_name_-_owner": "Enter first name - owner",
+    "email": "Enter Email",
+    "personnel_id_plus": "Enter Personnel Id",
+    "street": "Enter Street",
+    "city": "Enter City",
+    "house_number": "Enter House No.",
+    "parent_id_number": "Enter Parent Id",
+    "שווער_-_חתן": "שווער_-_חתן Enter",
+    "mom_id_number": "Enter Mom Id",
+    "zip_code": "Enter Zip Code",
+    "children_at_home": "Enter Children At Home",
+    "married_children": "Enter Maried Children",
+    "husband's_occupation": "Enter Husband Occupation",
+    "woman's_occupation": "Enter Woman Occupation",
     "appliedFilter": "Applied filter",
     "download": "Download",
-    "sampleFormat": "Sample format"
+    "sampleFormat": "Sample format",
+    "formSettings": "Client Form Settings",
+    "blocks": "Blocks",
+    "addBlockInputPlaceholder": "Enter block name",
+    "AddNewUser": "Add User"
   },
   "dataTypes": {
     "text": "text",
@@ -141,9 +167,11 @@
     "smtp": "Connect Email Account",
     "subject": "Subject",
     "newTemplate": "New Template",
-    "save": "SAVE",
+    "save": "Save",
     "templateName": "Template Name",
     "edit": "Edit",
+    "duplicate": "Duplicate",
+    "delete": "Delete",
     "cancel": "Cancel",
     "connect": "CONNECT",
     "connected": "Connected",
@@ -169,7 +197,8 @@
     "start_hour": "Start hour",
     "end_hour": "End hour",
     "website": "Website",
-    "default": "Default"
+    "default": "Default",
+    "emailTemplate": "Email Templates"
   },
   "websites": {
     "addDomain": "+ Add Domain",
@@ -177,6 +206,7 @@
     "note": "Note"
   },
   "netfree": {
+    "title": "NetFree",
     "categories": "Categories",
     "websites": "Websites",
     "note": "note",
@@ -215,11 +245,12 @@
     "to": "to",
     "admin": "Admin",
     "client": "Client",
-    "addFilterProfile": "+ Add Profile",
+    "addFilterProfile": "Add Profile",
     "description": "Description",
     "filterProfile": "Filter Profile",
     "lastUpdatedAt": "Last Updated at",
-    "addClient": "Add Client",
+    "addClient": "Add New Client",
+    "Client": "Add Client",
     "editClient": "Edit Client",
     "userID": "User ID",
     "firstName": "First Name",
@@ -233,11 +264,16 @@
     "addUser": "Add User",
     "editUser": "Edit User",
     "selectStatus": "Select status",
-    "changeStatus": "Change Status"
+    "changeStatus": "Change Status",
+    "First_Name_Owner": "Field",
+    "Equals": "Equals",
+    "deleteUser": "Delete User",
+    "addProfile": "Add Profile",
+    "searchUrl": "Search URL"
   },
   "searchbox": {
     "placeHolder": "Search",
-    "requestId": "Request ID",
+    "requestId": "Id",
     "clientUserID": "User ID",
     "name": "Name",
     "email": "Email",

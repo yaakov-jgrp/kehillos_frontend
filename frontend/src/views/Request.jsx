@@ -126,8 +126,8 @@ const Request = () => {
   }, [lang, page, rowsPerPage, JSON.stringify(searchParams)]);
 
   return (
-    <div className="w-full bg-white rounded-3xl">
-      <div className="flex py-4 px-7 font-bold text-[#2B3674] justify-between">
+    <div className="w-full bg-white rounded-3xl shadow-custom">
+      <div className="flex py-4 px-7 justify-between text-gray-11 font-medium text-2xl">
         {t("requests.title")}
         <RequestStatusModal
           requestStatuses={requestStatuses}
@@ -136,9 +136,10 @@ const Request = () => {
       </div>
       <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2">
         <table className="!table text-[12px] md:text-[14px] mb-3">
-          <thead className="sticky top-0 z-10 [&_th]:min-w-[8.5rem]">
-            <tr className="tracking-[-2%] mb-5 bg-lightPrimary">
-              <th className="pr-3">
+          <thead className="sticky top-0 z-10 [&_th]:min-w-[8.5rem] bg-[#F9FBFC]">
+            <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
+            <tr className="tracking-[-2%] mb-5">
+              <th className="pr-3 pl-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -166,7 +167,7 @@ const Request = () => {
                   name="id"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -194,7 +195,7 @@ const Request = () => {
                   name="created_at"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -222,7 +223,7 @@ const Request = () => {
                   name="from"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -250,7 +251,7 @@ const Request = () => {
                   name="request_type"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -280,7 +281,7 @@ const Request = () => {
                   name="requestdetail"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -308,7 +309,7 @@ const Request = () => {
                   name="status"
                 />
               </th>
-              <th className="pr-3">
+              <th className="pr-3 pb-2">
                 <SearchField
                   variant="auth"
                   extra="mb-2"
@@ -353,8 +354,8 @@ const Request = () => {
                   <>
                     {allRequest.map((el) => {
                       return (
-                        <tr className="h-[75px]" key={el.id}>
-                          <td>#{el.id}</td>
+                        <tr className="h-[75px] border-b border-b-[#F2F2F2]" key={el.id}>
+                          <td className="py-12">#{el.id}</td>
                           <td>
                             {formateDateTime(el.created_at).date}
                             <br />
@@ -365,7 +366,7 @@ const Request = () => {
                               href={`https://netfree.link/app/#/sectors/user-filter-settings/${el.customer_id}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-[#2B3674] hover:text-[#2B3674] font-bold"
+                              className="text-gray-11 hover:text-gray-10 font-medium"
                             >
                               #{el.customer_id}
                               <br />
@@ -374,7 +375,7 @@ const Request = () => {
                             <br />
                             <a
                               href={`mailto:${el.sender_email}`}
-                              className="text-[#2B3674] hover:text-[#2B3674] font-bold"
+                              className="text-brand-500 hover:text-brand-600 font-medium"
                             >
                               {el.sender_email}
                             </a>
@@ -385,7 +386,7 @@ const Request = () => {
                               href={el.requested_website}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-[#2B3674] hover:text-[#2B3674] font-bold line-clamp-2 break-words"
+                              className="text-brand-500 hover:text-brand-600 font-medium line-clamp-2 break-words"
                             >
                               {el.requested_website}
                             </a>
@@ -401,7 +402,7 @@ const Request = () => {
                                   maxHeight: "250px",
                                 },
                               }}
-                              className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-1 text-black bg-white"
+                              className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-1 text-black bg-white"
                               onChange={(e) => {
                                 const updateData = {
                                   status_id: e.target.value,
@@ -423,10 +424,14 @@ const Request = () => {
                                 })}
                             </Select>
                           </td>
-                          <td className="flex justify-center gap-4 px-2">
-                            <div className="bg-[#F4F7FE] px-2 py-1">
-                              {el.action_done}
-                            </div>
+                          <td className="flex justify-center gap-4 px-2 my-6">
+                            {el.action_done ? (
+                              <div className="bg-[#F4F7FE] px-2 py-1 rounded-lg">
+                                {el.action_done}
+                              </div>
+                            ) : (
+                              "-"
+                            )}
                           </td>
                         </tr>
                       );

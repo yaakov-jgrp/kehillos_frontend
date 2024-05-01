@@ -62,6 +62,7 @@ function App() {
         setLocale("enUS");
       }
     } else {
+      localStorage.setItem(DEFAULT_LANGUAGE, "he");
       document.body.dir = "rtl";
       i18next.changeLanguage("he");
       setLocale("heIL");
@@ -75,6 +76,27 @@ function App() {
       },
       secondary: {
         main: "#f50057",
+      },
+    },
+
+    components: {
+      MuiTabs: {
+        styleOverrides: {
+          indicator: {
+            backgroundColor: "#0B99FF",
+            height: "2.5px",
+          },
+        },
+      },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            color: "#5C5C5C",
+            "&.Mui-selected": {
+              color: "#1C1C1C",
+            },
+          },
+        },
       },
     },
   });
@@ -158,40 +180,35 @@ function App() {
   ];
 
   return (
-    <>
-      <ThemeProvider theme={themeWithLocale}>
-        <Router>
-          <Routes>
-            <Route exact path="/signin" element={<SignIn />} />
-
+    <ThemeProvider theme={themeWithLocale}>
+      <Router>
+        <Routes>
+          <Route exact path="/signin" element={<SignIn />} />
+          <Route
+            element={
+              <RouteGuard token={ACCESS_TOKEN_KEY} routeRedirect="/signin" />
+            }
+          >
             <Route
-              element={
-                <RouteGuard token={ACCESS_TOKEN_KEY} routeRedirect="/signin" />
-              }
-            >
-              <Route
-                path="/*"
-                element={<Navigate to={routes[0].path} replace />}
-              />
-              {routes.map((prop, key) => {
-                return (
-                  <Route
-                    path={`/${prop.path}`}
-                    element={
-                      <DefaultLayout route={prop}>
-                        {prop.component}
-                      </DefaultLayout>
-                    }
-                    key={key}
-                  />
-                );
-              })}
-            </Route>
-          </Routes>
-        </Router>
-        <ToastContainer autoClose={2000} />
-      </ThemeProvider>
-    </>
+              path="/*"
+              element={<Navigate to={routes[0].path} replace />}
+            />
+            {routes.map((prop, key) => {
+              return (
+                <Route
+                  path={`/${prop.path}`}
+                  element={
+                    <DefaultLayout route={prop}>{prop.component}</DefaultLayout>
+                  }
+                  key={key}
+                />
+              );
+            })}
+          </Route>
+        </Routes>
+      </Router>
+      <ToastContainer autoClose={2000} />
+    </ThemeProvider>
   );
 }
 

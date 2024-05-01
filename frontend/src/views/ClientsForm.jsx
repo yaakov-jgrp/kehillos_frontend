@@ -13,6 +13,7 @@ import AddButtonIcon from "../component/common/AddButton";
 import CustomField from "../component/fields/CustomField";
 import DeleteConfirmationModal from "../component/common/DeleteConfirmationModal";
 import EditButtonIcon from "../component/common/EditButton";
+import BinIcon from "../assets/images/bin.svg";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
@@ -134,66 +135,76 @@ const ClientsForm = () => {
   }, [fetchFullformDataHandler, lang]);
 
   return (
-    <div className="w-full bg-white rounded-3xl">
+    <div className="w-full bg-white rounded-3xl shadow-custom flex flex-col gap-4 p-4">
       {isLoading && (
         <div className="h-[90vh] w-full flex justify-center items-center">
           <Loader />
         </div>
       )}
-      <div className="h-[calc(100vh-100px)] flex overflow-y-auto overflow-x-auto mx-5 px-2">
-        <div className="flex-1 w-1/4 p-2">
-          <h5 className="text-start text-[12px] py-2 md:text-[16px] font-bold text-[#2B3674] w-[100%] flex items-center justify-between">
-            {t("clients.sections")}
+
+      <p className="text-gray-11 font-medium text-2xl">
+        {t("clients.formSettings")}
+      </p>
+
+      <div className="h-[calc(100vh-100px)] flex overflow-y-auto overflow-x-auto gap-8">
+        <div className="flex-[0.3]">
+          <h5 className="text-start text-[12px] py-2 md:text-[20px] font-medium text-gray-11 w-[100%] flex items-center justify-between border-b border-[#F2F2F2] mb-4">
+            {t("clients.blocks")}
             <AddButtonIcon onClick={() => addBlockFieldModalHandler(true)} />
           </h5>
           {fullFormData && !isLoading && fullFormData.length > 0 ? (
-            <Draggable
-              onPosChange={(currentPos, newPos) =>
-                getChangedFieldsPos(currentPos, newPos, true)
-              }
-            >
-              {fullFormData.map((blockData, index) => (
-                <BlockButton
-                  classes="flex items-center justify-between custom-word-break"
-                  key={index}
-                  onClick={() => activeBlockHandler(blockData.block_id)}
-                  active={activeBlock === blockData.block_id}
-                >
-                  {lang === "he"
-                    ? blockData?.field_name_language.he
-                    : blockData.block}
-                  <div className="flex items-center">
-                    {blockData?.is_editable && (
-                      <EditButtonIcon
-                        extra="mr-2"
-                        onClick={() =>
-                          editBlockFieldModalHandler(blockData, true)
-                        }
-                      />
-                    )}
-                    {blockData?.is_delete && (
-                      <MdDelete
-                        className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer"
-                        onClick={() => {
-                          setDeleteMethod((prev) => ({
-                            type: blockData.block_id,
-                            value: true,
-                          }));
-                          setConfirmationModal(true);
-                        }}
-                      />
-                    )}
-                    <PiDotsSixVerticalBold className="cursor-grab z-20" />
-                  </div>
-                </BlockButton>
-              ))}
-            </Draggable>
+            <div className="border border-[#F2F2F2] rounded-lg p-1">
+              <Draggable
+                onPosChange={(currentPos, newPos) =>
+                  getChangedFieldsPos(currentPos, newPos, true)
+                }
+              >
+                {fullFormData.map((blockData, index) => (
+                  <BlockButton
+                    classes="flex items-center justify-between custom-word-break"
+                    key={index}
+                    onClick={() => activeBlockHandler(blockData.block_id)}
+                    // active={activeBlock === blockData.block_id}
+                  >
+                    {lang === "he"
+                      ? blockData?.field_name_language.he
+                      : blockData.block}
+                    <div className="flex items-center">
+                      {blockData?.is_editable && (
+                        <EditButtonIcon
+                          extra="mr-2"
+                          onClick={() =>
+                            editBlockFieldModalHandler(blockData, true)
+                          }
+                        />
+                      )}
+                      {blockData?.is_delete && (
+                        <img
+                          src={BinIcon}
+                          alt="BinIcon"
+                          className="mr-2 hover:cursor-pointer"
+                          onClick={() => {
+                            setDeleteMethod((prev) => ({
+                              type: blockData.block_id,
+                              value: true,
+                            }));
+                            setConfirmationModal(true);
+                          }}
+                        />
+                      )}
+                      <PiDotsSixVerticalBold className="cursor-grab z-20" />
+                    </div>
+                  </BlockButton>
+                ))}
+              </Draggable>
+            </div>
           ) : (
             <p>{t("clients.noSections")}</p>
           )}
         </div>
-        <div className="flex-2 w-3/4 p-2">
-          <h5 className="text-start flex items-center justify-between text-[12px] py-2 md:text-[16px] font-bold text-[#2B3674] w-[100%]">
+
+        <div className="flex-[0.7]">
+          <h5 className="text-start flex items-center justify-between text-[12px] py-2 md:text-[20px] font-medium text-gray-11 w-[100%] border-b border-[#F2F2F2] mb-4">
             {t("clients.fields")}
           </h5>
           {fullFormData && (
@@ -219,7 +230,7 @@ const ClientsForm = () => {
                     }
                   >
                     {blockData.field.length > 0 ? (
-                      <>
+                      <div className="flex flex-col gap-4">
                         <Draggable
                           onPosChange={(currentPos, newPos) =>
                             getChangedFieldsPos(
@@ -236,10 +247,10 @@ const ClientsForm = () => {
                             );
                             return (
                               <div
-                                className={`mb-2 ${
+                                className={`mb-2 px-2 flex gap-1 ${
                                   isCheckBox
-                                    ? "flex items-center justify-end flex-row-reverse"
-                                    : ""
+                                    ? "items-center justify-end flex-row-reverse"
+                                    : "flex-col"
                                 }`}
                                 key={index}
                               >
@@ -248,15 +259,15 @@ const ClientsForm = () => {
                                     isCheckBox ? "ml-2 w-full" : "mb-1"
                                   }`}
                                 >
-                                  <div className="flex">
+                                  <div className="flex items-center">
                                     <label
-                                      className={`block text-black text-sm font-bold`}
+                                      className={`block text-gray-11 text-md font-normal`}
                                     >
                                       {lang === "he"
                                         ? field?.field_name_language.he
                                         : field?.field_name}
                                     </label>
-                                    <p className="text-sm mx-1 capitalize text-gray-500">{`(${field?.data_type?.label})`}</p>
+                                    <p className="text-md mx-1 capitalize text-gray-10 font-normal">{`(${field?.data_type?.label})`}</p>
                                   </div>
                                   <div className="flex items-center">
                                     {field?.is_editable && (
@@ -271,8 +282,10 @@ const ClientsForm = () => {
                                       />
                                     )}
                                     {field?.is_delete && (
-                                      <MdDelete
-                                        className="mr-2 text-blueSecondary w-4 h-4 hover:cursor-pointer"
+                                      <img
+                                        src={BinIcon}
+                                        alt="BinIcon"
+                                        className="mr-2 hover:cursor-pointer"
                                         onClick={() => {
                                           setDeleteMethod((prev) => ({
                                             type: field?.id,
@@ -285,24 +298,27 @@ const ClientsForm = () => {
                                     <PiDotsSixVerticalBold className="cursor-grab z-20" />
                                   </div>
                                 </div>
-                                <CustomField
-                                  disabled={true}
-                                  value={field?.defaultvalue}
-                                  field={field}
-                                />
+                                <div>
+                                  <CustomField
+                                    disabled={true}
+                                    value={field?.defaultvalue}
+                                    field={field}
+                                  />
+                                </div>
                               </div>
                             );
                           })}
                         </Draggable>
-                      </>
+                      </div>
                     ) : (
-                      <p>{t("clients.noFields")}</p>
+                      <p className="px-2">{t("clients.noFields")}</p>
                     )}
                   </CustomAccordion>
                 ))}
             </Accordion>
           )}
         </div>
+
         {showModal && (
           <BlockFieldModal
             editData={editData}
@@ -314,6 +330,7 @@ const ClientsForm = () => {
             setShowModal={setShowModal}
           />
         )}
+
         {confirmationModal && (
           <DeleteConfirmationModal
             showModal={confirmationModal}

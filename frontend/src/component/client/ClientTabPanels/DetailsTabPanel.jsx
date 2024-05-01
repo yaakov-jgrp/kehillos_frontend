@@ -35,7 +35,7 @@ function DetailsTabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box py={2}>
           {isLoading ? (
             <Loader />
           ) : (

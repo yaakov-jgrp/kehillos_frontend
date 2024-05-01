@@ -88,19 +88,16 @@ function ClientNetfreeTabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box py={3}>
           {isLoading ? (
             <Loader />
           ) : (
-            <div className="w-full flex">
-              <div className={`mb-6 flex items-start w-full`}>
-                <FieldLabel
-                  className={`min-w-[120px] ${lang === "he" ? "ml-6" : "mr-6"}`}
-                >
+            <div className="w-full flex items-center border border-[#E3E5E6] rounded-lg px-3 pt-4 pb-6">
+              <div className={`flex gap-32 w-full`}>
+                <label className="capitalize text-gray-11 text-sm font-normal w-32">
                   {t("netfree.netfreeProfile")}
-                </FieldLabel>
-                :
-                <div className="mx-6 flex w-full justify-between">
+                </label>
+                <div className="flex w-full justify-between items-center">
                   {editNetfree ? (
                     <form
                       style={{
@@ -124,7 +121,7 @@ function ClientNetfreeTabPanel(props) {
                                   maxHeight: "250px",
                                 },
                               }}
-                              className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                              className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded-lg outline-none w-full p-2 text-black bg-white"
                               onChange={onChange}
                               value={value}
                               placeholder="Select Profile"
@@ -142,14 +139,14 @@ function ClientNetfreeTabPanel(props) {
                       </div>
                       <div className="flex items-center justify-end rounded-b">
                         <button
-                          className="text-red-500 background-transparent font-bold uppercase px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
+                          className="text-[#EB5757] background-transparent font-normal capitalize px-3 py-1 text-sm outline-none focus:outline-none mr-1 mb-1"
                           type="button"
                           onClick={editHandler}
                         >
                           {t("netfree.close")}
                         </button>
                         <button
-                          className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 uppercase px-3 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                          className="text-white text-[14px] font-small transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 capitalize px-3 py-1 rounded-lg hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                           type="submit"
                         >
                           {t("netfree.save")}
@@ -159,9 +156,11 @@ function ClientNetfreeTabPanel(props) {
                   ) : (
                     <>
                       <div>
-                        <p className="capitalize">{netfreeprofile?.name}</p>
+                        <p className="capitalize text-sm">
+                          : {netfreeprofile?.name}
+                        </p>
                         {netfreeprofile?.description !== "" && (
-                          <p className="capitalize text-gray-700">
+                          <p className="capitalize text-gray-10 ml-1 text-sm">
                             ({netfreeprofile?.description})
                           </p>
                         )}
