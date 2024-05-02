@@ -303,7 +303,7 @@ const ActionModal = ({
       setInputValues([""]);
     }
   }, [sendEmailTypes]);
-  console.log(trafficAction);
+
   return (
     <>
       {showModal ? (
