@@ -76,7 +76,7 @@ const NetFree = () => {
     if (siteSearch) {
       searchCategories(siteSearch, response);
     } else {
-      searchCategories(currentSearchTerm, response);
+      searchCategories(currentSearchTerm, response, "name");
     }
   };
 
@@ -635,6 +635,7 @@ const NetFree = () => {
             searchCategories={searchCategories}
             categoriesDataCopy={categoriesDataCopy}
             actionsList={actionsList}
+            currentSearchTerm={currentSearchTerm}
           />
         )}
 
