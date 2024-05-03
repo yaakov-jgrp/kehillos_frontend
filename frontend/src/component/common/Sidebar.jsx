@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 // UI Components Imports
 import SidebarLinks from "./SidebarLinks";
 import Request from "../../views/Request";
@@ -7,10 +5,10 @@ import Emails from "../../views/Emails";
 import NetFree from "../../views/NetFree";
 import Clients from "../../views/Clients";
 import ClientsForm from "../../views/ClientsForm";
-import Logs from "../../views/Logs";
+import Logs from "../..//views/Logs";
 import Users from "../../views/Users";
 
-// Third part Imports
+// Third-party Imports
 import { useTranslation } from "react-i18next";
 
 // Icon imports
@@ -25,17 +23,11 @@ import { IoLogoBuffer } from "react-icons/io";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
 import NetfreeIcon from "../../constants/icons/NetfreeIcon";
 import Logo from "../../assets/images/Kehillos_Logo.svg";
+import { color } from "framer-motion";
 
 const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
   const routes = [
-    // {
-    //   name: t('sidebar.dashboard'),
-    //   path: "dashboard",
-    //   type: 'menu',
-    //   icon: <MdHome className="h-6 w-6" />,
-    //   component: <Dashboard />,
-    // },
     {
       name: t("sidebar.clients"),
       path: "clients",
@@ -92,13 +84,6 @@ const Sidebar = ({ open, onClose }) => {
         },
       ],
     },
-    // {
-    //   name: t('sidebar.profile'),
-    //   path: "profile",
-    //   type: 'menu',
-    //   icon: <MdPerson className="h-6 w-6" />,
-    //   component: <Profile />,
-    // },
     {
       name: t("sidebar.logout"),
       path: "profile",
@@ -129,10 +114,16 @@ const Sidebar = ({ open, onClose }) => {
       <div className="mx-auto my-6 flex items-center">
         <img src={Logo} alt="Logo" className="h-[44px] md:h-[65px]" />
       </div>
-      {/* <div className={`mb-5 mt-[40px] h-px bg-gray-300 dark:bg-white/30`} /> */}
+
       <ul className="mb-auto pt-1">
         <SidebarLinks routes={routes} />
       </ul>
+
+      {/* Adding the new div with support information */}
+      <div className="text-center mt-auto py-2">
+      <p style={{ fontSize: '15px' }}>  <a href="mailto:support@kehillos.com">support@kehillos.com</a></p>
+      <p style={{ fontSize: '12px', color: '#4597f7' }}>powering tomorrow <a href="https://jgrp.dev">jgrp.dev</a></p>
+      </div>
     </div>
   );
 };
