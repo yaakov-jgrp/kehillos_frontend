@@ -146,7 +146,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("id")}
-                      className="flex cursor-pointer items-center justify-between w-full"
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-xl" : ""
+                      }`}
                     >
                       {t("searchbox.requestId")}
                       {sortField === "id" ? (
@@ -174,7 +176,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("created_at")}
-                      className="flex cursor-pointer items-center justify-between w-full"
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-xl" : ""
+                      }`}
                     >
                       {t("searchbox.dateCreated")}
                       {sortField === "created_at" ? (
@@ -202,7 +206,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("sender_email")}
-                      className="flex cursor-pointer items-center justify-between w-full"
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-xl" : ""
+                      }`}
                     >
                       {t("searchbox.from")}
                       {sortField === "from" ? (
@@ -230,7 +236,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("request_type")}
-                      className="flex cursor-pointer items-center justify-between w-full"
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-xl" : ""
+                      }`}
                     >
                       {t("searchbox.requestType")}
                       {sortField === "request_type" ? (
@@ -258,7 +266,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("requested_website")}
-                      className="flex cursor-pointer items-center justify-between w-full"
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-xl" : ""
+                      }`}
                     >
                       {t("searchbox.requestdetail")}
                       {sortField === "requestdetail" ? (
@@ -288,7 +298,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("status")}
-                      className="flex cursor-pointer items-center justify-between w-full"
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-xl" : ""
+                      }`}
                     >
                       {t("searchbox.status")}
                       {sortField === "status" ? (
@@ -316,7 +328,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("action_done")}
-                      className="flex cursor-pointer items-center justify-between w-full"
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-xl" : ""
+                      }`}
                     >
                       {t("searchbox.actionsDone")}
                       {sortField === "action_done" ? (
@@ -354,7 +368,10 @@ const Request = () => {
                   <>
                     {allRequest.map((el) => {
                       return (
-                        <tr className="h-[75px] border-b border-b-[#F2F2F2]" key={el.id}>
+                        <tr
+                          className="h-[75px] border-b border-b-[#F2F2F2]"
+                          key={el.id}
+                        >
                           <td className="py-12">#{el.id}</td>
                           <td>
                             {formateDateTime(el.created_at).date}
