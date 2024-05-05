@@ -8,9 +8,9 @@ const CustomCheckBox = (props) => {
       {...rest}
       disabled={disabled}
       style={{
-        color: "#0B99FF",
+        color: "#1C1C1C",
         "&:hover": {
-          backgroundColor: "#0B99FF",
+          backgroundColor: "#1C1C1C",
         },
         "& .MuiSvgIcon-root": {
           color: "white",

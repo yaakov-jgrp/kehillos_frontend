@@ -33,6 +33,7 @@ import websiteServices from "../../../services/website";
 const Websites = ({ currentTab, handleTabChange }) => {
   const { t, i18n } = useTranslation();
   const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
 
   const [isLoading, setIsLoading] = useState(false);
   const [domainsData, setDomainsData] = useState([]);
@@ -314,7 +315,11 @@ const Websites = ({ currentTab, handleTabChange }) => {
               <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
               <tr className=" pr-3 rounded-lg mb-5">
                 <th className="px-1 w-[15rem] pl-2 pt-2 pb-4">
-                  <p className="text-start text-gray-11 font-medium text-sm">
+                  <p
+                    className={`text-start text-gray-11 font-medium ${
+                      lang === "he" ? "text-xl" : "text-sm"
+                    }`}
+                  >
                     {t("websites.domain")}
                   </p>
                   <SearchField
@@ -328,7 +333,11 @@ const Websites = ({ currentTab, handleTabChange }) => {
                   />
                 </th>
                 <th className="pl-5 pt-2 pb-4">
-                  <p className="text-start text-gray-11 font-medium text-sm">
+                  <p
+                    className={`text-start text-gray-11 font-medium ${
+                      lang === "he" ? "text-xl" : "text-sm"
+                    }`}
+                  >
                     {t("netfree.note")}
                   </p>
                   <SearchField
@@ -342,7 +351,11 @@ const Websites = ({ currentTab, handleTabChange }) => {
                   />
                 </th>
                 <th className="pl-5 pt-2 pb-4">
-                  <p className="text-start text-gray-11 font-medium text-sm">
+                  <p
+                    className={`text-start text-gray-11 font-medium ${
+                      lang === "he" ? "text-xl" : "text-sm"
+                    }`}
+                  >
                     {t("netfree.actions")}
                   </p>
                   <SearchField

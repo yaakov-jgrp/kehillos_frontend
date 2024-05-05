@@ -47,8 +47,13 @@ const Categories = ({
   deleteAction,
   searchCategories,
   categoriesDataCopy,
+  currentSearchTerm,
+  setCurrentSearchTerm,
+  currentActionSearchTerm,
+  setCurrentActionSearchTerm,
 }) => {
   const { t, i18n } = useTranslation();
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   // const [showActionModal, setShowActionModal] = useState(false);
   // const [clickedAction, setClickedAction] = useState(null);
   // const [currentSelectedCategoryId, setCurrentSelectedCategoryId] = useState(0);
@@ -383,34 +388,55 @@ const Categories = ({
             <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
             <tr className="pr-3 rounded-lg mb-5">
               <th className="px-1 w-[15rem] pl-2 pt-2 pb-4">
-                <p className="text-start text-gray-11 font-medium text-sm">
+                <p
+                  className={`text-start text-gray-11 font-medium  ${
+                    lang === "he" ? "text-xl" : "text-sm"
+                  }`}
+                >
                   {t("netfree.name")}
                 </p>
                 <SearchField
+                  value={currentSearchTerm}
                   variant="auth"
                   type="text"
                   placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) =>
-                    searchCategories(e.target.value, categoriesDataCopy, "name")
-                  }
+                  onChange={(e) => {
+                    localStorage.setItem("currentSearchTerm", e.target.value);
+                    setCurrentSearchTerm(e.target.value);
+                    searchCategories(
+                      e.target.value,
+                      categoriesDataCopy,
+                      "name"
+                    );
+                  }}
                   name="name"
                 />
               </th>
               <th className="pl-5 pt-2 pb-4">
-                <p className="text-start text-gray-11 font-medium text-sm">
+                <p
+                  className={`text-start text-gray-11 font-medium ${
+                    lang === "he" ? "text-xl" : "text-sm"
+                  }`}
+                >
                   {t("netfree.actions")}
                 </p>
                 <SearchField
+                  value={currentActionSearchTerm}
                   variant="auth"
                   type="text"
                   placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    localStorage.setItem(
+                      "currentActionSearchTerm",
+                      e.target.value
+                    );
+                    setCurrentActionSearchTerm(e.target.value);
                     searchCategories(
                       e.target.value,
                       categoriesDataCopy,
                       "actions"
-                    )
-                  }
+                    );
+                  }}
                   name="actions"
                 />
               </th>

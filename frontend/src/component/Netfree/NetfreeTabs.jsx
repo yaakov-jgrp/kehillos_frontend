@@ -6,9 +6,8 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Tab, Tabs } from "@mui/material";
 
-const NetfreeTabs = ({ currentTab, handleTabChange }) => {
+const NetfreeTabs = ({ currentTab, handleTabChange, tabsArray }) => {
   const { t } = useTranslation();
-  const NetfreePageTabs = [t("netfree.categories"), t("netfree.websites")];
   const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
 
   return (
@@ -20,7 +19,7 @@ const NetfreeTabs = ({ currentTab, handleTabChange }) => {
         scrollButtons="auto"
         aria-label="basic tabs example"
       >
-        {NetfreePageTabs.map((tabItem, i) => {
+        {tabsArray.map((tabItem, i) => {
           return (
             <Tab
               key={i}
