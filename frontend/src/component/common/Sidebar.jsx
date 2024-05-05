@@ -122,7 +122,7 @@ const Sidebar = ({ open, onClose }) => {
       {/* Adding the new div with support information */}
       <div className="text-center mt-auto py-2">
       <p style={{ fontSize: '15px' }}>  <a href="mailto:support@kehillos.com">support@kehillos.com</a></p>
-      <p style={{ fontSize: '12px', color: '#4597f7' }}>powering tomorrow <a href="https://jgrp.dev">jgrp.dev</a></p>
+      <p style={{ fontSize: '12px', color: '#4597f7' }}>Powering tomorrow <a href="https://jgrp.dev">jgrp.dev</a></p>
       </div>
     </div>
   );
