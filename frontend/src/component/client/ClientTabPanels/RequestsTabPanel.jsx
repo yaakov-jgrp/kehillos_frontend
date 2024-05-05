@@ -130,7 +130,9 @@ function RequestsTabPanel(props) {
                       label={
                         <p
                           onClick={() => handleSortHandler("id")}
-                          className="flex cursor-pointer items-center justify-between w-full"
+                          className={`flex cursor-pointer items-center justify-between w-full ${
+                            lang === "he" ? "text-xl" : ""
+                          }`}
                         >
                           {t("searchbox.requestId")}
                           {sortField === "id" ? (
@@ -158,7 +160,9 @@ function RequestsTabPanel(props) {
                       label={
                         <p
                           onClick={() => handleSortHandler("created_at")}
-                          className="flex cursor-pointer items-center justify-between w-full"
+                          className={`flex cursor-pointer items-center justify-between w-full ${
+                            lang === "he" ? "text-xl" : ""
+                          }`}
                         >
                           {t("searchbox.dateCreated")}
                           {sortField === "created_at" ? (
@@ -188,7 +192,9 @@ function RequestsTabPanel(props) {
                       label={
                         <p
                           onClick={() => handleSortHandler("sender_email")}
-                          className="flex cursor-pointer items-center justify-between w-full"
+                          className={`flex cursor-pointer items-center justify-between w-full ${
+                            lang === "he" ? "text-xl" : ""
+                          }`}
                         >
                           {t("searchbox.from")}
                           {sortField === "from" ? (
@@ -216,7 +222,9 @@ function RequestsTabPanel(props) {
                       label={
                         <p
                           onClick={() => handleSortHandler("request_type")}
-                          className="flex cursor-pointer items-center justify-between w-full"
+                          className={`flex cursor-pointer items-center justify-between w-full ${
+                            lang === "he" ? "text-xl" : ""
+                          }`}
                         >
                           {t("searchbox.requestType")}
                           {sortField === "request_type" ? (
@@ -246,7 +254,9 @@ function RequestsTabPanel(props) {
                       label={
                         <p
                           onClick={() => handleSortHandler("requested_website")}
-                          className="flex cursor-pointer items-center justify-between w-full"
+                          className={`flex cursor-pointer items-center justify-between w-full ${
+                            lang === "he" ? "text-xl" : ""
+                          }`}
                         >
                           {t("searchbox.requestdetail")}
                           {sortField === "requestdetail" ? (
@@ -276,7 +286,9 @@ function RequestsTabPanel(props) {
                       label={
                         <p
                           onClick={() => handleSortHandler("action_done")}
-                          className="flex cursor-pointer items-center justify-between w-full"
+                          className={`flex cursor-pointer items-center justify-between w-full ${
+                            lang === "he" ? "text-xl" : ""
+                          }`}
                         >
                           {t("searchbox.actionsDone")}
                           {sortField === "action_done" ? (
@@ -317,7 +329,10 @@ function RequestsTabPanel(props) {
                         {" "}
                         {requests.data.map((el) => {
                           return (
-                            <tr className="h-[75px] border-b border-b-[#F2F2F2]" key={el.id}>
+                            <tr
+                              className="h-[75px] border-b border-b-[#F2F2F2]"
+                              key={el.id}
+                            >
                               <td className="py-12">#{el.id}</td>
                               <td>
                                 {formateDateTime(el.created_at).date}

@@ -19,11 +19,13 @@ function SearchField(props) {
     disabled,
     onChange,
     name,
+    value,
     noUnderline,
     borderRadius,
   } = props;
 
   const { i18n } = useTranslation();
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
 
   return (
     <div
@@ -34,7 +36,9 @@ function SearchField(props) {
       {label && (
         <label
           htmlFor={id}
-          className={`text-[10px] capitalize flex p-1 truncate md:text-[14px] text-gray-11 ${
+          className={`${
+            lang === "he" ? "text-xl" : "text-[10px]"
+          } capitalize flex p-1 truncate md:text-[14px] text-gray-11 ${
             variant === "auth" ? "font-medium" : "font-bold"
           }`}
         >
@@ -42,15 +46,29 @@ function SearchField(props) {
         </label>
       )}
       <div className="flex justify-center items-end relative">
-        <input
-          disabled={disabled}
-          type={type}
-          id={id}
-          onChange={onChange}
-          name={name}
-          placeholder={placeholder}
-          className={`font-normal mt-6 h-9 w-full px-6 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal bg-white border-[1px] border-[#E3E5E6] rounded-full`}
-        />
+        {value && (
+          <input
+            value={value}
+            disabled={disabled}
+            type={type}
+            id={id}
+            onChange={onChange}
+            name={name}
+            placeholder={placeholder}
+            className={`font-normal mt-6 h-9 w-full px-6 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal bg-white border-[1px] border-[#E3E5E6] rounded-full`}
+          />
+        )}
+        {!value && (
+          <input
+            disabled={disabled}
+            type={type}
+            id={id}
+            onChange={onChange}
+            name={name}
+            placeholder={placeholder}
+            className={`font-normal mt-6 h-9 w-full px-6 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal bg-white border-[1px] border-[#E3E5E6] rounded-full`}
+          />
+        )}
         <img
           src={SearchSvg}
           alt="Search-Icon"

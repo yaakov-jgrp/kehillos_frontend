@@ -241,6 +241,7 @@ const Clients = () => {
           }}
         />
       )}
+
       <div className="flex justify-between py-4 px-7">
         <p className="text-gray-11 font-medium text-2xl">
           {t("clients.title")}
@@ -292,7 +293,8 @@ const Clients = () => {
           </button>
         </div>
       </div>
-      <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2 mt-4">
+
+      <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2 mt-4 custom-scroll-container">
         <table
           className="!table text-[12px] md:text-[14px] min-w-[100%] mb-3"
           ref={tableRef}
@@ -308,7 +310,9 @@ const Clients = () => {
                     label={
                       <p
                         onClick={() => handleSortHandler("id")}
-                        className="flex cursor-pointer items-center justify-between w-full"
+                        className={`flex cursor-pointer items-center justify-between w-full ${
+                          lang === "he" ? "text-xl" : ""
+                        }`}
                       >
                         {t("clients.id")}
                         {sortField === "id" ? (
@@ -357,7 +361,9 @@ const Clients = () => {
                                     field?.data_type?.value
                                   )
                                 }
-                                className="flex cursor-pointer items-center justify-between w-full"
+                                className={`flex cursor-pointer items-center justify-between w-full ${
+                                  lang === "he" ? "text-xl" : ""
+                                }`}
                               >
                                 {lang === "he"
                                   ? field?.field_name_language.he
@@ -542,6 +548,7 @@ const Clients = () => {
           </tbody>
         </table>
       </div>
+
       <TablePagination
         component="div"
         count={totalCount}
@@ -551,6 +558,7 @@ const Clients = () => {
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+
       {showDisplayModal && (
         <DisplayFieldsModal
           formValues={displayFormValues}

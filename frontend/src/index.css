@@ -53,7 +53,8 @@
 }
 
 /* Style the vertical scrollbar */
-::-webkit-scrollbar {
+/* -----------------------------------Original Implementation----------------------------- */
+/* ::-webkit-scrollbar {
   width: 8.6px;
   height: 8.6px;
 }
@@ -82,4 +83,90 @@
   background-color: #e1e1e1;
   border-radius: 8px;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+} */
+
+/* -----------------------------------Border Implementation----------------------------- */
+/* ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 30px;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  border-top: 60px solid rgb(251, 251, 251);
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  border-left: 60px solid rgb(255, 255, 255);
+}
+
+::-webkit-scrollbar-track {
+  background-color: #e1e1e1;
+  border-radius: 8px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+} */
+
+/* -----------------------------------Simplebar Implementation----------------------------- */
+
+/* .simplebar-scrollbar::before {
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 50px;
+  height: 10px;
+  background-color: white !important;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.simplebar-track.simplebar-vertical,
+.simplebar-track.simplebar-horizontal {
+  background: #e1e1e1 !important;
+  border-radius: 8px;
+  height: 10px;
+}
+
+.simplebar-mask {
+  opacity: 1 !important;
+} */
+
+/* -----------------------------------Custom CSS Implementation------------------------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: #ebebeb;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: #e9e9e9;
+  border: 3px solid white;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 20px;
+  background-color: transparent;
+  background-repeat: no-repeat;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  cursor: pointer;
+  height: 60px;
+  min-height: 60px;
+  background: url("/assets/vertical_scrollbar_thumb.svg") no-repeat top center;
+  background-position: top center;
+  padding-top: 5px;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  cursor: pointer;
+  width: 60px;
+  min-width: 60px;
+  background: url("/assets/scrollbar-thumb.svg") no-repeat left center;
+  background-position: left center;
+  padding-left: 5px;
 }

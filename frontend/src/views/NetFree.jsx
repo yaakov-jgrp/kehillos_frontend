@@ -42,7 +42,12 @@ const NetFree = () => {
   const [showActionModal, setShowActionModal] = useState(false);
   const [clickedAction, setClickedAction] = useState(null);
   const [currentSelectedCategoryId, setCurrentSelectedCategoryId] = useState(0);
-  const [currentSearchTerm, setCurrentSearchTerm] = useState("");
+  const [currentSearchTerm, setCurrentSearchTerm] = useState(
+    localStorage.getItem("currentSearchTerm") || ""
+  );
+  const [currentActionSearchTerm, setCurrentActionSearchTerm] = useState(
+    localStorage.getItem("currentActionSearchTerm") || ""
+  );
   const [siteSearch, setSiteSearch] = useState("");
   const [editActionID, setEditActionId] = useState(null);
   const [defaultTraffic, setDefaultTraffic] = useState(null);
@@ -56,11 +61,18 @@ const NetFree = () => {
   const [defaultStatus, setDefaultStatus] = useState(null);
   const [trafficStatus, setTrafficStatus] = useState(null);
   const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
+  const NetfreePageTabs = [t("netfree.categories"), t("netfree.websites")];
+  const [currentProfileTab, setCurrentProfileTab] = useState(0);
 
   // Handlers
 
   const handleChange = (e, value) => {
     setTab(value);
+  };
+
+  const handleCurrentProfileTabChange = (e, value) => {
+    setCurrentProfileTab(value);
+    profileClickHandler(value);
   };
 
   const setResponseDataToState = (res) => {
@@ -76,7 +88,12 @@ const NetFree = () => {
     if (siteSearch) {
       searchCategories(siteSearch, response);
     } else {
-      searchCategories(currentSearchTerm, response);
+      if (currentSearchTerm) {
+        searchCategories(currentSearchTerm, response, "name");
+      }
+      if (currentActionSearchTerm) {
+        searchCategories(currentActionSearchTerm, response, "actions");
+      }
     }
   };
 
@@ -173,20 +190,19 @@ const NetFree = () => {
   };
 
   const searchCategories = (searchTerm, response, type) => {
-    setCurrentSearchTerm(searchTerm);
     if (siteSearch) {
       setCategoriesData(response);
-    } else if (currentSearchTerm) {
+    } else if (currentSearchTerm || currentActionSearchTerm) {
       let filteredData = [];
       if (type === "name") {
         filteredData = response?.filter((el) =>
-          el[type].toLowerCase().includes(searchTerm.toLowerCase())
+          el[type].toLowerCase().includes(searchTerm.trim().toLowerCase())
         );
       } else {
         filteredData = response?.filter(
           (el) =>
             el.actions?.filter((action) =>
-              action.label.toLowerCase().includes(searchTerm.toLowerCase())
+              action.label.toLowerCase().includes(searchTerm.trim().toLowerCase())
             ).length > 0
         );
       }
@@ -303,6 +319,7 @@ const NetFree = () => {
       (profile) => profile.id === activeProfile.id
     );
     profileClickHandler(activeIndex - 1);
+    setCurrentProfileTab(activeIndex - 1);
     setProfilesList(updatedProfiles);
     setProfileActiveIndex(activeIndex - 1);
     setActiveprofile(updatedProfiles[activeIndex - 1]);
@@ -363,7 +380,7 @@ const NetFree = () => {
 
         <div className="flex flex-col gap-3">
           <div className="px-2">
-            <ul
+            {/* <ul
               className={`${
                 defaultLanguageValue === "he" ? "pl-[150px]" : "pr-[150px]"
               } overflow-x-auto scrollbar-hide flex text-sm font-medium text-center`}
@@ -390,7 +407,14 @@ const NetFree = () => {
                     </li>
                   );
                 })}
-            </ul>
+            </ul> */}
+            {profilesList && profilesList.length > 0 && (
+              <NetfreeTabs
+                currentTab={currentProfileTab}
+                handleTabChange={handleCurrentProfileTabChange}
+                tabsArray={profilesList.map((profile) => profile.name)}
+              />
+            )}
           </div>
 
           {activeProfile && (
@@ -398,7 +422,7 @@ const NetFree = () => {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <p className="capitalize font-medium text-gray-11 text-2xl">
-                    {activeProfile.name + " " + t("netfree.filterProfile")}
+                    {t("netfree.filterProfile") + " " + activeProfile.name}
                   </p>
                   <img
                     src={InfoIcon}
@@ -578,7 +602,11 @@ const NetFree = () => {
 
       <div className="shadow-custom rounded-2xl px-4 py-3 flex flex-col gap-3 bg-white">
         <div className="flex items-center justify-between w-full">
-          <NetfreeTabs currentTab={tab} handleTabChange={handleChange} />
+          <NetfreeTabs
+            currentTab={tab}
+            handleTabChange={handleChange}
+            tabsArray={NetfreePageTabs}
+          />
           <div className="flex items-center gap-1">
             <div className="flex items-center gap-1">
               <p className="text-gray-11 font-medium text-md">
@@ -635,6 +663,10 @@ const NetFree = () => {
             searchCategories={searchCategories}
             categoriesDataCopy={categoriesDataCopy}
             actionsList={actionsList}
+            currentSearchTerm={currentSearchTerm}
+            setCurrentSearchTerm={setCurrentSearchTerm}
+            currentActionSearchTerm={currentActionSearchTerm}
+            setCurrentActionSearchTerm={setCurrentActionSearchTerm}
           />
         )}
 
@@ -658,6 +690,9 @@ const NetFree = () => {
             setTrafficAction={setTrafficAction}
             defaultStatus={defaultStatus}
             trafficStatus={trafficStatus}
+            searchCategories={searchCategories}
+            currentSearchTerm={currentSearchTerm}
+            currentActionSearchTerm={currentActionSearchTerm}
           />
           <ProfileModal
             showModal={showProfileModal}
