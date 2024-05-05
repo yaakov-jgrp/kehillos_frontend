@@ -14,7 +14,6 @@ import SearchField from "../component/fields/SearchField";
 import FilterModal from "../component/client/FilterModal";
 import NoDataFound from "../component/common/NoDataFound";
 import CustomField from "../component/fields/CustomField";
-import { makeStyles } from "@mui/styles";
 import IconButton from "@mui/material/IconButton";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
