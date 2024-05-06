@@ -116,7 +116,13 @@ export default function SignIn() {
               {t("auth.signin")}
             </button>
           </form>
+
         </div>
+                
+        <div className="text-center mt-auto pt-10 pb-5 ">
+      <p style={{ fontSize: '12px', color: '#4597f7' }}>Powering tomorrow <a href="https://jgrp.dev">jgrp.dev</a></p>
+      
+    </div>
       </div>
     </div>
   );
