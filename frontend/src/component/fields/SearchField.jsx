@@ -37,8 +37,8 @@ function SearchField(props) {
         <label
           htmlFor={id}
           className={`${
-            lang === "he" ? "text-xl" : "text-[10px]"
-          } capitalize flex p-1 truncate md:text-[14px] text-gray-11 ${
+            lang === "he" ? "text-[16.5px]" : "text-[15px]"
+          } capitalize flex p-1 truncate text-gray-11 ${
             variant === "auth" ? "font-medium" : "font-bold"
           }`}
         >

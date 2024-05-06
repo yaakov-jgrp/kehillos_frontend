@@ -300,7 +300,7 @@ const Clients = () => {
           ref={tableRef}
         >
           {fullFormData && fullFormData.length > 0 && (
-            <thead className="sticky top-0 z-10 [&_th]:min-w-[12rem] bg-[#F9FBFC]">
+            <thead className="sticky top-0 z-10 [&_th]:min-w-[13rem] bg-[#F9FBFC]">
               <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
               <tr className="tracking-[-2%] mb-5">
                 <th className="pr-3">
@@ -311,7 +311,7 @@ const Clients = () => {
                       <p
                         onClick={() => handleSortHandler("id")}
                         className={`flex cursor-pointer items-center justify-between w-full ${
-                          lang === "he" ? "text-xl" : ""
+                          lang === "he" ? "text-[16.5px]" : "text-[15px]"
                         }`}
                       >
                         {t("clients.id")}
@@ -362,7 +362,7 @@ const Clients = () => {
                                   )
                                 }
                                 className={`flex cursor-pointer items-center justify-between w-full ${
-                                  lang === "he" ? "text-xl" : ""
+                                  lang === "he" ? "text-[16.5px]" : "text-[15px]"
                                 }`}
                               >
                                 {lang === "he"
