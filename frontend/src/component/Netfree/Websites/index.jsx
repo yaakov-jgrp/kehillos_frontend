@@ -317,7 +317,7 @@ const Websites = ({ currentTab, handleTabChange }) => {
                 <th className="px-1 w-[15rem] pl-2 pt-2 pb-4">
                   <p
                     className={`text-start text-gray-11 font-medium ${
-                      lang === "he" ? "text-xl" : "text-sm"
+                      lang === "he" ? "text-[16.5px]" : "text-[15px]"
                     }`}
                   >
                     {t("websites.domain")}
@@ -335,7 +335,7 @@ const Websites = ({ currentTab, handleTabChange }) => {
                 <th className="pl-5 pt-2 pb-4">
                   <p
                     className={`text-start text-gray-11 font-medium ${
-                      lang === "he" ? "text-xl" : "text-sm"
+                      lang === "he" ? "text-[16.5px]" : "text-[15px]"
                     }`}
                   >
                     {t("netfree.note")}
@@ -353,7 +353,7 @@ const Websites = ({ currentTab, handleTabChange }) => {
                 <th className="pl-5 pt-2 pb-4">
                   <p
                     className={`text-start text-gray-11 font-medium ${
-                      lang === "he" ? "text-xl" : "text-sm"
+                      lang === "he" ? "text-[16.5px]" : "text-[15px]"
                     }`}
                   >
                     {t("netfree.actions")}

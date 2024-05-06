@@ -131,7 +131,7 @@ function RequestsTabPanel(props) {
                         <p
                           onClick={() => handleSortHandler("id")}
                           className={`flex cursor-pointer items-center justify-between w-full ${
-                            lang === "he" ? "text-xl" : ""
+                            lang === "he" ? "text-[16.5px]" : "text-[15px]"
                           }`}
                         >
                           {t("searchbox.requestId")}
@@ -161,7 +161,7 @@ function RequestsTabPanel(props) {
                         <p
                           onClick={() => handleSortHandler("created_at")}
                           className={`flex cursor-pointer items-center justify-between w-full ${
-                            lang === "he" ? "text-xl" : ""
+                            lang === "he" ? "text-[16.5px]" : "text-[15px]"
                           }`}
                         >
                           {t("searchbox.dateCreated")}
@@ -193,7 +193,7 @@ function RequestsTabPanel(props) {
                         <p
                           onClick={() => handleSortHandler("sender_email")}
                           className={`flex cursor-pointer items-center justify-between w-full ${
-                            lang === "he" ? "text-xl" : ""
+                            lang === "he" ? "text-[16.5px]" : "text-[15px]"
                           }`}
                         >
                           {t("searchbox.from")}
@@ -223,7 +223,7 @@ function RequestsTabPanel(props) {
                         <p
                           onClick={() => handleSortHandler("request_type")}
                           className={`flex cursor-pointer items-center justify-between w-full ${
-                            lang === "he" ? "text-xl" : ""
+                            lang === "he" ? "text-[16.5px]" : "text-[15px]"
                           }`}
                         >
                           {t("searchbox.requestType")}
@@ -255,7 +255,7 @@ function RequestsTabPanel(props) {
                         <p
                           onClick={() => handleSortHandler("requested_website")}
                           className={`flex cursor-pointer items-center justify-between w-full ${
-                            lang === "he" ? "text-xl" : ""
+                            lang === "he" ? "text-[16.5px]" : "text-[15px]"
                           }`}
                         >
                           {t("searchbox.requestdetail")}
@@ -287,7 +287,7 @@ function RequestsTabPanel(props) {
                         <p
                           onClick={() => handleSortHandler("action_done")}
                           className={`flex cursor-pointer items-center justify-between w-full ${
-                            lang === "he" ? "text-xl" : ""
+                            lang === "he" ? "text-[16.5px]" : "text-[15px]"
                           }`}
                         >
                           {t("searchbox.actionsDone")}
