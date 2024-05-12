@@ -56,7 +56,7 @@
   },
   "requests": {
     "title": "פניות",
-    "$requestId": "תְעוּדַת זֶהוּת",
+    "$requestId": "מספר פניה",
     "$clinetName": "שם לקוח",
     "$clientEmail": "אימייל לקוח",
     "$domainRequested": "אתר מבוקש",
