@@ -120,7 +120,9 @@ function Users() {
       <div className="flex justify-between items-center py-4 px-7 text-gray-11 font-medium text-2xl">
         {t("sidebar.users")}
         <button
-          className={`w-[128px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+          className={`${
+            lang === "he" ? "w-[150px]" : "w-[128px]"
+          } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
           onClick={() => {
             setUserModal(true);
             setNewUser(true);
@@ -191,7 +193,9 @@ function Users() {
                   }`}
                 >
                   <label
-                    className={`text-[10px] truncate md:text-[14px] text-navy-700 ml-1.5 font-medium`}
+                    className={`truncate text-gray-11 ml-1.5 font-medium ${
+                      lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                    }`}
                   >
                     {t("netfree.actions")}
                   </label>

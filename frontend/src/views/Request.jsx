@@ -147,7 +147,7 @@ const Request = () => {
                     <p
                       onClick={() => handleSortHandler("id")}
                       className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-xl" : ""
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
                       }`}
                     >
                       {t("searchbox.requestId")}
@@ -177,7 +177,7 @@ const Request = () => {
                     <p
                       onClick={() => handleSortHandler("created_at")}
                       className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-xl" : ""
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
                       }`}
                     >
                       {t("searchbox.dateCreated")}
@@ -207,7 +207,7 @@ const Request = () => {
                     <p
                       onClick={() => handleSortHandler("sender_email")}
                       className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-xl" : ""
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
                       }`}
                     >
                       {t("searchbox.from")}
@@ -237,7 +237,7 @@ const Request = () => {
                     <p
                       onClick={() => handleSortHandler("request_type")}
                       className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-xl" : ""
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
                       }`}
                     >
                       {t("searchbox.requestType")}
@@ -267,7 +267,7 @@ const Request = () => {
                     <p
                       onClick={() => handleSortHandler("requested_website")}
                       className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-xl" : ""
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
                       }`}
                     >
                       {t("searchbox.requestdetail")}
@@ -299,7 +299,7 @@ const Request = () => {
                     <p
                       onClick={() => handleSortHandler("status")}
                       className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-xl" : ""
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
                       }`}
                     >
                       {t("searchbox.status")}
@@ -329,7 +329,7 @@ const Request = () => {
                     <p
                       onClick={() => handleSortHandler("action_done")}
                       className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-xl" : ""
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
                       }`}
                     >
                       {t("searchbox.actionsDone")}

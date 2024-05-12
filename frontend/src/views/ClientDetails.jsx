@@ -127,7 +127,10 @@ function ClientDetails() {
         ) : (
           <>
             {clientData && !isLoading ? (
-              <Box sx={{ width: "100%", height: "100%", overflow: "auto" }}>
+              <Box
+                sx={{ width: "100%", height: "100%", overflow: "auto" }}
+                className="scrollbar-hide"
+              >
                 <div className="flex p-2 gap-4">
                   <div className="flex-[0.1]">
                     <div className="rounded-lg shadow-md w-[116px] h-[116px] flex justify-center items-center">
