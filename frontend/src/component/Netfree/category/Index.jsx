@@ -23,6 +23,7 @@ import { deleteNetfreeStatus } from "../../../lib/CommonFunctions";
 import Loader from "../../common/Loader";
 
 const Categories = ({
+  categoryFilter,
   actionsList,
   profilesList,
   categoriesData,
@@ -443,111 +444,120 @@ const Categories = ({
             </tr>
           </thead>
           <tbody className="pt-5">
-            {categoriesData.map((el, currentIndex) => {
-              return (
-                <tr
-                  className="h-[20px] border-b border-sky-500 w-[100%]"
-                  key={el.categories_id}
-                >
-                  <td>
-                    <h5 className="font-medium text-gray-11 break-words w-[15rem] py-2 text-sm">
-                      {el.name}
-                    </h5>
-                  </td>
-                  <td className="pl-5 pr-5 flex gap-2 py-[6px] my-2">
-                    {el.actions.map((action, index) => {
-                      return action.label.length ? (
-                        action.isActionEditOn ? (
-                          <ActionSelectBox
-                            options={actionsList.map((item) =>
-                              !el.actions.some((el) => el.label === item.label)
-                                ? item
-                                : null
-                            )}
-                            categoryName={el.name}
-                            categoryId={el.categories_id}
-                            currentActions={actionsList.map((item, index) =>
-                              el.actions.some((el) => el.label === item.label)
-                                ? item.id
-                                : null
-                            )}
-                            operationType="edit"
-                            previousValue={action.label}
-                          />
-                        ) : (
-                          <div
-                            key={action + index}
-                            className="px-3 relative py-1 bg-[#F2F8FB] rounded-full flex gap-2 whitespace-nowrap text-gray-10 font-medium"
-                          >
-                            {action.label}
-                            <span
-                              onClick={() => {
-                                openActionOptions(currentIndex, action);
-                                handleClickedAction(action?.id);
-                              }}
+            {categoriesData
+              .filter((el) => {
+                if (categoryFilter === "with_actions") {
+                  return el.actions.length > 0;
+                }
+                return true;
+              })
+              .map((el, currentIndex) => {
+                return (
+                  <tr
+                    className="h-[20px] border-b border-sky-500 w-[100%]"
+                    key={el.categories_id}
+                  >
+                    <td>
+                      <h5 className="font-medium text-gray-11 break-words w-[15rem] py-2 text-sm">
+                        {el.name}
+                      </h5>
+                    </td>
+                    <td className="pl-5 pr-5 flex gap-2 py-[6px] my-2">
+                      {el.actions.map((action, index) => {
+                        return action.label.length ? (
+                          action.isActionEditOn ? (
+                            <ActionSelectBox
+                              options={actionsList.map((item) =>
+                                !el.actions.some(
+                                  (el) => el.label === item.label
+                                )
+                                  ? item
+                                  : null
+                              )}
+                              categoryName={el.name}
+                              categoryId={el.categories_id}
+                              currentActions={actionsList.map((item, index) =>
+                                el.actions.some((el) => el.label === item.label)
+                                  ? item.id
+                                  : null
+                              )}
+                              operationType="edit"
+                              previousValue={action.label}
+                            />
+                          ) : (
+                            <div
+                              key={action + index}
+                              className="px-3 relative py-1 bg-[#F2F8FB] rounded-full flex gap-2 whitespace-nowrap text-gray-10 font-medium"
                             >
-                              <MdExpandMore className="h-5 w-5 text-gray-10 cursor-pointer" />
-                            </span>
-                            {clickedAction == action?.id && (
-                              <div
-                                className={`absolute top-[20px] z-10 drop-shadow-md bg-white cursor-pointer ${
-                                  i18n.dir() === "rtl"
-                                    ? "left-[-15px]"
-                                    : "right-[-15px]"
-                                }`}
+                              {action.label}
+                              <span
+                                onClick={() => {
+                                  openActionOptions(currentIndex, action);
+                                  handleClickedAction(action?.id);
+                                }}
                               >
-                                {(action.label.includes(
-                                  "Send email template"
-                                ) ||
-                                  action.label.includes(
-                                    "שלח תבנית אימייל"
-                                  )) && (
+                                <MdExpandMore className="h-5 w-5 text-gray-10 cursor-pointer" />
+                              </span>
+                              {clickedAction == action?.id && (
+                                <div
+                                  className={`absolute top-[20px] z-10 drop-shadow-md bg-white cursor-pointer ${
+                                    i18n.dir() === "rtl"
+                                      ? "left-[-15px]"
+                                      : "right-[-15px]"
+                                  }`}
+                                >
+                                  {(action.label.includes(
+                                    "Send email template"
+                                  ) ||
+                                    action.label.includes(
+                                      "שלח תבנית אימייל"
+                                    )) && (
+                                    <div
+                                      className="py-1 px-3 border-b-[1px] hover:bg-[#f2f3f5]"
+                                      onClick={() =>
+                                        editSelectedAction(el, action)
+                                      }
+                                    >
+                                      {t("netfree.edit")}
+                                    </div>
+                                  )}
                                   <div
-                                    className="py-1 px-3 border-b-[1px] hover:bg-[#f2f3f5]"
+                                    className="py-1 px-3 hover:bg-[#f2f3f5]"
                                     onClick={() =>
-                                      editSelectedAction(el, action)
+                                      deleteAction(el.categories_id, action.id)
                                     }
                                   >
-                                    {t("netfree.edit")}
+                                    {t("netfree.remove")}
                                   </div>
-                                )}
-                                <div
-                                  className="py-1 px-3 hover:bg-[#f2f3f5]"
-                                  onClick={() =>
-                                    deleteAction(el.categories_id, action.id)
-                                  }
-                                >
-                                  {t("netfree.remove")}
                                 </div>
-                              </div>
-                            )}
-                          </div>
-                        )
-                      ) : null;
-                    })}
-                    {el.request_status && (
-                      <StatusOption
-                        getData={getCategoryData}
-                        dataValue={el}
-                        deleteStatusFn={(statusId) =>
-                          requestService.deleteCategoryStatus(statusId)
-                        }
-                      />
-                    )}
-                    {
-                      <AddButtonIcon
-                        extra={""}
-                        onClick={() => {
-                          setTrafficAction(false);
-                          enableActionUpdate(el);
-                          setIsDefaultActionSelectOpen(false);
-                        }}
-                      />
-                    }
-                  </td>
-                </tr>
-              );
-            })}
+                              )}
+                            </div>
+                          )
+                        ) : null;
+                      })}
+                      {el.request_status && (
+                        <StatusOption
+                          getData={getCategoryData}
+                          dataValue={el}
+                          deleteStatusFn={(statusId) =>
+                            requestService.deleteCategoryStatus(statusId)
+                          }
+                        />
+                      )}
+                      {
+                        <AddButtonIcon
+                          extra={""}
+                          onClick={() => {
+                            setTrafficAction(false);
+                            enableActionUpdate(el);
+                            setIsDefaultActionSelectOpen(false);
+                          }}
+                        />
+                      }
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       )}

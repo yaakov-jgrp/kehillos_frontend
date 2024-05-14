@@ -206,6 +206,11 @@
     "note": "Note"
   },
   "netfree": {
+    "all": "All",
+    "kehillos": "Kehillos",
+    "netfree": "NetFree",
+    "with_actions": "With Actions",
+    "select_filter": "Select Filter",
     "title": "NetFree",
     "categories": "Categories",
     "websites": "Websites",

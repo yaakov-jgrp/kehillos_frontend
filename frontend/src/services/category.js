@@ -1,12 +1,12 @@
 import api from "./api";
 
-const getCategories = () => {
+const getCategories = (params = "") => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
   return api.get(
     `/api/crm/category/?lang=${lang}&profile=${
       filterProfileID ? filterProfileID : "1"
-    }`
+    }${params}`
   );
 };
 
