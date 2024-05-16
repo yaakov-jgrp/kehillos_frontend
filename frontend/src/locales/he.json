@@ -206,6 +206,11 @@
     "note": "הערה"
   },
   "netfree": {
+    "all": "כל הקטגוריות",
+    "kehillos": "קטגוריות קיילים",
+    "netfree": "קטגוריות נטפרים",
+    "with_actions": "קטגוריות עם פעולות",
+    "select_filter": "בחר פרופיל",
     "title": "נטפרי",
     "categories": "קטגוריות",
     "websites": "אתרים",
