@@ -207,7 +207,7 @@
   },
   "netfree": {
     "all": "All",
-    "kehillos": "Kehillos",
+    "kehillos": "",
     "netfree": "NetFree",
     "with_actions": "With Actions",
     "select_filter": "Select Filter",
