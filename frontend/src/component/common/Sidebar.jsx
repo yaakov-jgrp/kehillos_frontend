@@ -112,7 +112,7 @@ const Sidebar = ({ open, onClose }) => {
       </span>
 
       <div className="mx-auto my-6 flex items-center">
-        <img src={Logo} alt="Logo" className="h-[44px] md:h-[65px]" />
+        <img src={localStorage.getItem("logo_url")} alt="Logo" className="h-[44px] md:h-[65px]" />
       </div>
 
       <ul className="mb-auto pt-1">

@@ -38,6 +38,7 @@ export default function SignIn() {
       .then((data) => {
         if (data.status === 200) {
           setAlert(t("auth.loginSuccess"), "success");
+          localStorage.setItem("logo_url", data.data.user.organization_logo_url);
           localStorage.setItem(ACCESS_TOKEN_KEY, data.data.access);
           localStorage.setItem(REFRESH_TOKEN_KEY, data.data.refresh);
           navigate("/request");
