@@ -181,36 +181,44 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   }, [defaultLanguageValue]);
 
   const option = {
-    locale: "en-US",
-    textDirection: "rtl",
+    locale: defaultLanguageValue,
+    textDirection: defaultLanguageValue === "he" ? "rtl" : "ltr",
     translations: {
-      "en-US": emailEditorHe,
+      [defaultLanguageValue]:
+        defaultLanguageValue === "he" ? emailEditorHe : {}, // Assuming you have similar JSON files for other languages
     },
     tools: {
       text: {
         properties: {
+          textOverflow: {
+            value: "clip",
+          },
           text: {
             value:
-              '<p style="line-height: 140%;">זהו בלוק טקסט חדש. שנה את הטקסט.</p>',
+              defaultLanguageValue === "he"
+                ? '<p style="line-height: 140%;">זהו בלוק טקסט חדש. שנה את הטקסט.</p>'
+                : '<p style="line-height: 140%;">This is a new text block. Change the text.</p>',
           },
           textAlign: {
-            value: "right",
+            value: defaultLanguageValue === "he" ? "right" : "left",
           },
         },
       },
       heading: {
         properties: {
           text: {
-            value: "כּוֹתֶרֶת",
+            value: defaultLanguageValue === "he" ? "כּוֹתֶרֶת" : "Heading",
           },
           textAlign: {
-            value: "right",
+            value: defaultLanguageValue === "he" ? "right" : "left",
           },
         },
       },
       button: {
         properties: {
-          text: { value: "טקסט לחצן" },
+          text: {
+            value: defaultLanguageValue === "he" ? "טקסט לחצן" : "Button Text",
+          },
         },
       },
     },

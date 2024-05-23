@@ -90,6 +90,7 @@ const Navbar = (props) => {
               index === routeTextArray.length - 1 ? "opacity-1" : "opacity-25"
             }`}
             to="#"
+            key={routeText}
           >
             {index !== 0 && (
               <span className="text-sm font-normal text-black hover:underline dark:text-white dark:hover:text-white opacity-25">
