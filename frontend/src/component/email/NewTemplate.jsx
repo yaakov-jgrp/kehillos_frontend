@@ -251,13 +251,16 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
                 />
               </div>
 
-              <div className="w-full my-5 h-[calc(100vh-330px)] [&_iframe]:!min-w-[100%] [&_iframe]:!h-[calc(100vh-330px)] [&_div]:!max-h-[calc(100vh-330px)]">
+              <div className="w-full my-5 h-[calc(100vh-330px)] [&_iframe]:!min-w-[100%] [&_iframe]:!h-[calc(100vh-330px)] [&_div]:!max-h-[calc(100vh-330px)] relative">
                 {!loadingTemplate && !loadingTags ? (
-                  <EmailEditor
-                    ref={emailEditorRef}
-                    onReady={onReady}
-                    options={defaultLanguageValue === "he" ? option : null}
-                  />
+                  <>
+                    <EmailEditor
+                      ref={emailEditorRef}
+                      onReady={onReady}
+                      options={defaultLanguageValue === "he" ? option : null}
+                    />
+                    <div className="w-[400px] h-12 bg-[#EEEEEE] absolute bottom-0 right-[0px]"></div>
+                  </>
                 ) : null}
               </div>
 

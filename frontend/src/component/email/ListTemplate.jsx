@@ -52,6 +52,7 @@ const ListTemplate = ({ newTemplate, onEdit }) => {
     setIsLoading(true);
     const response = await emailService.getTemplates();
     setTemplateList(response.data.data);
+    console.log(response);
     setFilteredTemplteList(response.data.data);
     setIsLoading(false);
   };

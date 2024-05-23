@@ -310,7 +310,7 @@ const ActionModal = ({
         <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
           <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
-              <div className="w-[380px] border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none h-[400px]">
+              <div className="w-[380px] border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none h-[480px]">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-b-[#E3E5E6] rounded-t">
                   <h3 className="text-lg font-medium">
                     {t("netfree.addAction")}
@@ -343,7 +343,15 @@ const ActionModal = ({
                         const isTemplateAction = actionsList.filter(
                           (el) => el.id === e.target.value
                         )[0]?.is_template_action;
-                        if (isTemplateAction) {
+                        const templateActionObject = actionsList.filter(
+                          (el) => el.id === e.target.value
+                        )[0];
+                        if (
+                          isTemplateAction ||
+                          (!isTemplateAction &&
+                            lang === "he" &&
+                            templateActionObject?.label === "שלח תבנית אימייל")
+                        ) {
                           setShowEmailTemplate(true);
                         } else {
                           setShowEmailTemplate(false);
