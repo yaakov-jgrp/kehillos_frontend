@@ -25,7 +25,7 @@ const Navbar = (props) => {
 
   return (
     <nav
-      className={`sticky flex flex-row flex-wrap items-center justify-between rounded-2xl bg-white mt-2 pb-2 pt-4 px-6 shadow-custom backdrop-blur-xl dark:bg-[#0b14374d] ${
+      className={`z-[1000] sticky flex flex-row flex-wrap items-center justify-between rounded-2xl bg-white mt-2 pb-2 pt-4 px-6 shadow-custom backdrop-blur-xl dark:bg-[#0b14374d] ${
         i18n.dir() === "rtl" ? "xl:ml-1 xl:mr-4 mr-2" : "xl:mx-4"
       }`}
     >
