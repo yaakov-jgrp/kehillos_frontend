@@ -8,6 +8,7 @@
   html {
     font-family: "Poppins", sans-serif;
   }
+
   button {
     font-family: "Poppins", sans-serif;
   }
@@ -41,6 +42,7 @@
   color: #5c5c5c;
   font-size: 16px;
 }
+
 
 /* Style the vertical scrollbar */
 /* -----------------------------------Original Implementation----------------------------- */
