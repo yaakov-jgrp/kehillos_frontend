@@ -12,10 +12,15 @@ import { IoIosArrowDown } from "react-icons/io";
 // Images imports
 import PersonAvatar from "../../assets/images/person_avatar.svg";
 import Notification from "../../assets/images/notification.svg";
+import { USER_DETAILS } from "../../constants";
 
 const Navbar = (props) => {
   const { onOpenSidenav, brandText, brandName } = props;
   const { t, i18n } = useTranslation();
+  const { first_name, last_name } = JSON.parse(
+    localStorage.getItem(USER_DETAILS)
+  );
+
   const routeTextArray = brandText.split("/").map((item) => {
     if (isNaN(Number(item))) {
       return t(`routes.${item}`);
@@ -133,7 +138,9 @@ const Navbar = (props) => {
             alt="avatar"
             className="w-8 h-8 rounded-lg/2"
           />
-          <p>Jacob Hershberg</p>
+          <p>
+            {first_name} {last_name}
+          </p>
           <IoIosArrowDown size="1em" className="cursor-pointer" />
         </div>
       </div>
