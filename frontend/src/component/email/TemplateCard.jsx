@@ -39,8 +39,8 @@ function TemplateCard({ duplicateTemplate, onEdit, deleteTemplate, template }) {
             {template.name}
           </p>
           <p className="text-gray-11 text-[14px] font-normal">
-            "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet,
-            consectetur, adipisci
+            {template.subject ??
+              "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet,consectetur, adipisci"}
           </p>
         </div>
 
