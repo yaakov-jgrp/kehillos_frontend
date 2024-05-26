@@ -13,7 +13,11 @@ import { useTranslation } from "react-i18next";
 import authService from "../../services/auth";
 
 // Utils imports
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "../../constants/index";
+import {
+  ACCESS_TOKEN_KEY,
+  REFRESH_TOKEN_KEY,
+  USER_DETAILS,
+} from "../../constants/index";
 
 // Images imports
 import Logo from "../../assets/images/Kehillos_Logo.svg";
@@ -31,6 +35,7 @@ export default function SignIn() {
   const [formdata, setFormData] = useState(formObject);
   const { t } = useTranslation();
   const { setAlert } = useAlert();
+
   const handleLogin = async (event) => {
     event.preventDefault();
     authService
@@ -41,7 +46,8 @@ export default function SignIn() {
           localStorage.setItem("logo_url", data.data.user.organization_logo_url);
           localStorage.setItem(ACCESS_TOKEN_KEY, data.data.access);
           localStorage.setItem(REFRESH_TOKEN_KEY, data.data.refresh);
-          navigate("/request");
+          localStorage.setItem(USER_DETAILS, JSON.stringify(data.data?.user));
+          navigate("/clients");
         } else {
           setAlert(t("auth.loginFailed"), "error");
         }
@@ -50,6 +56,7 @@ export default function SignIn() {
         setAlert(error.response.data.message, "error");
       });
   };
+
   const handleInput = (event) => {
     setFormData({ ...formdata, [event.target.name]: event.target.value });
   };
@@ -66,6 +73,7 @@ export default function SignIn() {
     }
     return true;
   };
+
   return (
     <div className="relative w-screen h-screen bg-[#F9FBFC]">
       <div className="absolute top-0 left-0  bg-white shadow-custom py-2 w-screen px-4 flex items-center justify-between">
@@ -117,13 +125,13 @@ export default function SignIn() {
               {t("auth.signin")}
             </button>
           </form>
-
         </div>
-                
+
         <div className="text-center mt-auto pt-10 pb-5 ">
-      <p style={{ fontSize: '12px', color: '#4597f7' }}>Powering tomorrow <a href="https://jgrp.dev">jgrp.dev</a></p>
-      
-    </div>
+          <p style={{ fontSize: "12px", color: "#4597f7" }}>
+            Powering tomorrow <a href="https://jgrp.dev">jgrp.dev</a>
+          </p>
+        </div>
       </div>
     </div>
   );
