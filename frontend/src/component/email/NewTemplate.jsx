@@ -345,7 +345,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
 
               <div className="flex justify-center">
                 <button
-                  className={`w-[150px] h-[40px] linear rounded-lg text-base font-medium transition duration-200 ${
+                  className={`w-[150px] h-[40px] linear rounded-lg text-base font-medium transition duration-200 !z-[10] ${
                     formValidate()
                       ? "bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white"
                       : "bg-gray-300"
