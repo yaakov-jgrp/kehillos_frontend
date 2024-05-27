@@ -33,8 +33,6 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   const [mergeTagsData, setMergeTagsData] = useState({});
 
   const onReady = () => {
-    if (emailEditorRef.current && emailEditorRef.current.editor) {
-      console.log("Setting merge tags");
       emailEditorRef.current.editor.setMergeTags({
         request: {
           name:t("email_builder.requests"),
@@ -131,9 +129,10 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
         }
       }
       });
-    } else {
-      console.error("Email editor not initialized");
-    }
+
+      if (editableTemplateId) {
+        emailEditorRef.current.editor.loadDesign(formdata.message);
+      }
   };
 
   const exportHtml = () => {
@@ -346,7 +345,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
 
               <div className="flex justify-center">
                 <button
-                  className={`w-[150px] h-[40px] linear rounded-lg text-base font-medium transition duration-200 ${
+                  className={`w-[150px] h-[40px] linear rounded-lg text-base font-medium transition duration-200 !z-[10] ${
                     formValidate()
                       ? "bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white"
                       : "bg-gray-300"
