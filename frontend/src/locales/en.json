@@ -15,6 +15,26 @@
     "select": "select",
     "AddNewClient": "Add New Client"
   },
+  "email_builder": {
+    "requests":"Requests",
+    "clients": "Clients",
+    "netfree_traffic":"Traffic Recordings",
+    "open_domain_pre_text": "Pre-text for opening a domain",
+    "open_domain_list": "List of opened domains",
+    "open_domain_after_text": "After-text for opening a domain",
+    "open_url_pre_text": "Pre-text for opening a URL",
+    "open_url_list": "List of opened URLs",
+    "open_url_after_text": "After-text for opening a URL",
+    "blocked_pre_text": "Pre-text for blocked traffic",
+    "blocked_list": "List of blocked traffic",
+    "blocked_after_text": "After-text for blocked traffic",
+    "open_domain_temporary_pre_text": "Pre-text for temporarily opening a domain",
+    "open_domain_temporary": "List of Temporarily opened domain",
+    "open_domain_temporary_after_text": "After-text for temporarily opening a domain",
+    "open_url_temporary_pre_text": "Pre-text for temporarily opening a URL",
+    "open_url_temporary": "List of Temporarily opened URL",
+    "open_url_temporary_after_text": "After-text for temporarily opening a URL"
+  },
   "messages": {
     "mustBeValid": "must be a valid mail",
     "mustContain": "must contain atleast",
@@ -297,4 +317,5 @@
     "entity": "Entity",
     "timeStamp": "Time Stamp"
   }
+  
 }
