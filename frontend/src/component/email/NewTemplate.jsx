@@ -33,8 +33,6 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   const [mergeTagsData, setMergeTagsData] = useState({});
 
   const onReady = () => {
-    if (emailEditorRef.current && emailEditorRef.current.editor) {
-      console.log("Setting merge tags");
       emailEditorRef.current.editor.setMergeTags({
         request: {
           name:t("email_builder.requests"),
@@ -131,9 +129,10 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
         }
       }
       });
-    } else {
-      console.error("Email editor not initialized");
-    }
+
+      if (editableTemplateId) {
+        emailEditorRef.current.editor.loadDesign(formdata.message);
+      }
   };
 
   const exportHtml = () => {
