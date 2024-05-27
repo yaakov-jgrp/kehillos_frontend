@@ -15,6 +15,26 @@
     "select": "נבחר",
     "AddNewClient": "הוסף לקוח חדש"
   },
+  "email_builder": {
+    "clients": "לקוחות",
+    "requests": "בקשות",
+    "netfree_traffic": "תעבורת נטפרי",
+    "open_domain_pre_text": "טקסט לפני פתיחת דומיין",
+    "open_domain_list": "רשימת דומיינים שנפתחו",
+    "open_domain_after_text": "טקסט אחרי פתיחת דומיין",
+    "open_url_pre_text": "טקסט לפני פתיחת כתובת URL",
+    "open_url_list": "רשימת כתובות URL שנפתחו",
+    "open_url_after_text": "טקסט אחרי פתיחת URL",
+    "blocked_pre_text": "טקסט לפני חסימת תעבורה",
+    "blocked_list": "רשימת תעבורה שנחסמה",
+    "blocked_after_text": "טקסט אחרי חסימת תעבורה",
+    "open_domain_temporary_pre_text": "טקסט לפני פתיחת דומיין זמנית",
+    "open_domain_temporary": "דומיין שנפתח זמנית",
+    "open_domain_temporary_after_text": "טקסט אחרי פתיחת דומיין זמנית",
+    "open_url_temporary_pre_text": "טקסט לפני פתיחת URL זמנית",
+    "open_url_temporary": "URL שנפתח זמנית",
+    "open_url_temporary_after_text": "טקסט אחרי פתיחת URL זמנית"
+},
   "messages": {
     "mustBeValid": "חייב להיות דואר חוקי",
     "mustContain": "חייב להכיל לפחות",
