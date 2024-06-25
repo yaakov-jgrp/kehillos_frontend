@@ -56,7 +56,15 @@
     "signin": "כניסה",
     "loginSuccess": "התחברת בהצלחה",
     "loginFailed": "הכניסה נכשלה, נסה שוב!!!",
-    "namePlaceholder": "הכנס שם"
+    "namePlaceholder": "הכנס שם",
+    "smtp_server": "כתובת מייל המחובר לחשבון",
+    "smtp_port": "מספר משתמש",
+    "smtp_username": "שם משתמש",
+    "smtp_password": "סיסמה",
+    "imap_server": "כתובת מייל המחובר לחשבון",
+    "imap_port": "מספר משתמש",
+    "imap_email": "אימייל",
+    "imap_password": "סיסמה"
   },
   "sidebar": {
     "title": "קהילות",
