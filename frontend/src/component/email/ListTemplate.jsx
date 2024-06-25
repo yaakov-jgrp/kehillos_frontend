@@ -26,6 +26,12 @@ import EmailTemplating from "../../views/EmailTemplating";
 const smtpFormObject = {
   email: "",
   password: "",
+  smtp_server: "",
+  smtp_port: 587,
+  imap_email: "",
+  imap_password: "",
+  imap_server: "",
+  imap_port: 993
 };
 
 const ListTemplate = ({ newTemplate, onEdit }) => {
@@ -125,22 +131,19 @@ const ListTemplate = ({ newTemplate, onEdit }) => {
       setAddEditMode(false);
     } else {
       setAddEditMode(true);
-      setSmtpFormdata({ email: "", password: "" });
+      setSmtpFormdata(smtpFormObject);
     }
   };
 
   const editSMTPSettings = () => {
-    setSmtpFormdata({ email: connectSMTPData.email, password: "" });
+    setSmtpFormdata({ ...connectSMTPData, password: "", imap_password: "" });
     setAddEditMode(true);
   };
 
   const connectSMTPEmail = async (event) => {
     event.preventDefault();
     await emailService
-      .loginEmail({
-        email: smtpFormdata.email,
-        password: smtpFormdata.password,
-      })
+      .loginEmail(smtpFormdata)
       .then((response) => {
         if (response.status === 200) {
           fetchSMTPSettings();
@@ -209,6 +212,55 @@ const ListTemplate = ({ newTemplate, onEdit }) => {
                   className="outline-none mb-2 border-[1px] w-full rounded-lg p-2"
                   onChange={handleSMTPInputChange}
                 />
+                <input
+                  type="text"
+                  placeholder={t("auth.smtp_server")}
+                  value={smtpFormdata.smtp_server}
+                  name="smtp_server"
+                  className="outline-none mb-2 border-[1px] w-full rounded-lg p-2"
+                  onChange={handleSMTPInputChange}
+                />
+                <input
+                  type="number"
+                  placeholder={t("auth.smtp_port")}
+                  value={smtpFormdata.smtp_port}
+                  name="smtp_port"
+                  className="outline-none mb-2 border-[1px] w-full rounded-lg p-2"
+                  onChange={handleSMTPInputChange}
+                />
+                <input
+                  type="email"
+                  placeholder={t("auth.imap_email")}
+                  value={smtpFormdata.imap_email}
+                  name="imap_email"
+                  className="outline-none mb-2 border-[1px] w-full rounded-lg p-2"
+                  onChange={handleSMTPInputChange}
+                />
+                <input
+                  type="password"
+                  placeholder={t("auth.imap_password")}
+                  value={smtpFormdata.imap_password}
+                  name="imap_password"
+                  className="outline-none mb-2 border-[1px] w-full rounded-lg p-2"
+                  onChange={handleSMTPInputChange}
+                />
+                <input
+                  type="text"
+                  placeholder={t("auth.imap_server")}
+                  value={smtpFormdata.imap_server}
+                  name="imap_server"
+                  className="outline-none mb-2 border-[1px] w-full rounded-lg p-2"
+                  onChange={handleSMTPInputChange}
+                />
+                <input
+                  type="number"
+                  placeholder={t("auth.imap_port")}
+                  value={smtpFormdata.imap_port}
+                  name="imap_port"
+                  className="outline-none mb-2 border-[1px] w-full rounded-lg p-2"
+                  onChange={handleSMTPInputChange}
+                />
+                
                 <button
                   type="submit"
                   disabled={!smtpFormValidate()}
@@ -323,37 +375,6 @@ const ListTemplate = ({ newTemplate, onEdit }) => {
             setEditText={setEditText}
           />
         )}
-
-        {/* <div className="dark:!bg-navy-800 flex w-1/2">
-          <button
-            type="submit"
-            className={`w-full rounded-full py-2 mx-2 px-7 text-[12px] md:text-base font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
-            onClick={newTemplate}
-          >
-            {t("emails.newTemplate")}
-          </button>
-          <button
-            type="button"
-            className={`w-full rounded-full py-2 mx-2 px-7 text-[12px] md:text-base font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
-            onClick={() => navigate("templating")}
-          >
-            {t("emails.templating")}
-          </button>
-        </div> */}
-
-        {/* <div className="md:w-[25%] bg-white">
-          <SearchField
-            variant="templateSearch"
-            extra=""
-            id="searchTemplate"
-            type="text"
-            placeholder={t("searchbox.placeHolder")}
-            onChange={(e) => searchTemplte(e.target.value)}
-            name="searchTemplate"
-            noUnderline="true"
-            borderRadius="30"
-          />
-        </div> */}
       </div>
     </div>
   );

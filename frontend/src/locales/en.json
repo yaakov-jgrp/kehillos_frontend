@@ -56,7 +56,15 @@
     "signin": "Signin",
     "loginSuccess": "Login Successfully",
     "loginFailed": "Login failed, try again!!!",
-    "namePlaceholder": "Enter Name"
+    "namePlaceholder": "Enter Name",
+    "smtp_server": "SMTP Server",
+    "smtp_port": "SMTP Port",
+    "smtp_username": "SMTP Username",
+    "smtp_password": "SMTP Password",
+    "imap_server": "IMAP Server",
+    "imap_port": "IMAP Port",
+    "imap_email": "IMAP Email",
+    "imap_password": "IMAP Password"
   },
   "sidebar": {
     "title": "Kehillos",
