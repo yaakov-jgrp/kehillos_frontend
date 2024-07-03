@@ -28,6 +28,7 @@ import ContentCopyIcon from "../assets/images/content_copy.svg";
 import BlueDownArrowIcon from "../assets/images/blue_down_arrow.svg";
 import { categoryFilters } from "../lib/FieldConstants";
 import { MenuItem, Select } from "@mui/material";
+import { deleteNetfreeStatus } from "../lib/CommonFunctions";
 
 const NetFree = () => {
   const [tab, setTab] = useState(0);
