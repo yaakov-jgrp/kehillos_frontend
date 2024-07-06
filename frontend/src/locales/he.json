@@ -48,6 +48,7 @@
     "emails": "תבניות",
     "profile": "פרופיל",
     "logout": "התנתק",
+    "formCreation": "יצירת טופס",
     "clients": "לקוחות",
     "details": "פרטים",
     "logs": "היסטוריה",
@@ -160,7 +161,8 @@
     "netfree": "נטפרי",
     "emails": "אימייל",
     "logs": "יומן",
-    "templating": "תבנית"
+    "templating": "תבנית",
+    "forms": "הגדרות טופס"
   },
   "emails": {
     "templates": "תבניות",
@@ -779,5 +781,9 @@
   "tools.tabs.uploads": "העלאות",
   "tools.text.personalize": "התאמה אישית",
   "tools.tooltip.drag_on_canvas": "גרור על בד",
-  "tools.tooltip.got_it": "הבנתי"
+  "tools.tooltip.got_it": "הבנתי",
+  "forms": {
+    "formsManagement": "ניהול טפסים",
+    "createNewForm": "צור טופס חדש"
+  }
 }

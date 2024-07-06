@@ -114,7 +114,7 @@ export function SidebarLinks(props) {
             {isSettingsOpen
               ? route.children.map((subMenu, subIndex) => {
                   return (
-                    <div key={subMenu.name + subIndex} className="px-10">
+                    <div key={subMenu.name + subIndex} className="px-4">
                       <Link to={"/" + subMenu.path}>
                         <GenerateMenuLink
                           index={subIndex}

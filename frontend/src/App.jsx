@@ -42,6 +42,7 @@ import { IoLogoBuffer } from "react-icons/io";
 // Utils imports
 import { DEFAULT_LANGUAGE } from "./constants";
 import { ACCESS_TOKEN_KEY } from "./constants";
+import Forms from "./views/Forms";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -136,6 +137,11 @@ function App() {
       name: t("clients.clientFormSettings"),
       path: "settings/formSettings",
       component: <ClientsForm />,
+    },
+    {
+      name: t("sidebar.formCreation"),
+      path: "settings/forms",
+      component: <Forms />,
     },
     {
       name: t("sidebar.request"),

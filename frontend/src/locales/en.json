@@ -48,6 +48,7 @@
     "emails": "Emails",
     "profile": "Profile",
     "logout": "Logout",
+    "formCreation": "Form Creation",
     "clients": "Clients",
     "details": "Details",
     "logs": "Logs History",
@@ -160,7 +161,8 @@
     "netfree": "netfree",
     "emails": "emails",
     "logs": "logs",
-    "templating": "templating"
+    "templating": "templating",
+    "forms": "Form Settings"
   },
   "emails": {
     "templates": "Templates",
@@ -291,5 +293,9 @@
     "action": "Action",
     "entity": "Entity",
     "timeStamp": "Time Stamp"
+  },
+  "forms": {
+    "formsManagement": "Forms Management",
+    "createNewForm": "Create New Form"
   }
 }

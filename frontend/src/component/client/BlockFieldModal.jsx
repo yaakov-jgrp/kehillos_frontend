@@ -266,7 +266,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
   }, []);
 
   return (
-    <div className="fixed left-0 bottom-0 z-[99] h-screen w-screen bg-[#00000080] flex justify-center items-center">
+    <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
       <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
         <div className="relative w-auto my-6 mx-auto max-w-3xl">
           <div className="min-w-[300px] max-w-[300px] md:min-w-[400px] md:max-w-[400px] overflow-y-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
@@ -334,7 +334,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                   maxHeight: "250px",
                                 },
                               }}
-                              className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded-lg outline-none w-full p-2 text-black bg-white"
+                              className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded-lg outline-none w-full p-2 text-black bg-white z-[9999]"
                               onChange={onChange}
                               onBlur={onBlur}
                               value={value}
@@ -410,7 +410,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                         maxHeight: "250px",
                                       },
                                     }}
-                                    className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                                    className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white z-[9999]"
                                     onChange={onChange}
                                     onBlur={onBlur}
                                     value={value}
@@ -448,7 +448,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                         maxHeight: "250px",
                                       },
                                     }}
-                                    className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                                    className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white z-[9999]"
                                     onChange={onChange}
                                     onBlur={onBlur}
                                     value={value}
@@ -499,7 +499,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                         </>
                       )}
                       <div className="flex flex-col mt-2">
-                        <div className="flex my-2 gap-6">
+                        <div className="flex my-2 gap-1 items-center">
                           <Controller
                             name="required"
                             control={control}
@@ -517,7 +517,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                             {t("clients.required")}
                           </label>
                         </div>
-                        <div className="flex my-2 gap-6">
+                        <div className="flex my-2 gap-1 items-center">
                           <Controller
                             name="unique"
                             control={control}

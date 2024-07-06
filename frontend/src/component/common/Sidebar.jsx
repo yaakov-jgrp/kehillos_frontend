@@ -12,6 +12,7 @@ import Users from "../../views/Users";
 import { useTranslation } from "react-i18next";
 
 // Icon imports
+import FormsSvg from "../../assets/forms.svg";
 import { HiX } from "react-icons/hi";
 import {
   MdOutlineContactSupport,
@@ -47,6 +48,13 @@ const Sidebar = ({ open, onClose }) => {
       type: "top-menu",
       icon: <MdOutlineSettings className="h-6 w-6" />,
       children: [
+        {
+          name: t("sidebar.formCreation"),
+          path: "settings/forms",
+          type: "menu",
+          icon: <img src={FormsSvg} className="h-5 w-5" />,
+          component: <ClientsForm />,
+        },
         {
           name: t("sidebar.clients"),
           path: "settings/formSettings",
@@ -121,8 +129,13 @@ const Sidebar = ({ open, onClose }) => {
 
       {/* Adding the new div with support information */}
       <div className="text-center mt-auto py-2">
-      <p style={{ fontSize: '15px' }}>  <a href="mailto:support@kehillos.com">support@kehillos.com</a></p>
-      <p style={{ fontSize: '12px', color: '#4597f7' }}>Powering tomorrow <a href="https://jgrp.dev">jgrp.dev</a></p>
+        <p style={{ fontSize: "15px" }}>
+          {" "}
+          <a href="mailto:support@kehillos.com">support@kehillos.com</a>
+        </p>
+        <p style={{ fontSize: "12px", color: "#4597f7" }}>
+          Powering tomorrow <a href="https://jgrp.dev">jgrp.dev</a>
+        </p>
       </div>
     </div>
   );

@@ -57,20 +57,23 @@ function DetailsTabPanel(props) {
                         : blockData.block
                     }
                   >
-                    {blockData.field.length > 0 ? (
-                      <>
-                        {blockData.field.map((field, index) => (
-                          <IndividualEditField
-                            key={index}
-                            field={field}
-                            clientData={clientData}
-                            setClientData={setClientData}
-                          />
-                        ))}
-                      </>
-                    ) : (
-                      <p>{t("clients.noFields")}</p>
-                    )}
+                    <div className="grid grid-cols-2 gap-4">
+                      {blockData.field.length > 0 ? (
+                        <>
+                          {blockData.field.map((field, index) => (
+                            <div key={index}>
+                              <IndividualEditField
+                                field={field}
+                                clientData={clientData}
+                                setClientData={setClientData}
+                              />
+                            </div>
+                          ))}
+                        </>
+                      ) : (
+                        <p>{t("clients.noFields")}</p>
+                      )}
+                    </div>
                   </CustomAccordion>
                 ))}
             </Accordion>
