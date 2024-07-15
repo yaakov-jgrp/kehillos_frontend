@@ -296,6 +296,14 @@
   },
   "forms": {
     "formsManagement": "Forms Management",
-    "createNewForm": "Create New Form"
+    "createNewForm": "Create New Form",
+    "name": "Name",
+    "description": "Description",
+    "dateCreated": "Date Created",
+    "datelastEdited": "Date Last Edited",
+    "formCreation": "Form Creation",
+    "formName": "Form Name",
+    "formDesc": "Form Description",
+    "pinForm": "Pin Form"
   }
 }

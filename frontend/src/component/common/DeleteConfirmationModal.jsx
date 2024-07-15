@@ -11,7 +11,7 @@ function DeleteConfirmationModal({ showModal, setShowModal, onClick }) {
   return (
     <>
       {showModal && (
-        <div className="fixed left-0 bottom-0 z-[99] h-screen w-screen bg-[#00000020] flex justify-center items-center">
+        <div className="fixed left-0 bottom-0 z-[1000] h-screen w-screen bg-[#00000020] flex justify-center items-center">
           <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-7xl">
               <div className="w-[400px] overflow-y-auto border-0 rounded-2xl shadow-lg relative flex flex-col bg-white outline-none focus:outline-none">

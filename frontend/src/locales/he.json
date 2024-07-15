@@ -784,6 +784,14 @@
   "tools.tooltip.got_it": "הבנתי",
   "forms": {
     "formsManagement": "ניהול טפסים",
-    "createNewForm": "צור טופס חדש"
+    "createNewForm": "צור טופס חדש",
+    "name": "שֵׁם",
+    "description": "תיאור",
+    "dateCreated": "תאריך יצירה",
+    "datelastEdited": "תאריך עריכה אחרון",
+    "formCreation": "יצירת טופס",
+    "formName": "שם טופס",
+    "formDesc": "תיאור הטופס",
+    "pinForm": "טופס סיכה"
   }
 }
