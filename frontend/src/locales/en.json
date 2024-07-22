@@ -304,6 +304,8 @@
     "formCreation": "Form Creation",
     "formName": "Form Name",
     "formDesc": "Form Description",
-    "pinForm": "Pin Form"
+    "pinForm": "Pin Form",
+    "isThisSectionRepeated": "Is this section repeated",
+    "submit": "Submit"
   }
 }

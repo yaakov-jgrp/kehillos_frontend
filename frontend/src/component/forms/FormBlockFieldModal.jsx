@@ -29,7 +29,15 @@ import {
   dataTypes,
 } from "../../lib/FieldConstants";
 
-function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
+function FormBlockFieldModal({
+  block,
+  blockId,
+  setShowModal,
+  onClick,
+  editData,
+  activeForm,
+  setActiveForm,
+}) {
   const { t } = useTranslation();
   const [selectValue, setSelectValue] = useState("");
   const [selectedValues, setSelectedValues] = useState([]);
@@ -38,23 +46,16 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     block
       ? {
           name: "",
-          field_name_language: {
-            he: "",
-          },
-          is_block_created: true,
+          isRepeatable: false,
         }
       : {
           name: "",
-          field_name_language: {
-            he: "",
-          },
-          block_id: blockId,
+          block_id: null,
           value: "",
           data_type: dataTypes[0],
           required: false,
           defaultvalue: "",
           unique: false,
-          display: true,
         }
   );
 
@@ -71,6 +72,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
           .required(
             `${t("netfree.name")} ${t("clients.is")} ${t("clients.required")}`
           ),
+        isRepeatable: yup.boolean().notRequired(),
       })
     : yup.object().shape({
         name: yup
@@ -84,7 +86,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
           .required(
             `${t("netfree.name")} ${t("clients.is")} ${t("clients.required")}`
           ),
-        block_id: yup.string().required(),
+        block_id: yup.number().required(),
         data_type: yup
           .string()
           .required(
@@ -107,7 +109,6 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
         required: yup.boolean().required(),
         defaultvalue: yup.string().notRequired(),
         unique: yup.boolean().required(),
-        display: yup.boolean().required(),
       });
 
   const {
@@ -115,7 +116,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     setValue,
     reset,
     watch,
-    formState: { errors, dirtyFields },
+    formState: { errors },
     handleSubmit,
   } = useForm({
     defaultValues,
@@ -126,10 +127,12 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
   const initModal = () => {
     setFormLoading(true);
     if (editData) {
-      setValue("field_name_language", editData?.field_name_language);
+      // setValue("field_name_language", editData?.field_name_language);
       if (block) {
-        setValue("name", editData?.block);
+        setValue("name", editData?.name);
+        setValue("isRepeatable", editData?.isRepeatable, { shouldDirty: true });
       } else {
+        setValue("block_id", editData?.block_id);
         if (editData?.data_type.value === "select") {
           const choices = editData?.enum_values?.choices?.map(
             (item) => item.value
@@ -137,14 +140,14 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
           setValue("value", choices.join(","));
           setSelectedValues(choices);
         }
-        setValue("name", editData?.field_name);
+        setValue("name", editData?.name);
         setValue("data_type", editData?.data_type.value);
         setValue("defaultvalue", editData?.defaultvalue || "");
         setValue("required", editData?.required);
         setValue("unique", editData?.unique);
-        setValue("display", editData?.display);
       }
     }
+    setValue("block_id", blockId);
     setTimeout(() => {
       setFormLoading(false);
     }, 500);
@@ -173,81 +176,142 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
   const submitForm = async (data, e) => {
     e.preventDefault();
     if (editData) {
+      const newPayload = activeForm;
       let updatedData;
-      const updateArray = [];
       if (block) {
-        for (const dirtyField in dirtyFields) {
-          updateArray.push({
-            [dirtyField]: data[dirtyField],
-          });
-        }
-        const updateValues = updateArray.reduce(
-          (acc, curr) => Object.assign(acc, curr),
-          {}
-        );
+        console.log("The updated data of the block is: ");
         updatedData = {
-          fields: [
-            {
-              id: editData?.block_id,
-              ...updateValues,
-            },
-          ],
-          is_block: true,
+          id: blockId,
+          ...data,
         };
-      } else {
-        for (const dirtyField in dirtyFields) {
-          if (!BlockFieldCheckValues.includes(dirtyField)) {
-            updateArray.push({
-              [dirtyField]: data[dirtyField],
-            });
+        newPayload.blocks = newPayload.blocks.map((block) => {
+          if (block.id === updatedData.block_id) {
+            delete updatedData.block_id;
+            return {
+              ...block,
+              ...updatedData,
+            };
           }
-        }
-        for (const value of BlockFieldCheckValues) {
-          updateArray.push({
-            [value]: data[value],
-          });
-        }
-        const updateValues = updateArray.reduce(
-          (acc, curr) => Object.assign(acc, curr),
-          {}
-        );
+          return block;
+        });
+      } else {
+        console.log("The updated data of the block's field is: ");
         updatedData = {
-          fields: [
-            {
-              id: editData.id,
-              ...updateValues,
-            },
-          ],
+          id: editData.id,
+          ...data,
         };
-      }
-
-      clientsService
-        .updateBlockField(updatedData)
-        .then((res) => {
-          reset();
-          setShowModal(false);
-          onClick();
-        })
-        .catch((err) => console.log(err));
-    } else {
-      let newDataValues = [];
-      for (const newValue in data) {
-        newDataValues.push({
-          [newValue]: data[newValue],
+        newPayload.blocks = newPayload.blocks.map((block) => {
+          if (block.id === editData.block_id) {
+            const enum_values = {
+              choices: [],
+            };
+            if (data.data_type === "select" && data.value !== "") {
+              const enumsChoicesArray = data.value.split(",");
+              enum_values.choices = enumsChoicesArray.map((item, index) => ({
+                id: index + 1,
+                label: item,
+                value: item,
+              }));
+            }
+            delete updatedData.block_id;
+            const newFieldsArray = block.fields.map((field) => {
+              if (field.id === updatedData.id) {
+                return {
+                  ...field,
+                  name: updatedData.name,
+                  defaultvalue: updatedData.defaultvalue,
+                  required: updatedData.required,
+                  unique: updatedData.unique,
+                  enum_values,
+                };
+              }
+              return field;
+            });
+            return {
+              ...block,
+              fields: newFieldsArray,
+            };
+          }
+          return block;
         });
       }
-      const newValues = newDataValues.reduce(
-        (acc, curr) => Object.assign(acc, curr),
-        {}
-      );
-      clientsService
-        .createBlockField(newValues)
-        .then((res) => {
-          reset();
-          setShowModal(false);
-          onClick();
-        })
-        .catch((err) => console.log(err));
+      // For now simulating the API response as:
+      localStorage.setItem("activeForm", JSON.stringify(newPayload));
+      reset();
+      setShowModal(false);
+      onClick();
+      // Call the API from form service to update the block/field data
+      // clientsService
+      //   .updateBlockField(updatedData)
+      //   .then((res) => {
+      //     reset();
+      //     setShowModal(false);
+      //     onClick();
+      //   })
+      //   .catch((err) => console.log(err));
+    } else {
+      const newPayload = activeForm;
+      // For now simulating the API response:
+      if (block) {
+        delete data.block_id;
+        newPayload.blocks.push({
+          id: newPayload.blocks.length + 1,
+          fields: [],
+          ...data,
+        });
+        console.log("The added data of the block is: ");
+      } else {
+        newPayload.blocks = newPayload.blocks.map((block) => {
+          if (block.id === data.block_id) {
+            delete data.block_id;
+            const enum_values = {
+              choices: [],
+            };
+            if (data.data_type === "select" && data.value !== "") {
+              const enumsChoicesArray = data.value.split(",");
+              enum_values.choices = enumsChoicesArray.map((item, index) => ({
+                id: index + 1,
+                label: item,
+                value: item,
+              }));
+            }
+            return {
+              ...block,
+              fields: [
+                ...block.fields,
+                {
+                  id: block.fields.length + 1,
+                  ...data,
+                  enum_values,
+                  data_type: {
+                    value: data.data_type,
+                    label: data.data_type,
+                  },
+                },
+              ],
+            };
+          }
+          return block;
+        });
+        console.log("The added data of the block's field is: ");
+      }
+      localStorage.setItem("activeForm", JSON.stringify(newPayload));
+      setTimeout(() => {
+        console.log("New payload is: ");
+        console.log(newPayload);
+        reset();
+        setShowModal(false);
+        onClick();
+      }, 1000);
+      // Call the API from form service to add the block/field data
+      // clientsService
+      //   .createBlockField(newValues)
+      //   .then((res) => {
+      //     reset();
+      //     setShowModal(false);
+      //     onClick();
+      //   })
+      //   .catch((err) => console.log(err));
     }
   };
 
@@ -278,7 +342,14 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
               method="post"
               noValidate
               autoComplete="off"
-              onSubmit={handleSubmit((data, e) => submitForm(data, e))}
+              onSubmit={handleSubmit(
+                (data, e) => {
+                  submitForm(data, e);
+                },
+                (errors) => {
+                  console.log(errors);
+                }
+              )}
             >
               <div className="flex items-center justify-between p-5 border-b border-solid border-[#E3E5E6] rounded-t ">
                 <h3 className="text-lg font-medium text-gray-11">
@@ -319,6 +390,21 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                     />
                   </div>
 
+                  {block && (
+                    <div className="my-1 flex items-center -ml-2">
+                      <Controller
+                        name="isRepeatable"
+                        control={control}
+                        render={({ field: { value, onChange, onBlur } }) => (
+                          <CustomCheckBox checked={value} onChange={onChange} />
+                        )}
+                      />
+                      <label className="text-gray-11">
+                        {t("forms.isThisSectionRepeated")}
+                      </label>
+                    </div>
+                  )}
+
                   {errors.name && (
                     <ErrorMessage message={errors.name.message} />
                   )}
@@ -357,9 +443,11 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                           )}
                         />
                       </div>
+
                       {errors.data_type && (
                         <ErrorMessage message={errors.data_type.message} />
                       )}
+
                       {watch("data_type") === "select" ? (
                         <div className="my-1">
                           <label className="block text-gray-11 text-md font-normal my-1">
@@ -572,4 +660,4 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
   );
 }
 
-export default BlockFieldModal;
+export default FormBlockFieldModal;

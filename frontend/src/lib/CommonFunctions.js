@@ -27,6 +27,18 @@ export const fetchFullformDataHandler = async (
   }, 500);
 };
 
+export const fetchActiveformDataHandler = async (
+  setIsLoading,
+  setActiveForm
+) => {
+  setIsLoading(true);
+  const res = JSON.parse(localStorage.getItem("activeForm"));
+  setActiveForm(res);
+  setTimeout(() => {
+    setIsLoading(false);
+  }, 500);
+};
+
 export const formateDateTime = (dateTime) => {
   const date = new Date(dateTime).toLocaleString("en-us", {
     month: "short",

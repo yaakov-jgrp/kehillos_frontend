@@ -792,6 +792,8 @@
     "formCreation": "יצירת טופס",
     "formName": "שם טופס",
     "formDesc": "תיאור הטופס",
-    "pinForm": "טופס סיכה"
+    "pinForm": "טופס סיכה",
+    "isThisSectionRepeated": "האם הסעיף הזה חוזר על עצמו",
+    "submit": "שלח"
   }
 }
