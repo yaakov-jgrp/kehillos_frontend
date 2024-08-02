@@ -94,15 +94,15 @@ const Sidebar = ({ open, onClose }) => {
 
   return (
     <div
-      className={`h-full px-5 sm:none duration-175 w-[250px] fixed linear !z-50 flex flex-col bg-white pb-10 shadow-custom transition-all md:!z-50 lg:!z-50 xl:!z-0 ${
+      className={`h-full px-5 sm:none duration-175 w-[220px] fixed linear !z-50 flex flex-col bg-white pb-10 shadow-custom transition-all md:!z-50 lg:!z-50 xl:!z-0 ${
         open
-          ? i18n.dir() === "ltr"
-            ? `left-0`
-            : "right-0"
-          : i18n.dir() === "ltr"
+        ? i18n.dir() === "ltr"
+          ? `left-0`
+          : "right-0"
+        : i18n.dir() === "ltr"
           ? "-left-96"
           : "-right-96"
-      }`}
+        }`}
     >
       <span
         className="absolute top-2 block cursor-pointer end-2 xl:hidden"
@@ -121,8 +121,8 @@ const Sidebar = ({ open, onClose }) => {
 
       {/* Adding the new div with support information */}
       <div className="text-center mt-auto py-2">
-      <p style={{ fontSize: '15px' }}>  <a href="mailto:support@kehillos.com">support@kehillos.com</a></p>
-      <p style={{ fontSize: '12px', color: '#4597f7' }}>Powering tomorrow <a href="https://jgrp.dev">jgrp.dev</a></p>
+        <p style={{ fontSize: '14px' }}>  <a href="mailto:support@kehillos.com">support@kehillos.com</a></p>
+        <p style={{ fontSize: '12px', color: '#4597f7' }}>Powering tomorrow <a href="https://jgrp.dev">jgrp.dev</a></p>
       </div>
     </div>
   );

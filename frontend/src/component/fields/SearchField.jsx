@@ -55,7 +55,7 @@ function SearchField(props) {
             onChange={onChange}
             name={name}
             placeholder={placeholder}
-            className={`font-normal mt-6 h-9 w-full px-6 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal bg-white border-[1px] border-[#E3E5E6] rounded-full`}
+            className={`font-normal mt-6 h-9 w-full px-7 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal bg-white border-[1px] border-[#E3E5E6] rounded-full`}
           />
         )}
         {!value && (
@@ -66,7 +66,7 @@ function SearchField(props) {
             onChange={onChange}
             name={name}
             placeholder={placeholder}
-            className={`font-normal mt-6 h-9 w-full px-6 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal bg-white border-[1px] border-[#E3E5E6] rounded-full`}
+            className={`font-normal mt-6 h-9 w-full px-7 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal bg-white border-[1px] border-[#E3E5E6] rounded-full`}
           />
         )}
         <img
@@ -75,7 +75,7 @@ function SearchField(props) {
           className={`absolute ${
             i18n.dir() === "rtl"
               ? variant === "auth"
-                ? "right-1"
+                ? "right-2"
                 : "right-[10px]"
               : variant === "auth"
               ? "left-2"

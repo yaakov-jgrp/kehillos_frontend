@@ -27,7 +27,7 @@ const DefaultLayout = ({ children, route }) => {
       <div className="h-full w-full bg-[#F9FBFC] pb-12">
         <main
           className={`mx-[14px] h-full flex-none transition-all md:pe-2 ${
-            i18n.dir() === "rtl" ? "xl:mr-[250px]" : "xl:ml-[250px]"
+            i18n.dir() === "rtl" ? "xl:mr-[220px]" : "xl:ml-[220px]"
           }`}
         >
           <div className="h-full md:h-[100vh]">

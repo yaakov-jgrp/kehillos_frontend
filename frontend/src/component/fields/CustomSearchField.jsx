@@ -47,7 +47,7 @@ function CustomSearchField(props) {
           onChange={onChange}
           name={name}
           placeholder={placeholder}
-          className={`font-normal mt-6 h-10 w-full px-6 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal ${
+          className={`font-normal mt-6 h-10 w-full px-7 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal ${
             noBgColor ? "border" : "bg-[#F2F8FB]"
           } rounded-lg`}
         />
@@ -57,7 +57,7 @@ function CustomSearchField(props) {
           className={`absolute ${
             i18n.dir() === "rtl"
               ? variant === "auth"
-                ? "right-1"
+                ? "right-2"
                 : "right-[10px]"
               : variant === "auth"
               ? "left-2"
