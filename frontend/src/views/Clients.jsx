@@ -427,7 +427,7 @@ const Clients = () => {
                             key={client.id}
                           >
                             <td
-                              className="border-b border-b-[#F2F2F2] py-12"
+                              className="border-b border-b-[#F2F2F2] p-1"
                               onClick={() => {
                                 handleRowClick(client?.id);
                               }}
