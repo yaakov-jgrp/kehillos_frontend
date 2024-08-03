@@ -423,7 +423,7 @@ const Clients = () => {
                       allClients.map((client, i) => {
                         return (
                           <tr
-                            className="h-[75px] cursor-pointer"
+                            className="h-[65px] cursor-pointer"
                             key={client.id}
                           >
                             <td
