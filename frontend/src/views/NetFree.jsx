@@ -26,6 +26,9 @@ import InfoIcon from "../assets/images/info.svg";
 import BinIcon from "../assets/images/bin.svg";
 import ContentCopyIcon from "../assets/images/content_copy.svg";
 import BlueDownArrowIcon from "../assets/images/blue_down_arrow.svg";
+import { categoryFilters } from "../lib/FieldConstants";
+import { MenuItem, Select } from "@mui/material";
+import { deleteNetfreeStatus } from "../lib/CommonFunctions";
 
 const NetFree = () => {
   const [tab, setTab] = useState(0);
@@ -63,6 +66,7 @@ const NetFree = () => {
   const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
   const NetfreePageTabs = [t("netfree.categories"), t("netfree.websites")];
   const [currentProfileTab, setCurrentProfileTab] = useState(0);
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
   // Handlers
 
@@ -99,7 +103,8 @@ const NetFree = () => {
 
   const getCategoryData = async () => {
     setIsLoading(true);
-    const response = await categoryService.getCategories();
+    const params = `&filter=${categoryFilter}`;
+    const response = await categoryService.getCategories(params);
     setResponseDataToState(response);
     setIsLoading(false);
   };
@@ -202,7 +207,9 @@ const NetFree = () => {
         filteredData = response?.filter(
           (el) =>
             el.actions?.filter((action) =>
-              action.label.toLowerCase().includes(searchTerm.trim().toLowerCase())
+              action.label
+                .toLowerCase()
+                .includes(searchTerm.trim().toLowerCase())
             ).length > 0
         );
       }
@@ -345,6 +352,10 @@ const NetFree = () => {
     getDefaultTrafficActions();
     getDefaultTraffic();
   }, [defaultLanguageValue]);
+
+  useEffect(() => {
+    getCategoryData();
+  }, [categoryFilter]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -626,19 +637,40 @@ const NetFree = () => {
               />
             </div>
             {tab === 0 && (
-              <button
-                className={`w-[90px] rounded-lg h-[36px] text-[14px] font-medium dark:bg-brand-400 text-[#0B99FF] dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-1 justify-center items-center border border-[#0B99FF]`}
-                onClick={() => {}}
+              <Select
+                sx={{
+                  width: "150px",
+                  borderRadius: "10px",
+                }}
+                MenuProps={{
+                  sx: {
+                    zIndex: 9999,
+                  },
+                }}
+                className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                value={categoryFilter}
+                placeholder={t("netfree.select_filter")}
               >
-                {t("clients.filters")}
-                <img src={BlueDownArrowIcon} alt="arrow_icon" />
-              </button>
+                <MenuItem value={"select_filter"} disabled>
+                  {t("netfree.select_filter")}
+                </MenuItem>
+                {categoryFilters.length > 0 &&
+                  categoryFilters?.map((el) => {
+                    return el ? (
+                      <MenuItem key={el} value={el}>
+                        {t(`netfree.${el}`)}
+                      </MenuItem>
+                    ) : null;
+                  })}
+              </Select>
             )}
           </div>
         </div>
 
         {tab === 0 && (
           <Categories
+            categoryFilter={categoryFilter}
             profileList={profilesList}
             categoriesData={categoriesData}
             handleSiteSearch={handleSiteSearch}
