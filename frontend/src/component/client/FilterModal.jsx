@@ -158,6 +158,15 @@ function FilterModal({
     ]);
   };
 
+  const deleteFilterCondition = (id) => {
+    const conditionsData = conditions.filter((item) => item.id !== id);
+    setConditions(conditionsData);
+    setValue("filters", conditionsData, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  };
+
   const filterFieldConditionUpdate = (type, value, id) => {
     const filteredConditions = conditions;
     const condition = conditions.filter((condition) => id === condition.id)[0];
@@ -198,15 +207,6 @@ function FilterModal({
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const deleteFilterCondition = (id) => {
-    const conditionsData = conditions.filter((item) => item.id !== id);
-    setConditions(conditionsData);
-    setValue("filters", conditionsData, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
   };
 
   const editFilterHandler = (filter) => {
@@ -386,7 +386,7 @@ function FilterModal({
         </>
       </Popover>
       {showModal ? (
-        <div className="fixed left-0 bottom-0 font-semibold z-[999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
+        <div className="fixed left-0 bottom-0 font-semibold z-[1000] h-screen w-screen bg-[#00000080] flex justify-center items-center">
           <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto min-w-[90vw] max-w-[90vw]">
               <div

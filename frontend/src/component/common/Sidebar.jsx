@@ -24,7 +24,9 @@ import { IoLogoBuffer } from "react-icons/io";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
 import NetfreeIcon from "../../constants/icons/NetfreeIcon";
 import Logo from "../../assets/images/Kehillos_Logo.svg";
-import { color } from "framer-motion";
+import FormsIcon from "../../assets/images/forms.svg";
+import FormsDarkIcon from "../../assets/images/forms_dark.svg";
+import ClientFormsTable from "../../views/ClientFormsTable";
 
 const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
@@ -35,6 +37,20 @@ const Sidebar = ({ open, onClose }) => {
       type: "menu",
       icon: <HiOutlineUserGroup className="h-6 w-6" />,
       component: <Clients />,
+    },
+    {
+      name: t("sidebar.forms"),
+      path: "client-forms",
+      type: "menu",
+      icon: <img src={FormsIcon} alt="forms-icon" className="h-4 w-4" />,
+      darkIcon: (
+        <img
+          src={FormsDarkIcon}
+          alt="forms-dark-icon"
+          className="h-6 w-6 -mt-4"
+        />
+      ),
+      component: <ClientFormsTable />,
     },
     {
       name: t("sidebar.request"),

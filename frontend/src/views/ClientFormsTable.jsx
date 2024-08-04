@@ -1,5 +1,5 @@
 // React and React Router Imports imports
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 // UI Imports
@@ -19,8 +19,8 @@ import formsService from "../services/forms";
 // Icon imports
 import AddIcon from "../assets/images/add.svg";
 import BinIcon from "../assets/images/bin.svg";
-import PencilIcon from "../assets/images/pencil.svg";
-import PinIcon from "../assets/pin.svg";
+import VisibilityIcon from "../assets/images/visibility_icon.svg";
+import FilterIcon from "../assets/images/filter_alt.svg";
 // Utils imports
 import { paginationRowOptions } from "../lib/FieldConstants";
 
@@ -29,13 +29,15 @@ import { paginationRowOptions } from "../lib/FieldConstants";
 // API services
 
 // Utils imports
-import { ACTIVE_FORM, FORM_FIELD_CONDITIONS } from "../constants";
+import { ACTIVE_FORM } from "../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveForm } from "../redux/activeFormSlice";
 import { setAllFormsState } from "../redux/allFormsSlice";
+import CreateClientFormModal from "../component/forms/CreateClientFormModal";
 
-function Forms() {
+function ClientFormsTable() {
   // states
+  const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [isLoading, setIsLoading] = useState(true);
@@ -44,9 +46,9 @@ function Forms() {
   const [totalCount, setTotalCount] = useState(100);
   const [searchParams, setSearchParams] = useState({});
   const [confirmationModal, setConfirmationModal] = useState(false);
-  const dispatch = useDispatch();
-  const allForms = useSelector((state) => state.allFormsState.allForms);
+  const [allClientForms, setAllClientForms] = useState([]);
   const [activeFormId, setActiveFormId] = useState(null);
+  const [showClientFormModal, setShowClientFormModal] = useState(false);
 
   // handlers
   const handleChangePage = (event, newPage) => {
@@ -62,7 +64,7 @@ function Forms() {
     setIsLoading(true);
     try {
       let payload = [];
-      const storedAllForms = JSON.parse(localStorage.getItem("allForms"));
+      const storedAllForms = JSON.parse(localStorage.getItem("allClientForms"));
       if (storedAllForms && storedAllForms.length > 0) {
         payload = storedAllForms;
       } else {
@@ -77,12 +79,11 @@ function Forms() {
         const params = `?page=${
           page + 1
         }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
-        const allFormsPayload = await formsService.getAllForms(params);
+        const allFormsPayload = await formsService.getAllClientsForms(params);
         payload = allFormsPayload.data;
         // setTotalCount(requestForms?.data?.count);
-        // setAllForms(requestForms?.data?.data);
       }
-      dispatch(setAllFormsState(payload));
+      setAllClientForms(payload);
       setTimeout(() => {
         setIsLoading(false);
       }, 500);
@@ -96,30 +97,56 @@ function Forms() {
     setSearchParams((prev) => ({ ...prev, ...{ [searchBy]: value } }));
   };
 
+  const deleteClientForm = () => {
+    setAllClientForms((prev) =>
+      prev.filter((form) => form.id !== activeFormId)
+    );
+    setConfirmationModal(false);
+  };
+
   // effects
   useEffect(() => {
     const searchTimer = setTimeout(() => fetchFormsData(), 500);
     return () => clearTimeout(searchTimer);
   }, [lang, page, rowsPerPage, JSON.stringify(searchParams)]);
 
+  useEffect(() => {
+    localStorage.setItem("allClientForms", JSON.stringify(allClientForms));
+  }, [allClientForms]);
+
   return (
     <div className="w-full bg-white rounded-3xl shadow-custom">
       <div className="flex justify-between items-center py-4 px-7 text-gray-11 font-medium text-2xl">
-        {t("forms.formsManagement")}
-        <Link to="/settings/forms/new-form">
+        {t("forms.forms")}
+        <div className="flex items-center gap-2">
+          <button
+            className={`w-[90px] rounded-lg py-1 text-[14px] font-medium dark:bg-brand-400 text-[#0B99FF] dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-1 justify-center items-center border border-[#0B99FF]`}
+            onClick={() => null}
+          >
+            <img src={FilterIcon} alt="visibility_icon" />
+            {t("clients.filters")}
+          </button>
+          <button
+            className={`w-[116px] rounded-lg py-1 text-[14px] font-semibold dark:bg-brand-400 text-gray-11 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-2 justify-center items-center border border-[#E3E5E6]`}
+            onClick={() => null}
+          >
+            <img src={VisibilityIcon} alt="visibility_icon" />
+            {t("clients.visibility")}
+          </button>
           <button
             className={`${
               lang === "he" ? "w-[150px]" : "w-[170px]"
             } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
             onClick={() => {
-              localStorage.setItem("activeForm", JSON.stringify(ACTIVE_FORM));
-              dispatch(setActiveForm(ACTIVE_FORM));
+              // TOOD: Open the create new client form modal
+              setShowClientFormModal(true);
+              return null;
             }}
           >
             <img src={AddIcon} alt="add_icon" />
-            {t("forms.createNewForm")}
+            {t("forms.addNewForm")}
           </button>
-        </Link>
+        </div>
       </div>
 
       <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2">
@@ -157,12 +184,12 @@ function Forms() {
                 <SearchField
                   variant="auth"
                   extra="mb-2"
-                  label={t("forms.description")}
-                  id="description"
+                  label={t("forms.clientId")}
+                  id="clientId"
                   type="text"
                   placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) => searchResult("description", e.target.value)}
-                  name="description"
+                  onChange={(e) => searchResult("clientId", e.target.value)}
+                  name="clientId"
                 />
               </th>
 
@@ -170,12 +197,14 @@ function Forms() {
                 <SearchField
                   variant="auth"
                   extra="mb-2"
-                  label={t("forms.dateCreated")}
-                  id="dateCreated"
+                  label={t("forms.dateFilledOut")}
+                  id="dateFilledOut"
                   type="text"
                   placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) => searchResult("dateCreated", e.target.value)}
-                  name="dateCreated"
+                  onChange={(e) =>
+                    searchResult("dateFilledOut", e.target.value)
+                  }
+                  name="dateFilledOut"
                 />
               </th>
 
@@ -223,44 +252,21 @@ function Forms() {
               </tr>
             ) : (
               <>
-                {allForms && allForms.length > 0 ? (
+                {allClientForms && allClientForms.length > 0 ? (
                   <>
-                    {allForms.map((el) => {
+                    {allClientForms.map((el) => {
                       return (
                         <tr
                           className="h-[75px] border-b border-b-[#F2F2F2] py-12"
                           key={el.id}
                         >
-                          <td>
-                            {el.isPined && (
-                              <img
-                                src={PinIcon}
-                                alt="pin-icon"
-                                className="inline"
-                              />
-                            )}{" "}
-                            #{el.id}
-                          </td>
+                          <td>#{el.id}</td>
                           <td>{el.name}</td>
-                          <td>{el.description}</td>
+                          <td>#{el.clientId}</td>
                           <td>{el.createdAt}</td>
                           <td>{el.lastEditedAt}</td>
                           <td>
                             <div className="h-auto w-full flex items-center justify-center gap-2">
-                              <Link to={`/settings/forms/${el.id}`}>
-                                <img
-                                  src={PencilIcon}
-                                  alt="PencilIcon"
-                                  className="hover:cursor-pointer"
-                                  onClick={() => {
-                                    localStorage.setItem(
-                                      "activeForm",
-                                      JSON.stringify(el)
-                                    );
-                                    dispatch(setActiveForm(el));
-                                  }}
-                                />
-                              </Link>
                               <img
                                 src={BinIcon}
                                 alt="BinIcon"
@@ -299,22 +305,19 @@ function Forms() {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
 
+      {showClientFormModal && (
+        <CreateClientFormModal setShowModal={setShowClientFormModal} />
+      )}
+
       {confirmationModal && (
         <DeleteConfirmationModal
           showModal={confirmationModal}
           setShowModal={setConfirmationModal}
-          onClick={() => {
-            dispatch(
-              setAllFormsState(
-                allForms.filter((form) => form.id !== activeFormId)
-              )
-            );
-            setConfirmationModal(false);
-          }}
+          onClick={deleteClientForm}
         />
       )}
     </div>
   );
 }
 
-export default Forms;
+export default ClientFormsTable;

@@ -27,13 +27,8 @@ export const fetchFullformDataHandler = async (
   }, 500);
 };
 
-export const fetchActiveformDataHandler = async (
-  setIsLoading,
-  setActiveForm
-) => {
+export const fetchActiveformDataHandler = async (setIsLoading) => {
   setIsLoading(true);
-  const res = JSON.parse(localStorage.getItem("activeForm"));
-  setActiveForm(res);
   setTimeout(() => {
     setIsLoading(false);
   }, 500);

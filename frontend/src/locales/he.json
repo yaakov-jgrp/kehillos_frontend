@@ -53,7 +53,8 @@
     "details": "פרטים",
     "logs": "היסטוריה",
     "users": "משתמשים",
-    "templating": "תגים"
+    "templating": "תגים",
+    "forms": "טפסים"
   },
   "requests": {
     "title": "פניות",
@@ -788,12 +789,24 @@
     "name": "שֵׁם",
     "description": "תיאור",
     "dateCreated": "תאריך יצירה",
+    "dateFilledOut": "תאריך מילוי",
     "datelastEdited": "תאריך עריכה אחרון",
     "formCreation": "יצירת טופס",
     "formName": "שם טופס",
     "formDesc": "תיאור הטופס",
     "pinForm": "טופס סיכה",
     "isThisSectionRepeated": "האם הסעיף הזה חוזר על עצמו",
-    "submit": "שלח"
+    "submit": "שלח",
+    "conditions": "תנאים",
+    "condition": "מַצָב",
+    "conditions_message_1": "כל התנאים (יש לעמוד בכל התנאים)",
+    "conditions_message_2": "כל תנאי (יש לעמוד באחד מהתנאים לפחות)",
+    "field": "שדה",
+    "value_placeholder": "הזן ערך",
+    "forms": "טפסים",
+    "addNewForm": "הוסף טופס חדש",
+    "clientId": "מזהה לקוח",
+    "client": "לָקוּחַ",
+    "form": "טופס"
   }
 }

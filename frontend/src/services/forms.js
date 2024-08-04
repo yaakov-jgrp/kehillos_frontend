@@ -15,128 +15,146 @@ const getAllForms = (params) => {
         description: "Test",
         blocks: [
           {
+            formId: 1,
             id: 1,
             name: "Personal Information",
             isRepeatable: true,
-            fields: [
-              {
-                id: 1,
-                name: "Name",
-                data_type: {
-                  label: "text",
-                  value: "text",
-                },
-                enum_values: {},
-                defaultvalue: "Abdul Raffay",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 2,
-                name: "Email",
-                data_type: {
-                  label: "email",
-                  value: "email",
-                },
-                enum_values: {},
-                defaultvalue: "abc@gmail.com",
-                required: true,
-                unique: true,
-              },
-              {
-                id: 3,
-                name: "Age",
-                data_type: {
-                  label: "number",
-                  value: "number",
-                },
-                enum_values: {},
-                defaultvalue: 22,
-                required: true,
-                unique: false,
-              },
-              {
-                id: 4,
-                name: "Contact No.",
-                data_type: {
-                  label: "phone",
-                  value: "phone",
-                },
-                enum_values: {},
-                defaultvalue: "+923154478526",
-                required: true,
-                unique: true,
-              },
-            ],
           },
 
           {
+            formId: 1,
             id: 2,
             name: "More Information",
             isRepeatable: false,
-            fields: [
-              {
-                id: 1,
-                name: "DoB",
-                data_type: {
-                  label: "date",
-                  value: "date",
+          },
+        ],
+        fields: [
+          {
+            blockId: 1,
+            id: 1,
+            name: "Name",
+            data_type: {
+              label: "text",
+              value: "text",
+            },
+            enum_values: {},
+            defaultvalue: "Abdul Raffay",
+            required: true,
+            unique: false,
+          },
+          {
+            blockId: 1,
+            id: 2,
+            name: "Email",
+            data_type: {
+              label: "email",
+              value: "email",
+            },
+            enum_values: {},
+            defaultvalue: "abc@gmail.com",
+            required: true,
+            unique: true,
+          },
+          {
+            blockId: 1,
+            id: 3,
+            name: "Age",
+            data_type: {
+              label: "number",
+              value: "number",
+            },
+            enum_values: {},
+            defaultvalue: 22,
+            required: true,
+            unique: false,
+          },
+          {
+            blockId: 1,
+            id: 4,
+            name: "Contact No.",
+            data_type: {
+              label: "phone",
+              value: "phone",
+            },
+            enum_values: {},
+            defaultvalue: "+923154478526",
+            required: true,
+            unique: true,
+          },
+          {
+            blockId: 2,
+            id: 5,
+            name: "DoB",
+            data_type: {
+              label: "date",
+              value: "date",
+            },
+            enum_values: {},
+            defaultvalue: "2024-07-07T13:21:06.408+00:00",
+            required: true,
+            unique: false,
+          },
+          {
+            blockId: 2,
+            id: 6,
+            name: "City",
+            data_type: {
+              label: "select",
+              value: "select",
+            },
+            enum_values: {
+              choices: [
+                {
+                  id: 1,
+                  label: "New York",
+                  value: "new_york",
                 },
-                enum_values: {},
-                defaultvalue: "2024-07-07T13:21:06.408+00:00",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 2,
-                name: "City",
-                data_type: {
-                  label: "select",
-                  value: "select",
+                {
+                  id: 1,
+                  label: "Brooklyn",
+                  value: "brooklyn",
                 },
-                enum_values: {
-                  choices: [
-                    {
-                      id: 1,
-                      label: "New York",
-                      value: "new_york",
-                    },
-                    {
-                      id: 1,
-                      label: "Brooklyn",
-                      value: "brooklyn",
-                    },
-                  ],
-                },
-                defaultvalue: "brooklyn",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 3,
-                name: "Single",
-                data_type: {
-                  label: "checkbox",
-                  value: "checkbox",
-                },
-                enum_values: {},
-                defaultvalue: false,
-                required: true,
-                unique: false,
-              },
-              {
-                id: 4,
-                name: "Marksheet",
-                data_type: {
-                  label: "file",
-                  value: "file",
-                },
-                enum_values: {},
-                defaultvalue: "",
-                required: true,
-                unique: false,
-              },
-            ],
+              ],
+            },
+            defaultvalue: "brooklyn",
+            required: true,
+            unique: false,
+          },
+          {
+            blockId: 2,
+            id: 7,
+            name: "Single",
+            data_type: {
+              label: "checkbox",
+              value: "checkbox",
+            },
+            enum_values: {},
+            defaultvalue: false,
+            required: true,
+            unique: false,
+          },
+          {
+            blockId: 2,
+            id: 8,
+            name: "Marksheet",
+            data_type: {
+              label: "file",
+              value: "file",
+            },
+            enum_values: {},
+            defaultvalue: "",
+            required: true,
+            unique: false,
+          },
+        ],
+        conditions: [
+          {
+            fieldId: 2,
+            id: 1,
+            field: "Name",
+            condition: "equals",
+            value: "Abc",
+            operator: "AND",
           },
         ],
         createdAt: formatDate("2024-07-07T13:21:06.408+00:00"),
@@ -149,664 +167,146 @@ const getAllForms = (params) => {
         description: "Test",
         blocks: [
           {
-            id: 1,
+            formId: 2,
+            id: 3,
             name: "Personal Information",
-            isRepeatable: false,
-            fields: [
-              {
-                id: 1,
-                name: "Name",
-                data_type: {
-                  label: "text",
-                  value: "text",
-                },
-                enum_values: {},
-                defaultvalue: "Abdul Raffay",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 2,
-                name: "Email",
-                data_type: {
-                  label: "email",
-                  value: "email",
-                },
-                enum_values: {},
-                defaultvalue: "abc@gmail.com",
-                required: true,
-                unique: true,
-              },
-              {
-                id: 3,
-                name: "Age",
-                data_type: {
-                  label: "number",
-                  value: "number",
-                },
-                enum_values: {},
-                defaultvalue: 22,
-                required: true,
-                unique: false,
-              },
-              {
-                id: 4,
-                name: "Contact No.",
-                data_type: {
-                  label: "phone",
-                  value: "phone",
-                },
-                enum_values: {},
-                defaultvalue: "+923154478526",
-                required: true,
-                unique: true,
-              },
-            ],
+            isRepeatable: true,
           },
 
           {
-            id: 2,
+            formId: 2,
+            id: 4,
             name: "More Information",
             isRepeatable: false,
-            fields: [
-              {
-                id: 1,
-                name: "DoB",
-                data_type: {
-                  label: "date",
-                  value: "date",
-                },
-                enum_values: {},
-                defaultvalue: "2024-07-07T13:21:06.408+00:00",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 2,
-                name: "City",
-                data_type: {
-                  label: "select",
-                  value: "select",
-                },
-                enum_values: {
-                  choices: [
-                    {
-                      id: 1,
-                      label: "New York",
-                      value: "new_york",
-                    },
-                    {
-                      id: 1,
-                      label: "Brooklyn",
-                      value: "brooklyn",
-                    },
-                  ],
-                },
-                defaultvalue: "brooklyn",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 3,
-                name: "Single",
-                data_type: {
-                  label: "checkbox",
-                  value: "checkbox",
-                },
-                enum_values: {},
-                defaultvalue: false,
-                required: true,
-                unique: false,
-              },
-              {
-                id: 4,
-                name: "Marksheet",
-                data_type: {
-                  label: "file",
-                  value: "file",
-                },
-                enum_values: {},
-                defaultvalue: "",
-                required: true,
-                unique: false,
-              },
-            ],
           },
         ],
-        createdAt: formatDate("2024-07-07T13:21:06.408+00:00"),
-        lastEditedAt: formatDate("2024-07-07T13:21:06.408+00:00"),
-      },
-      {
-        id: 3,
-        isPined: false,
-        name: "Form 3",
-        description: "Test",
-        blocks: [
+        fields: [
           {
-            id: 1,
-            name: "Personal Information",
-            isRepeatable: false,
-            fields: [
-              {
-                id: 1,
-                name: "Name",
-                data_type: {
-                  label: "text",
-                  value: "text",
-                },
-                enum_values: {},
-                defaultvalue: "Abdul Raffay",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 2,
-                name: "Email",
-                data_type: {
-                  label: "email",
-                  value: "email",
-                },
-                enum_values: {},
-                defaultvalue: "abc@gmail.com",
-                required: true,
-                unique: true,
-              },
-              {
-                id: 3,
-                name: "Age",
-                data_type: {
-                  label: "number",
-                  value: "number",
-                },
-                enum_values: {},
-                defaultvalue: 22,
-                required: true,
-                unique: false,
-              },
-              {
-                id: 4,
-                name: "Contact No.",
-                data_type: {
-                  label: "phone",
-                  value: "phone",
-                },
-                enum_values: {},
-                defaultvalue: "+923154478526",
-                required: true,
-                unique: true,
-              },
-            ],
+            blockId: 3,
+            id: 9,
+            name: "Name",
+            data_type: {
+              label: "text",
+              value: "text",
+            },
+            enum_values: {},
+            defaultvalue: "Abdul Raffay",
+            required: true,
+            unique: false,
           },
-
           {
-            id: 2,
-            name: "More Information",
-            isRepeatable: false,
-            fields: [
-              {
-                id: 1,
-                name: "DoB",
-                data_type: {
-                  label: "date",
-                  value: "date",
+            blockId: 3,
+            id: 10,
+            name: "Email",
+            data_type: {
+              label: "email",
+              value: "email",
+            },
+            enum_values: {},
+            defaultvalue: "abc@gmail.com",
+            required: true,
+            unique: true,
+          },
+          {
+            blockId: 3,
+            id: 11,
+            name: "Age",
+            data_type: {
+              label: "number",
+              value: "number",
+            },
+            enum_values: {},
+            defaultvalue: 22,
+            required: true,
+            unique: false,
+          },
+          {
+            blockId: 3,
+            id: 12,
+            name: "Contact No.",
+            data_type: {
+              label: "phone",
+              value: "phone",
+            },
+            enum_values: {},
+            defaultvalue: "+923154478526",
+            required: true,
+            unique: true,
+          },
+          {
+            blockId: 4,
+            id: 13,
+            name: "DoB",
+            data_type: {
+              label: "date",
+              value: "date",
+            },
+            enum_values: {},
+            defaultvalue: "2024-07-07T13:21:06.408+00:00",
+            required: true,
+            unique: false,
+          },
+          {
+            blockId: 4,
+            id: 14,
+            name: "City",
+            data_type: {
+              label: "select",
+              value: "select",
+            },
+            enum_values: {
+              choices: [
+                {
+                  id: 1,
+                  label: "New York",
+                  value: "new_york",
                 },
-                enum_values: {},
-                defaultvalue: "2024-07-07T13:21:06.408+00:00",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 2,
-                name: "City",
-                data_type: {
-                  label: "select",
-                  value: "select",
+                {
+                  id: 1,
+                  label: "Brooklyn",
+                  value: "brooklyn",
                 },
-                enum_values: {
-                  choices: [
-                    {
-                      id: 1,
-                      label: "New York",
-                      value: "new_york",
-                    },
-                    {
-                      id: 1,
-                      label: "Brooklyn",
-                      value: "brooklyn",
-                    },
-                  ],
-                },
-                defaultvalue: "brooklyn",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 3,
-                name: "Single",
-                data_type: {
-                  label: "checkbox",
-                  value: "checkbox",
-                },
-                enum_values: {},
-                defaultvalue: false,
-                required: true,
-                unique: false,
-              },
-              {
-                id: 4,
-                name: "Marksheet",
-                data_type: {
-                  label: "file",
-                  value: "file",
-                },
-                enum_values: {},
-                defaultvalue: "",
-                required: true,
-                unique: false,
-              },
-            ],
+              ],
+            },
+            defaultvalue: "brooklyn",
+            required: true,
+            unique: false,
+          },
+          {
+            blockId: 4,
+            id: 15,
+            name: "Single",
+            data_type: {
+              label: "checkbox",
+              value: "checkbox",
+            },
+            enum_values: {},
+            defaultvalue: false,
+            required: true,
+            unique: false,
+          },
+          {
+            blockId: 4,
+            id: 16,
+            name: "Marksheet",
+            data_type: {
+              label: "file",
+              value: "file",
+            },
+            enum_values: {},
+            defaultvalue: "",
+            required: true,
+            unique: false,
           },
         ],
-        createdAt: formatDate("2024-07-07T13:21:06.408+00:00"),
-        lastEditedAt: formatDate("2024-07-07T13:21:06.408+00:00"),
-      },
-      {
-        id: 4,
-        isPined: false,
-        name: "Form 4",
-        description: "Test",
-        blocks: [
+        conditions: [
           {
-            id: 1,
-            name: "Personal Information",
-            isRepeatable: false,
-            fields: [
-              {
-                id: 1,
-                name: "Name",
-                data_type: {
-                  label: "text",
-                  value: "text",
-                },
-                enum_values: {},
-                defaultvalue: "Abdul Raffay",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 2,
-                name: "Email",
-                data_type: {
-                  label: "email",
-                  value: "email",
-                },
-                enum_values: {},
-                defaultvalue: "abc@gmail.com",
-                required: true,
-                unique: true,
-              },
-              {
-                id: 3,
-                name: "Age",
-                data_type: {
-                  label: "number",
-                  value: "number",
-                },
-                enum_values: {},
-                defaultvalue: 22,
-                required: true,
-                unique: false,
-              },
-              {
-                id: 4,
-                name: "Contact No.",
-                data_type: {
-                  label: "phone",
-                  value: "phone",
-                },
-                enum_values: {},
-                defaultvalue: "+923154478526",
-                required: true,
-                unique: true,
-              },
-            ],
-          },
-
-          {
+            fieldId: 9,
             id: 2,
-            name: "More Information",
-            isRepeatable: false,
-            fields: [
-              {
-                id: 1,
-                name: "DoB",
-                data_type: {
-                  label: "date",
-                  value: "date",
-                },
-                enum_values: {},
-                defaultvalue: "2024-07-07T13:21:06.408+00:00",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 2,
-                name: "City",
-                data_type: {
-                  label: "select",
-                  value: "select",
-                },
-                enum_values: {
-                  choices: [
-                    {
-                      id: 1,
-                      label: "New York",
-                      value: "new_york",
-                    },
-                    {
-                      id: 1,
-                      label: "Brooklyn",
-                      value: "brooklyn",
-                    },
-                  ],
-                },
-                defaultvalue: "brooklyn",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 3,
-                name: "Single",
-                data_type: {
-                  label: "checkbox",
-                  value: "checkbox",
-                },
-                enum_values: {},
-                defaultvalue: false,
-                required: true,
-                unique: false,
-              },
-              {
-                id: 4,
-                name: "Marksheet",
-                data_type: {
-                  label: "file",
-                  value: "file",
-                },
-                enum_values: {},
-                defaultvalue: "",
-                required: true,
-                unique: false,
-              },
-            ],
-          },
-        ],
-        createdAt: formatDate("2024-07-07T13:21:06.408+00:00"),
-        lastEditedAt: formatDate("2024-07-07T13:21:06.408+00:00"),
-      },
-      {
-        id: 5,
-        isPined: false,
-        name: "Form 5",
-        description: "Test",
-        blocks: [
-          {
-            id: 1,
-            name: "Personal Information",
-            isRepeatable: false,
-            fields: [
-              {
-                id: 1,
-                name: "Name",
-                data_type: {
-                  label: "text",
-                  value: "text",
-                },
-                enum_values: {},
-                defaultvalue: "Abdul Raffay",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 2,
-                name: "Email",
-                data_type: {
-                  label: "email",
-                  value: "email",
-                },
-                enum_values: {},
-                defaultvalue: "abc@gmail.com",
-                required: true,
-                unique: true,
-              },
-              {
-                id: 3,
-                name: "Age",
-                data_type: {
-                  label: "number",
-                  value: "number",
-                },
-                enum_values: {},
-                defaultvalue: 22,
-                required: true,
-                unique: false,
-              },
-              {
-                id: 4,
-                name: "Contact No.",
-                data_type: {
-                  label: "phone",
-                  value: "phone",
-                },
-                enum_values: {},
-                defaultvalue: "+923154478526",
-                required: true,
-                unique: true,
-              },
-            ],
-          },
-
-          {
-            id: 2,
-            name: "More Information",
-            isRepeatable: false,
-            fields: [
-              {
-                id: 1,
-                name: "DoB",
-                data_type: {
-                  label: "date",
-                  value: "date",
-                },
-                enum_values: {},
-                defaultvalue: "2024-07-07T13:21:06.408+00:00",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 2,
-                name: "City",
-                data_type: {
-                  label: "select",
-                  value: "select",
-                },
-                enum_values: {
-                  choices: [
-                    {
-                      id: 1,
-                      label: "New York",
-                      value: "new_york",
-                    },
-                    {
-                      id: 1,
-                      label: "Brooklyn",
-                      value: "brooklyn",
-                    },
-                  ],
-                },
-                defaultvalue: "brooklyn",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 3,
-                name: "Single",
-                data_type: {
-                  label: "checkbox",
-                  value: "checkbox",
-                },
-                enum_values: {},
-                defaultvalue: false,
-                required: true,
-                unique: false,
-              },
-              {
-                id: 4,
-                name: "Marksheet",
-                data_type: {
-                  label: "file",
-                  value: "file",
-                },
-                enum_values: {},
-                defaultvalue: "",
-                required: true,
-                unique: false,
-              },
-            ],
-          },
-        ],
-        createdAt: formatDate("2024-07-07T13:21:06.408+00:00"),
-        lastEditedAt: formatDate("2024-07-07T13:21:06.408+00:00"),
-      },
-      {
-        id: 6,
-        isPined: false,
-        name: "Form 6",
-        description: "Test",
-        blocks: [
-          {
-            id: 1,
-            name: "Personal Information",
-            isRepeatable: false,
-            fields: [
-              {
-                id: 1,
-                name: "Name",
-                data_type: {
-                  label: "text",
-                  value: "text",
-                },
-                enum_values: {},
-                defaultvalue: "Abdul Raffay",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 2,
-                name: "Email",
-                data_type: {
-                  label: "email",
-                  value: "email",
-                },
-                enum_values: {},
-                defaultvalue: "abc@gmail.com",
-                required: true,
-                unique: true,
-              },
-              {
-                id: 3,
-                name: "Age",
-                data_type: {
-                  label: "number",
-                  value: "number",
-                },
-                enum_values: {},
-                defaultvalue: 22,
-                required: true,
-                unique: false,
-              },
-              {
-                id: 4,
-                name: "Contact No.",
-                data_type: {
-                  label: "phone",
-                  value: "phone",
-                },
-                enum_values: {},
-                defaultvalue: "+923154478526",
-                required: true,
-                unique: true,
-              },
-            ],
-          },
-
-          {
-            id: 2,
-            name: "More Information",
-            isRepeatable: false,
-            fields: [
-              {
-                id: 1,
-                name: "DoB",
-                data_type: {
-                  label: "date",
-                  value: "date",
-                },
-                enum_values: {},
-                defaultvalue: "2024-07-07T13:21:06.408+00:00",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 2,
-                name: "City",
-                data_type: {
-                  label: "select",
-                  value: "select",
-                },
-                enum_values: {
-                  choices: [
-                    {
-                      id: 1,
-                      label: "New York",
-                      value: "new_york",
-                    },
-                    {
-                      id: 1,
-                      label: "Brooklyn",
-                      value: "brooklyn",
-                    },
-                  ],
-                },
-                defaultvalue: "brooklyn",
-                required: true,
-                unique: false,
-              },
-              {
-                id: 3,
-                name: "Single",
-                data_type: {
-                  label: "checkbox",
-                  value: "checkbox",
-                },
-                enum_values: {},
-                defaultvalue: false,
-                required: true,
-                unique: false,
-              },
-              {
-                id: 4,
-                name: "Marksheet",
-                data_type: {
-                  label: "file",
-                  value: "file",
-                },
-                enum_values: {},
-                defaultvalue: "",
-                required: true,
-                unique: false,
-              },
-            ],
+            field: "Name",
+            condition: "equals",
+            value: "Abc",
+            operator: "AND",
           },
         ],
         createdAt: formatDate("2024-07-07T13:21:06.408+00:00"),
@@ -817,15 +317,60 @@ const getAllForms = (params) => {
     num_pages: 1,
     next: null,
     previous: null,
-    count: 6,
+    count: 2,
   };
   return new Promise((resolve, reject) => {
     resolve(forms);
   });
 };
 
+const getAllClientsForms = (params) => {
+  const clientForms = {
+    success: true,
+    data: [
+      {
+        id: 1,
+        name: "Form 1",
+        clientId: 1,
+        createdAt: formatDate("2024-07-07T13:21:06.408+00:00"),
+        lastEditedAt: formatDate("2024-07-07T13:21:06.408+00:00"),
+      },
+      {
+        id: 2,
+        name: "Form 2",
+        clientId: 2,
+        createdAt: formatDate("2024-07-07T13:21:06.408+00:00"),
+        lastEditedAt: formatDate("2024-07-07T13:21:06.408+00:00"),
+      },
+      {
+        id: 3,
+        name: "Form 3",
+        clientId: 3,
+        createdAt: formatDate("2024-07-07T13:21:06.408+00:00"),
+        lastEditedAt: formatDate("2024-07-07T13:21:06.408+00:00"),
+      },
+      {
+        id: 4,
+        name: "Form 4",
+        clientId: 4,
+        createdAt: formatDate("2024-07-07T13:21:06.408+00:00"),
+        lastEditedAt: formatDate("2024-07-07T13:21:06.408+00:00"),
+      },
+    ],
+    page: 1,
+    num_pages: 1,
+    next: null,
+    previous: null,
+    count: 2,
+  };
+  return new Promise((resolve, reject) => {
+    resolve(clientForms);
+  });
+};
+
 const formService = {
   getAllForms,
+  getAllClientsForms,
 };
 
 export default formService;
