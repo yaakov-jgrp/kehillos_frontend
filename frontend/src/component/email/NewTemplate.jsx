@@ -33,35 +33,106 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   const [mergeTagsData, setMergeTagsData] = useState({});
 
   const onReady = () => {
-    emailEditorRef.current.editor.setMergeTags({
-      $request_id: {
-        name: t("requests.$requestId"),
-        value: "{request_id}",
+      emailEditorRef.current.editor.setMergeTags({
+        request: {
+          name:t("email_builder.requests"),
+          mergeTags: {  // Note the use of 'mergeTags' instead of 'children' for nesting
+            $request_id: {
+              name: t("requests.$requestId"),
+              value: "{request_id}",
+            },
+            $client_name: {
+                  name: t("requests.$clinetName"),
+                  value: "{client_name}",
+            },
+            $client_email: {
+                  name: t("requests.$clientEmail"),
+                  value: "{client_email}",
+                },
+            $domain_requested: {
+              name: t("requests.$domainRequested"),
+              value: "{domain_requested}",
+            },
+            $admin_email: {
+              name: t("requests.$adminEmail"),
+              value: "{admin_email}",
+            }
+          }
+        },
+      client:{
+        name:t("email_builder.clients"),
+        mergeTags: mergeTagsData.client
       },
-      $client_name: {
-        name: t("requests.$clinetName"),
-        value: "{client_name}",
-      },
-      $client_email: {
-        name: t("requests.$clientEmail"),
-        value: "{client_email}",
-      },
-      $domain_requested: {
-        name: t("requests.$domainRequested"),
-        value: "{domain_requested}",
-      },
-      $admin_email: {
-        name: t("requests.$adminEmail"),
-        value: "{admin_email}",
-      },
-      ...mergeTagsData,
-    });
-    // editor is ready
-    // you can load your template here;
-    // const templateJson = {};
-    if (editableTemplateId) {
-      emailEditorRef.current.editor.loadDesign(formdata.message);
-    }
+      netfree_traffic:{
+        name:t("email_builder.netfree_traffic"),
+        mergeTags: {
+          $traffic_recording_open_domain_pre_text: {
+            name: t("email_builder.open_domain_pre_text"),
+            value: "{traffic_recording_open_domain_pre_text}"
+          },
+          $traffic_recording_open_domain_list: {
+            name: t("email_builder.open_domain_list"),
+            value: "{traffic_recording_open_domain_list}"
+          },
+          $traffic_recording_open_domain_after_text: {
+            name: t("email_builder.open_domain_after_text"),
+            value: "{traffic_recording_open_domain_after_text}"
+          },
+          $traffic_recording_open_url_pre_text: {
+            name: t("email_builder.open_url_pre_text"),
+            value: "{traffic_recording_open_url_pre_text}"
+          },
+          $traffic_recording_open_url_list: {
+            name: t("email_builder.open_url_list"),
+            value: "{traffic_recording_open_url_list}"
+          },
+          $traffic_recording_open_url_after_text: {
+            name: t("email_builder.open_url_after_text"),
+            value: "{traffic_recording_open_url_after_text}"
+          },
+          $traffic_recording_blocked_pre_text: {
+            name: t("email_builder.blocked_pre_text"),
+            value: "{traffic_recording_blocked_pre_text}"
+          },
+          $traffic_recording_blocked_list: {
+            name: t("email_builder.blocked_list"),
+            value: "{traffic_recording_blocked_list}"
+          },
+          $traffic_recording_blocked_after_text: {
+            name: t("email_builder.blocked_after_text"),
+            value: "{traffic_recording_blocked_after_text}"
+          },
+          $traffic_recording_open_domain_temporary_pre_text: {
+            name: t("email_builder.open_domain_temporary_pre_text"),
+            value: "{traffic_recording_open_domain_temporary_pre_text}"
+          },
+          $traffic_recording_open_domain_temporary: {
+            name: t("email_builder.open_domain_temporary"),
+            value: "{traffic_recording_open_domain_temporary}"
+          },
+          $traffic_recording_open_domain_temporary_after_text: {
+            name: t("email_builder.open_domain_temporary_after_text"),
+            value: "{traffic_recording_open_domain_temporary_after_text}"
+          },
+          $traffic_recording_open_url_temporary_pre_text: {
+            name: t("email_builder.open_url_temporary_pre_text"),
+            value: "{traffic_recording_open_url_temporary_pre_text}"
+          },
+          $traffic_recording_open_url_temporary: {
+            name: t("email_builder.open_url_temporary"),
+            value: "{traffic_recording_open_url_temporary}"
+          },
+          $traffic_recording_open_url_temporary_after_text: {
+            name: t("email_builder.open_url_temporary_after_text"),
+            value: "{traffic_recording_open_url_temporary_after_text}"
+          }
+        }
+      }
+      });
+
+      if (editableTemplateId) {
+        emailEditorRef.current.editor.loadDesign(formdata.message);
+      }
   };
 
   const exportHtml = () => {
@@ -181,36 +252,44 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   }, [defaultLanguageValue]);
 
   const option = {
-    locale: "en-US",
-    textDirection: "rtl",
+    locale: defaultLanguageValue,
+    textDirection: defaultLanguageValue === "he" ? "rtl" : "ltr",
     translations: {
-      "en-US": emailEditorHe,
+      [defaultLanguageValue]:
+        defaultLanguageValue === "he" ? emailEditorHe : {}, // Assuming you have similar JSON files for other languages
     },
     tools: {
       text: {
         properties: {
+          textOverflow: {
+            value: "clip",
+          },
           text: {
             value:
-              '<p style="line-height: 140%;">זהו בלוק טקסט חדש. שנה את הטקסט.</p>',
+              defaultLanguageValue === "he"
+                ? '<p style="line-height: 140%;">זהו בלוק טקסט חדש. שנה את הטקסט.</p>'
+                : '<p style="line-height: 140%;">This is a new text block. Change the text.</p>',
           },
           textAlign: {
-            value: "right",
+            value: defaultLanguageValue === "he" ? "right" : "left",
           },
         },
       },
       heading: {
         properties: {
           text: {
-            value: "כּוֹתֶרֶת",
+            value: defaultLanguageValue === "he" ? "כּוֹתֶרֶת" : "Heading",
           },
           textAlign: {
-            value: "right",
+            value: defaultLanguageValue === "he" ? "right" : "left",
           },
         },
       },
       button: {
         properties: {
-          text: { value: "טקסט לחצן" },
+          text: {
+            value: defaultLanguageValue === "he" ? "טקסט לחצן" : "Button Text",
+          },
         },
       },
     },
@@ -266,7 +345,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
 
               <div className="flex justify-center">
                 <button
-                  className={`w-[150px] h-[40px] linear rounded-lg text-base font-medium transition duration-200 ${
+                  className={`w-[150px] h-[40px] linear rounded-lg text-base font-medium transition duration-200 !z-[10] ${
                     formValidate()
                       ? "bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white"
                       : "bg-gray-300"

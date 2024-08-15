@@ -49,20 +49,19 @@ export function SidebarLinks(props) {
       <div className="relative flex hover:cursor-pointer">
         <li
           className={`w-full h-10 md:h-12 rounded-full my-[3px] flex cursor-pointer items-center gap-2 ${
-            type === "sub-menu" ? "px-3" : "px-8"
-          } ${
-            activeRoute(route) === true && type !== "sub-menu"
+            type === "sub-menu" ? "px-3" : "px-5"
+            } ${
+              activeRoute(route) === true && type !== "sub-menu"
               ? "bg-brand-500"
               : ""
-          }`}
+            }`}
           key={route.name + index}
         >
           <span
-            className={`${
-              activeRoute(route) === true && type !== "sub-menu"
-                ? "text-white"
-                : "text-gray-10"
-            }`}
+            className={`${activeRoute(route) === true && type !== "sub-menu"
+              ? "text-white"
+              : "text-gray-10"
+              }`}
           >
             {route.icon && route.path !== "/clients-form" ? (
               route.icon
@@ -80,26 +79,24 @@ export function SidebarLinks(props) {
               route.darkIcon}
           </span>
           <p
-            className={`leading-1 flex ${
-              activeRoute(route) === true && type !== "sub-menu"
-                ? "text-white dark:text-white"
-                : "text-gray-10"
-            }`}
+            className={`leading-1 flex ${activeRoute(route) === true && type !== "sub-menu"
+              ? "text-white dark:text-white"
+              : "text-gray-10"
+              }`}
           >
             {route.name}
           </p>
         </li>
         {activeRoute(route) && type === "sub-menu" ? (
           <div
-            className={`absolute bottom-px h-9 w-1 rounded-lg bg-brand-500 dark:bg-brand-400 ${
-              i18n.dir() === "rtl"
-                ? type === "sub-menu"
-                  ? "right-0 w-[1px]"
-                  : "left-0"
-                : type === "sub-menu"
+            className={`absolute bottom-px h-9 w-1 rounded-lg bg-brand-500 dark:bg-brand-400 ${i18n.dir() === "rtl"
+              ? type === "sub-menu"
+                ? "right-0 w-[1px]"
+                : "left-0"
+              : type === "sub-menu"
                 ? "left-0 w-[1px]"
                 : "right-0"
-            }`}
+              }`}
           />
         ) : null}
       </div>

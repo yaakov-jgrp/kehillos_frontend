@@ -15,6 +15,26 @@
     "select": "select",
     "AddNewClient": "Add New Client"
   },
+  "email_builder": {
+    "requests":"Requests",
+    "clients": "Clients",
+    "netfree_traffic":"Traffic Recordings",
+    "open_domain_pre_text": "Pre-text for opening a domain",
+    "open_domain_list": "List of opened domains",
+    "open_domain_after_text": "After-text for opening a domain",
+    "open_url_pre_text": "Pre-text for opening a URL",
+    "open_url_list": "List of opened URLs",
+    "open_url_after_text": "After-text for opening a URL",
+    "blocked_pre_text": "Pre-text for blocked traffic",
+    "blocked_list": "List of blocked traffic",
+    "blocked_after_text": "After-text for blocked traffic",
+    "open_domain_temporary_pre_text": "Pre-text for temporarily opening a domain",
+    "open_domain_temporary": "List of Temporarily opened domain",
+    "open_domain_temporary_after_text": "After-text for temporarily opening a domain",
+    "open_url_temporary_pre_text": "Pre-text for temporarily opening a URL",
+    "open_url_temporary": "List of Temporarily opened URL",
+    "open_url_temporary_after_text": "After-text for temporarily opening a URL"
+  },
   "messages": {
     "mustBeValid": "must be a valid mail",
     "mustContain": "must contain atleast",
@@ -36,7 +56,15 @@
     "signin": "Signin",
     "loginSuccess": "Login Successfully",
     "loginFailed": "Login failed, try again!!!",
-    "namePlaceholder": "Enter Name"
+    "namePlaceholder": "Enter Name",
+    "smtp_server": "SMTP Server",
+    "smtp_port": "SMTP Port",
+    "smtp_username": "SMTP Username",
+    "smtp_password": "SMTP Password",
+    "imap_server": "IMAP Server",
+    "imap_port": "IMAP Port",
+    "imap_email": "IMAP Email",
+    "imap_password": "IMAP Password"
   },
   "sidebar": {
     "title": "Kehillos",
@@ -209,6 +237,11 @@
     "note": "Note"
   },
   "netfree": {
+    "all": "All",
+    "kehillos": "",
+    "netfree": "NetFree",
+    "with_actions": "With Actions",
+    "select_filter": "Select Filter",
     "title": "NetFree",
     "categories": "Categories",
     "websites": "Websites",
@@ -331,4 +364,5 @@
     "versionName": "Version Name",
     "versionComments": "Comments"
   }
+  
 }
