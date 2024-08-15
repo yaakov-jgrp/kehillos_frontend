@@ -46,7 +46,7 @@ function CustomField(props) {
           type={data_type.value}
           className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
           required={required}
-          onChange={onChange}
+          onChange={(e) => onChange(e)}
           onBlur={onBlur}
           value={value ? value : ""}
           disabled={disabled}

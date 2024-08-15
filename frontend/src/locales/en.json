@@ -316,9 +316,19 @@
     "field": "Field",
     "value_placeholder": "Enter value",
     "forms": "Forms",
+    "allForms": "All Forms",
     "addNewForm": "Add New Form",
     "clientId": "Client ID",
     "client": "Client",
-    "form": "Form"
+    "form": "Form",
+    "save": "Save",
+    "add": "Add",
+    "formAddedSuccessfully": "Form Added successfully!",
+    "commentAddedSuccessfully": "Your Comment has been saved!",
+    "goBack": "Go Back",
+    "editForm": "Edit Form",
+    "remark": "Remark",
+    "versionName": "Version Name",
+    "versionComments": "Comments"
   }
 }

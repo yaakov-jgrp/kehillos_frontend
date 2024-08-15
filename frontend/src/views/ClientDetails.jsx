@@ -25,6 +25,7 @@ import categoryService from "../services/category";
 // Icon imports
 import { MdDelete } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
+import { ClientFormsTabPanel } from "../component/client/ClientTabPanels/ClientFormsTabPanel";
 
 function ClientDetails() {
   const { id } = useParams();
@@ -35,6 +36,7 @@ function ClientDetails() {
     t("sidebar.details"),
     t("sidebar.netfree"),
     t("sidebar.request"),
+    t("sidebar.forms"),
   ];
   const [isLoading, setIsloading] = useState(true);
   const [clientData, setClientData] = useState(null);
@@ -131,54 +133,7 @@ function ClientDetails() {
                 sx={{ width: "100%", height: "100%", overflow: "auto" }}
                 className="scrollbar-hide"
               >
-                <div className="flex p-2 gap-4">
-                  <div className="flex-[0.1]">
-                    <div className="rounded-lg shadow-md w-[116px] h-[116px] flex justify-center items-center">
-                      <FaUser color="lightgrey" size={80} />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between flex-[0.9] text-md">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-32">
-                        <span className="font-normal text-gray-10 uppercase">
-                          {t("clients.id")}
-                        </span>
-                        <p className="text-gray-11">
-                          : {clientData?.client_id}
-                        </p>
-                      </div>
-
-                      <div className="flex gap-11">
-                        <span className="font-normal text-gray-10 capitalize">
-                          {t("netfree.netfreeProfile")}
-                        </span>
-                        <div>
-                          <p className="capitalize">: {netfreeprofile?.name}</p>
-                          {netfreeprofile?.description !== "" && (
-                            <p className="capitalize text-gray-11">
-                              ({netfreeprofile?.description})
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      {/* <MdEdit
-                        className="text-blueSecondary mx-2 w-5 h-5 hover:cursor-pointer"
-                        onClick={() => editClientHandler(clientData)}
-                      /> */}
-                      <button
-                        className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none flex justify-center gap-2"
-                        onClick={() => setConfirmationModal(true)}
-                      >
-                        <img src={WhiteBin} alt="WhiteBin" />
-                        {t("netfree.deleteUser")}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
+                {/* Top Tab Navigation  */}
                 <Box sx={{ borderBottom: 1, borderColor: "#E3E5E6" }}>
                   <Tabs
                     value={value}
@@ -205,13 +160,64 @@ function ClientDetails() {
                 </Box>
 
                 {value === 0 && (
-                  <DetailsTabPanel
-                    isLoading={isLoading}
-                    clientData={clientData}
-                    setClientData={setClientData}
-                    value={value}
-                    index={0}
-                  />
+                  <>
+                    <div className="flex p-2 gap-4 mt-4">
+                      <div className="flex-[0.1]">
+                        <div className="rounded-lg shadow-md w-[116px] h-[116px] flex justify-center items-center">
+                          <FaUser color="lightgrey" size={80} />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between flex-[0.9] text-md">
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-32">
+                            <span className="font-normal text-gray-10 uppercase">
+                              {t("clients.id")}
+                            </span>
+                            <p className="text-gray-11">
+                              : {clientData?.client_id}
+                            </p>
+                          </div>
+
+                          <div className="flex gap-11">
+                            <span className="font-normal text-gray-10 capitalize">
+                              {t("netfree.netfreeProfile")}
+                            </span>
+                            <div>
+                              <p className="capitalize">
+                                : {netfreeprofile?.name}
+                              </p>
+                              {netfreeprofile?.description !== "" && (
+                                <p className="capitalize text-gray-11">
+                                  ({netfreeprofile?.description})
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          {/* <MdEdit
+                        className="text-blueSecondary mx-2 w-5 h-5 hover:cursor-pointer"
+                        onClick={() => editClientHandler(clientData)}
+                      /> */}
+                          <button
+                            className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none flex justify-center gap-2"
+                            onClick={() => setConfirmationModal(true)}
+                          >
+                            <img src={WhiteBin} alt="WhiteBin" />
+                            {t("netfree.deleteUser")}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <DetailsTabPanel
+                      isLoading={isLoading}
+                      clientData={clientData}
+                      setClientData={setClientData}
+                      value={value}
+                      index={0}
+                    />
+                  </>
                 )}
 
                 {value === 1 && netfreeprofiles && (
@@ -230,12 +236,15 @@ function ClientDetails() {
                 {value === 2 && (
                   <RequestsTabPanel id={id} value={value} index={2} />
                 )}
+
+                {value === 3 && <ClientFormsTabPanel clientId={id} />}
               </Box>
             ) : (
               t("clients.noClientFound") + " " + id
             )}
           </>
         )}
+
         {netfreeprofiles && clientModal && (
           <ClientModal
             showModal={clientModal}
@@ -249,6 +258,7 @@ function ClientDetails() {
             }}
           />
         )}
+
         {confirmationModal && (
           <DeleteConfirmationModal
             showModal={confirmationModal}

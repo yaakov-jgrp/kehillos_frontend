@@ -1,37 +1,198 @@
 import React, { useEffect, useState } from "react";
 import CrossIcon from "../../assets/images/cross.svg";
+import AddCircleIcon from "../../assets/images/add_circle.svg";
 import { useTranslation } from "react-i18next";
 import { MenuItem, Select } from "@mui/material";
 import clientsService from "../../services/clients";
-import { useSelector } from "react-redux";
 import { Accordion } from "@chakra-ui/react";
 import CustomAccordion from "../common/Accordion";
 import CustomField from "../fields/CustomField";
-import { checkBoxConstants } from "../../lib/FieldConstants";
+import PhoneInput from "react-phone-number-input";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { handleNumberkeyPress } from "../../lib/CommonFunctions";
+import {
+  checkBoxConstants,
+  DateFieldConstants,
+  NumberFieldConstants,
+  TextFieldConstants,
+} from "../../lib/FieldConstants";
+import formsService from "../../services/forms";
+import { MdOutlineUploadFile } from "react-icons/md";
+import CustomCheckBox from "../fields/checkbox";
+import dayjs from "dayjs";
+import en from "react-phone-number-input/locale/en";
+import he from "react-phone-number-input/locale/he";
+import FormAddedSuccessfullyModal from "./FormAddedSuccessfullyModal";
 
-export default function CreateClientFormModal({ setShowModal }) {
+export default function CreateClientFormModal({
+  setShowModal,
+  setShowSuccessModal,
+}) {
   const { t } = useTranslation();
 
   // State for select inputs
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [activeFormState, setActiveFormState] = useState(null);
+  const [searchParams, setSearchParams] = useState({});
+  const [page, setPage] = useState(0);
   const [clientValue, setClientValue] = useState("");
   const [formId, setFormId] = useState("");
   const [allClients, setAllClients] = useState([]);
-  const allForms = useSelector((state) => state.allFormsState.allForms);
+  const [allForms, setAllForms] = useState([]);
 
-  useEffect(() => {
-    const fetchClientsData = async () => {
-      const params = `?page=${1}&lang=${"en"}&page_size=${50}`;
-      const clientsData = await clientsService.getClients(params);
-      setAllClients(clientsData.data.data);
+  const fetchFormsData = async () => {
+    try {
+      let payload = [];
+      const storedAllForms = JSON.parse(localStorage.getItem("allForms"));
+      if (storedAllForms && storedAllForms.length > 0) {
+        payload = storedAllForms;
+      } else {
+        let searchValues = "";
+        for (const searchfield in searchParams) {
+          if (searchParams[searchfield] !== "") {
+            searchValues += `&search_${[searchfield]}=${
+              searchParams[searchfield]
+            }`;
+          }
+        }
+        const params = `?page=${
+          page + 1
+        }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
+        const allFormsPayload = await formsService.getAllForms(params);
+        payload = allFormsPayload.data;
+      }
+      console.log(payload);
+      setAllForms(payload);
+      setTimeout(() => {}, 500);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchClientsData = async () => {
+    const params = `?page=${1}&lang=${"en"}&page_size=${50}`;
+    const clientsData = await clientsService.getClients(params);
+    setAllClients(clientsData.data.data);
+  };
+
+  function addRepeatableBlock(blockId) {
+    const activeFormStateObj = { ...activeFormState };
+    // Find the block to repeat
+    const blockToRepeat = activeFormStateObj.blocks.find(
+      (block) => block.id === blockId
+    );
+
+    // Create a new block with an incremented ID
+    const newBlockId =
+      Math.max(...activeFormState.blocks.map((block) => block.id)) + 1;
+    const newBlock = {
+      ...blockToRepeat,
+      id: newBlockId,
+      isRepeatable: false,
     };
 
+    // Find fields associated with the block
+    const fieldsToRepeat = activeFormStateObj.fields.filter(
+      (field) => field.blockId === blockId
+    );
+
+    // Create new fields with incremented IDs and updated blockId
+    const newFields = fieldsToRepeat.map((field) => {
+      const newFieldId = Math.random() + Date.now();
+      return { ...field, id: newFieldId, blockId: newBlockId };
+    });
+
+    // Find conditions associated with these fields
+    const conditionsToRepeat = activeFormStateObj.conditions.filter(
+      (condition) =>
+        fieldsToRepeat.some((field) => field.id === condition.fieldId)
+    );
+
+    // Create new conditions for the new fields
+    const newConditions = conditionsToRepeat.map((condition) => {
+      const newField = newFields.find(
+        (field) => field.name === condition.field
+      );
+      const newConditionId = Math.random() + Date.now();
+      return { ...condition, fieldId: newField.id, id: newConditionId };
+    });
+
+    // Append the new block, fields, and conditions to activeFormStateObj
+    activeFormStateObj.blocks.push(newBlock);
+    activeFormStateObj.fields.push(...newFields);
+    activeFormStateObj.conditions.push(...newConditions);
+
+    console.log(activeFormStateObj);
+
+    setActiveFormState(activeFormStateObj);
+  }
+
+  const updateFieldValue = (fieldId, newValue) => {
+    setActiveFormState((prevState) => {
+      const updatedFields = prevState.fields.map((field) => {
+        if (field.id === fieldId) {
+          return {
+            ...field,
+            defaultvalue: newValue,
+          };
+        }
+        return field;
+      });
+
+      console.log({
+        ...prevState,
+        fields: updatedFields,
+      });
+
+      return {
+        ...prevState,
+        fields: updatedFields,
+      };
+    });
+  };
+
+  const submitFormHandler = () => {
+    const finalPayload = {};
+    const blockToRemoveID = activeFormState.blocks.filter(
+      (block) => block.isRepeatable
+    )[0].id;
+    finalPayload.name = activeFormState.name;
+    finalPayload.isPined = activeFormState.isPined;
+    finalPayload.clientID = clientValue;
+    finalPayload.blocks = activeFormState.blocks
+      .filter((block) => !block.isRepeatable)
+      .map((block) => ({
+        id: block.id,
+        name: block.name,
+        isRepeatable: block.isRepeatable,
+      }));
+    finalPayload.fields = activeFormState.fields
+      .filter((field) => field.blockId !== blockToRemoveID)
+      .map((field) => ({
+        blockId: field.blockId,
+        name: field.name,
+        data_type: field.data_type,
+        enum_values: field.enum_values,
+        required: field.required,
+        unique: field.unique,
+        defaultvalue: field.defaultvalue,
+      }));
+    console.log(finalPayload);
+    setShowSuccessModal(true);
+    setShowModal(false);
+  };
+
+  useEffect(() => {
     fetchClientsData();
+    fetchFormsData();
   }, []);
 
   useEffect(() => {
     setActiveFormState(allForms.filter((form) => form.id === formId)[0]);
-  }, [formId]);
+  }, [formId, allForms]);
 
   return (
     <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
@@ -111,7 +272,7 @@ export default function CreateClientFormModal({ setShowModal }) {
               </div>
             </div>
 
-            <div className="p-4">
+            <div className="p-4 h-[30rem] overflow-y-scroll scrollbar-hide">
               {activeFormState &&
                 Object.keys(activeFormState).length > 0 &&
                 activeFormState.blocks.length > 0 && (
@@ -122,61 +283,245 @@ export default function CreateClientFormModal({ setShowModal }) {
                     )}
                     allowMultiple
                   >
-                    {activeFormState.blocks.map((blockData, index) => (
-                      <CustomAccordion
-                        key={index}
-                        showAddButton={false}
-                        title={blockData.name}
-                        onClick={() => {
-                          addBlockFieldModalHandler(false, blockData.id);
-                        }}
-                      >
-                        {activeFormState.fields.length > 0 ? (
-                          <div className="grid grid-cols-3 gap-4">
-                            {activeFormState.fields
-                              .filter((field) => field.blockId === blockData.id)
-                              .map((field, index) => {
-                                const isCheckBox = checkBoxConstants.includes(
-                                  field.data_type.value
-                                );
-                                return (
-                                  <div
-                                    className="mb-2 px-2 flex flex-col gap-1"
-                                    key={index}
-                                  >
+                    {activeFormState.blocks
+                      .filter((form) => !form.isRepeatable)
+                      .map((blockData, index) => (
+                        <CustomAccordion
+                          key={index}
+                          showAddButton={false}
+                          title={blockData.name}
+                          onClick={() => {
+                            addBlockFieldModalHandler(false, blockData.id);
+                          }}
+                        >
+                          {activeFormState.fields.length > 0 ? (
+                            <div className="grid grid-cols-3 gap-4">
+                              {activeFormState.fields
+                                .filter(
+                                  (field) => field.blockId === blockData.id
+                                )
+                                .map((field, index) => {
+                                  const isCheckBox = checkBoxConstants.includes(
+                                    field.data_type.value
+                                  );
+                                  return (
                                     <div
-                                      className={`flex items-center justify-between ${
-                                        isCheckBox ? "ml-2 w-full" : "mb-1"
-                                      }`}
+                                      className="mb-2 px-2 flex flex-col gap-1"
+                                      key={index}
                                     >
-                                      <div className="flex items-center">
-                                        <label className="block text-gray-700 text-md font-normal">
-                                          {field.name}
-                                        </label>
-                                        <p className="text-md mx-1 capitalize text-gray-600 font-normal">{`(${field.data_type.value})`}</p>
+                                      <div
+                                        className={`flex items-center justify-between ${
+                                          isCheckBox ? "ml-2 w-full" : "mb-1"
+                                        }`}
+                                      >
+                                        <div className="flex items-center">
+                                          <label className="block text-gray-700 text-md font-normal">
+                                            {field.name}
+                                          </label>
+                                          <p className="text-md mx-1 capitalize text-gray-600 font-normal">{`(${field.data_type.value})`}</p>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        {TextFieldConstants.includes(
+                                          field.data_type.value
+                                        ) && (
+                                          <input
+                                            type={field.data_type.value}
+                                            className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
+                                            value={field.defaultvalue}
+                                            onChange={(e) =>
+                                              updateFieldValue(
+                                                field.id,
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                        )}
+
+                                        {NumberFieldConstants.includes(
+                                          field.data_type.value
+                                        ) && (
+                                          <input
+                                            type="number"
+                                            min="0"
+                                            className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
+                                            value={field.defaultvalue}
+                                            onKeyDown={handleNumberkeyPress}
+                                            onChange={(e) =>
+                                              updateFieldValue(
+                                                field.id,
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                        )}
+
+                                        {field.data_type.value === "phone" && (
+                                          <PhoneInput
+                                            labels={lang === "en" ? en : he}
+                                            className="appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2 text-gray-11 [&>input]:outline-none [&>input]:bg-white placeholder:text-gray-10 dark:placeholder:!text-gray-10"
+                                            defaultCountry={"IL"}
+                                            value={field.defaultvalue}
+                                            onChange={(e) =>
+                                              updateFieldValue(field.id, e)
+                                            }
+                                          />
+                                        )}
+
+                                        {field.data_type.value === "file" && (
+                                          <label className="text-md flex items-center w-full appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2.5 text-gray-11">
+                                            <MdOutlineUploadFile
+                                              style={{
+                                                marginRight: "5px",
+                                                fontSize: "1.25rem",
+                                              }}
+                                            />
+                                            {field.defaultvalue}
+                                            <input
+                                              type={field.data_type.value}
+                                              onChange={(e) =>
+                                                updateFieldValue(
+                                                  field.id,
+                                                  e.target.value
+                                                )
+                                              }
+                                              hidden
+                                            />
+                                          </label>
+                                        )}
+
+                                        {field.data_type.value === "select" && (
+                                          <Select
+                                            className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                                            onChange={
+                                              (e) => console.log(e)
+                                              // updateFieldValue(field.id, e)
+                                            }
+                                            MenuProps={{
+                                              sx: {
+                                                maxHeight: "250px",
+                                                zIndex: 13000,
+                                              },
+                                            }}
+                                            defaultValue={
+                                              field.enum_values?.choices?.filter(
+                                                (item) =>
+                                                  item.label ===
+                                                  field.defaultvalue
+                                              )[0]?.label
+                                            }
+                                            placeholder="Select"
+                                          >
+                                            {field.enum_values?.choices?.map(
+                                              (el) => {
+                                                return el !== "" ? (
+                                                  <MenuItem
+                                                    key={el.id}
+                                                    value={el.label}
+                                                  >
+                                                    {el.label}
+                                                  </MenuItem>
+                                                ) : null;
+                                              }
+                                            )}
+                                          </Select>
+                                        )}
+
+                                        {checkBoxConstants.includes(
+                                          field.data_type.value
+                                        ) && (
+                                          <CustomCheckBox
+                                            onChange={(e) =>
+                                              updateFieldValue(
+                                                field.id,
+                                                e.target.checked
+                                              )
+                                            }
+                                            checked={field.defaultvalue}
+                                          />
+                                        )}
+
+                                        {DateFieldConstants.includes(
+                                          field.data_type.value
+                                        ) && (
+                                          <LocalizationProvider
+                                            dateAdapter={AdapterDayjs}
+                                          >
+                                            <DatePicker
+                                              className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-0 text-black"
+                                              format="DD/MM/YYYY"
+                                              onChange={(e) =>
+                                                updateFieldValue(
+                                                  field.id,
+                                                  e.target.value
+                                                )
+                                              }
+                                              value={dayjs(field.defaultvalue)}
+                                              slotProps={{
+                                                field: { clearable: true },
+                                                popper: {
+                                                  disablePortal: true,
+                                                },
+                                              }}
+                                              sx={{
+                                                border: 0,
+                                                "& .MuiInputBase-input": {
+                                                  padding: 1.5,
+                                                  border: "none",
+                                                },
+                                                "& fieldset": {
+                                                  borderColor:
+                                                    "inherit!important",
+                                                },
+                                              }}
+                                            />
+                                          </LocalizationProvider>
+                                        )}
                                       </div>
                                     </div>
-                                    <div>
-                                      <CustomField
-                                        value={field?.defaultvalue}
-                                        field={field}
-                                        onChange={(e) => {
-                                          console.log(e.target.value);
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        ) : (
-                          <p className="px-2">{t("clients.noFields")}</p>
-                        )}
-                      </CustomAccordion>
-                    ))}
+                                  );
+                                })}
+                            </div>
+                          ) : (
+                            <p className="px-2">{t("clients.noFields")}</p>
+                          )}
+                        </CustomAccordion>
+                      ))}
+
+                    {activeFormState.blocks
+                      .filter((form) => form.isRepeatable)
+                      .map((blockData, index) => (
+                        <button
+                          className="border border-solid border-[#E3E5E6] rounded-lg w-full p-3 text-[#0B99FF] flex justify-center items-center gap-2"
+                          onClick={() => addRepeatableBlock(blockData.id)}
+                        >
+                          <img src={AddCircleIcon} alt="add_circle_icon" />
+                          <p>
+                            {t("forms.add")} {blockData.name}
+                          </p>
+                        </button>
+                      ))}
                   </Accordion>
                 )}
             </div>
+
+            {activeFormState &&
+              Object.keys(activeFormState).length > 0 &&
+              activeFormState.blocks.length > 0 && (
+                <div className="mt-4 p-2 flex justify-center items-center">
+                  <button
+                    disabled={!clientValue || !activeFormState}
+                    className={`${
+                      lang === "he" ? "w-[150px]" : "w-[170px]"
+                    } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+                    onClick={() => {
+                      submitFormHandler();
+                    }}
+                  >
+                    {t("forms.save")}
+                  </button>
+                </div>
+              )}
           </div>
         </div>
       </div>

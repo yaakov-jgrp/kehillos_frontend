@@ -1,6 +1,5 @@
 // React and React Router Imports imports
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 
 // UI Imports
 import { TablePagination } from "@mui/material";
@@ -29,11 +28,9 @@ import { paginationRowOptions } from "../lib/FieldConstants";
 // API services
 
 // Utils imports
-import { ACTIVE_FORM } from "../constants";
 import { useDispatch, useSelector } from "react-redux";
-import { setActiveForm } from "../redux/activeFormSlice";
-import { setAllFormsState } from "../redux/allFormsSlice";
 import CreateClientFormModal from "../component/forms/CreateClientFormModal";
+import FormAddedSuccessfullyModal from "../component/forms/FormAddedSuccessfullyModal";
 
 function ClientFormsTable() {
   // states
@@ -49,6 +46,7 @@ function ClientFormsTable() {
   const [allClientForms, setAllClientForms] = useState([]);
   const [activeFormId, setActiveFormId] = useState(null);
   const [showClientFormModal, setShowClientFormModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // handlers
   const handleChangePage = (event, newPage) => {
@@ -306,7 +304,10 @@ function ClientFormsTable() {
       />
 
       {showClientFormModal && (
-        <CreateClientFormModal setShowModal={setShowClientFormModal} />
+        <CreateClientFormModal
+          setShowModal={setShowClientFormModal}
+          setShowSuccessModal={setShowSuccessModal}
+        />
       )}
 
       {confirmationModal && (
@@ -314,6 +315,14 @@ function ClientFormsTable() {
           showModal={confirmationModal}
           setShowModal={setConfirmationModal}
           onClick={deleteClientForm}
+        />
+      )}
+
+      {showSuccessModal && (
+        <FormAddedSuccessfullyModal
+          onClick={() => {
+            setShowSuccessModal(false);
+          }}
         />
       )}
     </div>

@@ -804,9 +804,19 @@
     "field": "שדה",
     "value_placeholder": "הזן ערך",
     "forms": "טפסים",
+    "allForms": "כל הטפסים",
     "addNewForm": "הוסף טופס חדש",
     "clientId": "מזהה לקוח",
     "client": "לָקוּחַ",
-    "form": "טופס"
+    "form": "טופס",
+    "save": "לְהַצִיל",
+    "add": "לְהוֹסִיף",
+    "formAddedSuccessfully": "טופס נוסף בהצלחה!",
+    "commentAddedSuccessfully": "התגובה שלך נשמרה!",
+    "goBack": "חזור",
+    "editForm": "ערוך טופס",
+    "remark": "הֶעָרָה",
+    "versionName": "שם גרסה",
+    "versionComments": "הערות"
   }
 }
