@@ -56,6 +56,12 @@ import {
 } from "../redux/activeFormSlice";
 import Loader from "../component/common/Loader";
 import { setAllFormsState } from "../redux/allFormsSlice";
+import {
+  isFloat,
+  transformFormDataForAddNewForm,
+  transformFormDataForUpdate,
+} from "../utils/helpers";
+import formService from "../services/forms";
 
 function FormDetails() {
   // states
@@ -144,7 +150,10 @@ function FormDetails() {
     // const res = await clientsService.updateBlockField(updatedData);
   };
 
-  const deleteBlockHandler = () => {
+  const deleteBlockHandler = async () => {
+    if (!isFloat(activeBlock)) {
+      await formService.deleteBlock(activeBlock);
+    }
     dispatch(
       setBlocks(
         activeFormState.blocks.filter((block) => block.id !== activeBlock)
@@ -169,7 +178,10 @@ function FormDetails() {
     fetchActiveformDataHandler(setIsLoading);
   };
 
-  const deleteFieldHandler = () => {
+  const deleteFieldHandler = async () => {
+    if (!isFloat(activeFieldId)) {
+      await formService.deleteField(activeFieldId);
+    }
     dispatch(
       setFields(
         activeFormState.fields.filter((field) => field.id !== activeFieldId)
@@ -184,20 +196,34 @@ function FormDetails() {
     );
   };
 
-  const addFieldConditionHandler = (fieldId, operator) => {
-    dispatch(
-      setConditions([
-        ...activeFormState.conditions,
-        {
-          fieldId,
-          id: Math.random() + Date.now(),
-          field: "",
-          condition: "",
-          value: "",
-          operator,
-        },
-      ])
-    );
+  const addFieldConditionHandler = async (fieldId, operator) => {
+    if (!isFloat(fieldId)) {
+      console.log("Calling API for adding a condition.");
+      const newCondition = await formService.createNewCondition({
+        fieldId,
+        field: "-",
+        condition: "equals",
+        value: "-",
+        operator,
+      });
+      dispatch(
+        setConditions([...activeFormState.conditions, newCondition.data])
+      );
+    } else {
+      dispatch(
+        setConditions([
+          ...activeFormState.conditions,
+          {
+            fieldId,
+            id: Math.random() + Date.now(),
+            field: "",
+            condition: "",
+            value: "",
+            operator,
+          },
+        ])
+      );
+    }
   };
 
   const editFieldConditionHandler = (conditionId, key, value) => {
@@ -216,7 +242,11 @@ function FormDetails() {
     );
   };
 
-  const deleteFieldConditionHandler = (conditionId) => {
+  const deleteFieldConditionHandler = async (conditionId) => {
+    if (!isFloat(conditionId)) {
+      console.log("Deleting condition by calling API.");
+      await formsService.deleteCondition(conditionId);
+    }
     dispatch(
       setConditions(
         activeFormState.conditions.filter(
@@ -226,33 +256,42 @@ function FormDetails() {
     );
   };
 
-  const submitFormHandler = () => {
-    if (!id) {
-      console.log(allForms);
-      dispatch(setAllFormsState([...allForms, activeFormState]));
-    } else {
-      dispatch(
-        setAllFormsState(
-          allForms.map((form) => {
-            if (form.id === Number(id)) {
-              return activeFormState;
-            }
-            return form;
-          })
-        )
-      );
+  const submitFormHandler = async () => {
+    try {
+      if (!id) {
+        const reqPaylaod = transformFormDataForAddNewForm(activeFormState);
+        const createNewForm = await formsService.createNewForm(reqPaylaod);
+        console.log("Create new form API returned the below payload..... ");
+        console.log(createNewForm.data);
+        dispatch(setAllFormsState([...allForms, activeFormState]));
+      } else {
+        console.log("The final form payload for update form is: ");
+        const payload = transformFormDataForUpdate(activeFormState);
+        console.log(payload);
+        const updatedForm = await formService.updateForm(id, payload);
+        console.log("The updated form data from API is:");
+        console.log(updatedForm.data);
+        // dispatch(
+        //   setAllFormsState(
+        //     allForms.map((form) => {
+        //       if (form.id === Number(id)) {
+        //         return activeFormState;
+        //       }
+        //       return form;
+        //     })
+        //   )
+        // );
+      }
+      navigate("/settings/forms");
+    } catch (error) {
+      toast.error(JSON.stringify(error));
+      console.log(error);
     }
-    navigate("/settings/forms");
   };
 
   // effects
   useEffect(() => {
     const fetchActiveFormHandler = async () => {
-      // TODO: call the API to fetch the form based on the id: param (replace the below code)
-      // const allForms = await formsService.getAllForms({});
-      // const activeFormPayload = allForms.data.filter(
-      //   (form) => form.id === parseInt(id)
-      // )[0];
       const activeFormPayload = JSON.parse(localStorage.getItem("activeForm"));
       if (activeFormPayload) {
         dispatch(setActiveFormState(activeFormPayload));

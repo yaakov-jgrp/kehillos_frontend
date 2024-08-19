@@ -33,6 +33,8 @@ import { ACTIVE_FORM, FORM_FIELD_CONDITIONS } from "../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveForm } from "../redux/activeFormSlice";
 import { setAllFormsState } from "../redux/allFormsSlice";
+import { toast } from "react-toastify";
+import { convertDataForShowingForms, formatDate } from "../utils/helpers";
 
 function Forms() {
   // states
@@ -46,6 +48,7 @@ function Forms() {
   const [confirmationModal, setConfirmationModal] = useState(false);
   const dispatch = useDispatch();
   const allForms = useSelector((state) => state.allFormsState.allForms);
+  const [allFormsLocalState, setAllFormsLocalState] = useState([]);
   const [activeFormId, setActiveFormId] = useState(null);
 
   // handlers
@@ -62,34 +65,49 @@ function Forms() {
     setIsLoading(true);
     try {
       let payload = [];
-      const storedAllForms = JSON.parse(localStorage.getItem("allForms"));
-      if (storedAllForms && storedAllForms.length > 0) {
-        payload = storedAllForms;
-      } else {
-        let searchValues = "";
-        for (const searchfield in searchParams) {
-          if (searchParams[searchfield] !== "") {
-            searchValues += `&search_${[searchfield]}=${
-              searchParams[searchfield]
-            }`;
-          }
+      let searchValues = "";
+      for (const searchfield in searchParams) {
+        if (searchParams[searchfield] !== "") {
+          searchValues += `&search_${[searchfield]}=${
+            searchParams[searchfield]
+          }`;
         }
-        const params = `?page=${
-          page + 1
-        }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
-        const allFormsPayload = await formsService.getAllForms(params);
-        payload = allFormsPayload.data;
-        // setTotalCount(requestForms?.data?.count);
-        // setAllForms(requestForms?.data?.data);
+      }
+      const params = `?page=${
+        page + 1
+      }&page_size=${rowsPerPage}${searchValues}`;
+      const allFormsPayload = await formsService.getAllForms(params);
+      if (
+        allFormsPayload?.data?.results &&
+        allFormsPayload.data.results.length > 0
+      ) {
+        payload = allFormsPayload.data.results.map((form) => ({
+          ...form,
+          createdAt: formatDate(form.createdAt),
+          lastEditedAt: formatDate(form.lastEditedAt),
+        }));
       }
       dispatch(setAllFormsState(payload));
+      setAllFormsLocalState(payload);
       setTimeout(() => {
         setIsLoading(false);
       }, 500);
     } catch (error) {
+      toast.error(JSON.stringify(error));
       console.log(error);
       setIsLoading(false);
     }
+  };
+
+  const deleteFormData = async () => {
+    try {
+      await formsService.deleteForm(activeFormId);
+      await fetchFormsData();
+    } catch (e) {
+      toast.error(JSON.stringify(error));
+      console.log(error);
+    }
+    setConfirmationModal(false);
   };
 
   const searchResult = (searchBy, value) => {
@@ -98,9 +116,31 @@ function Forms() {
 
   // effects
   useEffect(() => {
+    setIsLoading(true);
+    console.log(searchParams);
+    let isObjectEmpty = false;
+    for (let key in searchParams) {
+      isObjectEmpty = !searchParams[key];
+    }
+    if (!isObjectEmpty && Object.keys(searchParams).length > 0) {
+      const filteredAllForms = allFormsLocalState.filter((form) => {
+        let condition = true;
+        for (let key in searchParams) {
+          condition = String(form[key]).includes(searchParams[key]);
+        }
+        return condition;
+      });
+      dispatch(setAllFormsState(filteredAllForms));
+    } else {
+      dispatch(setAllFormsState(allFormsLocalState));
+    }
+    setIsLoading(false);
+  }, [searchParams]);
+
+  useEffect(() => {
     const searchTimer = setTimeout(() => fetchFormsData(), 500);
     return () => clearTimeout(searchTimer);
-  }, [lang, page, rowsPerPage, JSON.stringify(searchParams)]);
+  }, [lang, page, rowsPerPage]);
 
   return (
     <div className="w-full bg-white rounded-3xl shadow-custom">
@@ -253,11 +293,13 @@ function Forms() {
                                   alt="PencilIcon"
                                   className="hover:cursor-pointer"
                                   onClick={() => {
+                                    const payload =
+                                      convertDataForShowingForms(el);
                                     localStorage.setItem(
                                       "activeForm",
-                                      JSON.stringify(el)
+                                      JSON.stringify(payload)
                                     );
-                                    dispatch(setActiveForm(el));
+                                    dispatch(setActiveForm(payload));
                                   }}
                                 />
                               </Link>
@@ -303,14 +345,7 @@ function Forms() {
         <DeleteConfirmationModal
           showModal={confirmationModal}
           setShowModal={setConfirmationModal}
-          onClick={() => {
-            dispatch(
-              setAllFormsState(
-                allForms.filter((form) => form.id !== activeFormId)
-              )
-            );
-            setConfirmationModal(false);
-          }}
+          onClick={deleteFormData}
         />
       )}
     </div>

@@ -12,6 +12,7 @@ export default function FormAddVersionModal({
 }) {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  const buttonDisabledCondition = !versionName || !versionComments;
 
   return (
     <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
@@ -60,6 +61,7 @@ export default function FormAddVersionModal({
             </button>
 
             <button
+              disabled={buttonDisabledCondition}
               className="w-full text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 py-[9px] rounded-lg focus:outline-none"
               onClick={onClick}
             >

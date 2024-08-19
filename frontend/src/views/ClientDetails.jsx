@@ -38,7 +38,7 @@ function ClientDetails() {
     t("sidebar.request"),
     t("sidebar.forms"),
   ];
-  const [isLoading, setIsloading] = useState(true);
+  const [isLoading, setIsloading] = useState(false);
   const [clientData, setClientData] = useState(null);
   const [value, setValue] = useState(0);
   const [netfreeprofile, setNetfreeProfile] = useState(null);
@@ -46,6 +46,22 @@ function ClientDetails() {
   const [netfreeprofiles, setNetfreeProfiles] = useState(null);
   const [fullFormData, setFullFormData] = useState(null);
   const [confirmationModal, setConfirmationModal] = useState(false);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const deleteClientHandler = async (id) => {
+    try {
+      const res = await clientsService.deleteClient(id);
+      if (res.status > 200) {
+        navigate("/clients");
+        toast.success(t("common.deleteSuccess"));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getClientDataHandler = async () => {
     setIsloading(true);
@@ -74,22 +90,6 @@ function ClientDetails() {
     }
   };
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const deleteClientHandler = async (id) => {
-    try {
-      const res = await clientsService.deleteClient(id);
-      if (res.status > 200) {
-        navigate("/clients");
-        toast.success(t("common.deleteSuccess"));
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const fetchNetfreeProfiles = async () => {
     const profilesListData = await categoryService.getProfilesList();
     setNetfreeProfiles(profilesListData.data.data);
@@ -109,7 +109,6 @@ function ClientDetails() {
         [item.field_slug]: item.display,
       };
     });
-
     setFullFormData(formFields);
   };
 

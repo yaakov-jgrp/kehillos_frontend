@@ -26,6 +26,17 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { handleNumberkeyPress } from "../../../lib/CommonFunctions";
 import FormAddVersionModal from "../../forms/FormAddVersionModal";
 import CommentAddedSuccessfullyModal from "../../forms/CommentAddedSuccessfullyModal";
+import DownArrow from "../../../assets/images/down_arrow.svg";
+import LeftDisableArrow from "../../../assets/images/left_disable_arrow.svg";
+import RightEnableArrow from "../../../assets/images/right_enable_arrow.svg";
+import {
+  convertDataForShowingClientFormDetails,
+  formatDate,
+  formatDateString,
+} from "../../../utils/helpers";
+import CreateClientFormModal from "../../forms/CreateClientFormModal";
+import FormAddedSuccessfullyModal from "../../forms/FormAddedSuccessfullyModal";
+import { toast } from "react-toastify";
 
 export const ClientFormsTabPanel = ({ clientId }) => {
   const { t } = useTranslation();
@@ -33,8 +44,7 @@ export const ClientFormsTabPanel = ({ clientId }) => {
   const [allClientForms, setAllClientForms] = useState([]);
   const [activeFormId, setActiveFormId] = useState(null);
   const [activeForm, setActiveForm] = useState(null);
-  const [activeFormCurrentVersion, setActiveFormCurrentVersion] =
-    useState(null);
+  const [activeFormCurrentVersion, setActiveFormCurrentVersion] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [showClientFormModal, setShowClientFormModal] = useState(false);
   const [showFormAddVersionModal, setShowFormAddVersionModal] = useState(false);
@@ -45,17 +55,32 @@ export const ClientFormsTabPanel = ({ clientId }) => {
   const [editMode, setEditMode] = useState(false);
   const [versionName, setVersionName] = useState("");
   const [versionComments, setVersionComments] = useState("");
+  const [showVersionDropdown, setShowVersionDropdown] = useState(false);
+  const [showVersionDetailBox, setShowVersionDetailBox] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const fetchFormsData = async () => {
     setIsLoading(true);
     try {
+      let payload = [];
       const allFormsPayload = await formsService.getSingleClientForms(clientId);
-      setAllClientForms(allFormsPayload.data);
-      setActiveFormId(allFormsPayload.data[0].id);
+      if (
+        allFormsPayload?.data?.results &&
+        allFormsPayload.data.results.length > 0
+      ) {
+        payload = allFormsPayload.data.results.map((clientForm) => ({
+          ...clientForm,
+          createdAt: formatDate(clientForm.createdAt),
+          lastEditedAt: formatDate(clientForm.lastEditedAt),
+        }));
+        setActiveFormId(payload[0].id);
+      }
+      setAllClientForms(payload);
       setTimeout(() => {
         setIsLoading(false);
       }, 500);
     } catch (error) {
+      toast.error(JSON.stringify(error));
       console.log(error);
       setIsLoading(false);
     }
@@ -67,9 +92,16 @@ export const ClientFormsTabPanel = ({ clientId }) => {
         formId
       );
       if (formDetailPayload.data) {
-        setActiveForm(formDetailPayload.data);
-        if (formDetailPayload.data.versions.length > 0) {
-          setActiveFormCurrentVersion(formDetailPayload.data.versions[0].id);
+        const payload = convertDataForShowingClientFormDetails(
+          formDetailPayload.data
+        );
+        setActiveForm(payload);
+        if (payload.versions.length > 0) {
+          const defaultVersion = payload.versions[0];
+          setActiveFormCurrentVersion({
+            id: defaultVersion.id,
+            name: defaultVersion.name,
+          });
         }
       }
     } catch (error) {
@@ -77,8 +109,10 @@ export const ClientFormsTabPanel = ({ clientId }) => {
     }
   };
 
-  const changeActiveFormCurrentVersion = (id) => {
-    setActiveFormCurrentVersion(id);
+  const changeActiveFormCurrentVersion = (payload) => {
+    setActiveFormCurrentVersion(payload);
+    setShowVersionDropdown(false);
+    setShowVersionDetailBox(false);
   };
 
   const searchResult = (searchBy, value) => {
@@ -275,35 +309,134 @@ export const ClientFormsTabPanel = ({ clientId }) => {
             </h1>
             <div className="flex items-center gap-2">
               {!editMode && (
-                <Select
-                  className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
-                  MenuProps={{
-                    sx: {
-                      maxHeight: "250px",
-                      zIndex: 13000,
-                    },
-                  }}
-                  placeholder="Select"
-                  defaultValue={activeForm.versions[0].name}
-                >
-                  {activeForm &&
-                    activeForm.versions.map((el) => {
-                      return (
-                        <MenuItem
-                          key={el.id}
-                          value={el.name}
-                          onClick={() => changeActiveFormCurrentVersion(el.id)}
-                        >
-                          {el.name}
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
+                <div className="relative">
+                  <div className="w-[240px] flex items-center justify-between px-4 py-[10px] border border-[#E3E5E6] rounded-lg">
+                    <p className="text-[#5C5C5C] text-[14px]">
+                      {activeFormCurrentVersion.name}
+                    </p>
+                    <button
+                      onClick={() => setShowVersionDropdown((prev) => !prev)}
+                    >
+                      <img src={DownArrow} alt="down_arrow" />
+                    </button>
+                  </div>
+
+                  <div
+                    className={`z-10000 rounded-lg w-full scrollbar-hide absolute top-12 left-0 bg-white shadow-lg transition-all ease-in-out duration-300 transform ${
+                      showVersionDropdown
+                        ? "opacity-100 scale-100"
+                        : "opacity-0 scale-95 pointer-events-none"
+                    }`}
+                  >
+                    {activeForm &&
+                      activeForm.versions.map((el) => {
+                        return (
+                          <div
+                            className="cursor-pointer my-2 p-2 hover:bg-[#F9FBFC] flex items-center justify-between relative"
+                            key={el.id}
+                            value={el.name}
+                            onClick={() => changeActiveFormCurrentVersion(el)}
+                          >
+                            <div>
+                              <p className="text-[#5C5C5C] text-[14px] font-medium">
+                                {el.name}
+                              </p>
+                              <p className="text-[#5C5C5C] text-[14px] font-regular">
+                                {formatDateString(el.createdAt)}
+                              </p>
+                            </div>
+                            <img
+                              onMouseEnter={() => {
+                                setShowVersionDetailBox(true);
+                                setActiveFormCurrentVersion(el);
+                              }}
+                              src={InfoIcon}
+                              alt="info_icon"
+                              className="relative z-10"
+                            />
+                          </div>
+                        );
+                      })}
+                  </div>
+
+                  {showVersionDetailBox && showVersionDropdown && (
+                    <div
+                      onMouseLeave={() => {
+                        setShowVersionDetailBox(false);
+                      }}
+                      className={`w-[320px] rounded-lg scrollbar-hide absolute top-2 right-64 bg-white shadow-lg`}
+                    >
+                      <div className="bg-[#F9FBFC] p-3 flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <p className="text-[#344054] font-medium text-[14px]">
+                            {activeFormCurrentVersion.name}
+                          </p>
+                          <div className="flex gap-2 items-center">
+                            <button>
+                              <img
+                                src={LeftDisableArrow}
+                                alt="LeftDisableArrow"
+                              />
+                            </button>
+                            <button>
+                              <img
+                                src={RightEnableArrow}
+                                alt="RightEnableArrow"
+                              />
+                            </button>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-[#000] font-medium text-[14px]">
+                            Yaakov Hershberg
+                          </p>
+                          <p className="text-[#828282] font-medium text-[14px]">
+                            {formatDate(activeFormCurrentVersion.createdAt)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="p-3">
+                        <p className="text-[#000] font-medium text-[14px]">
+                          {t("forms.comment")}
+                        </p>
+                        <p className="text-[#828282] font-medium text-[14px]">
+                          {activeFormCurrentVersion.comment}
+                        </p>
+                      </div>
+
+                      <div className="overflow-y-scroll p-3 h-[10rem]">
+                        {activeFormCurrentVersion.dirtyFields.map(
+                          (dirtyField) => (
+                            <div className="border-b border-b-solid border-b-[#E0E0E0] py-2 flex flex-col gap-2">
+                              <div className="flex items-center gap-24">
+                                <p className="text-[#000] font-medium text-[14px]">
+                                  Current
+                                </p>
+                                <p className="text-[#828282] font-medium text-[14px]">
+                                  :{dirtyField.current}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-24">
+                                <p className="text-[#000] font-medium text-[14px]">
+                                  Previous
+                                </p>
+                                <p className="text-[#828282] font-medium text-[14px]">
+                                  :{dirtyField.previous}
+                                </p>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
               <button
                 className={`${
-                  editMode ? "w-[100px]" : "w-[250px]"
-                } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+                  editMode ? "w-[100px]" : "w-[150px]"
+                } h-[42px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
                 onClick={() => {
                   if (!editMode) {
                     setEditMode(true);
@@ -463,6 +596,22 @@ export const ClientFormsTabPanel = ({ clientId }) => {
         </div>
       )}
 
+      {showClientFormModal && (
+        <CreateClientFormModal
+          setShowModal={setShowClientFormModal}
+          setShowSuccessModal={setShowSuccessModal}
+          clientId={clientId}
+        />
+      )}
+
+      {showSuccessModal && (
+        <FormAddedSuccessfullyModal
+          onClick={() => {
+            setShowSuccessModal(false);
+          }}
+        />
+      )}
+
       {showFormAddVersionModal && (
         <FormAddVersionModal
           setShowModal={setShowFormAddVersionModal}
@@ -471,6 +620,8 @@ export const ClientFormsTabPanel = ({ clientId }) => {
           versionComments={versionComments}
           setVersionComments={setVersionComments}
           onClick={() => {
+            setVersionName("");
+            setVersionComments("");
             setShowFormAddVersionModal(false);
             setShowCommentAddedSuccessfullyModal(true);
           }}

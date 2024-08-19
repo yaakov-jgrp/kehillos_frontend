@@ -34,7 +34,7 @@
     "open_url_temporary_pre_text": "טקסט לפני פתיחת URL זמנית",
     "open_url_temporary": "URL שנפתח זמנית",
     "open_url_temporary_after_text": "טקסט אחרי פתיחת URL זמנית"
-},
+  },
   "messages": {
     "mustBeValid": "חייב להיות דואר חוקי",
     "mustContain": "חייב להכיל לפחות",
@@ -850,6 +850,7 @@
     "editForm": "ערוך טופס",
     "remark": "הֶעָרָה",
     "versionName": "שם גרסה",
-    "versionComments": "הערות"
+    "versionComments": "הערות",
+    "comment": "הֶעָרָה"
   }
 }

@@ -16,9 +16,9 @@
     "AddNewClient": "Add New Client"
   },
   "email_builder": {
-    "requests":"Requests",
+    "requests": "Requests",
     "clients": "Clients",
-    "netfree_traffic":"Traffic Recordings",
+    "netfree_traffic": "Traffic Recordings",
     "open_domain_pre_text": "Pre-text for opening a domain",
     "open_domain_list": "List of opened domains",
     "open_domain_after_text": "After-text for opening a domain",
@@ -362,7 +362,7 @@
     "editForm": "Edit Form",
     "remark": "Remark",
     "versionName": "Version Name",
-    "versionComments": "Comments"
+    "versionComments": "Comments",
+    "comment": "Comment"
   }
-  
 }

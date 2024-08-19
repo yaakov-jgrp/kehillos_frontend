@@ -34,6 +34,8 @@ import {
   setBlocks,
   setFields,
 } from "../../redux/activeFormSlice";
+import { isFloat } from "../../utils/helpers";
+import formService from "../../services/forms";
 
 function FormBlockFieldModal({
   block,
@@ -155,7 +157,7 @@ function FormBlockFieldModal({
         }
         setValue("name", editData?.name);
         setValue("data_type", editData?.data_type.value);
-        setValue("defaultvalue", editData?.defaultvalue || "");
+        setValue("defaultvalue", JSON.stringify(editData?.defaultvalue) || "");
         setValue("required", editData?.required);
         setValue("unique", editData?.unique);
       }
@@ -235,17 +237,26 @@ function FormBlockFieldModal({
     } else {
       if (block) {
         delete data.blockId;
-        dispatch(
-          setBlocks([
-            ...activeForm.blocks,
-            {
-              formId: parseInt(formId),
-              id: Math.random() + Date.now(),
-              name: data.name,
-              isRepeatable: data.isRepeatable,
-            },
-          ])
-        );
+        if (!isFloat(formId)) {
+          const newBlock = await formService.createNewBlock({
+            formId: parseInt(formId),
+            name: data.name,
+            isRepeatable: data.isRepeatable,
+          });
+          dispatch(setBlocks([...activeForm.blocks, newBlock.data]));
+        } else {
+          dispatch(
+            setBlocks([
+              ...activeForm.blocks,
+              {
+                formId: parseInt(formId),
+                id: Math.random() + Date.now(),
+                name: data.name,
+                isRepeatable: data.isRepeatable,
+              },
+            ])
+          );
+        }
         reset();
         setShowModal(false);
         onClick();
@@ -270,12 +281,18 @@ function FormBlockFieldModal({
             label: data.data_type,
           },
         };
-        dispatch(
-          setFields([
-            ...activeForm.fields,
-            { id: Math.random() + Date.now(), ...newFieldPayload },
-          ])
-        );
+        delete newFieldPayload.value;
+        if (!isFloat(blockId)) {
+          const newField = await formService.createNewField(newFieldPayload);
+          dispatch(setFields([...activeForm.fields, newField.data]));
+        } else {
+          dispatch(
+            setFields([
+              ...activeForm.fields,
+              { id: Math.random() + Date.now(), ...newFieldPayload },
+            ])
+          );
+        }
         reset();
         setShowModal(false);
       }

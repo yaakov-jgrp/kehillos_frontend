@@ -31,6 +31,7 @@ import { paginationRowOptions } from "../lib/FieldConstants";
 import { useDispatch, useSelector } from "react-redux";
 import CreateClientFormModal from "../component/forms/CreateClientFormModal";
 import FormAddedSuccessfullyModal from "../component/forms/FormAddedSuccessfullyModal";
+import { formatDate } from "../utils/helpers";
 
 function ClientFormsTable() {
   // states
@@ -62,24 +63,28 @@ function ClientFormsTable() {
     setIsLoading(true);
     try {
       let payload = [];
-      const storedAllForms = JSON.parse(localStorage.getItem("allClientForms"));
-      if (storedAllForms && storedAllForms.length > 0) {
-        payload = storedAllForms;
-      } else {
-        let searchValues = "";
-        for (const searchfield in searchParams) {
-          if (searchParams[searchfield] !== "") {
-            searchValues += `&search_${[searchfield]}=${
-              searchParams[searchfield]
-            }`;
-          }
+      let searchValues = "";
+      for (const searchfield in searchParams) {
+        if (searchParams[searchfield] !== "") {
+          searchValues += `&search_${[searchfield]}=${
+            searchParams[searchfield]
+          }`;
         }
-        const params = `?page=${
-          page + 1
-        }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
-        const allFormsPayload = await formsService.getAllClientsForms(params);
-        payload = allFormsPayload.data;
-        // setTotalCount(requestForms?.data?.count);
+      }
+      const params = `?page=${
+        page + 1
+      }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
+      const allFormsPayload = await formsService.getAllClientsForms(params);
+      if (
+        allFormsPayload?.data?.results &&
+        allFormsPayload.data.results.length > 0
+      ) {
+        payload = allFormsPayload.data.results.map((clientForm) => ({
+          ...clientForm,
+          createdAt: formatDate(clientForm.createdAt),
+          lastEditedAt: formatDate(clientForm.lastEditedAt),
+        }));
+        setTotalCount(allFormsPayload?.data?.count);
       }
       setAllClientForms(payload);
       setTimeout(() => {
@@ -95,10 +100,9 @@ function ClientFormsTable() {
     setSearchParams((prev) => ({ ...prev, ...{ [searchBy]: value } }));
   };
 
-  const deleteClientForm = () => {
-    setAllClientForms((prev) =>
-      prev.filter((form) => form.id !== activeFormId)
-    );
+  const deleteClientForm = async () => {
+    await formsService.deleteClientForm(activeFormId);
+    await fetchFormsData();
     setConfirmationModal(false);
   };
 
@@ -107,10 +111,6 @@ function ClientFormsTable() {
     const searchTimer = setTimeout(() => fetchFormsData(), 500);
     return () => clearTimeout(searchTimer);
   }, [lang, page, rowsPerPage, JSON.stringify(searchParams)]);
-
-  useEffect(() => {
-    localStorage.setItem("allClientForms", JSON.stringify(allClientForms));
-  }, [allClientForms]);
 
   return (
     <div className="w-full bg-white rounded-3xl shadow-custom">
@@ -307,6 +307,7 @@ function ClientFormsTable() {
         <CreateClientFormModal
           setShowModal={setShowClientFormModal}
           setShowSuccessModal={setShowSuccessModal}
+          clientId={null}
         />
       )}
 

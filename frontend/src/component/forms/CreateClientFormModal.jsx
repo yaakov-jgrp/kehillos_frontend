@@ -25,10 +25,18 @@ import dayjs from "dayjs";
 import en from "react-phone-number-input/locale/en";
 import he from "react-phone-number-input/locale/he";
 import FormAddedSuccessfullyModal from "./FormAddedSuccessfullyModal";
+import {
+  convertDataForShowingForms,
+  transformFormDataForAddNewClientForm,
+} from "../../utils/helpers";
+import { CLIENTS } from "../../constants";
+import { toast } from "react-toastify";
+import formService from "../../services/forms";
 
 export default function CreateClientFormModal({
   setShowModal,
   setShowSuccessModal,
+  clientId,
 }) {
   const { t } = useTranslation();
 
@@ -38,7 +46,7 @@ export default function CreateClientFormModal({
   const [activeFormState, setActiveFormState] = useState(null);
   const [searchParams, setSearchParams] = useState({});
   const [page, setPage] = useState(0);
-  const [clientValue, setClientValue] = useState("");
+  const [clientValue, setClientValue] = useState(null);
   const [formId, setFormId] = useState("");
   const [allClients, setAllClients] = useState([]);
   const [allForms, setAllForms] = useState([]);
@@ -46,23 +54,25 @@ export default function CreateClientFormModal({
   const fetchFormsData = async () => {
     try {
       let payload = [];
-      const storedAllForms = JSON.parse(localStorage.getItem("allForms"));
-      if (storedAllForms && storedAllForms.length > 0) {
-        payload = storedAllForms;
-      } else {
-        let searchValues = "";
-        for (const searchfield in searchParams) {
-          if (searchParams[searchfield] !== "") {
-            searchValues += `&search_${[searchfield]}=${
-              searchParams[searchfield]
-            }`;
-          }
+      let searchValues = "";
+      for (const searchfield in searchParams) {
+        if (searchParams[searchfield] !== "") {
+          searchValues += `&search_${[searchfield]}=${
+            searchParams[searchfield]
+          }`;
         }
-        const params = `?page=${
-          page + 1
-        }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
-        const allFormsPayload = await formsService.getAllForms(params);
-        payload = allFormsPayload.data;
+      }
+      const params = `?page=${
+        page + 1
+      }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
+      const allFormsPayload = await formsService.getAllForms(params);
+      if (
+        allFormsPayload?.data?.results &&
+        allFormsPayload.data.results.length > 0
+      ) {
+        payload = allFormsPayload.data.results.map((form) =>
+          convertDataForShowingForms(form)
+        );
       }
       console.log(payload);
       setAllForms(payload);
@@ -74,8 +84,11 @@ export default function CreateClientFormModal({
 
   const fetchClientsData = async () => {
     const params = `?page=${1}&lang=${"en"}&page_size=${50}`;
-    const clientsData = await clientsService.getClients(params);
+    // const clientsData = await clientsService.getClients(params);
+    const clientsData = CLIENTS;
     setAllClients(clientsData.data.data);
+    const clientIdVar = clientId ? clientId : clientsData.data.data[0].id;
+    setClientValue(clientIdVar);
   };
 
   function addRepeatableBlock(blockId) {
@@ -105,27 +118,9 @@ export default function CreateClientFormModal({
       return { ...field, id: newFieldId, blockId: newBlockId };
     });
 
-    // Find conditions associated with these fields
-    const conditionsToRepeat = activeFormStateObj.conditions.filter(
-      (condition) =>
-        fieldsToRepeat.some((field) => field.id === condition.fieldId)
-    );
-
-    // Create new conditions for the new fields
-    const newConditions = conditionsToRepeat.map((condition) => {
-      const newField = newFields.find(
-        (field) => field.name === condition.field
-      );
-      const newConditionId = Math.random() + Date.now();
-      return { ...condition, fieldId: newField.id, id: newConditionId };
-    });
-
     // Append the new block, fields, and conditions to activeFormStateObj
     activeFormStateObj.blocks.push(newBlock);
     activeFormStateObj.fields.push(...newFields);
-    activeFormStateObj.conditions.push(...newConditions);
-
-    console.log(activeFormStateObj);
 
     setActiveFormState(activeFormStateObj);
   }
@@ -142,11 +137,6 @@ export default function CreateClientFormModal({
         return field;
       });
 
-      console.log({
-        ...prevState,
-        fields: updatedFields,
-      });
-
       return {
         ...prevState,
         fields: updatedFields,
@@ -154,35 +144,45 @@ export default function CreateClientFormModal({
     });
   };
 
-  const submitFormHandler = () => {
-    const finalPayload = {};
-    const blockToRemoveID = activeFormState.blocks.filter(
-      (block) => block.isRepeatable
-    )[0].id;
-    finalPayload.name = activeFormState.name;
-    finalPayload.isPined = activeFormState.isPined;
-    finalPayload.clientID = clientValue;
-    finalPayload.blocks = activeFormState.blocks
-      .filter((block) => !block.isRepeatable)
-      .map((block) => ({
-        id: block.id,
-        name: block.name,
-        isRepeatable: block.isRepeatable,
-      }));
-    finalPayload.fields = activeFormState.fields
-      .filter((field) => field.blockId !== blockToRemoveID)
-      .map((field) => ({
-        blockId: field.blockId,
-        name: field.name,
-        data_type: field.data_type,
-        enum_values: field.enum_values,
-        required: field.required,
-        unique: field.unique,
-        defaultvalue: field.defaultvalue,
-      }));
-    console.log(finalPayload);
-    setShowSuccessModal(true);
-    setShowModal(false);
+  const submitFormHandler = async () => {
+    try {
+      const finalPayload = {};
+      const blockToRemoveID = activeFormState.blocks.filter(
+        (block) => block.isRepeatable
+      )[0].id;
+      finalPayload.name = activeFormState.name;
+      finalPayload.isPined = activeFormState.isPined;
+      finalPayload.clientId = clientValue;
+      finalPayload.blocks = activeFormState.blocks
+        .filter((block) => !block.isRepeatable)
+        .map((block) => ({
+          id: block.id,
+          name: block.name,
+          isRepeatable: block.isRepeatable,
+        }));
+      finalPayload.fields = activeFormState.fields
+        .filter((field) => field.blockId !== blockToRemoveID)
+        .map((field) => ({
+          blockId: field.blockId,
+          name: field.name,
+          data_type: field.data_type,
+          enum_values: field.enum_values,
+          required: field.required,
+          unique: field.unique,
+          defaultvalue: field.defaultvalue,
+        }));
+      console.log("The final payload for the API is: ");
+      const newClientFormRequestBody =
+        transformFormDataForAddNewClientForm(finalPayload);
+      const newClientFormPayload = await formService.createNewClientForm(
+        newClientFormRequestBody
+      );
+      setShowSuccessModal(true);
+      setShowModal(false);
+    } catch (error) {
+      toast.error(JSON.stringify(error));
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -218,6 +218,7 @@ export default function CreateClientFormModal({
                     labelId="client-select-label"
                     id="client-select"
                     className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                    disabled={!!clientId}
                     value={clientValue}
                     MenuProps={{
                       sx: {
@@ -492,7 +493,7 @@ export default function CreateClientFormModal({
                       .filter((form) => form.isRepeatable)
                       .map((blockData, index) => (
                         <button
-                          className="border border-solid border-[#E3E5E6] rounded-lg w-full p-3 text-[#0B99FF] flex justify-center items-center gap-2"
+                          className="my-4 border border-solid border-[#E3E5E6] rounded-lg w-full p-3 text-[#0B99FF] flex justify-center items-center gap-2"
                           onClick={() => addRepeatableBlock(blockData.id)}
                         >
                           <img src={AddCircleIcon} alt="add_circle_icon" />
