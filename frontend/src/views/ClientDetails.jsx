@@ -26,6 +26,7 @@ import categoryService from "../services/category";
 import { MdDelete } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { ClientFormsTabPanel } from "../component/client/ClientTabPanels/ClientFormsTabPanel";
+import { FULL_FORM_DATA, PROFILE_LIST, SINGLE_CLIENT_DATA } from "../constants";
 
 function ClientDetails() {
   const { id } = useParams();
@@ -66,37 +67,50 @@ function ClientDetails() {
   const getClientDataHandler = async () => {
     setIsloading(true);
     try {
-      const profilesData = await categoryService.getProfilesList();
+      // const profilesData = await categoryService.getProfilesList();
+      const profilesData = PROFILE_LIST;
       const netfreeProfiles = profilesData.data.data;
-      clientsService
-        .getClient(id)
-        .then((res) => {
-          setClientData(res.data);
-          setIsloading(false);
-          if (netfreeProfiles.length > 0) {
-            const { netfree_profile } = res.data;
-            const matchingProfile = netfreeProfiles.filter(
-              (profile) => profile.id === netfree_profile
-            )[0];
-            setNetfreeProfile(matchingProfile);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          setIsloading(false);
-        });
+      // clientsService
+      //   .getClient(id)
+      //   .then((res) => {
+      //     setClientData(res.data);
+      //     setIsloading(false);
+      //     if (netfreeProfiles.length > 0) {
+      //       const { netfree_profile } = res.data;
+      //       const matchingProfile = netfreeProfiles.filter(
+      //         (profile) => profile.id === netfree_profile
+      //       )[0];
+      //       setNetfreeProfile(matchingProfile);
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //     setIsloading(false);
+      //   });
+      const res = SINGLE_CLIENT_DATA;
+      setClientData(res.data);
+      setIsloading(false);
+      if (netfreeProfiles.length > 0) {
+        const { netfree_profile } = res.data;
+        const matchingProfile = netfreeProfiles.filter(
+          (profile) => profile.id === netfree_profile
+        )[0];
+        setNetfreeProfile(matchingProfile);
+      }
     } catch (error) {
       console.log(err);
     }
   };
 
   const fetchNetfreeProfiles = async () => {
-    const profilesListData = await categoryService.getProfilesList();
+    // const profilesListData = await categoryService.getProfilesList();
+    const profilesListData = PROFILE_LIST;
     setNetfreeProfiles(profilesListData.data.data);
   };
 
   const fetchFullFormData = async () => {
-    const formData = await clientsService.getFullformData();
+    // const formData = await clientsService.getFullformData();
+    const formData = FULL_FORM_DATA;
     let formFields = [];
     formData.data.result.forEach((block) => {
       block.field.forEach((field) => {

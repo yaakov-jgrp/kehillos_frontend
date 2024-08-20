@@ -44,7 +44,8 @@ export const ClientFormsTabPanel = ({ clientId }) => {
   const [allClientForms, setAllClientForms] = useState([]);
   const [activeFormId, setActiveFormId] = useState(null);
   const [activeForm, setActiveForm] = useState(null);
-  const [activeFormCurrentVersion, setActiveFormCurrentVersion] = useState({});
+  const [activeFormCurrentVersion, setActiveFormCurrentVersion] =
+    useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showClientFormModal, setShowClientFormModal] = useState(false);
   const [showFormAddVersionModal, setShowFormAddVersionModal] = useState(false);
@@ -55,6 +56,7 @@ export const ClientFormsTabPanel = ({ clientId }) => {
   const [editMode, setEditMode] = useState(false);
   const [versionName, setVersionName] = useState("");
   const [versionComments, setVersionComments] = useState("");
+  const [dirtyFields, setDirtyFields] = useState([]);
   const [showVersionDropdown, setShowVersionDropdown] = useState(false);
   const [showVersionDetailBox, setShowVersionDetailBox] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -92,17 +94,36 @@ export const ClientFormsTabPanel = ({ clientId }) => {
         formId
       );
       if (formDetailPayload.data) {
-        const payload = convertDataForShowingClientFormDetails(
+        let payload = convertDataForShowingClientFormDetails(
           formDetailPayload.data
         );
-        setActiveForm(payload);
+        if (payload.fields.length > 0) {
+          setDirtyFields(
+            payload.fields.map((field) => ({
+              fieldId: field.id,
+              current: field.defaultvalue,
+              previous: field.defaultvalue,
+            }))
+          );
+        }
         if (payload.versions.length > 0) {
           const defaultVersion = payload.versions[0];
-          setActiveFormCurrentVersion({
-            id: defaultVersion.id,
-            name: defaultVersion.name,
+          setActiveFormCurrentVersion(defaultVersion);
+          const defaultVersionDirtyFieldsIdArray =
+            defaultVersion.dirty_fields.map((dirtyField) => dirtyField.fieldId);
+          payload.fields = payload.fields.map((field) => {
+            if (defaultVersionDirtyFieldsIdArray.includes(field.id)) {
+              return {
+                ...field,
+                defaultvalue: defaultVersion.dirty_fields.find(
+                  (dirtyField) => dirtyField.fieldId === field.id
+                ).current,
+              };
+            }
+            return field;
           });
         }
+        setActiveForm(payload);
       }
     } catch (error) {
       console.log(error);
@@ -110,6 +131,39 @@ export const ClientFormsTabPanel = ({ clientId }) => {
   };
 
   const changeActiveFormCurrentVersion = (payload) => {
+    const defaultVersionDirtyFieldsIdArray = payload.dirty_fields.map(
+      (dirtyField) => dirtyField.fieldId
+    );
+    setActiveForm((prev) => ({
+      ...prev,
+      fields: prev.fields.map((field) => {
+        if (defaultVersionDirtyFieldsIdArray.includes(field.id)) {
+          const newDefaultValue = payload.dirty_fields.find(
+            (dirtyField) => dirtyField.fieldId === field.id
+          ).current;
+          return {
+            ...field,
+            defaultvalue: newDefaultValue,
+          };
+        }
+        return field;
+      }),
+    }));
+    setDirtyFields((prevDirtyFields) =>
+      prevDirtyFields.map((dirtyFieldObj) => {
+        if (defaultVersionDirtyFieldsIdArray.includes(dirtyFieldObj.fieldId)) {
+          const newDefaultValue = payload.dirty_fields.find(
+            (dirtyField) => dirtyField.fieldId === dirtyFieldObj.fieldId
+          ).current;
+          return {
+            ...dirtyFieldObj,
+            current: newDefaultValue,
+            previous: newDefaultValue,
+          };
+        }
+        return dirtyFieldObj;
+      })
+    );
     setActiveFormCurrentVersion(payload);
     setShowVersionDropdown(false);
     setShowVersionDetailBox(false);
@@ -131,6 +185,18 @@ export const ClientFormsTabPanel = ({ clientId }) => {
         return field;
       });
 
+      setDirtyFields((prevState) =>
+        prevState.map((field) => {
+          if (field.fieldId === fieldId) {
+            return {
+              ...field,
+              current: newValue,
+            };
+          }
+          return field;
+        })
+      );
+
       return {
         ...prevState,
         fields: updatedFields,
@@ -138,9 +204,37 @@ export const ClientFormsTabPanel = ({ clientId }) => {
     });
   };
 
-  const saveFormNewVersion = () => {
+  const closeCommentAddedSuccessfullyModal = async () => {
     setEditMode(false);
     setShowCommentAddedSuccessfullyModal(false);
+  };
+
+  const saveFormVersion = async () => {
+    try {
+      const dirtyFieldsPayload = dirtyFields.filter(
+        (dirtyField) => dirtyField.current !== dirtyField.previous
+      );
+      const newVersionRequestPayload = {
+        name: versionName,
+        comment: versionComments,
+        clientFormId: activeFormId,
+        dirty_fields: dirtyFieldsPayload,
+      };
+      const newVersionResponse = await formsService.createNewClientFormVersion(
+        newVersionRequestPayload
+      );
+      await fetchFormsDetailsData(activeFormId);
+      setVersionName("");
+      setVersionComments("");
+      setShowFormAddVersionModal(false);
+      setShowCommentAddedSuccessfullyModal(true);
+    } catch (error) {
+      toast.error(JSON.stringify(error));
+      console.log(error);
+      setVersionName("");
+      setVersionComments("");
+      setShowFormAddVersionModal(false);
+    }
   };
 
   // effects
@@ -268,7 +362,10 @@ export const ClientFormsTabPanel = ({ clientId }) => {
                             el.isPined ? "bg-[#0B99FF1A]" : ""
                           }`}
                           key={el.id}
-                          onClick={() => setActiveFormId(el.id)}
+                          onClick={() => {
+                            setActiveFormId(el.id);
+                            setActiveFormCurrentVersion(null);
+                          }}
                         >
                           <td>
                             {el.isPined && (
@@ -310,26 +407,28 @@ export const ClientFormsTabPanel = ({ clientId }) => {
             <div className="flex items-center gap-2">
               {!editMode && (
                 <div className="relative">
-                  <div className="w-[240px] flex items-center justify-between px-4 py-[10px] border border-[#E3E5E6] rounded-lg">
-                    <p className="text-[#5C5C5C] text-[14px]">
-                      {activeFormCurrentVersion.name}
-                    </p>
-                    <button
-                      onClick={() => setShowVersionDropdown((prev) => !prev)}
-                    >
-                      <img src={DownArrow} alt="down_arrow" />
-                    </button>
-                  </div>
+                  {activeFormCurrentVersion && (
+                    <div className="w-[240px] flex items-center justify-between px-4 py-[10px] border border-[#E3E5E6] rounded-lg">
+                      <p className="text-[#5C5C5C] text-[14px]">
+                        {activeFormCurrentVersion.name}
+                      </p>
+                      <button
+                        onClick={() => setShowVersionDropdown((prev) => !prev)}
+                      >
+                        <img src={DownArrow} alt="down_arrow" />
+                      </button>
+                    </div>
+                  )}
 
-                  <div
-                    className={`z-10000 rounded-lg w-full scrollbar-hide absolute top-12 left-0 bg-white shadow-lg transition-all ease-in-out duration-300 transform ${
-                      showVersionDropdown
-                        ? "opacity-100 scale-100"
-                        : "opacity-0 scale-95 pointer-events-none"
-                    }`}
-                  >
-                    {activeForm &&
-                      activeForm.versions.map((el) => {
+                  {activeForm && activeForm.versions.length > 0 && (
+                    <div
+                      className={`z-10000 rounded-lg w-full scrollbar-hide absolute top-12 left-0 bg-white shadow-lg transition-all ease-in-out duration-300 transform ${
+                        showVersionDropdown
+                          ? "opacity-100 scale-100"
+                          : "opacity-0 scale-95 pointer-events-none"
+                      }`}
+                    >
+                      {activeForm.versions.map((el) => {
                         return (
                           <div
                             className="cursor-pointer my-2 p-2 hover:bg-[#F9FBFC] flex items-center justify-between relative"
@@ -357,80 +456,83 @@ export const ClientFormsTabPanel = ({ clientId }) => {
                           </div>
                         );
                       })}
-                  </div>
-
-                  {showVersionDetailBox && showVersionDropdown && (
-                    <div
-                      onMouseLeave={() => {
-                        setShowVersionDetailBox(false);
-                      }}
-                      className={`w-[320px] rounded-lg scrollbar-hide absolute top-2 right-64 bg-white shadow-lg`}
-                    >
-                      <div className="bg-[#F9FBFC] p-3 flex flex-col gap-2">
-                        <div className="flex items-center justify-between">
-                          <p className="text-[#344054] font-medium text-[14px]">
-                            {activeFormCurrentVersion.name}
-                          </p>
-                          <div className="flex gap-2 items-center">
-                            <button>
-                              <img
-                                src={LeftDisableArrow}
-                                alt="LeftDisableArrow"
-                              />
-                            </button>
-                            <button>
-                              <img
-                                src={RightEnableArrow}
-                                alt="RightEnableArrow"
-                              />
-                            </button>
-                          </div>
-                        </div>
-                        <div>
-                          <p className="text-[#000] font-medium text-[14px]">
-                            Yaakov Hershberg
-                          </p>
-                          <p className="text-[#828282] font-medium text-[14px]">
-                            {formatDate(activeFormCurrentVersion.createdAt)}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="p-3">
-                        <p className="text-[#000] font-medium text-[14px]">
-                          {t("forms.comment")}
-                        </p>
-                        <p className="text-[#828282] font-medium text-[14px]">
-                          {activeFormCurrentVersion.comment}
-                        </p>
-                      </div>
-
-                      <div className="overflow-y-scroll p-3 h-[10rem]">
-                        {activeFormCurrentVersion.dirtyFields.map(
-                          (dirtyField) => (
-                            <div className="border-b border-b-solid border-b-[#E0E0E0] py-2 flex flex-col gap-2">
-                              <div className="flex items-center gap-24">
-                                <p className="text-[#000] font-medium text-[14px]">
-                                  Current
-                                </p>
-                                <p className="text-[#828282] font-medium text-[14px]">
-                                  :{dirtyField.current}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-24">
-                                <p className="text-[#000] font-medium text-[14px]">
-                                  Previous
-                                </p>
-                                <p className="text-[#828282] font-medium text-[14px]">
-                                  :{dirtyField.previous}
-                                </p>
-                              </div>
-                            </div>
-                          )
-                        )}
-                      </div>
                     </div>
                   )}
+
+                  {activeFormCurrentVersion &&
+                    showVersionDetailBox &&
+                    showVersionDropdown && (
+                      <div
+                        onMouseLeave={() => {
+                          setShowVersionDetailBox(false);
+                        }}
+                        className={`w-[320px] rounded-lg scrollbar-hide absolute top-2 right-64 bg-white shadow-lg`}
+                      >
+                        <div className="bg-[#F9FBFC] p-3 flex flex-col gap-2">
+                          <div className="flex items-center justify-between">
+                            <p className="text-[#344054] font-medium text-[14px]">
+                              {activeFormCurrentVersion.name}
+                            </p>
+                            <div className="flex gap-2 items-center">
+                              <button>
+                                <img
+                                  src={LeftDisableArrow}
+                                  alt="LeftDisableArrow"
+                                />
+                              </button>
+                              <button>
+                                <img
+                                  src={RightEnableArrow}
+                                  alt="RightEnableArrow"
+                                />
+                              </button>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-[#000] font-medium text-[14px]">
+                              Yaakov Hershberg
+                            </p>
+                            <p className="text-[#828282] font-medium text-[14px]">
+                              {formatDate(activeFormCurrentVersion.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="p-3">
+                          <p className="text-[#000] font-medium text-[14px]">
+                            {t("forms.comment")}
+                          </p>
+                          <p className="text-[#828282] font-medium text-[14px]">
+                            {activeFormCurrentVersion.comment}
+                          </p>
+                        </div>
+
+                        <div className="overflow-y-scroll p-3 h-[10rem]">
+                          {activeFormCurrentVersion.dirty_fields.map(
+                            (dirtyField) => (
+                              <div className="border-b border-b-solid border-b-[#E0E0E0] py-2 flex flex-col gap-2">
+                                <div className="flex items-center gap-24">
+                                  <p className="text-[#000] font-medium text-[14px]">
+                                    Current
+                                  </p>
+                                  <p className="text-[#828282] font-medium text-[14px]">
+                                    :{dirtyField.current}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-24">
+                                  <p className="text-[#000] font-medium text-[14px]">
+                                    Previous
+                                  </p>
+                                  <p className="text-[#828282] font-medium text-[14px]">
+                                    :{dirtyField.previous}
+                                  </p>
+                                </div>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
                 </div>
               )}
               <button
@@ -606,8 +708,9 @@ export const ClientFormsTabPanel = ({ clientId }) => {
 
       {showSuccessModal && (
         <FormAddedSuccessfullyModal
-          onClick={() => {
+          onClick={async () => {
             setShowSuccessModal(false);
+            await fetchFormsData();
           }}
         />
       )}
@@ -620,16 +723,15 @@ export const ClientFormsTabPanel = ({ clientId }) => {
           versionComments={versionComments}
           setVersionComments={setVersionComments}
           onClick={() => {
-            setVersionName("");
-            setVersionComments("");
-            setShowFormAddVersionModal(false);
-            setShowCommentAddedSuccessfullyModal(true);
+            saveFormVersion();
           }}
         />
       )}
 
       {showCommentAddedSuccessfullyModal && (
-        <CommentAddedSuccessfullyModal onClick={saveFormNewVersion} />
+        <CommentAddedSuccessfullyModal
+          onClick={closeCommentAddedSuccessfullyModal}
+        />
       )}
     </div>
   );
