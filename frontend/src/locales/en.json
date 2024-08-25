@@ -363,6 +363,7 @@
     "remark": "Remark",
     "versionName": "Version Name",
     "versionComments": "Comments",
-    "comment": "Comment"
+    "comment": "Comment",
+    "clientsForm": "Client's Form"
   }
 }

@@ -37,6 +37,7 @@ import {
 import CreateClientFormModal from "../../forms/CreateClientFormModal";
 import FormAddedSuccessfullyModal from "../../forms/FormAddedSuccessfullyModal";
 import { toast } from "react-toastify";
+import { RiHistoryLine } from "react-icons/ri";
 
 export const ClientFormsTabPanel = ({ clientId }) => {
   const { t } = useTranslation();
@@ -128,6 +129,18 @@ export const ClientFormsTabPanel = ({ clientId }) => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const checkIsFieldDirty = (fieldId) => {
+    let flag = false;
+    if (activeFormCurrentVersion) {
+      const activeFormCurrentVersionDirtyFieldsIdArray =
+        activeFormCurrentVersion.dirty_fields.map(
+          (dirtyField) => dirtyField.fieldId
+        );
+      flag = activeFormCurrentVersionDirtyFieldsIdArray.includes(fieldId);
+    }
+    return flag;
   };
 
   const changeActiveFormCurrentVersion = (payload) => {
@@ -557,7 +570,12 @@ export const ClientFormsTabPanel = ({ clientId }) => {
             {!editMode &&
               activeForm.fields.map((field, index) => (
                 <div key={index} className="flex justify-between">
-                  <span className="text-[#5C5C5C]">{field.name}</span>
+                  <span className="text-[#5C5C5C] flex items-center gap-2">
+                    {checkIsFieldDirty(field.id) && (
+                      <RiHistoryLine color="#000" />
+                    )}
+                    {field.name}
+                  </span>
                   <span className="text-[#1C1C1C]">
                     :
                     {field.defaultvalue === true

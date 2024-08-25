@@ -289,12 +289,29 @@ function FormDetails() {
     }
   };
 
+  const toggleFieldConditionDisplay = (fieldId) => {
+    const newActiveFormFields = activeFormState.fields.map((field) => {
+      if (field.id === fieldId) {
+        return {
+          ...field,
+          isConditionShown: !field.isConditionShown,
+        };
+      }
+      return field;
+    });
+    dispatch(setFields(newActiveFormFields));
+  };
+
   // effects
   useEffect(() => {
     const fetchActiveFormHandler = async () => {
       const activeFormPayload = JSON.parse(localStorage.getItem("activeForm"));
       if (activeFormPayload) {
-        dispatch(setActiveFormState(activeFormPayload));
+        const newActiveFormPayload = { ...activeFormPayload };
+        newActiveFormPayload.fields = newActiveFormPayload.fields.map(
+          (field) => ({ ...field, isConditionShown: false })
+        );
+        dispatch(setActiveFormState(newActiveFormPayload));
       } else {
         dispatch(setActiveFormState(ACTIVE_FORM));
       }
@@ -469,11 +486,19 @@ function FormDetails() {
                                         <p className="text-md mx-1 capitalize text-gray-10 font-normal">{`(${field.data_type.value})`}</p>
                                       </div>
                                       <div className="flex items-center">
-                                        <img
-                                          className="cursor-pointer mr-2"
-                                          src={ConditionsIcon}
-                                          alt="conditions_icon"
-                                        />
+                                        <button
+                                          onClick={() =>
+                                            toggleFieldConditionDisplay(
+                                              field.id
+                                            )
+                                          }
+                                        >
+                                          <img
+                                            className="cursor-pointer mr-2"
+                                            src={ConditionsIcon}
+                                            alt="conditions_icon"
+                                          />
+                                        </button>
                                         <img
                                           className="cursor-pointer mr-2"
                                           src={CopyIcon}
@@ -513,326 +538,309 @@ function FormDetails() {
                                         field={field}
                                       />
                                     </div>
-                                    <div>
-                                      {/* Conditions Heading */}
-                                      <p className="font-medium my-2">
-                                        {t("forms.conditions")}
-                                      </p>
 
-                                      {/* AND Conditions */}
+                                    {field.isConditionShown && (
                                       <div>
-                                        <p className="my-4">
-                                          {t("forms.conditions_message_1")}
+                                        {/* Conditions Heading */}
+                                        <p className="font-medium my-2">
+                                          {t("forms.conditions")}
                                         </p>
 
-                                        {activeFormState.conditions
-                                          .filter(
-                                            (condition) =>
-                                              condition.fieldId === field.id &&
-                                              condition.operator === "AND"
-                                          )
-                                          .map((condition) => (
-                                            <div
-                                              className="flex items-end gap-4 my-4"
-                                              key={condition.id}
-                                            >
-                                              <div className="w-full">
-                                                <p>{t("forms.field")}</p>
-                                                <Select
-                                                  labelId="demo-select-small-label"
-                                                  id="demo-select-small"
-                                                  className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
-                                                  value={condition.field}
-                                                  MenuProps={{
-                                                    sx: {
-                                                      maxHeight: "250px",
-                                                    },
-                                                  }}
-                                                  onChange={(e) => {
-                                                    editFieldConditionHandler(
-                                                      condition.id,
-                                                      "field",
-                                                      e.target.value
-                                                    );
-                                                  }}
-                                                >
-                                                  <MenuItem value="" disabled>
-                                                    Select
-                                                  </MenuItem>
-                                                  {activeFormState.fields
-                                                    .filter(
-                                                      (fieldObj) =>
-                                                        fieldObj.blockId ===
-                                                          blockData.id &&
-                                                        fieldObj.id !== field.id
-                                                    )
-                                                    .map((fieldObj, index) => (
-                                                      <MenuItem
-                                                        key={index}
-                                                        value={fieldObj.name}
-                                                      >
-                                                        {fieldObj.name}
-                                                      </MenuItem>
-                                                    ))}
-                                                </Select>
-                                              </div>
-                                              <div className="w-full">
-                                                <p>{t("forms.condition")}</p>
-                                                <Select
-                                                  labelId="demo-select-small-label"
-                                                  id="demo-select-small"
-                                                  className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
-                                                  value={condition.condition}
-                                                  MenuProps={{
-                                                    sx: {
-                                                      maxHeight: "250px",
-                                                    },
-                                                  }}
-                                                  onChange={(e) =>
-                                                    editFieldConditionHandler(
-                                                      condition.id,
-                                                      "condition",
-                                                      e.target.value
-                                                    )
-                                                  }
-                                                >
-                                                  <MenuItem value="" disabled>
-                                                    Select
-                                                  </MenuItem>
-                                                  {field.data_type.value ===
-                                                  "date"
-                                                    ? FORM_FIELD_CONDITIONS.date.map(
-                                                        (condition, index) => (
-                                                          <MenuItem
-                                                            key={index}
-                                                            value={
-                                                              condition.slug
-                                                            }
-                                                          >
-                                                            {condition.name}
-                                                          </MenuItem>
-                                                        )
+                                        {/* AND Conditions */}
+                                        <div>
+                                          <p className="my-4">
+                                            {t("forms.conditions_message_1")}
+                                          </p>
+
+                                          {activeFormState.conditions
+                                            .filter(
+                                              (condition) =>
+                                                condition.fieldId ===
+                                                  field.id &&
+                                                condition.operator === "AND"
+                                            )
+                                            .map((condition) => (
+                                              <div
+                                                className="flex items-end gap-4 my-4"
+                                                key={condition.id}
+                                              >
+                                                <div className="w-full">
+                                                  <p>{t("forms.field")}</p>
+                                                  <Select
+                                                    labelId="demo-select-small-label"
+                                                    id="demo-select-small"
+                                                    className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                                                    value={condition.field}
+                                                    MenuProps={{
+                                                      sx: {
+                                                        maxHeight: "250px",
+                                                      },
+                                                    }}
+                                                    onChange={(e) => {
+                                                      editFieldConditionHandler(
+                                                        condition.id,
+                                                        "field",
+                                                        e.target.value
+                                                      );
+                                                    }}
+                                                  >
+                                                    <MenuItem value="" disabled>
+                                                      Select
+                                                    </MenuItem>
+                                                    {activeFormState.fields
+                                                      .filter(
+                                                        (fieldObj) =>
+                                                          fieldObj.blockId ===
+                                                            blockData.id &&
+                                                          fieldObj.id !==
+                                                            field.id
                                                       )
-                                                    : FORM_FIELD_CONDITIONS.other.map(
-                                                        (condition, index) => (
+                                                      .map(
+                                                        (fieldObj, index) => (
                                                           <MenuItem
                                                             key={index}
                                                             value={
-                                                              condition.slug
+                                                              fieldObj.name
                                                             }
                                                           >
-                                                            {condition.name}
+                                                            {fieldObj.name}
                                                           </MenuItem>
                                                         )
                                                       )}
-                                                </Select>
-                                              </div>
-                                              <div className="w-full">
-                                                <input
-                                                  className="pl-2 appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full py-[10px] text-gray-11 font-normal"
-                                                  value={condition.value}
-                                                  placeholder={t(
-                                                    "forms.value_placeholder"
-                                                  )}
-                                                  onChange={(e) =>
-                                                    editFieldConditionHandler(
-                                                      condition.id,
-                                                      "value",
-                                                      e.target.value
-                                                    )
-                                                  }
-                                                />
-                                              </div>
-                                              <div className="my-3">
-                                                <img
-                                                  src={BinIcon}
-                                                  alt="BinIcon"
-                                                  className="mx-1 self-center text-blueSecondary h-[22px] w-[64px] hover:cursor-pointer"
-                                                  onClick={() =>
-                                                    deleteFieldConditionHandler(
-                                                      condition.id
-                                                    )
-                                                  }
-                                                />
-                                              </div>
-                                            </div>
-                                          ))}
-
-                                        <button
-                                          className="w-fit h-[40px] px-4 rounded-lg flex cursor-pointer items-center text-brand-500 font-normal text-md border border-brand-500"
-                                          onClick={() =>
-                                            addFieldConditionHandler(
-                                              field.id,
-                                              "AND"
-                                            )
-                                          }
-                                        >
-                                          <IoIosAdd
-                                            style={{ color: "#0B99FF" }}
-                                            size="1.5rem"
-                                          />
-                                          {t("clients.addCondition")}
-                                        </button>
-                                      </div>
-
-                                      {/* dividing border */}
-                                      <div className="border border-b border-[#E3E5E6] my-6"></div>
-
-                                      {/* OR Conditions */}
-                                      <div>
-                                        <p className="my-4">
-                                          {t("forms.conditions_message_2")}
-                                        </p>
-                                        {activeFormState.conditions
-                                          .filter(
-                                            (condition) =>
-                                              condition.fieldId === field.id &&
-                                              condition.operator === "OR"
-                                          )
-                                          .map((condition) => (
-                                            <div
-                                              className="flex items-end gap-4 my-4"
-                                              key={condition.id}
-                                            >
-                                              <div className="w-full">
-                                                <p>{t("forms.field")}</p>
-                                                <Select
-                                                  labelId="demo-select-small-label"
-                                                  id="demo-select-small"
-                                                  className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
-                                                  value={condition.field}
-                                                  MenuProps={{
-                                                    sx: {
-                                                      maxHeight: "250px",
-                                                    },
-                                                  }}
-                                                  onChange={(e) =>
-                                                    editFieldConditionHandler(
-                                                      condition.id,
-                                                      "field",
-                                                      e.target.value
-                                                    )
-                                                  }
-                                                >
-                                                  <MenuItem value="" disabled>
-                                                    Select
-                                                  </MenuItem>
-                                                  {activeFormState.fields
-                                                    .filter(
-                                                      (fieldObj) =>
-                                                        fieldObj.blockId ===
-                                                          blockData.id &&
-                                                        fieldObj.id !== field.id
-                                                    )
-                                                    .map((fieldObj, index) => (
-                                                      <MenuItem
-                                                        key={index}
-                                                        value={fieldObj.name}
-                                                      >
-                                                        {fieldObj.name}
-                                                      </MenuItem>
-                                                    ))}
-                                                </Select>
-                                              </div>
-                                              <div className="w-full">
-                                                <p>{t("forms.condition")}</p>
-                                                <Select
-                                                  labelId="demo-select-small-label"
-                                                  id="demo-select-small"
-                                                  className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
-                                                  value={condition.condition}
-                                                  MenuProps={{
-                                                    sx: {
-                                                      maxHeight: "250px",
-                                                    },
-                                                  }}
-                                                  onChange={(e) =>
-                                                    editFieldConditionHandler(
-                                                      condition.id,
-                                                      "condition",
-                                                      e.target.value
-                                                    )
-                                                  }
-                                                >
-                                                  <MenuItem value="" disabled>
-                                                    Select
-                                                  </MenuItem>
-                                                  {field.data_type.value ===
-                                                  "date"
-                                                    ? FORM_FIELD_CONDITIONS.date.map(
-                                                        (condition, index) => (
-                                                          <MenuItem
-                                                            key={index}
-                                                            value={
-                                                              condition.slug
-                                                            }
-                                                          >
-                                                            {condition.name}
-                                                          </MenuItem>
-                                                        )
+                                                  </Select>
+                                                </div>
+                                                <div className="w-full">
+                                                  <p>{t("forms.condition")}</p>
+                                                  <Select
+                                                    labelId="demo-select-small-label"
+                                                    id="demo-select-small"
+                                                    className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                                                    value={condition.condition}
+                                                    MenuProps={{
+                                                      sx: {
+                                                        maxHeight: "250px",
+                                                      },
+                                                    }}
+                                                    onChange={(e) =>
+                                                      editFieldConditionHandler(
+                                                        condition.id,
+                                                        "condition",
+                                                        e.target.value
                                                       )
-                                                    : FORM_FIELD_CONDITIONS.other.map(
-                                                        (condition, index) => (
+                                                    }
+                                                  >
+                                                    <MenuItem value="" disabled>
+                                                      Select
+                                                    </MenuItem>
+                                                    {FORM_FIELD_CONDITIONS.other.map(
+                                                      (condition, index) => (
+                                                        <MenuItem
+                                                          key={index}
+                                                          value={condition.slug}
+                                                        >
+                                                          {condition.name}
+                                                        </MenuItem>
+                                                      )
+                                                    )}
+                                                  </Select>
+                                                </div>
+                                                <div className="w-full">
+                                                  <input
+                                                    className="pl-2 appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full py-[10px] text-gray-11 font-normal"
+                                                    value={condition.value}
+                                                    placeholder={t(
+                                                      "forms.value_placeholder"
+                                                    )}
+                                                    onChange={(e) =>
+                                                      editFieldConditionHandler(
+                                                        condition.id,
+                                                        "value",
+                                                        e.target.value
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
+                                                <div className="my-3">
+                                                  <img
+                                                    src={BinIcon}
+                                                    alt="BinIcon"
+                                                    className="mx-1 self-center text-blueSecondary h-[22px] w-[64px] hover:cursor-pointer"
+                                                    onClick={() =>
+                                                      deleteFieldConditionHandler(
+                                                        condition.id
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
+                                              </div>
+                                            ))}
+
+                                          <button
+                                            className="w-fit h-[40px] px-4 rounded-lg flex cursor-pointer items-center text-brand-500 font-normal text-md border border-brand-500"
+                                            onClick={() =>
+                                              addFieldConditionHandler(
+                                                field.id,
+                                                "AND"
+                                              )
+                                            }
+                                          >
+                                            <IoIosAdd
+                                              style={{ color: "#0B99FF" }}
+                                              size="1.5rem"
+                                            />
+                                            {t("clients.addCondition")}
+                                          </button>
+                                        </div>
+
+                                        {/* dividing border */}
+                                        <div className="border border-b border-[#E3E5E6] my-6"></div>
+
+                                        {/* OR Conditions */}
+                                        <div>
+                                          <p className="my-4">
+                                            {t("forms.conditions_message_2")}
+                                          </p>
+                                          {activeFormState.conditions
+                                            .filter(
+                                              (condition) =>
+                                                condition.fieldId ===
+                                                  field.id &&
+                                                condition.operator === "OR"
+                                            )
+                                            .map((condition) => (
+                                              <div
+                                                className="flex items-end gap-4 my-4"
+                                                key={condition.id}
+                                              >
+                                                <div className="w-full">
+                                                  <p>{t("forms.field")}</p>
+                                                  <Select
+                                                    labelId="demo-select-small-label"
+                                                    id="demo-select-small"
+                                                    className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                                                    value={condition.field}
+                                                    MenuProps={{
+                                                      sx: {
+                                                        maxHeight: "250px",
+                                                      },
+                                                    }}
+                                                    onChange={(e) =>
+                                                      editFieldConditionHandler(
+                                                        condition.id,
+                                                        "field",
+                                                        e.target.value
+                                                      )
+                                                    }
+                                                  >
+                                                    <MenuItem value="" disabled>
+                                                      Select
+                                                    </MenuItem>
+                                                    {activeFormState.fields
+                                                      .filter(
+                                                        (fieldObj) =>
+                                                          fieldObj.blockId ===
+                                                            blockData.id &&
+                                                          fieldObj.id !==
+                                                            field.id
+                                                      )
+                                                      .map(
+                                                        (fieldObj, index) => (
                                                           <MenuItem
                                                             key={index}
                                                             value={
-                                                              condition.slug
+                                                              fieldObj.name
                                                             }
                                                           >
-                                                            {condition.name}
+                                                            {fieldObj.name}
                                                           </MenuItem>
                                                         )
                                                       )}
-                                                </Select>
+                                                  </Select>
+                                                </div>
+                                                <div className="w-full">
+                                                  <p>{t("forms.condition")}</p>
+                                                  <Select
+                                                    labelId="demo-select-small-label"
+                                                    id="demo-select-small"
+                                                    className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                                                    value={condition.condition}
+                                                    MenuProps={{
+                                                      sx: {
+                                                        maxHeight: "250px",
+                                                      },
+                                                    }}
+                                                    onChange={(e) =>
+                                                      editFieldConditionHandler(
+                                                        condition.id,
+                                                        "condition",
+                                                        e.target.value
+                                                      )
+                                                    }
+                                                  >
+                                                    <MenuItem value="" disabled>
+                                                      Select
+                                                    </MenuItem>
+                                                    {FORM_FIELD_CONDITIONS.other.map(
+                                                      (condition, index) => (
+                                                        <MenuItem
+                                                          key={index}
+                                                          value={condition.slug}
+                                                        >
+                                                          {condition.name}
+                                                        </MenuItem>
+                                                      )
+                                                    )}
+                                                  </Select>
+                                                </div>
+                                                <div className="w-full">
+                                                  <input
+                                                    className="pl-2 appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full py-[10px] text-gray-11 font-normal"
+                                                    value={condition.value}
+                                                    placeholder={t(
+                                                      "forms.value_placeholder"
+                                                    )}
+                                                    onChange={(e) =>
+                                                      editFieldConditionHandler(
+                                                        condition.id,
+                                                        "value",
+                                                        e.target.value
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
+                                                <div className="my-3">
+                                                  <img
+                                                    src={BinIcon}
+                                                    alt="BinIcon"
+                                                    className="mx-1 self-center text-blueSecondary h-[22px] w-[64px] hover:cursor-pointer"
+                                                    onClick={() =>
+                                                      deleteFieldConditionHandler(
+                                                        condition.id
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
                                               </div>
-                                              <div className="w-full">
-                                                <input
-                                                  className="pl-2 appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full py-[10px] text-gray-11 font-normal"
-                                                  value={condition.value}
-                                                  placeholder={t(
-                                                    "forms.value_placeholder"
-                                                  )}
-                                                  onChange={(e) =>
-                                                    editFieldConditionHandler(
-                                                      condition.id,
-                                                      "value",
-                                                      e.target.value
-                                                    )
-                                                  }
-                                                />
-                                              </div>
-                                              <div className="my-3">
-                                                <img
-                                                  src={BinIcon}
-                                                  alt="BinIcon"
-                                                  className="mx-1 self-center text-blueSecondary h-[22px] w-[64px] hover:cursor-pointer"
-                                                  onClick={() =>
-                                                    deleteFieldConditionHandler(
-                                                      condition.id
-                                                    )
-                                                  }
-                                                />
-                                              </div>
-                                            </div>
-                                          ))}
+                                            ))}
 
-                                        <button
-                                          className="w-fit h-[40px] px-4 rounded-lg flex cursor-pointer items-center text-brand-500 font-normal text-md border border-brand-500"
-                                          onClick={() =>
-                                            addFieldConditionHandler(
-                                              field.id,
-                                              "OR"
-                                            )
-                                          }
-                                        >
-                                          <IoIosAdd
-                                            style={{ color: "#0B99FF" }}
-                                            size="1.5rem"
-                                          />
-                                          {t("clients.addCondition")}
-                                        </button>
+                                          <button
+                                            className="w-fit h-[40px] px-4 rounded-lg flex cursor-pointer items-center text-brand-500 font-normal text-md border border-brand-500"
+                                            onClick={() =>
+                                              addFieldConditionHandler(
+                                                field.id,
+                                                "OR"
+                                              )
+                                            }
+                                          >
+                                            <IoIosAdd
+                                              style={{ color: "#0B99FF" }}
+                                              size="1.5rem"
+                                            />
+                                            {t("clients.addCondition")}
+                                          </button>
+                                        </div>
                                       </div>
-                                    </div>
+                                    )}
                                   </div>
                                 );
                               })}

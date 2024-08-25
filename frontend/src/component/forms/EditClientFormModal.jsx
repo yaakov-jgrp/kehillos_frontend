@@ -22,72 +22,22 @@ import CustomCheckBox from "../fields/checkbox";
 import dayjs from "dayjs";
 import en from "react-phone-number-input/locale/en";
 import he from "react-phone-number-input/locale/he";
-import FormAddedSuccessfullyModal from "./FormAddedSuccessfullyModal";
-import {
-  convertDataForShowingForms,
-  transformFormDataForAddNewClientForm,
-} from "../../utils/helpers";
-import { CLIENTS } from "../../constants";
+import { transformFormDataForAddNewClientForm } from "../../utils/helpers";
 import { toast } from "react-toastify";
 import formService from "../../services/forms";
 
-export default function CreateClientFormModal({
+export default function EditClientFormModal({
   setShowModal,
   setShowSuccessModal,
   clientId,
+  formId,
+  clientDetailForm,
 }) {
   const { t } = useTranslation();
 
   // State for select inputs
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [activeFormState, setActiveFormState] = useState(null);
-  const [searchParams, setSearchParams] = useState({});
-  const [page, setPage] = useState(0);
-  const [clientValue, setClientValue] = useState(null);
-  const [formId, setFormId] = useState("");
-  const [allClients, setAllClients] = useState([]);
-  const [allForms, setAllForms] = useState([]);
-
-  const fetchFormsData = async () => {
-    try {
-      let payload = [];
-      let searchValues = "";
-      for (const searchfield in searchParams) {
-        if (searchParams[searchfield] !== "") {
-          searchValues += `&search_${[searchfield]}=${
-            searchParams[searchfield]
-          }`;
-        }
-      }
-      const params = `?page=${
-        page + 1
-      }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
-      const allFormsPayload = await formsService.getAllForms(params);
-      if (
-        allFormsPayload?.data?.results &&
-        allFormsPayload.data.results.length > 0
-      ) {
-        payload = allFormsPayload.data.results.map((form) =>
-          convertDataForShowingForms(form)
-        );
-      }
-      console.log(payload);
-      setAllForms(payload);
-      setTimeout(() => {}, 500);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchClientsData = async () => {
-    const params = `?page=${1}&lang=${"en"}&page_size=${50}`;
-    // const clientsData = await clientsService.getClients(params);
-    const clientsData = CLIENTS;
-    setAllClients(clientsData.data.data);
-    const clientIdVar = clientId ? clientId : clientsData.data.data[0].id;
-    setClientValue(clientIdVar);
-  };
 
   function addRepeatableBlock(blockId) {
     const activeFormStateObj = { ...activeFormState };
@@ -172,9 +122,10 @@ export default function CreateClientFormModal({
       console.log("The final payload for the API is: ");
       const newClientFormRequestBody =
         transformFormDataForAddNewClientForm(finalPayload);
-      const newClientFormPayload = await formService.createNewClientForm(
-        newClientFormRequestBody
-      );
+      console.log(newClientFormRequestBody);
+      // const newClientFormPayload = await formService.createNewClientForm(
+      //   newClientFormRequestBody
+      // );
       setShowSuccessModal(true);
       setShowModal(false);
     } catch (error) {
@@ -376,14 +327,8 @@ export default function CreateClientFormModal({
   };
 
   useEffect(() => {
-    fetchClientsData();
-    fetchFormsData();
+    setActiveFormState(clientDetailForm);
   }, []);
-
-  useEffect(() => {
-    console.log(allForms.filter((form) => form.id === formId)[0]);
-    setActiveFormState(allForms.filter((form) => form.id === formId)[0]);
-  }, [formId, allForms]);
 
   return (
     <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
@@ -391,7 +336,7 @@ export default function CreateClientFormModal({
         <div className="relative w-auto my-6 mx-auto max-w-7xl">
           <div className="scrollbar-hide w-[60vw] h-[35rem] overflow-y-auto border-0 rounded-xl shadow-lg relative flex flex-col bg-white outline-none focus:outline-none">
             <div className="flex items-center justify-between border-b border-b-[#E3E5E6] rounded-t px-4 py-2">
-              <h3 className="text-lg font-medium">{t("forms.addNewForm")}</h3>
+              <h3 className="text-lg font-medium">{t("forms.clientsForm")}</h3>
               <button
                 className=""
                 onClick={() => setShowModal(false)}
@@ -401,7 +346,7 @@ export default function CreateClientFormModal({
               </button>
             </div>
 
-            <div className="bg-[#F9FBFC] rounded-lg m-4 px-4 pt-4">
+            {/* <div className="bg-[#F9FBFC] rounded-lg m-4 px-4 pt-4">
               <div className="flex items-center gap-2 w-full border-b border-b-[#E3E5E6] pb-4">
                 <div className="w-full">
                   <p>{t("forms.client")}</p>
@@ -409,28 +354,20 @@ export default function CreateClientFormModal({
                     labelId="client-select-label"
                     id="client-select"
                     className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
-                    disabled={!!clientId}
-                    value={clientValue}
+                    disabled
+                    value={clientId}
                     MenuProps={{
                       sx: {
                         maxHeight: "250px",
                         zIndex: 13000,
                       },
                     }}
-                    onChange={(e) => {
-                      console.log(e.target.value);
-                      setClientValue(e.target.value);
-                    }}
+                    onChange={(e) => {}}
                     placeholder="Choose client"
                   >
                     <MenuItem key="select" value="select" disabled>
                       Select
                     </MenuItem>
-                    {allClients.map((client) => (
-                      <MenuItem key={client.id} value={client.id}>
-                        #{client.id} {client.full_name}
-                      </MenuItem>
-                    ))}
                   </Select>
                 </div>
                 <div className="w-full">
@@ -446,23 +383,17 @@ export default function CreateClientFormModal({
                         zIndex: 13000,
                       },
                     }}
-                    onChange={(e) => {
-                      setFormId(e.target.value);
-                    }}
+                    onChange={(e) => {}}
                     placeholder="Choose form"
+                    disabled
                   >
-                    <MenuItem key="select" value="select" disabled>
+                    <MenuItem key="select" value="select">
                       Select
                     </MenuItem>
-                    {allForms.map((form) => (
-                      <MenuItem key={form.id} value={form.id}>
-                        {form.name}
-                      </MenuItem>
-                    ))}
                   </Select>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div className="p-4 h-[30rem] overflow-y-scroll scrollbar-hide">
               {activeFormState &&
@@ -488,11 +419,199 @@ export default function CreateClientFormModal({
                         >
                           {activeFormState.fields.length > 0 ? (
                             <div className="grid grid-cols-3 gap-4">
-                              {renderFields(
-                                activeFormState.fields.filter(
-                                  (field) => field.blockId === blockData.id
+                              {activeFormState.fields
+                                .filter(
+                                  (field) =>
+                                    field.clientFormBlockId === blockData.id
                                 )
-                              )}
+                                .map((field, index) => {
+                                  const isCheckBox = checkBoxConstants.includes(
+                                    field.data_type.value
+                                  );
+                                  return (
+                                    <div
+                                      className="mb-2 px-2 flex flex-col gap-1"
+                                      key={index}
+                                    >
+                                      <div
+                                        className={`flex items-center justify-between ${
+                                          isCheckBox ? "ml-2 w-full" : "mb-1"
+                                        }`}
+                                      >
+                                        <div className="flex items-center">
+                                          <label className="block text-gray-700 text-md font-normal">
+                                            {field.name}
+                                          </label>
+                                          <p className="text-md mx-1 capitalize text-gray-600 font-normal">{`(${field.data_type.value})`}</p>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        {TextFieldConstants.includes(
+                                          field.data_type.value
+                                        ) && (
+                                          <input
+                                            disabled
+                                            type={field.data_type.value}
+                                            className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
+                                            value={field.defaultvalue}
+                                            onChange={(e) =>
+                                              updateFieldValue(
+                                                field.id,
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                        )}
+
+                                        {NumberFieldConstants.includes(
+                                          field.data_type.value
+                                        ) && (
+                                          <input
+                                            disabled
+                                            type="number"
+                                            min="0"
+                                            className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
+                                            value={field.defaultvalue}
+                                            onKeyDown={handleNumberkeyPress}
+                                            onChange={(e) =>
+                                              updateFieldValue(
+                                                field.id,
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                        )}
+
+                                        {field.data_type.value === "phone" && (
+                                          <PhoneInput
+                                            disabled
+                                            labels={lang === "en" ? en : he}
+                                            className="appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2 text-gray-11 [&>input]:outline-none [&>input]:bg-white placeholder:text-gray-10 dark:placeholder:!text-gray-10"
+                                            defaultCountry={"IL"}
+                                            value={field.defaultvalue}
+                                            onChange={(e) =>
+                                              updateFieldValue(field.id, e)
+                                            }
+                                          />
+                                        )}
+
+                                        {field.data_type.value === "file" && (
+                                          <label className="text-md flex items-center w-full appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2.5 text-gray-11">
+                                            <MdOutlineUploadFile
+                                              style={{
+                                                marginRight: "5px",
+                                                fontSize: "1.25rem",
+                                              }}
+                                            />
+                                            {field.defaultvalue}
+                                            <input
+                                              disabled
+                                              type={field.data_type.value}
+                                              onChange={(e) =>
+                                                updateFieldValue(
+                                                  field.id,
+                                                  e.target.value
+                                                )
+                                              }
+                                              hidden
+                                            />
+                                          </label>
+                                        )}
+
+                                        {field.data_type.value === "select" && (
+                                          <Select
+                                            disabled
+                                            className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                                            onChange={
+                                              (e) => console.log(e)
+                                              // updateFieldValue(field.id, e)
+                                            }
+                                            MenuProps={{
+                                              sx: {
+                                                maxHeight: "250px",
+                                                zIndex: 13000,
+                                              },
+                                            }}
+                                            defaultValue={
+                                              field.enum_values?.choices?.filter(
+                                                (item) =>
+                                                  item.label ===
+                                                  field.defaultvalue
+                                              )[0]?.label
+                                            }
+                                            placeholder="Select"
+                                          >
+                                            {field.enum_values?.choices?.map(
+                                              (el) => {
+                                                return el !== "" ? (
+                                                  <MenuItem
+                                                    key={el.id}
+                                                    value={el.label}
+                                                  >
+                                                    {el.label}
+                                                  </MenuItem>
+                                                ) : null;
+                                              }
+                                            )}
+                                          </Select>
+                                        )}
+
+                                        {checkBoxConstants.includes(
+                                          field.data_type.value
+                                        ) && (
+                                          <CustomCheckBox
+                                            disabled={true}
+                                            onChange={(e) =>
+                                              updateFieldValue(
+                                                field.id,
+                                                e.target.checked
+                                              )
+                                            }
+                                            checked={field.defaultvalue}
+                                          />
+                                        )}
+
+                                        {DateFieldConstants.includes(
+                                          field.data_type.value
+                                        ) && (
+                                          <LocalizationProvider
+                                            dateAdapter={AdapterDayjs}
+                                          >
+                                            <DatePicker
+                                              disabled
+                                              className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-0 text-black"
+                                              format="DD/MM/YYYY"
+                                              onChange={(e) =>
+                                                updateFieldValue(
+                                                  field.id,
+                                                  e.target.value
+                                                )
+                                              }
+                                              value={dayjs(field.defaultvalue)}
+                                              slotProps={{
+                                                field: { clearable: true },
+                                                popper: {
+                                                  disablePortal: true,
+                                                },
+                                              }}
+                                              sx={{
+                                                border: 0,
+                                                "& .MuiInputBase-input": {
+                                                  padding: 1.5,
+                                                  border: "none",
+                                                },
+                                                "& fieldset": {
+                                                  borderColor:
+                                                    "inherit!important",
+                                                },
+                                              }}
+                                            />
+                                          </LocalizationProvider>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
                             </div>
                           ) : (
                             <p className="px-2">{t("clients.noFields")}</p>
@@ -517,12 +636,12 @@ export default function CreateClientFormModal({
                 )}
             </div>
 
-            {activeFormState &&
+            {/* {activeFormState &&
               Object.keys(activeFormState).length > 0 &&
               activeFormState.blocks.length > 0 && (
                 <div className="mt-4 p-2 flex justify-center items-center">
                   <button
-                    disabled={!clientValue || !activeFormState}
+                    disabled={!activeFormState}
                     className={`${
                       lang === "he" ? "w-[150px]" : "w-[170px]"
                     } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
@@ -533,7 +652,7 @@ export default function CreateClientFormModal({
                     {t("forms.save")}
                   </button>
                 </div>
-              )}
+              )} */}
           </div>
         </div>
       </div>

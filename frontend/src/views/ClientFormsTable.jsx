@@ -20,10 +20,12 @@ import AddIcon from "../assets/images/add.svg";
 import BinIcon from "../assets/images/bin.svg";
 import VisibilityIcon from "../assets/images/visibility_icon.svg";
 import FilterIcon from "../assets/images/filter_alt.svg";
+import PencilIcon from "../assets/images/pencil.svg";
 // Utils imports
 import { paginationRowOptions } from "../lib/FieldConstants";
 
 // UI Components Imports
+import { IoEyeOutline } from "react-icons/io5";
 
 // API services
 
@@ -31,7 +33,11 @@ import { paginationRowOptions } from "../lib/FieldConstants";
 import { useDispatch, useSelector } from "react-redux";
 import CreateClientFormModal from "../component/forms/CreateClientFormModal";
 import FormAddedSuccessfullyModal from "../component/forms/FormAddedSuccessfullyModal";
-import { formatDate } from "../utils/helpers";
+import {
+  convertDataForShowingClientFormDetails,
+  formatDate,
+} from "../utils/helpers";
+import EditClientFormModal from "../component/forms/EditClientFormModal";
 
 function ClientFormsTable() {
   // states
@@ -48,6 +54,10 @@ function ClientFormsTable() {
   const [activeFormId, setActiveFormId] = useState(null);
   const [showClientFormModal, setShowClientFormModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [clientDetailForm, setClientDetailForm] = useState(null);
+  const [showEditClientFormModal, setShowEditClientFormModal] = useState(false);
+  const [clientId, setClientId] = useState(0);
+  const [clientFormId, setClientFormId] = useState(0);
 
   // handlers
   const handleChangePage = (event, newPage) => {
@@ -104,6 +114,45 @@ function ClientFormsTable() {
     await formsService.deleteClientForm(activeFormId);
     await fetchFormsData();
     setConfirmationModal(false);
+  };
+
+  const fetchClientFormsDetailsData = async (formId) => {
+    try {
+      const formDetailPayload = await formsService.getSingleClientFormDetails(
+        formId
+      );
+      if (formDetailPayload.data) {
+        let payload = convertDataForShowingClientFormDetails(
+          formDetailPayload.data
+        );
+        if (payload.versions.length > 0) {
+          const sortedVersions = payload.versions.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+          const defaultVersion = sortedVersions[0];
+          const defaultVersionDirtyFieldsIdArray =
+            defaultVersion.dirty_fields.map((dirtyField) => dirtyField.fieldId);
+          payload.fields = payload.fields.map((field) => {
+            if (defaultVersionDirtyFieldsIdArray.includes(field.id)) {
+              return {
+                ...field,
+                defaultvalue: defaultVersion.dirty_fields.find(
+                  (dirtyField) => dirtyField.fieldId === field.id
+                ).current,
+              };
+            }
+            return field;
+          });
+        }
+        console.log(payload);
+        setClientDetailForm(payload);
+        setClientId(payload.clientId);
+        setClientFormId(payload.id);
+        setShowEditClientFormModal(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // effects
@@ -265,6 +314,13 @@ function ClientFormsTable() {
                           <td>{el.lastEditedAt}</td>
                           <td>
                             <div className="h-auto w-full flex items-center justify-center gap-2">
+                              <button
+                                onClick={() => {
+                                  fetchClientFormsDetailsData(el.id);
+                                }}
+                              >
+                                <IoEyeOutline size={20} />
+                              </button>
                               <img
                                 src={BinIcon}
                                 alt="BinIcon"
@@ -308,6 +364,16 @@ function ClientFormsTable() {
           setShowModal={setShowClientFormModal}
           setShowSuccessModal={setShowSuccessModal}
           clientId={null}
+        />
+      )}
+
+      {showEditClientFormModal && (
+        <EditClientFormModal
+          setShowModal={setShowEditClientFormModal}
+          setShowSuccessModal={setShowSuccessModal}
+          clientId={clientId}
+          formId={clientFormId}
+          clientDetailForm={clientDetailForm}
         />
       )}
 

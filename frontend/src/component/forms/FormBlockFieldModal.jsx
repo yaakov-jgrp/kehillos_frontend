@@ -490,7 +490,7 @@ function FormBlockFieldModal({
                                     className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
                                     onChange={onChange}
                                     onBlur={onBlur}
-                                    value={value}
+                                    defaultValue=""
                                     placeholder="Select Default Value"
                                   >
                                     {selectedValues?.map((el) => {
