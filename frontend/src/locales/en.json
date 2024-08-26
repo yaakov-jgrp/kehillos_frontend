@@ -364,6 +364,7 @@
     "versionName": "Version Name",
     "versionComments": "Comments",
     "comment": "Comment",
-    "clientsForm": "Client's Form"
+    "clientsForm": "Client's Form",
+    "enter": "Enter"
   }
 }
