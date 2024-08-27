@@ -28,38 +28,52 @@ import {
   checkBoxValues,
   dataTypes,
 } from "../../lib/FieldConstants";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setActiveForm,
+  setBlocks,
+  setFields,
+} from "../../redux/activeFormSlice";
+import { isFloat } from "../../utils/helpers";
+import formService from "../../services/forms";
 
-function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
+function FormBlockFieldModal({
+  block,
+  formId,
+  blockId,
+  setShowModal,
+  onClick,
+  editData,
+}) {
   const { t } = useTranslation();
+  const activeForm = useSelector((state) => state.activeForm);
+  const dispatch = useDispatch();
   const [selectValue, setSelectValue] = useState("");
   const [selectedValues, setSelectedValues] = useState([]);
   const [formLoading, setFormLoading] = useState(false);
   const [defaultValues, setDefaultValues] = useState(
     block
       ? {
+          id: blockId,
+          formId: formId,
           name: "",
-          field_name_language: {
-            he: "",
-          },
-          is_block_created: true,
+          isRepeatable: false,
         }
       : {
           name: "",
-          field_name_language: {
-            he: "",
-          },
-          block_id: blockId,
+          blockId: editData?.blockId ?? blockId,
           value: "",
           data_type: dataTypes[0],
           required: false,
           defaultvalue: "",
           unique: false,
-          display: true,
         }
   );
 
   const schema = block
     ? yup.object().shape({
+        id: yup.number().notRequired(),
+        formId: yup.number().notRequired(),
         name: yup
           .string()
           .min(
@@ -71,6 +85,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
           .required(
             `${t("netfree.name")} ${t("clients.is")} ${t("clients.required")}`
           ),
+        isRepeatable: yup.boolean().notRequired(),
       })
     : yup.object().shape({
         name: yup
@@ -84,7 +99,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
           .required(
             `${t("netfree.name")} ${t("clients.is")} ${t("clients.required")}`
           ),
-        block_id: yup.string().required(),
+        blockId: yup.number().required(),
         data_type: yup
           .string()
           .required(
@@ -107,7 +122,6 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
         required: yup.boolean().required(),
         defaultvalue: yup.string().notRequired(),
         unique: yup.boolean().required(),
-        display: yup.boolean().required(),
       });
 
   const {
@@ -115,7 +129,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     setValue,
     reset,
     watch,
-    formState: { errors, dirtyFields },
+    formState: { errors },
     handleSubmit,
   } = useForm({
     defaultValues,
@@ -126,10 +140,14 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
   const initModal = () => {
     setFormLoading(true);
     if (editData) {
-      setValue("field_name_language", editData?.field_name_language);
+      // setValue("field_name_language", editData?.field_name_language);
       if (block) {
-        setValue("name", editData?.block);
+        setValue("id", blockId);
+        setValue("formId", formId);
+        setValue("name", editData?.name);
+        setValue("isRepeatable", editData?.isRepeatable, { shouldDirty: true });
       } else {
+        setValue("blockId", editData.blockId);
         if (editData?.data_type.value === "select") {
           const choices = editData?.enum_values?.choices?.map(
             (item) => item.value
@@ -137,12 +155,11 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
           setValue("value", choices.join(","));
           setSelectedValues(choices);
         }
-        setValue("name", editData?.field_name);
+        setValue("name", editData?.name);
         setValue("data_type", editData?.data_type.value);
-        setValue("defaultvalue", editData?.defaultvalue || "");
+        setValue("defaultvalue", JSON.stringify(editData?.defaultvalue) || "");
         setValue("required", editData?.required);
         setValue("unique", editData?.unique);
-        setValue("display", editData?.display);
       }
     }
     setTimeout(() => {
@@ -174,80 +191,111 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     e.preventDefault();
     if (editData) {
       let updatedData;
-      const updateArray = [];
       if (block) {
-        for (const dirtyField in dirtyFields) {
-          updateArray.push({
-            [dirtyField]: data[dirtyField],
-          });
-        }
-        const updateValues = updateArray.reduce(
-          (acc, curr) => Object.assign(acc, curr),
-          {}
+        dispatch(
+          setBlocks(
+            activeForm.blocks.map((block) => {
+              if (block.id === data.id) {
+                return data;
+              }
+              return block;
+            })
+          )
         );
-        updatedData = {
-          fields: [
-            {
-              id: editData?.block_id,
-              ...updateValues,
-            },
-          ],
-          is_block: true,
-        };
+        reset();
+        setShowModal(false);
+        onClick();
       } else {
-        for (const dirtyField in dirtyFields) {
-          if (!BlockFieldCheckValues.includes(dirtyField)) {
-            updateArray.push({
-              [dirtyField]: data[dirtyField],
-            });
-          }
-        }
-        for (const value of BlockFieldCheckValues) {
-          updateArray.push({
-            [value]: data[value],
-          });
-        }
-        const updateValues = updateArray.reduce(
-          (acc, curr) => Object.assign(acc, curr),
-          {}
+        dispatch(
+          setFields(
+            activeForm.fields.map((field) => {
+              if (field.id === editData.id) {
+                return {
+                  ...editData,
+                  name: data.name,
+                  defaultvalue: data.defaultvalue,
+                  required: data.required,
+                  unique: data.unique,
+                };
+              }
+              return field;
+            })
+          )
         );
-        updatedData = {
-          fields: [
-            {
-              id: editData.id,
-              ...updateValues,
-            },
-          ],
-        };
+        reset();
+        setShowModal(false);
       }
-
-      clientsService
-        .updateBlockField(updatedData)
-        .then((res) => {
-          reset();
-          setShowModal(false);
-          onClick();
-        })
-        .catch((err) => console.log(err));
+      // Call the API from form service to update the block/field data
+      // clientsService
+      //   .updateBlockField(updatedData)
+      //   .then((res) => {
+      //     reset();
+      //     setShowModal(false);
+      //     onClick();
+      //   })
+      //   .catch((err) => console.log(err));
     } else {
-      let newDataValues = [];
-      for (const newValue in data) {
-        newDataValues.push({
-          [newValue]: data[newValue],
-        });
+      if (block) {
+        delete data.blockId;
+        if (!isFloat(formId)) {
+          const newBlock = await formService.createNewBlock({
+            formId: parseInt(formId),
+            name: data.name,
+            isRepeatable: data.isRepeatable,
+          });
+          dispatch(setBlocks([...activeForm.blocks, newBlock.data]));
+        } else {
+          dispatch(
+            setBlocks([
+              ...activeForm.blocks,
+              {
+                formId: parseInt(formId),
+                id: Math.random() + Date.now(),
+                name: data.name,
+                isRepeatable: data.isRepeatable,
+              },
+            ])
+          );
+        }
+        reset();
+        setShowModal(false);
+        onClick();
+      } else {
+        const enum_values = {
+          choices: [],
+        };
+        if (data.data_type === "select" && data.value !== "") {
+          const enumsChoicesArray = data.value.split(",");
+          enum_values.choices = enumsChoicesArray.map((item, index) => ({
+            id: index + 1,
+            label: item,
+            value: item,
+          }));
+        }
+        const newFieldPayload = {
+          ...data,
+          enum_values,
+          blockId,
+          data_type: {
+            value: data.data_type,
+            label: data.data_type,
+          },
+        };
+        delete newFieldPayload.value;
+        if (!isFloat(blockId)) {
+          const newField = await formService.createNewField(newFieldPayload);
+          dispatch(setFields([...activeForm.fields, newField.data]));
+        } else {
+          dispatch(
+            setFields([
+              ...activeForm.fields,
+              { id: Math.random() + Date.now(), ...newFieldPayload },
+            ])
+          );
+        }
+        reset();
+        setShowModal(false);
       }
-      const newValues = newDataValues.reduce(
-        (acc, curr) => Object.assign(acc, curr),
-        {}
-      );
-      clientsService
-        .createBlockField(newValues)
-        .then((res) => {
-          reset();
-          setShowModal(false);
-          onClick();
-        })
-        .catch((err) => console.log(err));
     }
   };
 
@@ -278,7 +326,14 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
               method="post"
               noValidate
               autoComplete="off"
-              onSubmit={handleSubmit((data, e) => submitForm(data, e))}
+              onSubmit={handleSubmit(
+                (data, e) => {
+                  submitForm(data, e);
+                },
+                (errors) => {
+                  console.log(errors);
+                }
+              )}
             >
               <div className="flex items-center justify-between p-5 border-b border-solid border-[#E3E5E6] rounded-t ">
                 <h3 className="text-lg font-medium text-gray-11">
@@ -319,6 +374,21 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                     />
                   </div>
 
+                  {block && (
+                    <div className="my-1 flex items-center -ml-2">
+                      <Controller
+                        name="isRepeatable"
+                        control={control}
+                        render={({ field: { value, onChange, onBlur } }) => (
+                          <CustomCheckBox checked={value} onChange={onChange} />
+                        )}
+                      />
+                      <label className="text-gray-11">
+                        {t("forms.isThisSectionRepeated")}
+                      </label>
+                    </div>
+                  )}
+
                   {errors.name && (
                     <ErrorMessage message={errors.name.message} />
                   )}
@@ -357,9 +427,11 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                           )}
                         />
                       </div>
+
                       {errors.data_type && (
                         <ErrorMessage message={errors.data_type.message} />
                       )}
+
                       {watch("data_type") === "select" ? (
                         <div className="my-1">
                           <label className="block text-gray-11 text-md font-normal my-1">
@@ -418,7 +490,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                                     className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
                                     onChange={onChange}
                                     onBlur={onBlur}
-                                    value={value}
+                                    defaultValue=""
                                     placeholder="Select Default Value"
                                   >
                                     {selectedValues?.map((el) => {
@@ -572,4 +644,4 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
   );
 }
 
-export default BlockFieldModal;
+export default FormBlockFieldModal;

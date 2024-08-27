@@ -19,4 +19,4 @@ function BlockButton(props) {
   );
 }
 
-export default React.memo(BlockButton);
+export default BlockButton;

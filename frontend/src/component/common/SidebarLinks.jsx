@@ -63,7 +63,20 @@ export function SidebarLinks(props) {
               : "text-gray-10"
               }`}
           >
-            {route.icon ? route.icon : <DashIcon />}
+            {route.icon && route.path !== "/clients-form" ? (
+              route.icon
+            ) : (
+              <DashIcon />
+            )}
+            {route.icon &&
+              route.path === "/clients-form" &&
+              activeRoute(route) &&
+              route.icon}
+
+            {route.icon &&
+              route.path !== "/clients-form" &&
+              !activeRoute(route) &&
+              route.darkIcon}
           </span>
           <p
             className={`leading-1 flex ${activeRoute(route) === true && type !== "sub-menu"
@@ -110,18 +123,18 @@ export function SidebarLinks(props) {
           <div>
             {isSettingsOpen
               ? route.children.map((subMenu, subIndex) => {
-                return (
-                  <div key={subMenu.name + subIndex} className="px-10">
-                    <Link to={"/" + subMenu.path}>
-                      <GenerateMenuLink
-                        index={subIndex}
-                        route={subMenu}
-                        type="sub-menu"
-                      />
-                    </Link>
-                  </div>
-                );
-              })
+                  return (
+                    <div key={subMenu.name + subIndex} className="px-4">
+                      <Link to={"/" + subMenu.path}>
+                        <GenerateMenuLink
+                          index={subIndex}
+                          route={subMenu}
+                          type="sub-menu"
+                        />
+                      </Link>
+                    </div>
+                  );
+                })
               : null}
           </div>
         </div>

@@ -38,10 +38,17 @@ import { ToastContainer } from "react-toastify";
 import { MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
 import { IoLogoBuffer } from "react-icons/io";
+import FormsIcon from "../src/assets/images/forms.svg";
+import FormsDarkIcon from "../src/assets/images/forms_dark.svg";
 
 // Utils imports
 import { DEFAULT_LANGUAGE } from "./constants";
 import { ACCESS_TOKEN_KEY } from "./constants";
+import Forms from "./views/Forms";
+import FormDetails from "./views/FormDetails";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+import ClientFormsTable from "./views/ClientFormsTable";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -121,6 +128,16 @@ function App() {
       component: <Clients />,
     },
     {
+      name: t("sidebar.forms"),
+      path: "client-forms",
+      type: "menu",
+      icon: <img src={FormsIcon} alt="forms-icon" className="h-4 w-4" />,
+      darkIcon: (
+        <img src={FormsDarkIcon} alt="forms-icon" className="h-6 w-6 -mt-4" />
+      ),
+      component: <ClientFormsTable />,
+    },
+    {
       name: t("sidebar.users"),
       path: "settings/users",
       type: "menu",
@@ -136,6 +153,21 @@ function App() {
       name: t("clients.clientFormSettings"),
       path: "settings/formSettings",
       component: <ClientsForm />,
+    },
+    {
+      name: t("sidebar.formCreation"),
+      path: "settings/forms",
+      component: <Forms />,
+    },
+    {
+      name: t("sidebar.formCreation"),
+      path: "settings/forms/:id",
+      component: <FormDetails />,
+    },
+    {
+      name: t("sidebar.formCreation"),
+      path: "settings/forms/new-form",
+      component: <FormDetails />,
     },
     {
       name: t("sidebar.request"),
@@ -180,35 +212,39 @@ function App() {
   ];
 
   return (
-    <ThemeProvider theme={themeWithLocale}>
-      <Router>
-        <Routes>
-          <Route exact path="/signin" element={<SignIn />} />
-          <Route
-            element={
-              <RouteGuard token={ACCESS_TOKEN_KEY} routeRedirect="/signin" />
-            }
-          >
+    <Provider store={store}>
+      <ThemeProvider theme={themeWithLocale}>
+        <Router>
+          <Routes>
+            <Route exact path="/signin" element={<SignIn />} />
             <Route
-              path="/*"
-              element={<Navigate to={routes[0].path} replace />}
-            />
-            {routes.map((prop, key) => {
-              return (
-                <Route
-                  path={`/${prop.path}`}
-                  element={
-                    <DefaultLayout route={prop}>{prop.component}</DefaultLayout>
-                  }
-                  key={key}
-                />
-              );
-            })}
-          </Route>
-        </Routes>
-      </Router>
-      <ToastContainer autoClose={2000} />
-    </ThemeProvider>
+              element={
+                <RouteGuard token={ACCESS_TOKEN_KEY} routeRedirect="/signin" />
+              }
+            >
+              <Route
+                path="/*"
+                element={<Navigate to={routes[0].path} replace />}
+              />
+              {routes.map((prop, key) => {
+                return (
+                  <Route
+                    path={`/${prop.path}`}
+                    element={
+                      <DefaultLayout route={prop}>
+                        {prop.component}
+                      </DefaultLayout>
+                    }
+                    key={key}
+                  />
+                );
+              })}
+            </Route>
+          </Routes>
+        </Router>
+        <ToastContainer autoClose={2000} />
+      </ThemeProvider>
+    </Provider>
   );
 }
 

@@ -25,7 +25,9 @@ function CustomAccordion({ title, children, onClick, showAddButton }) {
               textAlign="left"
               className="flex items-center justify-between px-2"
             >
-              <p className="text-[20px] text-gray-11 font-medium capitalize">{title}</p>
+              <p className="text-[20px] text-gray-11 font-medium capitalize">
+                {title}
+              </p>
               {isExpanded && showAddButton && (
                 <AddButtonIcon extra={""} onClick={onClick} />
               )}

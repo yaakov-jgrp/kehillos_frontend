@@ -12,6 +12,7 @@ import Users from "../../views/Users";
 import { useTranslation } from "react-i18next";
 
 // Icon imports
+import FormsSvg from "../../assets/forms.svg";
 import { HiX } from "react-icons/hi";
 import {
   MdOutlineContactSupport,
@@ -23,7 +24,9 @@ import { IoLogoBuffer } from "react-icons/io";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
 import NetfreeIcon from "../../constants/icons/NetfreeIcon";
 import Logo from "../../assets/images/Kehillos_Logo.svg";
-import { color } from "framer-motion";
+import FormsIcon from "../../assets/images/forms.svg";
+import FormsDarkIcon from "../../assets/images/forms_dark.svg";
+import ClientFormsTable from "../../views/ClientFormsTable";
 
 const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
@@ -34,6 +37,20 @@ const Sidebar = ({ open, onClose }) => {
       type: "menu",
       icon: <HiOutlineUserGroup className="h-6 w-6" />,
       component: <Clients />,
+    },
+    {
+      name: t("sidebar.forms"),
+      path: "client-forms",
+      type: "menu",
+      icon: <img src={FormsIcon} alt="forms-icon" className="h-4 w-4" />,
+      darkIcon: (
+        <img
+          src={FormsDarkIcon}
+          alt="forms-dark-icon"
+          className="h-6 w-6 -mt-4"
+        />
+      ),
+      component: <ClientFormsTable />,
     },
     {
       name: t("sidebar.request"),
@@ -47,6 +64,13 @@ const Sidebar = ({ open, onClose }) => {
       type: "top-menu",
       icon: <MdOutlineSettings className="h-6 w-6" />,
       children: [
+        {
+          name: t("sidebar.formCreation"),
+          path: "settings/forms",
+          type: "menu",
+          icon: <img src={FormsSvg} className="h-5 w-5" />,
+          component: <ClientsForm />,
+        },
         {
           name: t("sidebar.clients"),
           path: "settings/formSettings",
@@ -121,8 +145,13 @@ const Sidebar = ({ open, onClose }) => {
 
       {/* Adding the new div with support information */}
       <div className="text-center mt-auto py-2">
-        <p style={{ fontSize: '14px' }}>  <a href="mailto:support@kehillos.com">support@kehillos.com</a></p>
-        <p style={{ fontSize: '12px', color: '#4597f7' }}>Powering tomorrow <a href="https://jgrp.dev">jgrp.dev</a></p>
+        <p style={{ fontSize: "15px" }}>
+          {" "}
+          <a href="mailto:support@kehillos.com">support@kehillos.com</a>
+        </p>
+        <p style={{ fontSize: "12px", color: "#4597f7" }}>
+          Powering tomorrow <a href="https://jgrp.dev">jgrp.dev</a>
+        </p>
       </div>
     </div>
   );

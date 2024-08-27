@@ -164,7 +164,7 @@ function IndividualEditField({ field, clientData, setClientData }) {
     <div className={`mb-2 ${lang === "he" ? "pr-2" : "pl-2"}`}>
       <div className={`flex items-center justify-between mb-1`}>
         <div className="flex w-full items-center">
-          <label className={`block text-gray-10 text-[15px] font-normal w-1/5`}>
+          <label className={`block text-gray-10 text-[15px] font-normal w-2/5`}>
             {lang === "he" ? field?.field_name_language.he : field?.field_name}
           </label>
           <div className="flex items-center justify-between w-full px-2">
