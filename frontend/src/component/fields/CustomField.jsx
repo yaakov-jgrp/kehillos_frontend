@@ -34,7 +34,7 @@ import { handleNumberkeyPress } from "../../lib/CommonFunctions";
 
 function CustomField(props) {
   const { t } = useTranslation();
-  const { data_type, required, enum_values, defaultvalue, field_slug } =
+  const { data_type, required, enum_values, defaultvalue, field_slug, name } =
     props.field;
   const { onChange, onBlur, value, disabled } = props;
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -46,11 +46,11 @@ function CustomField(props) {
           type={data_type.value}
           className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
           required={required}
-          onChange={onChange}
+          onChange={(e) => onChange(e)}
           onBlur={onBlur}
           value={value ? value : ""}
           disabled={disabled}
-          placeholder={t(`clients.${field_slug}`)}
+          placeholder={`${t("forms.enter")} ${name}`}
         />
       )}
       {NumberFieldConstants.includes(data_type.value) && (
@@ -64,19 +64,19 @@ function CustomField(props) {
           onBlur={onBlur}
           value={value ? value : ""}
           disabled={disabled}
-          placeholder={t(`clients.${field_slug}`)}
+          placeholder={`${t("forms.enter")} ${name}`}
         />
       )}
       {data_type.value === "phone" && (
         <PhoneInput
           labels={lang === "en" ? en : he}
           className="appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2 text-gray-11 [&>input]:outline-none [&>input]:bg-white placeholder:text-gray-10 dark:placeholder:!text-gray-10"
-          placeholder={t("clients.enterNumber")}
           defaultCountry={"IL"}
           value={value ? value : ""}
           onChange={onChange}
           onBlur={onBlur}
           disabled={disabled}
+          placeholder={t("clients.enterNumber")}
         />
       )}
       {data_type.value === "file" && (

@@ -34,7 +34,7 @@
     "open_url_temporary_pre_text": "טקסט לפני פתיחת URL זמנית",
     "open_url_temporary": "URL שנפתח זמנית",
     "open_url_temporary_after_text": "טקסט אחרי פתיחת URL זמנית"
-},
+  },
   "messages": {
     "mustBeValid": "חייב להיות דואר חוקי",
     "mustContain": "חייב להכיל לפחות",
@@ -76,11 +76,13 @@
     "emails": "תבניות",
     "profile": "פרופיל",
     "logout": "התנתק",
+    "formCreation": "יצירת טופס",
     "clients": "לקוחות",
     "details": "פרטים",
     "logs": "היסטוריה",
     "users": "משתמשים",
-    "templating": "תגים"
+    "templating": "תגים",
+    "forms": "טפסים"
   },
   "requests": {
     "title": "פניות",
@@ -188,7 +190,8 @@
     "netfree": "נטפרי",
     "emails": "אימייל",
     "logs": "יומן",
-    "templating": "תבנית"
+    "templating": "תבנית",
+    "forms": "הגדרות טופס"
   },
   "emails": {
     "templates": "תבניות",
@@ -812,5 +815,44 @@
   "tools.tabs.uploads": "העלאות",
   "tools.text.personalize": "התאמה אישית",
   "tools.tooltip.drag_on_canvas": "גרור על בד",
-  "tools.tooltip.got_it": "הבנתי"
+  "tools.tooltip.got_it": "הבנתי",
+  "forms": {
+    "formsManagement": "ניהול טפסים",
+    "createNewForm": "צור טופס חדש",
+    "name": "שֵׁם",
+    "description": "תיאור",
+    "dateCreated": "תאריך יצירה",
+    "dateFilledOut": "תאריך מילוי",
+    "datelastEdited": "תאריך עריכה אחרון",
+    "formCreation": "יצירת טופס",
+    "formName": "שם טופס",
+    "formDesc": "תיאור הטופס",
+    "pinForm": "טופס סיכה",
+    "isThisSectionRepeated": "האם הסעיף הזה חוזר על עצמו",
+    "submit": "שלח",
+    "conditions": "תנאים",
+    "condition": "מַצָב",
+    "conditions_message_1": "כל התנאים (יש לעמוד בכל התנאים)",
+    "conditions_message_2": "כל תנאי (יש לעמוד באחד מהתנאים לפחות)",
+    "field": "שדה",
+    "value_placeholder": "הזן ערך",
+    "forms": "טפסים",
+    "allForms": "כל הטפסים",
+    "addNewForm": "הוסף טופס חדש",
+    "clientId": "מזהה לקוח",
+    "client": "לָקוּחַ",
+    "form": "טופס",
+    "save": "לְהַצִיל",
+    "add": "לְהוֹסִיף",
+    "formAddedSuccessfully": "טופס נוסף בהצלחה!",
+    "commentAddedSuccessfully": "התגובה שלך נשמרה!",
+    "goBack": "חזור",
+    "editForm": "ערוך טופס",
+    "remark": "הֶעָרָה",
+    "versionName": "שם גרסה",
+    "versionComments": "הערות",
+    "comment": "הֶעָרָה",
+    "clientsForm": "טופס הלקוח",
+    "enter": "לְהַכנִיס"
+  }
 }

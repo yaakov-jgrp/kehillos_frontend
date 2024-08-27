@@ -16,9 +16,9 @@
     "AddNewClient": "Add New Client"
   },
   "email_builder": {
-    "requests":"Requests",
+    "requests": "Requests",
     "clients": "Clients",
-    "netfree_traffic":"Traffic Recordings",
+    "netfree_traffic": "Traffic Recordings",
     "open_domain_pre_text": "Pre-text for opening a domain",
     "open_domain_list": "List of opened domains",
     "open_domain_after_text": "After-text for opening a domain",
@@ -76,11 +76,13 @@
     "emails": "Emails",
     "profile": "Profile",
     "logout": "Logout",
+    "formCreation": "Form Creation",
     "clients": "Clients",
     "details": "Details",
     "logs": "Logs History",
     "users": "Users",
-    "templating": "Templating"
+    "templating": "Templating",
+    "forms": "Forms"
   },
   "requests": {
     "title": "Requests",
@@ -188,7 +190,8 @@
     "netfree": "netfree",
     "emails": "emails",
     "logs": "logs",
-    "templating": "templating"
+    "templating": "templating",
+    "forms": "Form Settings"
   },
   "emails": {
     "templates": "Templates",
@@ -324,6 +327,44 @@
     "action": "Action",
     "entity": "Entity",
     "timeStamp": "Time Stamp"
+  },
+  "forms": {
+    "formsManagement": "Forms Management",
+    "createNewForm": "Create New Form",
+    "name": "Name",
+    "description": "Description",
+    "dateCreated": "Date Created",
+    "dateFilledOut": "Date Filled Out",
+    "datelastEdited": "Date Last Edited",
+    "formCreation": "Form Creation",
+    "formName": "Form Name",
+    "formDesc": "Form Description",
+    "pinForm": "Pin Form",
+    "isThisSectionRepeated": "Is this section repeated",
+    "submit": "Submit",
+    "conditions": "Conditions",
+    "condition": "Condition",
+    "conditions_message_1": "All Conditions (All conditions must be met)",
+    "conditions_message_2": "Any Conditions (At least one of the conditions must be met)",
+    "field": "Field",
+    "value_placeholder": "Enter value",
+    "forms": "Forms",
+    "allForms": "All Forms",
+    "addNewForm": "Add New Form",
+    "clientId": "Client ID",
+    "client": "Client",
+    "form": "Form",
+    "save": "Save",
+    "add": "Add",
+    "formAddedSuccessfully": "Form Added successfully!",
+    "commentAddedSuccessfully": "Your Comment has been saved!",
+    "goBack": "Go Back",
+    "editForm": "Edit Form",
+    "remark": "Remark",
+    "versionName": "Version Name",
+    "versionComments": "Comments",
+    "comment": "Comment",
+    "clientsForm": "Client's Form",
+    "enter": "Enter"
   }
-  
 }
