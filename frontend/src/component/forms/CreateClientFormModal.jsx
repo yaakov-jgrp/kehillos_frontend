@@ -30,6 +30,7 @@ import {
 import { CLIENTS } from "../../constants";
 import { toast } from "react-toastify";
 import formService from "../../services/forms";
+import clientsService from "../../services/clients";
 
 export default function CreateClientFormModal({
   setShowModal,
@@ -82,8 +83,8 @@ export default function CreateClientFormModal({
 
   const fetchClientsData = async () => {
     const params = `?page=${1}&lang=${"en"}&page_size=${50}`;
-    // const clientsData = await clientsService.getClients(params);
-    const clientsData = CLIENTS;
+    const clientsData = await clientsService.getClients(params);
+    // const clientsData = CLIENTS;
     setAllClients(clientsData.data.data);
     const clientIdVar = clientId ? clientId : clientsData.data.data[0].id;
     setClientValue(clientIdVar);
