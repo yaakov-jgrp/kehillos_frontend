@@ -36,12 +36,16 @@ import {
 } from "../../../utils/helpers";
 import CreateClientFormModal from "../../forms/CreateClientFormModal";
 import FormAddedSuccessfullyModal from "../../forms/FormAddedSuccessfullyModal";
+import CustomAccordion from "../../common/Accordion";
 import { toast } from "react-toastify";
 import { RiHistoryLine } from "react-icons/ri";
+import { Accordion } from "@chakra-ui/react";
+import { FieldVersionHistory } from "../../forms/FieldVersionHistory";
 
 export const ClientFormsTabPanel = ({ clientId }) => {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  const { first_name } = JSON.parse(localStorage.getItem("user_details"));
   const [allClientForms, setAllClientForms] = useState([]);
   const [activeFormId, setActiveFormId] = useState(null);
   const [activeForm, setActiveForm] = useState(null);
@@ -61,6 +65,11 @@ export const ClientFormsTabPanel = ({ clientId }) => {
   const [showVersionDropdown, setShowVersionDropdown] = useState(false);
   const [showVersionDetailBox, setShowVersionDetailBox] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [fieldsHistory, setFieldsHistory] = useState({});
+  const [currentFieldHistoryArray, setCurrentFieldsHistoryArray] = useState([]);
+  const [currentFieldHistoryId, setCurrentFieldsHistoryId] = useState(null);
+  const [currentFieldBlockId, setCurrentFieldBlockId] = useState(null);
+  const [showFieldHistoryBox, setShowFieldHistoryBox] = useState(false);
 
   const fetchFormsData = async () => {
     setIsLoading(true);
@@ -102,6 +111,7 @@ export const ClientFormsTabPanel = ({ clientId }) => {
           setDirtyFields(
             payload.fields.map((field) => ({
               fieldId: field.id,
+              name: field.name,
               current: field.defaultvalue,
               previous: field.defaultvalue,
             }))
@@ -123,7 +133,31 @@ export const ClientFormsTabPanel = ({ clientId }) => {
             }
             return field;
           });
+          const changedFieldsHistory = {};
+          payload.versions.forEach((version) => {
+            version.dirty_fields.forEach((dirtyField) => {
+              if (changedFieldsHistory.hasOwnProperty(dirtyField.fieldId)) {
+                changedFieldsHistory[dirtyField.fieldId].push({
+                  ...version,
+                  dirty_fields: version.dirty_fields.filter(
+                    (item) => item.fieldId === dirtyField.fieldId
+                  ),
+                });
+              } else {
+                changedFieldsHistory[dirtyField.fieldId] = [
+                  {
+                    ...version,
+                    dirty_fields: version.dirty_fields.filter(
+                      (item) => item.fieldId === dirtyField.fieldId
+                    ),
+                  },
+                ];
+              }
+            });
+          });
+          setFieldsHistory(changedFieldsHistory);
         }
+        console.log(payload);
         setActiveForm(payload);
       }
     } catch (error) {
@@ -233,6 +267,7 @@ export const ClientFormsTabPanel = ({ clientId }) => {
         clientFormId: activeFormId,
         dirty_fields: dirtyFieldsPayload,
       };
+      console.log(newVersionRequestPayload);
       const newVersionResponse = await formsService.createNewClientFormVersion(
         newVersionRequestPayload
       );
@@ -368,11 +403,11 @@ export const ClientFormsTabPanel = ({ clientId }) => {
               <>
                 {allClientForms && allClientForms.length > 0 ? (
                   <>
-                    {allClientForms.map((el) => {
+                    {allClientForms.map((el, index) => {
                       return (
                         <tr
                           className={`h-[75px] border-b border-b-[#F2F2F2] cursor-pointer py-12 ${
-                            el.isPined ? "bg-[#0B99FF1A]" : ""
+                            el.id === activeFormId ? "bg-[#0B99FF1A]" : ""
                           }`}
                           key={el.id}
                           onClick={() => {
@@ -435,7 +470,7 @@ export const ClientFormsTabPanel = ({ clientId }) => {
 
                   {activeForm && activeForm.versions.length > 0 && (
                     <div
-                      className={`z-10000 rounded-lg w-full scrollbar-hide absolute top-12 left-0 bg-white shadow-lg transition-all ease-in-out duration-300 transform ${
+                      className={`z-[10000] rounded-lg w-full scrollbar-hide absolute top-12 left-0 bg-white shadow-lg transition-all ease-in-out duration-300 transform ${
                         showVersionDropdown
                           ? "opacity-100 scale-100"
                           : "opacity-0 scale-95 pointer-events-none"
@@ -479,7 +514,7 @@ export const ClientFormsTabPanel = ({ clientId }) => {
                         onMouseLeave={() => {
                           setShowVersionDetailBox(false);
                         }}
-                        className={`w-[320px] rounded-lg scrollbar-hide absolute top-2 right-64 bg-white shadow-lg`}
+                        className={`z-[10000] w-[370px] rounded-lg scrollbar-hide absolute top-2 right-64 bg-white shadow-lg`}
                       >
                         <div className="bg-[#F9FBFC] p-3 flex flex-col gap-2">
                           <div className="flex items-center justify-between">
@@ -503,7 +538,7 @@ export const ClientFormsTabPanel = ({ clientId }) => {
                           </div>
                           <div>
                             <p className="text-[#000] font-medium text-[14px]">
-                              Yaakov Hershberg
+                              {first_name}
                             </p>
                             <p className="text-[#828282] font-medium text-[14px]">
                               {formatDate(activeFormCurrentVersion.createdAt)}
@@ -526,18 +561,22 @@ export const ClientFormsTabPanel = ({ clientId }) => {
                               <div className="border-b border-b-solid border-b-[#E0E0E0] py-2 flex flex-col gap-2">
                                 <div className="flex items-center gap-24">
                                   <p className="text-[#000] font-medium text-[14px]">
-                                    Current
+                                    {dirtyField?.name
+                                      ? `${dirtyField?.name} (Current)`
+                                      : "Current"}
                                   </p>
                                   <p className="text-[#828282] font-medium text-[14px]">
-                                    :{dirtyField.current}
+                                    :{`${dirtyField.current}`}
                                   </p>
                                 </div>
                                 <div className="flex items-center gap-24">
                                   <p className="text-[#000] font-medium text-[14px]">
-                                    Previous
+                                    {dirtyField?.name
+                                      ? `${dirtyField?.name} (Previous)`
+                                      : "Previous"}
                                   </p>
                                   <p className="text-[#828282] font-medium text-[14px]">
-                                    :{dirtyField.previous}
+                                    :{`${dirtyField.previous}`}
                                   </p>
                                 </div>
                               </div>
@@ -566,151 +605,226 @@ export const ClientFormsTabPanel = ({ clientId }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-32 gap-y-4 pt-8 pb-12">
-            {!editMode &&
-              activeForm.fields.map((field, index) => (
-                <div key={index} className="flex justify-between">
-                  <span className="text-[#5C5C5C] flex items-center gap-2">
-                    {checkIsFieldDirty(field.id) && (
-                      <RiHistoryLine color="#000" />
-                    )}
-                    {field.name}
-                  </span>
-                  <span className="text-[#1C1C1C]">
-                    :
-                    {field.defaultvalue === true
-                      ? "Yes"
-                      : field.defaultvalue === false
-                      ? "No"
-                      : field.defaultvalue}
-                  </span>
-                </div>
-              ))}
+          <div className="my-4">
+            {activeForm.blocks &&
+              activeForm.blocks.length > 0 &&
+              activeForm.blocks.map((block, index) => (
+                <Accordion
+                  className="z-10"
+                  defaultIndex={Array.from(
+                    { length: activeForm?.blocks?.length },
+                    (x, i) => i
+                  )}
+                  allowMultiple
+                >
+                  <CustomAccordion
+                    key={`${block.name}-${index}`}
+                    showAddButton={false}
+                    title={block.name}
+                  >
+                    <div
+                      className={`grid grid-cols-2 gap-x-32 gap-y-4 px-2 ${
+                        showFieldHistoryBox && currentFieldBlockId === block.id
+                          ? "pt-8 pb-44"
+                          : "pt-8 pb-12"
+                      }`}
+                    >
+                      {activeForm.fields
+                        .filter((field) => field.clientFormBlockId === block.id)
+                        .map((field, index) =>
+                          editMode ? (
+                            <div key={index} className="flex justify-between">
+                              <p className="text-[#5C5C5C]">{field.name}</p>
 
-            {editMode &&
-              activeForm.fields.map((field, index) => (
-                <div key={index} className="flex justify-between">
-                  <p className="text-[#5C5C5C]">{field.name}</p>
+                              <div>
+                                {TextFieldConstants.includes(
+                                  field.data_type.value
+                                ) && (
+                                  <input
+                                    type={field.data_type.value}
+                                    className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
+                                    value={field.defaultvalue}
+                                    onChange={(e) =>
+                                      updateFieldValue(field.id, e.target.value)
+                                    }
+                                  />
+                                )}
 
-                  <div>
-                    {TextFieldConstants.includes(field.data_type.value) && (
-                      <input
-                        type={field.data_type.value}
-                        className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
-                        value={field.defaultvalue}
-                        onChange={(e) =>
-                          updateFieldValue(field.id, e.target.value)
-                        }
-                      />
-                    )}
+                                {NumberFieldConstants.includes(
+                                  field.data_type.value
+                                ) && (
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
+                                    value={field.defaultvalue}
+                                    onKeyDown={handleNumberkeyPress}
+                                    onChange={(e) =>
+                                      updateFieldValue(field.id, e.target.value)
+                                    }
+                                  />
+                                )}
 
-                    {NumberFieldConstants.includes(field.data_type.value) && (
-                      <input
-                        type="number"
-                        min="0"
-                        className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
-                        value={field.defaultvalue}
-                        onKeyDown={handleNumberkeyPress}
-                        onChange={(e) =>
-                          updateFieldValue(field.id, e.target.value)
-                        }
-                      />
-                    )}
+                                {field.data_type.value === "phone" && (
+                                  <PhoneInput
+                                    labels={lang === "en" ? en : he}
+                                    className="appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2 text-gray-11 [&>input]:outline-none [&>input]:bg-white placeholder:text-gray-10 dark:placeholder:!text-gray-10"
+                                    defaultCountry={"IL"}
+                                    value={field.defaultvalue}
+                                    onChange={(e) =>
+                                      updateFieldValue(field.id, e)
+                                    }
+                                  />
+                                )}
 
-                    {field.data_type.value === "phone" && (
-                      <PhoneInput
-                        labels={lang === "en" ? en : he}
-                        className="appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2 text-gray-11 [&>input]:outline-none [&>input]:bg-white placeholder:text-gray-10 dark:placeholder:!text-gray-10"
-                        defaultCountry={"IL"}
-                        value={field.defaultvalue}
-                        onChange={(e) => updateFieldValue(field.id, e)}
-                      />
-                    )}
+                                {field.data_type.value === "file" && (
+                                  <label className="text-md flex items-center w-full appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2.5 text-gray-11">
+                                    <MdOutlineUploadFile
+                                      style={{
+                                        marginRight: "5px",
+                                        fontSize: "1.25rem",
+                                      }}
+                                    />
+                                    {field.defaultvalue}
+                                    <input
+                                      type={field.data_type.value}
+                                      onChange={(e) =>
+                                        updateFieldValue(
+                                          field.id,
+                                          e.target.value
+                                        )
+                                      }
+                                      hidden
+                                    />
+                                  </label>
+                                )}
 
-                    {field.data_type.value === "file" && (
-                      <label className="text-md flex items-center w-full appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2.5 text-gray-11">
-                        <MdOutlineUploadFile
-                          style={{
-                            marginRight: "5px",
-                            fontSize: "1.25rem",
-                          }}
-                        />
-                        {field.defaultvalue}
-                        <input
-                          type={field.data_type.value}
-                          onChange={(e) =>
-                            updateFieldValue(field.id, e.target.value)
-                          }
-                          hidden
-                        />
-                      </label>
-                    )}
+                                {field.data_type.value === "select" && (
+                                  <Select
+                                    className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                                    onChange={(e) => {
+                                      updateFieldValue(
+                                        field.id,
+                                        e.target.value
+                                      );
+                                    }}
+                                    MenuProps={{
+                                      sx: {
+                                        maxHeight: "250px",
+                                        zIndex: 13000,
+                                      },
+                                    }}
+                                    defaultValue={
+                                      field.enum_values?.choices[0].label
+                                    }
+                                    placeholder="Select"
+                                  >
+                                    {field.enum_values?.choices?.map((el) => {
+                                      return el !== "" ? (
+                                        <MenuItem key={el.id} value={el.label}>
+                                          {el.label}
+                                        </MenuItem>
+                                      ) : null;
+                                    })}
+                                  </Select>
+                                )}
 
-                    {field.data_type.value === "select" && (
-                      <Select
-                        className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
-                        onChange={
-                          (e) => console.log(e)
-                          // updateFieldValue(field.id, e)
-                        }
-                        MenuProps={{
-                          sx: {
-                            maxHeight: "250px",
-                            zIndex: 13000,
-                          },
-                        }}
-                        defaultValue={field.enum_values?.choices[0].label}
-                        placeholder="Select"
-                      >
-                        {field.enum_values?.choices?.map((el) => {
-                          return el !== "" ? (
-                            <MenuItem key={el.id} value={el.label}>
-                              {el.label}
-                            </MenuItem>
-                          ) : null;
-                        })}
-                      </Select>
-                    )}
+                                {checkBoxConstants.includes(
+                                  field.data_type.value
+                                ) && (
+                                  <CustomCheckBox
+                                    onChange={(e) =>
+                                      updateFieldValue(
+                                        field.id,
+                                        e.target.checked
+                                      )
+                                    }
+                                    checked={field.defaultvalue}
+                                  />
+                                )}
 
-                    {checkBoxConstants.includes(field.data_type.value) && (
-                      <CustomCheckBox
-                        onChange={(e) =>
-                          updateFieldValue(field.id, e.target.checked)
-                        }
-                        checked={field.defaultvalue}
-                      />
-                    )}
-
-                    {DateFieldConstants.includes(field.data_type.value) && (
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                          className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-0 text-black"
-                          format="DD/MM/YYYY"
-                          onChange={(e) =>
-                            updateFieldValue(field.id, e.target.value)
-                          }
-                          value={dayjs(field.defaultvalue)}
-                          slotProps={{
-                            field: { clearable: true },
-                            popper: {
-                              disablePortal: true,
-                            },
-                          }}
-                          sx={{
-                            border: 0,
-                            "& .MuiInputBase-input": {
-                              padding: 1.5,
-                              border: "none",
-                            },
-                            "& fieldset": {
-                              borderColor: "inherit!important",
-                            },
-                          }}
-                        />
-                      </LocalizationProvider>
-                    )}
-                  </div>
-                </div>
+                                {DateFieldConstants.includes(
+                                  field.data_type.value
+                                ) && (
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                  >
+                                    <DatePicker
+                                      className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-0 text-black"
+                                      format="DD/MM/YYYY"
+                                      onChange={(value) => {
+                                        updateFieldValue(field.id, value);
+                                      }}
+                                      value={dayjs(field.defaultvalue)}
+                                      slotProps={{
+                                        field: { clearable: true },
+                                        popper: {
+                                          disablePortal: true,
+                                        },
+                                      }}
+                                      sx={{
+                                        border: 0,
+                                        "& .MuiInputBase-input": {
+                                          padding: 1.5,
+                                          border: "none",
+                                        },
+                                        "& fieldset": {
+                                          borderColor: "inherit!important",
+                                        },
+                                      }}
+                                    />
+                                  </LocalizationProvider>
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <div
+                              key={index}
+                              className="flex justify-between relative"
+                            >
+                              <span className="text-[#5C5C5C] flex items-center gap-2">
+                                {checkIsFieldDirty(field.id) && (
+                                  <div
+                                    className="cursor-pointer"
+                                    onMouseEnter={() => {
+                                      setCurrentFieldsHistoryId(field.id);
+                                      setCurrentFieldBlockId(
+                                        field.clientFormBlockId
+                                      );
+                                      setShowFieldHistoryBox(true);
+                                      setCurrentFieldsHistoryArray(
+                                        fieldsHistory[field.id]
+                                      );
+                                    }}
+                                  >
+                                    <RiHistoryLine color="#000" />
+                                  </div>
+                                )}
+                                {field.name}
+                              </span>
+                              <span className="text-[#1C1C1C]">
+                                :
+                                {field.defaultvalue === true
+                                  ? "Yes"
+                                  : field.defaultvalue === false
+                                  ? "No"
+                                  : field.defaultvalue}
+                              </span>
+                              {showFieldHistoryBox &&
+                                field.id === currentFieldHistoryId && (
+                                  <FieldVersionHistory
+                                    formVersionsArray={currentFieldHistoryArray}
+                                    setShowFieldHistoryBox={
+                                      setShowFieldHistoryBox
+                                    }
+                                  />
+                                )}
+                            </div>
+                          )
+                        )}
+                    </div>
+                  </CustomAccordion>
+                </Accordion>
               ))}
           </div>
         </div>
