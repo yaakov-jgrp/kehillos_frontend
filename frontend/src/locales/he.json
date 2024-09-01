@@ -819,7 +819,7 @@
   "forms": {
     "formsManagement": "ניהול טפסים",
     "createNewForm": "צור טופס חדש",
-    "name": "שֵׁם",
+    "name": "שם",
     "description": "תיאור",
     "dateCreated": "תאריך יצירה",
     "dateFilledOut": "תאריך מילוי",
@@ -831,7 +831,7 @@
     "isThisSectionRepeated": "האם הסעיף הזה חוזר על עצמו",
     "submit": "שלח",
     "conditions": "תנאים",
-    "condition": "מַצָב",
+    "condition": "תנאי",
     "conditions_message_1": "כל התנאים (יש לעמוד בכל התנאים)",
     "conditions_message_2": "כל תנאי (יש לעמוד באחד מהתנאים לפחות)",
     "field": "שדה",
@@ -840,19 +840,19 @@
     "allForms": "כל הטפסים",
     "addNewForm": "הוסף טופס חדש",
     "clientId": "מזהה לקוח",
-    "client": "לָקוּחַ",
+    "client": "לקוח",
     "form": "טופס",
-    "save": "לְהַצִיל",
-    "add": "לְהוֹסִיף",
+    "save": "שמור",
+    "add": "הוסף",
     "formAddedSuccessfully": "טופס נוסף בהצלחה!",
     "commentAddedSuccessfully": "התגובה שלך נשמרה!",
     "goBack": "חזור",
     "editForm": "ערוך טופס",
-    "remark": "הֶעָרָה",
+    "remark": "הערה",
     "versionName": "שם גרסה",
     "versionComments": "הערות",
-    "comment": "הֶעָרָה",
+    "comment": "הערה",
     "clientsForm": "טופס הלקוח",
-    "enter": "לְהַכנִיס"
+    "enter": "הכנס"
   }
 }
