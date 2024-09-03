@@ -89,6 +89,7 @@ function ClientDetails() {
       //   });
       const res = SINGLE_CLIENT_DATA;
       setClientData(res.data);
+      console.log("response data",res.data);  
       setIsloading(false);
       if (netfreeProfiles.length > 0) {
         const { netfree_profile } = res.data;
@@ -124,6 +125,7 @@ function ClientDetails() {
       };
     });
     setFullFormData(formFields);
+    console.log(formFields);
   };
 
   useEffect(() => {
@@ -131,6 +133,7 @@ function ClientDetails() {
     fetchNetfreeProfiles();
     getClientDataHandler();
   }, [lang]);
+
 
   return (
     <>

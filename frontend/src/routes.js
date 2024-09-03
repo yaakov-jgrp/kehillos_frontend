@@ -12,6 +12,7 @@ import EmailTemplating from "./views/EmailTemplating";
 // Icon imports
 import { MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
 import { HiOutlineUserGroup } from "react-icons/hi2";
+import Config from "./views/apiConfig";
 
 const routes = [
   // {
@@ -64,6 +65,14 @@ const routes = [
     icon: <MdOutlineSettings className="h-6 w-6" />,
     component: <EmailTemplating />,
   },
+  {
+    name: t("sidebar.config"),
+    path: "settings/config",
+    type: "menu",
+    icon: <MdOutlineSettings className="h-6 w-6" />,
+    component: <Config />,
+  },
+
   // {
   //   name: t('sidebar.profile'),
   //   path: "profile",
