@@ -132,7 +132,11 @@ const ClientModal = ({
   };
 
   const submitForm = async (data, e) => {
+    console.log("submitting form");
+    console.log("form submit data",data);
+    alert('submitting form');
     e.preventDefault();
+
     let fieldsArray = [];
     const formData = new FormData();
     const dirtyFieldsArray = Object.keys(dirtyFields);
