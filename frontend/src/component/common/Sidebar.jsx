@@ -1,17 +1,13 @@
-// UI Components Imports
+import React from "react";
 import SidebarLinks from "./SidebarLinks";
 import Request from "../../views/Request";
 import Emails from "../../views/Emails";
 import NetFree from "../../views/NetFree";
 import Clients from "../../views/Clients";
 import ClientsForm from "../../views/ClientsForm";
-import Logs from "../..//views/Logs";
+import Logs from "../../views/Logs";
 import Users from "../../views/Users";
-
-// Third-party Imports
 import { useTranslation } from "react-i18next";
-
-// Icon imports
 import FormsSvg from "../../assets/forms.svg";
 import { HiX } from "react-icons/hi";
 import {
@@ -27,6 +23,7 @@ import Logo from "../../assets/images/Kehillos_Logo.svg";
 import FormsIcon from "../../assets/images/forms.svg";
 import FormsDarkIcon from "../../assets/images/forms_dark.svg";
 import ClientFormsTable from "../../views/ClientFormsTable";
+import Config from "../../views/apiConfig";
 
 const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
@@ -58,6 +55,13 @@ const Sidebar = ({ open, onClose }) => {
       type: "menu",
       icon: <MdOutlineContactSupport className="h-6 w-6" />,
       component: <Request />,
+    },
+    {
+      name: t("Field Configuration"),
+      path: "settings/config",
+      type: "menu",
+      icon: <IoLogoBuffer className="h-6 w-6" />,
+      component: <Config />,
     },
     {
       name: t("sidebar.settings"),
@@ -120,13 +124,13 @@ const Sidebar = ({ open, onClose }) => {
     <div
       className={`h-full px-5 sm:none duration-175 w-[220px] fixed linear !z-50 flex flex-col bg-white pb-10 shadow-custom transition-all md:!z-50 lg:!z-50 xl:!z-0 ${
         open
-        ? i18n.dir() === "ltr"
-          ? `left-0`
-          : "right-0"
-        : i18n.dir() === "ltr"
+          ? i18n.dir() === "ltr"
+            ? `left-0`
+            : "right-0"
+          : i18n.dir() === "ltr"
           ? "-left-96"
           : "-right-96"
-        }`}
+      }`}
     >
       <span
         className="absolute top-2 block cursor-pointer end-2 xl:hidden"
@@ -136,12 +140,19 @@ const Sidebar = ({ open, onClose }) => {
       </span>
 
       <div className="mx-auto my-6 flex items-center">
-        <img src={localStorage.getItem("logo_url")} alt="Logo" className="h-[44px] md:h-[65px]" />
+        <img
+          src={localStorage.getItem("logo_url")}
+          alt="Logo"
+          className="h-[44px] md:h-[65px]"
+        />
       </div>
 
-      <ul className="mb-auto pt-1">
-        <SidebarLinks routes={routes} />
-      </ul>
+      {/* Add this div to ensure the content can scroll */}
+      <div className="flex-1 overflow-y-auto">
+        <ul className="mb-auto pt-1">
+          <SidebarLinks routes={routes} />
+        </ul>
+      </div>
 
       {/* Adding the new div with support information */}
       <div className="text-center mt-auto py-2">

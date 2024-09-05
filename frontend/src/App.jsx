@@ -49,6 +49,7 @@ import FormDetails from "./views/FormDetails";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import ClientFormsTable from "./views/ClientFormsTable";
+import Config from "./views/apiConfig";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -202,6 +203,13 @@ function App() {
       type: "menu",
       icon: <IoLogoBuffer className="h-6 w-6" />,
       component: <Logs />,
+    },
+    {
+      name: t("sidebar.config"),
+      path: "settings/config",
+      type: "menu",
+      icon: <IoLogoBuffer className="h-6 w-6" />,
+      component: <Config/>,
     },
     // {
     //   name: t('sidebar.profile'),
