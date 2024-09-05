@@ -67,8 +67,9 @@ function ClientDetails() {
   const getClientDataHandler = async () => {
     setIsloading(true);
     try {
-      // const profilesData = await categoryService.getProfilesList();
-      const profilesData = PROFILE_LIST;
+      const profilesData = await categoryService.getProfilesList();
+      // const profilesData = PROFILE_LIST;
+
       const netfreeProfiles = profilesData.data.data;
       // clientsService
       //   .getClient(id)
@@ -104,14 +105,14 @@ function ClientDetails() {
   };
 
   const fetchNetfreeProfiles = async () => {
-    // const profilesListData = await categoryService.getProfilesList();
-    const profilesListData = PROFILE_LIST;
+    const profilesListData = await categoryService.getProfilesList();
+    // const profilesListData = PROFILE_LIST;
     setNetfreeProfiles(profilesListData.data.data);
   };
 
   const fetchFullFormData = async () => {
-    // const formData = await clientsService.getFullformData();
-    const formData = FULL_FORM_DATA;
+    const formData = await clientsService.getFullformData();
+    // const formData = FULL_FORM_DATA;
     let formFields = [];
     formData.data.result.forEach((block) => {
       block.field.forEach((field) => {

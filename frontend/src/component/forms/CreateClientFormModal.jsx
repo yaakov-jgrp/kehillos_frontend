@@ -30,6 +30,7 @@ import {
 import { CLIENTS } from "../../constants";
 import { toast } from "react-toastify";
 import formService from "../../services/forms";
+import clientsService from "../../services/clients";
 
 export default function CreateClientFormModal({
   setShowModal,
@@ -82,8 +83,8 @@ export default function CreateClientFormModal({
 
   const fetchClientsData = async () => {
     const params = `?page=${1}&lang=${"en"}&page_size=${50}`;
-    // const clientsData = await clientsService.getClients(params);
-    const clientsData = CLIENTS;
+    const clientsData = await clientsService.getClients(params);
+    // const clientsData = CLIENTS;
     setAllClients(clientsData.data.data);
     const clientIdVar = clientId ? clientId : clientsData.data.data[0].id;
     setClientValue(clientIdVar);
@@ -92,6 +93,12 @@ export default function CreateClientFormModal({
   function addRepeatableBlock(blockId) {
     const activeFormStateObj = { ...activeFormState };
     // Find the block to repeat
+    const blockElement = activeFormStateObj.blocks.filter(
+      (block) => block.id === blockId
+    )[0];
+    const blocksArray = activeFormStateObj.blocks.filter(
+      (block) => block.name === blockElement.name
+    );
     const blockToRepeat = activeFormStateObj.blocks.find(
       (block) => block.id === blockId
     );
@@ -101,6 +108,7 @@ export default function CreateClientFormModal({
       Math.max(...activeFormState.blocks.map((block) => block.id)) + 1;
     const newBlock = {
       ...blockToRepeat,
+      newName: `${blockToRepeat.name} ${blocksArray.length}`,
       id: newBlockId,
       isRepeatable: false,
     };
@@ -145,9 +153,9 @@ export default function CreateClientFormModal({
   const submitFormHandler = async () => {
     try {
       const finalPayload = {};
-      const blockToRemoveID = activeFormState.blocks.filter(
-        (block) => block.isRepeatable
-      )[0].id;
+      const blockToRemoveID =
+        activeFormState.blocks.filter((block) => block.isRepeatable)[0]?.id ??
+        null;
       finalPayload.name = activeFormState.name;
       finalPayload.isPined = activeFormState.isPined;
       finalPayload.clientId = clientValue;
@@ -155,7 +163,7 @@ export default function CreateClientFormModal({
         .filter((block) => !block.isRepeatable)
         .map((block) => ({
           id: block.id,
-          name: block.name,
+          name: block?.newName ? block?.newName : block.name,
           isRepeatable: block.isRepeatable,
         }));
       finalPayload.fields = activeFormState.fields
@@ -481,7 +489,11 @@ export default function CreateClientFormModal({
                         <CustomAccordion
                           key={index}
                           showAddButton={false}
-                          title={blockData.name}
+                          title={
+                            blockData?.newName
+                              ? blockData.newName
+                              : blockData.name
+                          }
                           onClick={() => {
                             addBlockFieldModalHandler(false, blockData.id);
                           }}
