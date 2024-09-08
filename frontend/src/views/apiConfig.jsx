@@ -17,7 +17,7 @@ const Config = () => {
     try {
       const token = localStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/client/fields/config",
+        "https://admin.kehillos.com/api/client/fields/config",
         {
           field: selectedTriggerFields,
           support_field: selectedFriendFields
@@ -42,7 +42,7 @@ const Config = () => {
 
     const fetchFields = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/client/list/fields", {
+        const response = await axios.get("https://admin.kehillos.com/api/client/list/fields", {
           headers: { Authorization: `Bearer ${token}` }
         });
         const uniqueFields = Array.from(new Set(response.data.fields));
@@ -55,7 +55,7 @@ const Config = () => {
 
     const getTriggerAndFriendFields = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/client/list/trigger/fields", {
+        const response = await axios.get("https://admin.kehillos.com/api/client/list/trigger/fields", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setSelectedTriggerFields(response.data.triggerFields || []);
