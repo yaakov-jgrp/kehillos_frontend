@@ -430,6 +430,7 @@ const ClientModal = ({
                                   MenuProps={{
                                     sx: {
                                       maxHeight: "250px",
+                                      zIndex:9999
                                     },
                                   }}
                                   className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-black bg-white"
