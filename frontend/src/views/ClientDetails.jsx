@@ -71,34 +71,34 @@ function ClientDetails() {
       // const profilesData = PROFILE_LIST;
 
       const netfreeProfiles = profilesData.data.data;
-      // clientsService
-      //   .getClient(id)
-      //   .then((res) => {
-      //     setClientData(res.data);
-      //     setIsloading(false);
-      //     if (netfreeProfiles.length > 0) {
-      //       const { netfree_profile } = res.data;
-      //       const matchingProfile = netfreeProfiles.filter(
-      //         (profile) => profile.id === netfree_profile
-      //       )[0];
-      //       setNetfreeProfile(matchingProfile);
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //     setIsloading(false);
-      //   });
-      const res = SINGLE_CLIENT_DATA;
-      setClientData(res.data);
-      console.log("response data",res.data);  
-      setIsloading(false);
-      if (netfreeProfiles.length > 0) {
-        const { netfree_profile } = res.data;
-        const matchingProfile = netfreeProfiles.filter(
-          (profile) => profile.id === netfree_profile
-        )[0];
-        setNetfreeProfile(matchingProfile);
-      }
+      clientsService
+        .getClient(id)
+        .then((res) => {
+          setClientData(res.data);
+          setIsloading(false);
+          if (netfreeProfiles.length > 0) {
+            const { netfree_profile } = res.data;
+            const matchingProfile = netfreeProfiles.filter(
+              (profile) => profile.id === netfree_profile
+            )[0];
+            setNetfreeProfile(matchingProfile);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setIsloading(false);
+        });
+      // const res = SINGLE_CLIENT_DATA;
+      // setClientData(res.data);
+      // console.log("response data",res.data);  
+      // setIsloading(false);
+      // if (netfreeProfiles.length > 0) {
+      //   const { netfree_profile } = res.data;
+      //   const matchingProfile = netfreeProfiles.filter(
+      //     (profile) => profile.id === netfree_profile
+      //   )[0];
+      //   setNetfreeProfile(matchingProfile);
+      // }
     } catch (error) {
       console.log(err);
     }
