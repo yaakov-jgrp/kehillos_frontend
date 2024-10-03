@@ -77,12 +77,17 @@
     "profile": "פרופיל",
     "logout": "התנתק",
     "formCreation": "יצירת טופס",
+    "automation": "אוטומציה",
     "clients": "לקוחות",
     "details": "פרטים",
     "logs": "היסטוריה",
     "users": "משתמשים",
     "templating": "תגים",
     "forms": "טפסים"
+  },
+  "automation": {
+    "automation": "אוטומציה",
+    "status": "סטטוס"
   },
   "requests": {
     "title": "פניות",
@@ -799,6 +804,7 @@
   "tools.tooltip.drag_on_canvas": "גרור על בד",
   "tools.tooltip.got_it": "הבנתי",
   "forms": {
+    "automation": "אוטומציה",
     "formsManagement": "ניהול טפסים",
     "createNewForm": "צור טופס חדש",
     "name": "שם",

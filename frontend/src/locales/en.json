@@ -77,12 +77,33 @@
     "profile": "Profile",
     "logout": "Logout",
     "formCreation": "Form Creation",
+    "automation": "Automation",
     "clients": "Clients",
     "details": "Details",
     "logs": "Logs History",
     "users": "Users",
     "templating": "Templating",
     "forms": "Forms"
+  },
+  "automation": {
+    "automation": "Automation",
+    "newWorkflow": "New Workflow",
+    "status": "Status",
+    "workflowName": "Workflow Name",
+    "workflowDescription": "Workflow Description",
+    "triggerType": "Trigger type",
+    "workflowTrigger": "Workflow Trigger",
+    "conditions": "Conditions",
+    "actions": "Actions",
+    "basicInformation": "Basic Information",
+    "active": "active",
+    "inactive": "inactive",
+    "created": "Deal creation",
+    "updated": "Deal updated  (Includes Creation)",
+    "recurrence": "Recurrence",
+    "firstTime": "Only first time conditions are met",
+    "everyTime": "Every time conditions are met",
+    "submit": "Submit"
   },
   "requests": {
     "title": "Requests",
@@ -182,6 +203,7 @@
     "false": "false"
   },
   "routes": {
+    "automation": "Automation",
     "clients": "Clients",
     "request": "Request",
     "settings": "settings",

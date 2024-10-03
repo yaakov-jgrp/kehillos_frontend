@@ -69,6 +69,13 @@ const Sidebar = ({ open, onClose }) => {
       icon: <MdOutlineSettings className="h-6 w-6" />,
       children: [
         {
+          name: t("sidebar.automation"),
+          path: "settings/automation",
+          type: "menu",
+          icon: <img src={FormsSvg} className="h-5 w-5" />,
+          component: <ClientsForm />,
+        },
+        {
           name: t("sidebar.formCreation"),
           path: "settings/forms",
           type: "menu",
