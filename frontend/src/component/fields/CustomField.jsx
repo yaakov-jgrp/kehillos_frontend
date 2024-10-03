@@ -100,6 +100,12 @@ function CustomField(props) {
       )}
       {data_type.value === "select" && (
         <Select
+        MenuProps={{
+          sx: {
+            maxHeight: "250px",
+            zIndex:9999
+          },
+        }}
           className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
           required={required}
           onChange={onChange}
