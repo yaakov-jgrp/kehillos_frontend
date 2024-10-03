@@ -106,12 +106,13 @@ function Automation() {
   };
 
   const deleteFormData = async () => {
+    
     try {
-      await formsService.deleteWorkflowData(activeFormId);
+      await automationService.deleteWorkflowData(activeFormId);
       await fetchWorkflowData();
     } catch (e) {
-      toast.error(JSON.stringify(error));
-      console.log(error);
+      toast.error(JSON.stringify(e));
+      console.log(e);
     }
     setConfirmationModal(false);
   };
