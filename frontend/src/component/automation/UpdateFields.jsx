@@ -1,5 +1,7 @@
 import React from "react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
 import {
   Button,
   TextField,
@@ -14,10 +16,37 @@ import BinIcon from "../../assets/images/bin.svg";
 import ToggleSwitch from "../common/ToggleSwitch";
 import { useTranslation } from "react-i18next";
 
-const UpdateFields = () => {
+// Yup validation schema
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required("Template Name is required"),
+  actions: Yup.array()
+    .of(
+      Yup.object().shape({
+        fieldName: Yup.string().required("Field Name is required"),
+        value: Yup.string().required("Value is required"),
+      })
+    )
+    .required("At least one action is required"),
+});
+
+const UpdateFields = ({
+  fullFormData,
+  conditions,
+  actionArray,
+  setActionArray,
+}) => {
   const { t } = useTranslation();
-  const { control, handleSubmit } = useForm({
+
+  // useForm hook with Yup validation
+  const {
+    control,
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationSchema),
     defaultValues: {
+      name: "",
       actions: [{ fieldName: "", value: "" }],
     },
   });
@@ -29,62 +58,86 @@ const UpdateFields = () => {
 
   const onSubmit = (data) => {
     console.log("Form Data:", data.actions);
+    // Add form values to actionArray
+    setActionArray([...actionArray, ...data.actions]);
+
+    // Optional: Reset form after submission
+    reset();
   };
 
   return (
-    <div className="mt-4">
-      <div className="flex mb-2 w-full gap-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+      <div className="flex w-full gap-4">
         <td className="w-1/2 md:w-1/5">{t("emails.templateName")}</td>
         <input
-          className="text-[13px] rounded-md h-[40px]"
-          id="templateName"
+          id="workflow_name"
           type="text"
-          value={"formdata.name"}
-          name="name"
+          className={`appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10 ${
+            errors.name ? "border-red-500" : ""
+          }`}
+          {...register("name")}
           placeholder={t("emails.templateName")}
         />
+        {errors.name && <p className="text-red-500">{errors.name.message}</p>}
       </div>
-      <div className="flex mb-2 items-center gap-3">
+
+      <div className="flex my-5 items-center gap-3">
         <label>Status</label>
         <ToggleSwitch />
       </div>
 
       {fields.map((item, index) => (
-        <Grid container item spacing={2} key={item.id}>
+        <Grid container item spacing={2} key={item.id} className="row-gap-2">
           {/* Dropdown Field using MUI Select */}
           <Grid item xs={5}>
-            <Controller
-              name={`actions[${index}].fieldName`}
-              control={control}
-              render={({ field }) => (
-                <FormControl fullWidth>
-                  <InputLabel>Select Field</InputLabel>
-                  <Select
-                    labelId="demo-select-small-label"
-                    id="demo-select-small"
-                    className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
-                    {...field}
-                    label="Select Field"
-                  >
-                    <MenuItem value="field1">Field 1</MenuItem>
-                    <MenuItem value="field2">Field 2</MenuItem>
-                    <MenuItem value="field3">Field 3</MenuItem>
-                    {/* Add more options as needed */}
-                  </Select>
-                </FormControl>
-              )}
-            />
+            <FormControl fullWidth>
+              <InputLabel>Select Field</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                {...register(`actions[${index}].fieldName`)}
+                defaultValue=""
+                MenuProps={{
+                  sx: {
+                    maxHeight: "250px",
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Select
+                </MenuItem>
+                {fullFormData
+                  .filter((item) => item?.data_type.value !== "file")
+                  .map((field, i) => (
+                    <MenuItem value={field?.field_slug} key={i}>
+                      {field.field_name}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+            {errors.actions?.[index]?.fieldName && (
+              <p className="text-red-500">
+                {errors.actions[index].fieldName.message}
+              </p>
+            )}
           </Grid>
 
           {/* Value Field */}
           <Grid item xs={5}>
-            <Controller
-              name={`actions[${index}].value`}
-              control={control}
-              render={({ field }) => (
-                <TextField fullWidth label="Enter Value" {...field} />
-              )}
+            <input
+              id={`actions[${index}].value`}
+              type="text"
+              className={`appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 ${
+                errors.actions?.[index]?.value ? "border-red-500" : ""
+              }`}
+              {...register(`actions[${index}].value`)}
             />
+            {errors.actions?.[index]?.value && (
+              <p className="text-red-500">
+                {errors.actions[index].value.message}
+              </p>
+            )}
           </Grid>
 
           {/* Delete Button */}
@@ -101,25 +154,22 @@ const UpdateFields = () => {
       ))}
 
       {/* Add Button */}
-      <Button
-        variant="contained"
+      <button
+        type="button"
         onClick={() => append({ fieldName: "", value: "" })}
-        style={{ marginTop: "16px" }}
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg mr-2"
       >
         Add Row
-      </Button>
+      </button>
 
       {/* Submit Button */}
-      <Button
-        variant="contained"
-        color="primary"
+      <button
         type="submit"
-        onClick={handleSubmit(onSubmit)}
-        style={{ marginLeft: "16px", marginTop: "16px" }}
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
       >
         Submit
-      </Button>
-    </div>
+      </button>
+    </form>
   );
 };
 

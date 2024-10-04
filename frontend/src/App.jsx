@@ -168,6 +168,11 @@ function App() {
       component: <AutomationDetails />,
     },
     {
+      name: t("sidebar.automation"),
+      path: "settings/automation/:id",
+      component: <AutomationDetails />,
+    },
+    {
       name: t("sidebar.formCreation"),
       path: "settings/forms",
       component: <Forms />,

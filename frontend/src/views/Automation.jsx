@@ -83,13 +83,13 @@ function Automation() {
     try {
       let payload = [];
       let searchValues = "";
-      for (const searchfield in searchParams) {
-        if (searchParams[searchfield] !== "") {
-          searchValues += `&search_${[searchfield]}=${
-            searchParams[searchfield]
-          }`;
-        }
-      }
+      // for (const searchfield in searchParams) {
+      //   if (searchParams[searchfield] !== "") {
+      //     searchValues += `&search_${[searchfield]}=${
+      //       searchParams[searchfield]
+      //     }`;
+      //   }
+      // }
       const params = `?page=${page + 1}&page_size=${rowsPerPage}&lang=${lang}`;
       const allFormsPayload = await automationService.getAutomationList(params);
       console.log("allFormsPayload", allFormsPayload);
@@ -299,7 +299,7 @@ function Automation() {
                           </td>
                           <td>
                             <div className="h-auto w-full flex items-center justify-center gap-2">
-                              <Link to={`/settings/forms/${el.id}`}>
+                              <Link to={`/settings/automation/${el.id}`}>
                                 <img
                                   src={PencilIcon}
                                   alt="PencilIcon"

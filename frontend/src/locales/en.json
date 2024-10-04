@@ -103,7 +103,13 @@
     "recurrence": "Recurrence",
     "firstTime": "Only first time conditions are met",
     "everyTime": "Every time conditions are met",
-    "submit": "Submit"
+    "submit": "Submit",
+    "update": "Update",
+    "actionTitle":"Action Title",
+    "toEmail": "To Mail",
+    "subject": "Subject",
+    "addField":"Add Field",
+    "editField":"Edit Field"
   },
   "requests": {
     "title": "Requests",
@@ -204,6 +210,7 @@
   },
   "routes": {
     "automation": "Automation",
+    "newWorkflow": "New Workflow",
     "clients": "Clients",
     "request": "Request",
     "settings": "settings",
