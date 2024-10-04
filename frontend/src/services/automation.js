@@ -19,7 +19,7 @@ const createWorkflow = (lang, data) => {
   return api.post(`/api/automation-workflow/?lang=${lang}`, data);
 };
 const updateWorkflow = (id, data) => {
-  return api.post(`/api/automation-workflow/${id}/`, data);
+  return api.put(`/api/automation-workflow/${id}/`, data);
 };
 
 const automationService = {
