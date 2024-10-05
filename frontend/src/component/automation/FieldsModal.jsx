@@ -70,7 +70,7 @@ function FieldsModal({
     defaultValues: {
       action_title: isEdit ? editData?.action_title : "",
       status: isEdit ? editData?.status : false,
-      fields: isEdit ? id ? editData?.update_fields?.fields : editData?.fields : [{ field_name: "", field_value: "" }],
+      fields: isEdit ? id ? editData?.fields : editData?.fields : [{ field_name: "", field_value: "" }],
     },
   });
 
@@ -207,7 +207,7 @@ function FieldsModal({
                         id="demo-select-small"
                         className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
                         {...register(`fields[${index}].field_name`)}
-                        defaultValue={id ? item?.field_slug : item?.field_name}
+                        defaultValue={item?.field_slug || item?.field_name}
                         MenuProps={{
                           sx: {
                             maxHeight: "250px",

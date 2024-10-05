@@ -239,10 +239,10 @@ function EmailModal({
                     <div className="w-[400px] h-12 bg-[#EEEEEE] absolute bottom-0 right-[0px]"></div>
                   </div>
 
-                  <div className="flex justify-end">
+                  <div className="flex justify-end relative">
                     <button
                       onClick={handleSubmit}
-                      className="px-6 py-2 mt-4 font-semibold bg-blue-500 text-white rounded"
+                      className="px-6 py-2 mt-4 font-semibold bg-blue-500 text-white rounded absolute"
                       disabled={!formValidate()}
                     >
                       {isEdit ? t("automation.update") : t("automation.submit")}
