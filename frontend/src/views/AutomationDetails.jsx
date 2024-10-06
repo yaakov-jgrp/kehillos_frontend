@@ -281,7 +281,8 @@ function AutomationDetails() {
         setValue("filters", response?.data?.conditions);
         setConditions(response?.data?.conditions);
         setActionArray(response?.data?.actions);
-        setAction(response?.data?.trigger_type);
+        setAction("addAction");
+        // setAction(response?.data?.trigger_type);
       }
     } catch (error) {
       console.log(error);
@@ -292,6 +293,11 @@ function AutomationDetails() {
     setIsEdit(true);
     setEdtActionData(item);
     setAction(item?.action_type);
+  };
+
+  const handleDeleteAction = (id) => {
+    const filteredItems = actionArray.filter(item => item.id !== id);
+    setActionArray(filteredItems);
   };
 
   useEffect(() => {
@@ -461,6 +467,7 @@ function AutomationDetails() {
           lang={lang}
           actionArray={actionArray}
           handleEditAction={handleEditAction}
+          handleDeleteAction={handleDeleteAction}
         />
 
         <button

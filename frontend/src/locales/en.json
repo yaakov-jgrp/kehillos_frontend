@@ -109,7 +109,13 @@
     "toEmail": "To Mail",
     "subject": "Subject",
     "addField":"Add Field",
-    "editField":"Edit Field"
+    "editField":"Edit Field",
+    "selectField":"Select Field",
+    "select":"Select",
+    "addRow": "Add Row",
+    "sendMail":"Send Mail",
+    "updateFields": "Update Fields",
+    "addAction":"Add Action"
   },
   "requests": {
     "title": "Requests",

@@ -83,8 +83,6 @@ function FieldsModal({
       status: data?.status === true ? 'active' : 'inactive'
     };
 
-    console.log("formDataWithStatus", formDataWithStatus);
-
     handleActionArrayManupulation(editData, actionArray, formDataWithStatus);
 
     setShowModal("");
@@ -176,7 +174,7 @@ function FieldsModal({
               </div>
 
               <div className="flex my-5 items-center gap-3">
-                <label>Status</label>
+                <label>{t("automation.status")}</label>
                 <ToggleSwitch
                   clickHandler={(e) => setValue("status", e.target.checked)}
                   selected={watchStatus}
@@ -194,7 +192,7 @@ function FieldsModal({
                   {/* Dropdown Field using MUI Select */}
                   <Grid item xs={5}>
                     <FormControl fullWidth>
-                      <InputLabel>Select Field</InputLabel>
+                      <InputLabel>{t("automation.selectField")}</InputLabel>
                       <Select
                         labelId="demo-select-small-label"
                         id="demo-select-small"
@@ -208,7 +206,7 @@ function FieldsModal({
                         }}
                       >
                         <MenuItem value="" disabled>
-                          Select
+                        {t("automation.select")}
                         </MenuItem>
                         {fullFormData
                           .filter((item) => item?.data_type.value !== "file")
@@ -265,7 +263,7 @@ function FieldsModal({
                 onClick={() => append({ field_name: "", field_value: "" })}
                 className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg mr-2"
               >
-                Add Row
+                {t("automation.addRow")}
               </button>
 
               {/* Submit Button */}
@@ -273,7 +271,7 @@ function FieldsModal({
                 type="submit"
                 className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
               >
-                {isEdit ? "Update" : "Submit"}
+                {isEdit ? t("automation.update") : t("automation.submit")}
               </button>
             </form>
           </div>

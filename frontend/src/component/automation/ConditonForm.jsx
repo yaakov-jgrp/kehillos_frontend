@@ -65,7 +65,7 @@ const ConditonForm = ({
                           }
                         >
                           <MenuItem value="" disabled>
-                            Select
+                            {t("automation.select")}
                           </MenuItem>
                           {fullFormData
                             ?.filter((item) => item?.data_type.value !== "file")
@@ -220,7 +220,7 @@ const ConditonForm = ({
                           }
                         >
                           <MenuItem value="" disabled>
-                            Select
+                            {t("automation.select")}
                           </MenuItem>
                           {fullFormData
                             ?.filter((item) => item?.data_type.value !== "file")
@@ -263,7 +263,7 @@ const ConditonForm = ({
                           }
                         >
                           <MenuItem value="" disabled>
-                            Select
+                            {t("automation.select")}
                           </MenuItem>
                           {filterOptions
                             .filter(

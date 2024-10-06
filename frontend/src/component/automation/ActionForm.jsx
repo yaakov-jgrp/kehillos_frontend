@@ -5,7 +5,7 @@ import PencilIcon from "../../assets/images/pencil.svg";
 import { FormControl, MenuItem, Select } from "@mui/material";
 import ToggleSwitch from "../common/ToggleSwitch";
 
-const ActionForm = ({action,handleActionChange, toggleModal, lang, actionArray, handleEditAction}) => {
+const ActionForm = ({action,handleActionChange, toggleModal, lang, actionArray, handleEditAction, handleDeleteAction}) => {
     const {t, i18n}= useTranslation();
   return (
     <div className="px-6 py-4 w-full bg-white rounded-3xl shadow-custom mt-2">
@@ -18,6 +18,7 @@ const ActionForm = ({action,handleActionChange, toggleModal, lang, actionArray, 
           id="demo-select-small"
           className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded-lg outline-none w-full p-2 text-black bg-white"
           value={action}
+          defaultValue={'addAction'}
           MenuProps={{
             sx: {
               maxHeight: "250px",
@@ -26,13 +27,13 @@ const ActionForm = ({action,handleActionChange, toggleModal, lang, actionArray, 
           }}
           onChange={(e) => handleActionChange(e)}
         >
-          <MenuItem value="" disabled>
-            Select
+          <MenuItem value="addAction" disabled>
+            {t("automation.addAction")}
           </MenuItem>
           <MenuItem value="send_email">
-            <div onClick={toggleModal}>Send Mail</div>
+            <div onClick={toggleModal}>{t("automation.sendMail")}</div>
           </MenuItem>
-          <MenuItem value="update_fields">Update Fields</MenuItem>
+          <MenuItem value="update_fields">{t("automation.updateFields")}</MenuItem>
         </Select>
       </FormControl>
       <table className="!table w-full text-[12px] md:text-[14px] my-3 border">
@@ -50,7 +51,7 @@ const ActionForm = ({action,handleActionChange, toggleModal, lang, actionArray, 
                     lang === "he" ? "text-[16.5px]" : "text-[15px]"
                   }`}
                 >
-                  Action Title
+                  {t("automation.actionTitle")}
                 </label>
               </div>
             </th>
@@ -65,7 +66,7 @@ const ActionForm = ({action,handleActionChange, toggleModal, lang, actionArray, 
                     lang === "he" ? "text-[16.5px]" : "text-[15px]"
                   }`}
                 >
-                  Action Type
+                  {t("automation.actionType")}
                 </label>
               </div>
             </th>
@@ -80,7 +81,7 @@ const ActionForm = ({action,handleActionChange, toggleModal, lang, actionArray, 
                     lang === "he" ? "text-[16.5px]" : "text-[15px]"
                   }`}
                 >
-                  Status
+                  {t("automation.status")}
                 </label>
               </div>
             </th>
@@ -96,7 +97,7 @@ const ActionForm = ({action,handleActionChange, toggleModal, lang, actionArray, 
                     lang === "he" ? "text-[16.5px]" : "text-[15px]"
                   }`}
                 >
-                  Action
+                  {t("automation.action")}
                 </label>
               </div>
             </th>
@@ -124,6 +125,7 @@ const ActionForm = ({action,handleActionChange, toggleModal, lang, actionArray, 
                     src={BinIcon}
                     alt="BinIcon"
                     className="hover:cursor-pointer"
+                    onClick={()=> handleDeleteAction(item?.id)}
                   />
                 </div>
               </td>
