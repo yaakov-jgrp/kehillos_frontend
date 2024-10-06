@@ -35,12 +35,6 @@ function FieldsModal({
   console.log("editData", editData);
   const { id } = useParams();
 
-  let defaultValues = {
-    action_title: "",
-    status: "",
-    fields: [{ field_name: "", field_value: "" }],
-  };
-
   const validationSchema = Yup.object().shape({
     action_title: Yup.string().required("Action Title is required"),
     status: Yup.boolean(),
@@ -69,7 +63,7 @@ function FieldsModal({
     resolver: yupResolver(validationSchema),
     defaultValues: {
       action_title: isEdit ? editData?.action_title : "",
-      status: isEdit ? editData?.status : false,
+      status: isEdit ? editData?.status === 'active' ? true : false : false,
       fields: isEdit ? id ? editData?.fields : editData?.fields : [{ field_name: "", field_value: "" }],
     },
   });
@@ -86,6 +80,7 @@ function FieldsModal({
       ...data,
       id: editData?.id || (Math.random() + 1).toString(36).substring(7), // If in edit mode, retain the existing id
       action_type: actionType,
+      status: data?.status === true ? 'active' : 'inactive'
     };
 
     console.log("formDataWithStatus", formDataWithStatus);
@@ -139,8 +134,6 @@ function FieldsModal({
   const watchStatus = watch("status");
 
   // console.log('watchFields',watchFields);
-
-  console.log("fields", fields);
 
   return (
     <div className="fixed w-full left-0 bottom-0 z-[1000] h-screen w-screen bg-[#00000080] flex justify-center items-center">

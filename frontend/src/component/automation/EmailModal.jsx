@@ -36,7 +36,7 @@ function EmailModal({
         to_email: editData.to_email || "",
         subject: editData.subject || "",
         html: editData.html || "",
-        status: editData.status || false,
+        status: editData.status === 'active' ? true  : false || false,
       });
       if (emailEditorRef.current && editData.design) {
         emailEditorRef.current.editor?.loadDesign(editData.design);
@@ -90,7 +90,8 @@ function EmailModal({
       html: exportedMessage.html,
       design: exportedMessage.design,
       action_type: actionType,
-      id: editData?.id || (Math.random() + 1).toString(36).substring(7)
+      id: editData?.id || (Math.random() + 1).toString(36).substring(7),
+      status: formdata?.status === true ? 'active' : 'inactive'
     };
   
     handleActionArrayManupulation(editData, actionArray, fullFormData);

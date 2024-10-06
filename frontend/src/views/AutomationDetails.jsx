@@ -1,21 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Loader from "../component/common/Loader";
-import { FormControl, MenuItem, Select } from "@mui/material";
-import ErrorMessage from "../component/common/ErrorMessage";
-import { IoIosAdd } from "react-icons/io";
 import clientsService from "../services/clients";
-import BinIcon from "../assets/images/bin.svg";
-import SendMail from "../component/automation/SendEmail";
 import automationService from "../services/automation";
-import PencilIcon from "../assets/images/pencil.svg";
 import FieldsModal from "../component/automation/FieldsModal";
 import EmailModal from "../component/automation/EmailModal";
-import ToggleSwitch from "../component/common/ToggleSwitch";
 import ConditonForm from "../component/automation/ConditonForm";
 import ActionForm from "../component/automation/ActionForm";
 
@@ -24,7 +17,6 @@ function AutomationDetails() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-  const [showForm, setShowForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [conditions, setConditions] = useState([]);
   const [filterOptions, setFilterOptions] = useState([]);
@@ -32,10 +24,7 @@ function AutomationDetails() {
   const [action, setAction] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [displayFields, setDisplayFields] = useState([]);
-  const [displayFormValues, setDisplayFormValues] = useState({});
   const [actionArray, setActionArray] = useState([]);
-  const [editableData, setEditableData] = useState({});
   const [editActionData, setEdtActionData] = useState({});
 
   // console.log("emailFormdata>>>>>>>>>>", emailFormdata);
@@ -155,8 +144,6 @@ function AutomationDetails() {
       //     });
       //     return acc;
       //   }, {});
-      setDisplayFormValues(result);
-      setDisplayFields(formFields);
       setFullFormData(formFields);
     } catch (error) {
       console.log(error);
@@ -286,8 +273,6 @@ function AutomationDetails() {
     try {
       const response = await automationService.getAutomationListById(id);
       if (response?.status === 200 || response?.status === 201) {
-        console.log("response is edit>>>>>>>>>", response);
-        setEditableData(response?.data);
         setValue("workflow_name", response?.data?.workflow_name);
         setValue("workflow_description", response?.data?.workflow_description);
         setValue("status", response?.data?.status);
@@ -320,7 +305,11 @@ function AutomationDetails() {
     }
   }, [id]);
 
-  return (
+  return isLoading ? (
+    <div className="h-[calc(100vh-210px)] w-full flex justify-center items-center">
+      <Loader />
+    </div>
+  ) : (
     <>
       <form onSubmit={handleSubmit((data, e) => submitFormHandler(data, e))}>
         <div className="px-6 py-4 w-full bg-white rounded-3xl shadow-custom">

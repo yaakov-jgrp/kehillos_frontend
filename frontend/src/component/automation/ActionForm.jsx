@@ -1,5 +1,4 @@
 import React from "react";
-import ErrorMessage from "../common/ErrorMessage";
 import { useTranslation } from "react-i18next";
 import BinIcon from "../../assets/images/bin.svg";
 import PencilIcon from "../../assets/images/pencil.svg";
@@ -36,8 +35,6 @@ const ActionForm = ({action,handleActionChange, toggleModal, lang, actionArray, 
           <MenuItem value="update_fields">Update Fields</MenuItem>
         </Select>
       </FormControl>
-      {/* {action === "sendmail" && <SendMail />} */}
-      {/* {action === "updateFields" && <UpdateFields conditions={conditions} fullFormData={fullFormData}/>} */}
       <table className="!table w-full text-[12px] md:text-[14px] my-3 border">
         <thead className="sticky top-0 z-10 [&_th]:min-w-[8.5rem] bg-[#F9FBFC]">
           <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
@@ -112,7 +109,7 @@ const ActionForm = ({action,handleActionChange, toggleModal, lang, actionArray, 
               <td className="p-2"> {item?.action_type} </td>
               <td className="p-2">
                 {" "}
-                <ToggleSwitch selected={item?.status} disabled={true} />
+                <ToggleSwitch selected={item?.status === "active" ? true : false} disabled={true} />
               </td>
 
               <td>
