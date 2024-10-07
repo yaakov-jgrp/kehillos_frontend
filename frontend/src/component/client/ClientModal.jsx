@@ -30,6 +30,8 @@ const ClientModal = ({
   showModal,
   setShowModal,
   client,
+  setClientRefresh,
+  clientRefresh,
   newClient,
   onClick,
   netfreeProfiles,
@@ -134,7 +136,7 @@ const ClientModal = ({
   const submitForm = async (data, e) => {
     console.log("submitting form");
     console.log("form submit data",data);
-    alert('submitting form');
+    // alert('submitting form');
     e.preventDefault();
 
     let fieldsArray = [];
@@ -173,6 +175,7 @@ const ClientModal = ({
         .then((res) => {
           reset();
           setShowModal(!showModal);
+          setClientRefresh(!clientRefresh);
           onClick();
         })
         .catch((err) => {
@@ -190,6 +193,7 @@ const ClientModal = ({
           .then((res) => {
             reset();
             setShowModal(!showModal);
+            setClientRefresh(!clientRefresh);
             onClick();
           })
           .catch((err) => {
