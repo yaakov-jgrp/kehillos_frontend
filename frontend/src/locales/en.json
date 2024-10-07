@@ -98,8 +98,8 @@
     "basicInformation": "Basic Information",
     "active": "active",
     "inactive": "inactive",
-    "created": "Deal creation",
-    "updated": "Deal updated  (Includes Creation)",
+    "created": "Created",
+    "updated": "Updated",
     "recurrence": "Recurrence",
     "firstTime": "Only first time conditions are met",
     "everyTime": "Every time conditions are met",
@@ -115,7 +115,11 @@
     "addRow": "Add Row",
     "sendMail":"Send Mail",
     "updateFields": "Update Fields",
-    "addAction":"Add Action"
+    "addAction":"Add Action",
+    "actionType": "Action Type",
+    "action": "Action",
+    "once": "Once",
+    "every_time": "Every Time"
   },
   "requests": {
     "title": "Requests",

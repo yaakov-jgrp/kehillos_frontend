@@ -98,8 +98,8 @@
     "basicInformation": "מידע בסיסי",
     "active": "פעיל",
     "inactive": "לא פעיל",
-    "created": "יצירת עסקה",
-    "updated": "עדכון עסקה (כולל יצירה)",
+    "created": "נוצר",
+    "updated": "מְעוּדכָּן",
     "recurrence": "חזרתיות",
     "firstTime": "רק בפעם הראשונה שהתנאים מתקיימים",
     "everyTime": "בכל פעם שהתנאים מתקיימים",
@@ -115,7 +115,11 @@
     "addRow": "הוסף שורה",
     "sendMail": "שלח מייל",
     "updateFields": "עדכן שדות",
-    "addAction":"הוסף פעולה"
+    "addAction":"הוסף פעולה",
+    "actionType": "סוג פעולה",
+    "action": "פעולה",
+    "once": "פעם אחת",
+    "every_time": "בכל פעם"
   },
 
   "requests": {

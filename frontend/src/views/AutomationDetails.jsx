@@ -20,7 +20,7 @@ function AutomationDetails() {
   const [isLoading, setIsLoading] = useState(false);
   const [conditions, setConditions] = useState([]);
   const [filterOptions, setFilterOptions] = useState([]);
-  const [fullFormData, setFullFormData] = useState(null);
+  const [fullFormData, setFullFormData] = useState([]);
   const [action, setAction] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);

@@ -16,13 +16,18 @@ const ActionForm = ({action,handleActionChange, toggleModal, lang, actionArray, 
         <Select
           labelId="demo-select-small-label"
           id="demo-select-small"
-          className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded-lg outline-none w-full p-2 text-black bg-white"
+          className="w-40 [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded-lg outline-none p-2 text-black bg-white"
           value={action}
           defaultValue={'addAction'}
           MenuProps={{
             sx: {
               maxHeight: "250px",
               maxWidth: "250px",
+            },
+            PaperProps: {
+              sx: {
+                right: '105%', // Adjust the `right` property
+              },
             },
           }}
           onChange={(e) => handleActionChange(e)}
