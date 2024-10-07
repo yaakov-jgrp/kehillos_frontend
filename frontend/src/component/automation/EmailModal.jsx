@@ -1,11 +1,23 @@
-// React imports
 import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import CrossIcon from "../../assets/images/cross.svg";
 import EmailEditor from "react-email-editor";
 import { DEFAULT_LANGUAGE } from "../../constants";
 import emailEditorHe from "../../locales/emailEditorHe.json";
 import ToggleSwitch from "../common/ToggleSwitch";
+import clientsService from "../../services/clients";
+
+// Define validation schema using Yup
+const validationSchema = Yup.object().shape({
+  action_title: Yup.string().required("Action title is required"),
+  to_email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  subject: Yup.string().required("Subject is required"),
+});
 
 function EmailModal({
   isEdit,
@@ -15,37 +27,67 @@ function EmailModal({
   actionType,
   setIsEdit,
   editData, // Add editData as a prop
-  handleActionArrayManupulation
+  handleActionArrayManupulation,
 }) {
   const { t } = useTranslation();
   const emailEditorRef = useRef(null);
   const defaultLanguageValue = localStorage.getItem(DEFAULT_LANGUAGE);
-  const [formdata, setFormData] = useState({
-    action_title: "",
-    to_email: "",
-    subject: "",
-    html: "",
-    status: false,
+  const [mergeTagsData, setMergeTagsData] = useState({});
+
+  // React Hook Form setup
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationSchema), // Add Yup resolver for validation
+    defaultValues: {
+      action_title: "",
+      to_email: "",
+      subject: "",
+      html: "",
+      status: false,
+    },
   });
+
+  const fetchFormDataTags = async () => {
+    // setloadingTags(true);
+    try {
+      const res = await clientsService.getFullformData(
+        "&field_email_template=true"
+      );
+      setMergeTagsData(res.data.result);
+      // setloadingTags(false);
+    } catch (error) {
+      console.log(error);
+      // setloadingTags(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFormDataTags();
+  }, [defaultLanguageValue]);
 
   // Use useEffect to set form data with editData when editing
   useEffect(() => {
     if (isEdit && editData) {
-      setFormData({
+      reset({
         action_title: editData.action_title || "",
         to_email: editData.to_email || "",
         subject: editData.subject || "",
-        html: editData.html || "",
-        status: editData.status === 'active' ? true  : false || false,
+        status: editData.status === "active",
       });
+
       if (emailEditorRef.current && editData.design) {
         emailEditorRef.current.editor?.loadDesign(editData.design);
       }
     }
-  }, [isEdit, editData]);
+  }, [isEdit, editData, reset]);
 
   const exportHtml = () => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       let messageBody = {
         design: null,
         html: null,
@@ -58,61 +100,128 @@ function EmailModal({
     });
   };
 
-  const handleInput = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formdata,
-      [name]: value,
-    });
-  };
-
   const handleSwitchChange = () => {
-    setFormData({
-      ...formdata,
-      status: !formdata.status,
-    });
+    setValue("status", !editData.status);
   };
 
-  const formValidate = () => {
-    if (!formdata?.action_title || !formdata?.to_email || !formdata?.subject) {
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-  
+  const onSubmit = async (formdata) => {
     const exportedMessage = await exportHtml();
-  
+
     const fullFormData = {
       ...formdata,
       html: exportedMessage.html,
       design: exportedMessage.design,
       action_type: actionType,
       id: editData?.id || (Math.random() + 1).toString(36).substring(7),
-      status: formdata?.status === true ? 'active' : 'inactive'
+      status: formdata.status ? "active" : "inactive",
     };
-  
+
+    console.log('fullFormData',fullFormData);
+    
+
     handleActionArrayManupulation(editData, actionArray, fullFormData);
-  
-    console.log("Form Data Submitted: ", fullFormData);
-  
-    // Reset and close modal
     setShowModal("");
-    // setEmailFormData(fullFormData);
-    setFormData({
-      action_title: "",
-      to_email: "",
-      subject: "",
-      html: "",
-      status: false,
-    });
     setIsEdit(false); // Reset edit mode
+    reset(); // Reset form data after submit
   };
-  
 
   const onReady = () => {
+    emailEditorRef.current.editor.setMergeTags({
+      request: {
+        name:t("email_builder.requests"),
+        mergeTags: {  // Note the use of 'mergeTags' instead of 'children' for nesting
+          $request_id: {
+            name: t("requests.$requestId"),
+            value: "{request_id}",
+          },
+          $client_name: {
+                name: t("requests.$clinetName"),
+                value: "{client_name}",
+          },
+          $client_email: {
+                name: t("requests.$clientEmail"),
+                value: "{client_email}",
+              },
+          $domain_requested: {
+            name: t("requests.$domainRequested"),
+            value: "{domain_requested}",
+          },
+          $admin_email: {
+            name: t("requests.$adminEmail"),
+            value: "{admin_email}",
+          }
+        }
+      },
+    client:{
+      name:t("email_builder.clients"),
+      mergeTags: mergeTagsData.client
+    },
+    netfree_traffic:{
+      name:t("email_builder.netfree_traffic"),
+      mergeTags: {
+        $traffic_recording_open_domain_pre_text: {
+          name: t("email_builder.open_domain_pre_text"),
+          value: "{traffic_recording_open_domain_pre_text}"
+        },
+        $traffic_recording_open_domain_list: {
+          name: t("email_builder.open_domain_list"),
+          value: "{traffic_recording_open_domain_list}"
+        },
+        $traffic_recording_open_domain_after_text: {
+          name: t("email_builder.open_domain_after_text"),
+          value: "{traffic_recording_open_domain_after_text}"
+        },
+        $traffic_recording_open_url_pre_text: {
+          name: t("email_builder.open_url_pre_text"),
+          value: "{traffic_recording_open_url_pre_text}"
+        },
+        $traffic_recording_open_url_list: {
+          name: t("email_builder.open_url_list"),
+          value: "{traffic_recording_open_url_list}"
+        },
+        $traffic_recording_open_url_after_text: {
+          name: t("email_builder.open_url_after_text"),
+          value: "{traffic_recording_open_url_after_text}"
+        },
+        $traffic_recording_blocked_pre_text: {
+          name: t("email_builder.blocked_pre_text"),
+          value: "{traffic_recording_blocked_pre_text}"
+        },
+        $traffic_recording_blocked_list: {
+          name: t("email_builder.blocked_list"),
+          value: "{traffic_recording_blocked_list}"
+        },
+        $traffic_recording_blocked_after_text: {
+          name: t("email_builder.blocked_after_text"),
+          value: "{traffic_recording_blocked_after_text}"
+        },
+        $traffic_recording_open_domain_temporary_pre_text: {
+          name: t("email_builder.open_domain_temporary_pre_text"),
+          value: "{traffic_recording_open_domain_temporary_pre_text}"
+        },
+        $traffic_recording_open_domain_temporary: {
+          name: t("email_builder.open_domain_temporary"),
+          value: "{traffic_recording_open_domain_temporary}"
+        },
+        $traffic_recording_open_domain_temporary_after_text: {
+          name: t("email_builder.open_domain_temporary_after_text"),
+          value: "{traffic_recording_open_domain_temporary_after_text}"
+        },
+        $traffic_recording_open_url_temporary_pre_text: {
+          name: t("email_builder.open_url_temporary_pre_text"),
+          value: "{traffic_recording_open_url_temporary_pre_text}"
+        },
+        $traffic_recording_open_url_temporary: {
+          name: t("email_builder.open_url_temporary"),
+          value: "{traffic_recording_open_url_temporary}"
+        },
+        $traffic_recording_open_url_temporary_after_text: {
+          name: t("email_builder.open_url_temporary_after_text"),
+          value: "{traffic_recording_open_url_temporary_after_text}"
+        }
+      }
+    }
+    })
     if (isEdit && editData && editData.design) {
       emailEditorRef.current.editor?.loadDesign(editData.design);
     }
@@ -123,42 +232,7 @@ function EmailModal({
     textDirection: defaultLanguageValue === "he" ? "rtl" : "ltr",
     translations: {
       [defaultLanguageValue]:
-        defaultLanguageValue === "he" ? emailEditorHe : {}, // Assuming you have similar JSON files for other languages
-    },
-    tools: {
-      text: {
-        properties: {
-          textOverflow: {
-            value: "clip",
-          },
-          text: {
-            value:
-              defaultLanguageValue === "he"
-                ? '<p style="line-height: 140%;">זהו בלוק טקסט חדש. שנה את הטקסט.</p>'
-                : '<p style="line-height: 140%;">This is a new text block. Change the text.</p>',
-          },
-          textAlign: {
-            value: defaultLanguageValue === "he" ? "right" : "left",
-          },
-        },
-      },
-      heading: {
-        properties: {
-          text: {
-            value: defaultLanguageValue === "he" ? "כּוֹתֶרֶת" : "Heading",
-          },
-          textAlign: {
-            value: defaultLanguageValue === "he" ? "right" : "left",
-          },
-        },
-      },
-      button: {
-        properties: {
-          text: {
-            value: defaultLanguageValue === "he" ? "טקסט לחצן" : "Button Text",
-          },
-        },
-      },
+        defaultLanguageValue === "he" ? emailEditorHe : {},
     },
   };
 
@@ -173,12 +247,15 @@ function EmailModal({
               </h3>
               <button
                 className="bg-transparent border-0 text-black float-right"
-                onClick={() =>{ setShowModal(""); setIsEdit(false);}}
+                onClick={() => {
+                  setShowModal("");
+                  setIsEdit(false);
+                }}
               >
                 <img src={CrossIcon} alt="CrossIcon" />
               </button>
             </div>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="px-7 flex gap-4 text-gray-11 [&_input]:border-[1px] [&_textarea]:border-[1px] [&_input]:outline-none [&_textarea]:outline-0 [&_input]:w-full [&_textarea]:w-full [&_input]:!px-4 [&_textarea]:!px-4 [&_input]:!py-1 [&_textarea]:!py-1">
                 <div className="w-[100%] [&_tr]:h-10">
                   <div className="flex items-center my-2 w-full gap-4">
@@ -187,47 +264,48 @@ function EmailModal({
                     </td>
                     <input
                       className="text-[13px] rounded-md h-[40px]"
-                      id="templateName"
-                      type="text"
-                      value={formdata?.action_title}
-                      onChange={handleInput}
-                      name="action_title"
+                      {...register("action_title")}
                       placeholder={t("automation.actionTitle")}
                     />
+                    {errors.action_title && (
+                      <p className="text-red-500">
+                        {errors.action_title.message}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex my-2 w-full gap-4">
                     <td className="w-1/2 md:w-1/5">{t("automation.toEmail")}</td>
                     <input
                       className="text-[13px] rounded-md h-[40px]"
-                      id="emailTo"
                       type="email"
+                      {...register("to_email")}
                       placeholder={t("automation.toEmail")}
-                      value={formdata?.to_email}
-                      onChange={handleInput}
-                      name="to_email"
                     />
+                    {errors.to_email && (
+                      <p className="text-red-500">{errors.to_email.message}</p>
+                    )}
                   </div>
 
                   <div className="flex items-center my-2 w-full gap-4">
                     <td className="w-1/2 md:w-1/5">{t("automation.subject")}</td>
                     <input
                       className="text-[13px] rounded-md h-[40px]"
-                      id="emailSubject"
-                      type="text"
+                      {...register("subject")}
                       placeholder={t("automation.subject")}
-                      value={formdata?.subject}
-                      onChange={handleInput}
-                      name="subject"
                     />
+                    {errors.subject && (
+                      <p className="text-red-500">{errors.subject.message}</p>
+                    )}
                   </div>
+
                   <div className="flex items-center my-2 w-full gap-4">
                     <td className="w-1/2 md:w-1/5">{t("automation.status")}</td>
                     <ToggleSwitch
                       id="status"
                       name="status"
-                      clickHandler={(e) => handleSwitchChange(e)}
-                      selected={formdata?.status}
+                      clickHandler={handleSwitchChange}
+                      selected={!!editData?.status}
                     />
                   </div>
 
@@ -242,11 +320,12 @@ function EmailModal({
 
                   <div className="flex justify-end relative">
                     <button
-                      onClick={handleSubmit}
+                      type="submit"
                       className="px-6 py-2 mt-4 font-semibold bg-blue-500 text-white rounded absolute"
-                      disabled={!formValidate()}
                     >
-                      {isEdit ? t("automation.update") : t("automation.submit")}
+                      {isEdit
+                        ? t("automation.update")
+                        : t("automation.submit")}
                     </button>
                   </div>
                 </div>
@@ -260,4 +339,3 @@ function EmailModal({
 }
 
 export default EmailModal;
-

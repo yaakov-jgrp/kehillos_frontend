@@ -220,7 +220,7 @@
   },
   "routes": {
     "automation": "Automation",
-    "newWorkflow": "New Workflow",
+    "new-workflow": "New Workflow",
     "clients": "Clients",
     "request": "Request",
     "settings": "settings",

@@ -27,8 +27,6 @@ function AutomationDetails() {
   const [actionArray, setActionArray] = useState([]);
   const [editActionData, setEdtActionData] = useState({});
 
-  // console.log("emailFormdata>>>>>>>>>>", emailFormdata);
-
   const toggleModal = () => {
     setShowModal(!showModal);
   };
@@ -265,8 +263,8 @@ function AutomationDetails() {
     console.log("Form Submitted Data payload", payload);
   };
 
-  const handleActionChange = (e) => {
-    setAction(e.target.value);
+  const handleActionChange = (value) => {
+    setAction(value);
   };
 
   const fetchAutomationDataById = async () => {
