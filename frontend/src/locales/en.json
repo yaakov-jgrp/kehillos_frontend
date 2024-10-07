@@ -99,7 +99,7 @@
     "active": "active",
     "inactive": "inactive",
     "created": "Created",
-    "updated": "Updated",
+    "updated": "Updated (Includes Creation)",
     "recurrence": "Recurrence",
     "firstTime": "Only first time conditions are met",
     "everyTime": "Every time conditions are met",

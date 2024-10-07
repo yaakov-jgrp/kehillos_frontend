@@ -99,7 +99,7 @@
     "active": "פעיל",
     "inactive": "לא פעיל",
     "created": "נוצר",
-    "updated": "מְעוּדכָּן",
+    "updated": "עודכן (כולל יצירה)",
     "recurrence": "חזרתיות",
     "firstTime": "רק בפעם הראשונה שהתנאים מתקיימים",
     "everyTime": "בכל פעם שהתנאים מתקיימים",
@@ -115,7 +115,7 @@
     "addRow": "הוסף שורה",
     "sendMail": "שלח מייל",
     "updateFields": "עדכן שדות",
-    "addAction":"הוסף פעולה",
+    "addAction": "הוסף פעולה",
     "actionType": "סוג פעולה",
     "action": "פעולה",
     "once": "פעם אחת",
@@ -202,7 +202,7 @@
     "false": "לא"
   },
   "routes": {
-    "automation":"אוטומציה",
+    "automation": "אוטומציה",
     "new-workflow": "זרימת עבודה חדשה",
     "clients": "לקוחות",
     "request": "פניות",
