@@ -27,6 +27,7 @@ function EmailModal({
   actionType,
   setIsEdit,
   editData, // Add editData as a prop
+  setEdtActionData,
   handleActionArrayManupulation,
 }) {
   const { t } = useTranslation();
@@ -250,6 +251,7 @@ function EmailModal({
                 onClick={() => {
                   setShowModal("");
                   setIsEdit(false);
+                  setEdtActionData({});
                 }}
               >
                 <img src={CrossIcon} alt="CrossIcon" />
