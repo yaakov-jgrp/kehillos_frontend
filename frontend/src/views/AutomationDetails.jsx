@@ -480,6 +480,7 @@ function AutomationDetails() {
           isEdit={isEdit}
           setIsEdit={setIsEdit}
           editData={editActionData}
+          setEdtActionData={setEdtActionData}
           conditions={conditions}
           fullFormData={fullFormData}
           setShowModal={setAction}
@@ -495,6 +496,7 @@ function AutomationDetails() {
           isEdit={isEdit}
           setIsEdit={setIsEdit}
           editData={editActionData}
+          setEdtActionData={setEdtActionData}
           setShowModal={setAction}
           setActionArray={setActionArray}
           actionArray={actionArray}

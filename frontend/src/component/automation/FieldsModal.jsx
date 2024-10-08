@@ -24,6 +24,7 @@ function FieldsModal({
   isEdit,
   setIsEdit,
   editData,
+  setEdtActionData,
   fullFormData,
   actionType,
   actionArray,
@@ -147,6 +148,7 @@ function FieldsModal({
                 onClick={() => {
                   setShowModal("");
                   setIsEdit(false);
+                  setEdtActionData({})
                 }}
               >
                 <img src={CrossIcon} alt="CrossIcon" />
