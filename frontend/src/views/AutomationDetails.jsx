@@ -270,7 +270,7 @@ function AutomationDetails() {
   });
 
   const convertToDateStrings = (dates) => {
-    return dates.map(({ month, day }) => {
+    return dates?.map(({ month, day }) => {
       const year = dayjs().year(); // Assuming current year, change this if necessary
       return dayjs(`${year}-${month}-${day}`).format('YYYY-MM-DD');
     });
@@ -298,13 +298,13 @@ function AutomationDetails() {
         payload = {
           frequency: "specific_date",
           time: time,
-          specific_date: specificDate,
+          specific_date: dayjs(specificDate).format('YYYY-MM-DD'),
         };
       } else if (value === "monthly_by_date") {
         payload = {
           frequency: "monthly_by_date",
           time: time,
-          monthly_by_date: selectedDay,
+          days_of_month: selectedDay,
         };
       } else if (value === "yearly_by_date") {
         payload = {
@@ -381,7 +381,7 @@ function AutomationDetails() {
     setValue("selectedDay", event.target.value);
   };
 
-  console.log('selectedDates',selectedDates);
+  console.log('selectedDay',selectedDay);
   
 
   const fetchAutomationDataById = async () => {
@@ -402,7 +402,9 @@ function AutomationDetails() {
         setTime(response?.data?.time);
         setSelectedWeekDay(response?.data?.days_of_week || []);
         setSelectedDates(convertToDateStrings(response?.data?.specific_dates_year) || []);
-        console.log("response>>>>>", response);
+        setSelectedDay(response?.data?.days_of_month || []);
+        setSpecificDate(dayjs(response?.data?.specific_date));
+        console.log("response>>>>>", response?.data?.days_of_month);
       }
     } catch (error) {
       console.log(error);
