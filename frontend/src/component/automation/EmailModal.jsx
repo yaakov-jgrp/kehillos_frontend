@@ -41,15 +41,16 @@ function EmailModal({
     handleSubmit,
     setValue,
     reset,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationSchema), // Add Yup resolver for validation
     defaultValues: {
-      action_title: "",
-      to_email: "",
-      subject: "",
+      action_title: isEdit ? editData.action_title : "",
+      to_email: isEdit ? editData.to_email : "",
+      subject: isEdit ? editData.subject : "",
       html: "",
-      status: false,
+      status: isEdit ? (editData?.status === "active" ? true : false) : false,
     },
   });
 
@@ -74,12 +75,12 @@ function EmailModal({
   // Use useEffect to set form data with editData when editing
   useEffect(() => {
     if (isEdit && editData) {
-      reset({
-        action_title: editData.action_title || "",
-        to_email: editData.to_email || "",
-        subject: editData.subject || "",
-        status: editData.status === "active",
-      });
+      // reset({
+      //   action_title: editData.action_title || "",
+      //   to_email: editData.to_email || "",
+      //   subject: editData.subject || "",
+      //   status: editData.status === "active" ? true : false,
+      // });
 
       if (emailEditorRef.current && editData.design) {
         emailEditorRef.current.editor?.loadDesign(editData.design);
@@ -101,9 +102,11 @@ function EmailModal({
     });
   };
 
-  const handleSwitchChange = () => {
-    setValue("status", !editData.status);
-  };
+  // const handleSwitchChange = () => {
+  //   setValue("status", !editData.status);
+  // };
+
+  console.log("editData", editData);
 
   const onSubmit = async (formdata) => {
     const exportedMessage = await exportHtml();
@@ -114,11 +117,10 @@ function EmailModal({
       design: exportedMessage.design,
       action_type: actionType,
       id: editData?.id || (Math.random() + 1).toString(36).substring(7),
-      status: formdata.status ? "active" : "inactive",
+      status: formdata?.status === true ? "active" : "inactive",
     };
 
-    console.log('fullFormData',fullFormData);
-    
+    console.log("fullFormData", fullFormData);
 
     handleActionArrayManupulation(editData, actionArray, fullFormData);
     setShowModal("");
@@ -129,20 +131,21 @@ function EmailModal({
   const onReady = () => {
     emailEditorRef.current.editor.setMergeTags({
       request: {
-        name:t("email_builder.requests"),
-        mergeTags: {  // Note the use of 'mergeTags' instead of 'children' for nesting
+        name: t("email_builder.requests"),
+        mergeTags: {
+          // Note the use of 'mergeTags' instead of 'children' for nesting
           $request_id: {
             name: t("requests.$requestId"),
             value: "{request_id}",
           },
           $client_name: {
-                name: t("requests.$clinetName"),
-                value: "{client_name}",
+            name: t("requests.$clinetName"),
+            value: "{client_name}",
           },
           $client_email: {
-                name: t("requests.$clientEmail"),
-                value: "{client_email}",
-              },
+            name: t("requests.$clientEmail"),
+            value: "{client_email}",
+          },
           $domain_requested: {
             name: t("requests.$domainRequested"),
             value: "{domain_requested}",
@@ -150,79 +153,79 @@ function EmailModal({
           $admin_email: {
             name: t("requests.$adminEmail"),
             value: "{admin_email}",
-          }
-        }
+          },
+        },
       },
-    client:{
-      name:t("email_builder.clients"),
-      mergeTags: mergeTagsData.client
-    },
-    netfree_traffic:{
-      name:t("email_builder.netfree_traffic"),
-      mergeTags: {
-        $traffic_recording_open_domain_pre_text: {
-          name: t("email_builder.open_domain_pre_text"),
-          value: "{traffic_recording_open_domain_pre_text}"
+      client: {
+        name: t("email_builder.clients"),
+        mergeTags: mergeTagsData.client,
+      },
+      netfree_traffic: {
+        name: t("email_builder.netfree_traffic"),
+        mergeTags: {
+          $traffic_recording_open_domain_pre_text: {
+            name: t("email_builder.open_domain_pre_text"),
+            value: "{traffic_recording_open_domain_pre_text}",
+          },
+          $traffic_recording_open_domain_list: {
+            name: t("email_builder.open_domain_list"),
+            value: "{traffic_recording_open_domain_list}",
+          },
+          $traffic_recording_open_domain_after_text: {
+            name: t("email_builder.open_domain_after_text"),
+            value: "{traffic_recording_open_domain_after_text}",
+          },
+          $traffic_recording_open_url_pre_text: {
+            name: t("email_builder.open_url_pre_text"),
+            value: "{traffic_recording_open_url_pre_text}",
+          },
+          $traffic_recording_open_url_list: {
+            name: t("email_builder.open_url_list"),
+            value: "{traffic_recording_open_url_list}",
+          },
+          $traffic_recording_open_url_after_text: {
+            name: t("email_builder.open_url_after_text"),
+            value: "{traffic_recording_open_url_after_text}",
+          },
+          $traffic_recording_blocked_pre_text: {
+            name: t("email_builder.blocked_pre_text"),
+            value: "{traffic_recording_blocked_pre_text}",
+          },
+          $traffic_recording_blocked_list: {
+            name: t("email_builder.blocked_list"),
+            value: "{traffic_recording_blocked_list}",
+          },
+          $traffic_recording_blocked_after_text: {
+            name: t("email_builder.blocked_after_text"),
+            value: "{traffic_recording_blocked_after_text}",
+          },
+          $traffic_recording_open_domain_temporary_pre_text: {
+            name: t("email_builder.open_domain_temporary_pre_text"),
+            value: "{traffic_recording_open_domain_temporary_pre_text}",
+          },
+          $traffic_recording_open_domain_temporary: {
+            name: t("email_builder.open_domain_temporary"),
+            value: "{traffic_recording_open_domain_temporary}",
+          },
+          $traffic_recording_open_domain_temporary_after_text: {
+            name: t("email_builder.open_domain_temporary_after_text"),
+            value: "{traffic_recording_open_domain_temporary_after_text}",
+          },
+          $traffic_recording_open_url_temporary_pre_text: {
+            name: t("email_builder.open_url_temporary_pre_text"),
+            value: "{traffic_recording_open_url_temporary_pre_text}",
+          },
+          $traffic_recording_open_url_temporary: {
+            name: t("email_builder.open_url_temporary"),
+            value: "{traffic_recording_open_url_temporary}",
+          },
+          $traffic_recording_open_url_temporary_after_text: {
+            name: t("email_builder.open_url_temporary_after_text"),
+            value: "{traffic_recording_open_url_temporary_after_text}",
+          },
         },
-        $traffic_recording_open_domain_list: {
-          name: t("email_builder.open_domain_list"),
-          value: "{traffic_recording_open_domain_list}"
-        },
-        $traffic_recording_open_domain_after_text: {
-          name: t("email_builder.open_domain_after_text"),
-          value: "{traffic_recording_open_domain_after_text}"
-        },
-        $traffic_recording_open_url_pre_text: {
-          name: t("email_builder.open_url_pre_text"),
-          value: "{traffic_recording_open_url_pre_text}"
-        },
-        $traffic_recording_open_url_list: {
-          name: t("email_builder.open_url_list"),
-          value: "{traffic_recording_open_url_list}"
-        },
-        $traffic_recording_open_url_after_text: {
-          name: t("email_builder.open_url_after_text"),
-          value: "{traffic_recording_open_url_after_text}"
-        },
-        $traffic_recording_blocked_pre_text: {
-          name: t("email_builder.blocked_pre_text"),
-          value: "{traffic_recording_blocked_pre_text}"
-        },
-        $traffic_recording_blocked_list: {
-          name: t("email_builder.blocked_list"),
-          value: "{traffic_recording_blocked_list}"
-        },
-        $traffic_recording_blocked_after_text: {
-          name: t("email_builder.blocked_after_text"),
-          value: "{traffic_recording_blocked_after_text}"
-        },
-        $traffic_recording_open_domain_temporary_pre_text: {
-          name: t("email_builder.open_domain_temporary_pre_text"),
-          value: "{traffic_recording_open_domain_temporary_pre_text}"
-        },
-        $traffic_recording_open_domain_temporary: {
-          name: t("email_builder.open_domain_temporary"),
-          value: "{traffic_recording_open_domain_temporary}"
-        },
-        $traffic_recording_open_domain_temporary_after_text: {
-          name: t("email_builder.open_domain_temporary_after_text"),
-          value: "{traffic_recording_open_domain_temporary_after_text}"
-        },
-        $traffic_recording_open_url_temporary_pre_text: {
-          name: t("email_builder.open_url_temporary_pre_text"),
-          value: "{traffic_recording_open_url_temporary_pre_text}"
-        },
-        $traffic_recording_open_url_temporary: {
-          name: t("email_builder.open_url_temporary"),
-          value: "{traffic_recording_open_url_temporary}"
-        },
-        $traffic_recording_open_url_temporary_after_text: {
-          name: t("email_builder.open_url_temporary_after_text"),
-          value: "{traffic_recording_open_url_temporary_after_text}"
-        }
-      }
-    }
-    })
+      },
+    });
     if (isEdit && editData && editData.design) {
       emailEditorRef.current.editor?.loadDesign(editData.design);
     }
@@ -236,6 +239,8 @@ function EmailModal({
         defaultLanguageValue === "he" ? emailEditorHe : {},
     },
   };
+
+  const watchStatus = watch("status");
 
   return (
     <div className="fixed w-full left-0 bottom-0 z-[1000] h-screen w-screen bg-[#00000080] flex justify-center items-center">
@@ -277,7 +282,9 @@ function EmailModal({
                   </div>
 
                   <div className="flex my-2 w-full gap-4">
-                    <td className="w-1/2 md:w-1/5">{t("automation.toEmail")}</td>
+                    <td className="w-1/2 md:w-1/5">
+                      {t("automation.toEmail")}
+                    </td>
                     <input
                       className="text-[13px] rounded-md h-[40px]"
                       type="email"
@@ -290,7 +297,9 @@ function EmailModal({
                   </div>
 
                   <div className="flex items-center my-2 w-full gap-4">
-                    <td className="w-1/2 md:w-1/5">{t("automation.subject")}</td>
+                    <td className="w-1/2 md:w-1/5">
+                      {t("automation.subject")}
+                    </td>
                     <input
                       className="text-[13px] rounded-md h-[40px]"
                       {...register("subject")}
@@ -304,10 +313,8 @@ function EmailModal({
                   <div className="flex items-center my-2 w-full gap-4">
                     <td className="w-1/2 md:w-1/5">{t("automation.status")}</td>
                     <ToggleSwitch
-                      id="status"
-                      name="status"
-                      clickHandler={handleSwitchChange}
-                      selected={!!editData?.status}
+                      clickHandler={(e) => setValue("status", e.target.checked)}
+                      selected={watchStatus}
                     />
                   </div>
 
@@ -325,9 +332,7 @@ function EmailModal({
                       type="submit"
                       className="px-6 py-2 mt-4 font-semibold bg-blue-500 text-white rounded absolute"
                     >
-                      {isEdit
-                        ? t("automation.update")
-                        : t("automation.submit")}
+                      {isEdit ? t("automation.update") : t("automation.submit")}
                     </button>
                   </div>
                 </div>
