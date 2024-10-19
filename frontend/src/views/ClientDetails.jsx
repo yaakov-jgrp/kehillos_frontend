@@ -87,12 +87,12 @@ function ClientDetails() {
           console.log(err);
           setIsloading(false);
         });
-
       // ::MOCKED DATA::
       // const profilesData = PROFILE_LIST;
       // const res = SINGLE_CLIENT_DATA;
       // const netfreeProfiles = profilesData.data.data;
       // setClientData(res.data);
+      // console.log("response data",res.data);  
       // setIsloading(false);
       // if (netfreeProfiles.length > 0) {
       //   const { netfree_profile } = res.data;
@@ -135,6 +135,7 @@ function ClientDetails() {
       };
     });
     setFullFormData(formFields);
+    console.log(formFields);
   };
 
   useEffect(() => {
@@ -142,6 +143,7 @@ function ClientDetails() {
     fetchNetfreeProfiles();
     getClientDataHandler();
   }, [lang]);
+
 
   return (
     <>
