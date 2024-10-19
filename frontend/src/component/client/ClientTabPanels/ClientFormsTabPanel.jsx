@@ -514,7 +514,9 @@ export const ClientFormsTabPanel = ({ clientId }) => {
                         onMouseLeave={() => {
                           setShowVersionDetailBox(false);
                         }}
-                        className={`z-[10000] w-[370px] rounded-lg scrollbar-hide absolute top-2 right-64 bg-white shadow-lg`}
+                        className={`z-[10000] w-[370px] rounded-lg scrollbar-hide absolute top-2 ${
+                          lang === "he" ? "left-64" : "right-64"
+                        } bg-white shadow-lg`}
                       >
                         <div className="bg-[#F9FBFC] p-3 flex flex-col gap-2">
                           <div className="flex items-center justify-between">
@@ -524,14 +526,22 @@ export const ClientFormsTabPanel = ({ clientId }) => {
                             <div className="flex gap-2 items-center">
                               <button>
                                 <img
-                                  src={LeftDisableArrow}
-                                  alt="LeftDisableArrow"
+                                  src={`${
+                                    lang === "he"
+                                      ? RightEnableArrow
+                                      : LeftDisableArrow
+                                  }`}
+                                  alt="Arrow"
                                 />
                               </button>
                               <button>
                                 <img
-                                  src={RightEnableArrow}
-                                  alt="RightEnableArrow"
+                                  src={`${
+                                    lang === "he"
+                                      ? LeftDisableArrow
+                                      : RightEnableArrow
+                                  }`}
+                                  alt="Arrow"
                                 />
                               </button>
                             </div>
