@@ -336,6 +336,8 @@
     "dateCreated": "Date Created",
     "dateFilledOut": "Date Filled Out",
     "datelastEdited": "Date Last Edited",
+    "createdAt": "Date Filled Out",
+    "lastEditedAt": "Date Last Edited",
     "formCreation": "Form Creation",
     "formName": "Form Name",
     "formDesc": "Form Description",
@@ -365,6 +367,7 @@
     "versionComments": "Comments",
     "comment": "Comment",
     "clientsForm": "Client's Form",
-    "enter": "Enter"
+    "enter": "Enter",
+    "value": "Value"
   }
 }
