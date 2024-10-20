@@ -67,9 +67,8 @@ function ClientDetails() {
   const getClientDataHandler = async () => {
     setIsloading(true);
     try {
+      // ::REAL DATA::
       const profilesData = await categoryService.getProfilesList();
-      // const profilesData = PROFILE_LIST;
-
       const netfreeProfiles = profilesData.data.data;
       clientsService
         .getClient(id)
@@ -88,7 +87,10 @@ function ClientDetails() {
           console.log(err);
           setIsloading(false);
         });
+      // ::MOCKED DATA::
+      // const profilesData = PROFILE_LIST;
       // const res = SINGLE_CLIENT_DATA;
+      // const netfreeProfiles = profilesData.data.data;
       // setClientData(res.data);
       // console.log("response data",res.data);  
       // setIsloading(false);
@@ -105,14 +107,21 @@ function ClientDetails() {
   };
 
   const fetchNetfreeProfiles = async () => {
+    // ::REAL DATA::
     const profilesListData = await categoryService.getProfilesList();
+
+    // ::MOCKED DATA::
     // const profilesListData = PROFILE_LIST;
     setNetfreeProfiles(profilesListData.data.data);
   };
 
   const fetchFullFormData = async () => {
+    // ::REAL DATA::
     const formData = await clientsService.getFullformData();
+
+    // ::MOCKED DATA::
     // const formData = FULL_FORM_DATA;
+
     let formFields = [];
     formData.data.result.forEach((block) => {
       block.field.forEach((field) => {
