@@ -157,7 +157,7 @@ function ClientFormsTable() {
         const storedFilters = JSON.parse(
           localStorage.getItem("clientFormsFilters")
         );
-        if (storedFilters.length > 0) {
+        if (storedFilters?.length > 0) {
           storedFilters.forEach((item) => {
             if (item.default) {
               payload = applyFilters(item.filters, payload);
@@ -235,7 +235,7 @@ function ClientFormsTable() {
       const storedFilters = JSON.parse(
         localStorage.getItem("clientFormsFilters")
       );
-      if (storedFilters.length > 0) {
+      if (storedFilters?.length > 0) {
         setFilters(storedFilters);
       }
     } catch (error) {

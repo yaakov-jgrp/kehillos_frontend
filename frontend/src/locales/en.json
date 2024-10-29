@@ -428,6 +428,7 @@
     "comment": "Comment",
     "clientsForm": "Client's Form",
     "enter": "Enter",
-    "value": "Value"
+    "value": "Value",
+    "clientsForms": "Client Forms"
   }
 }
