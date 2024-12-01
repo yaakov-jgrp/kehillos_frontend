@@ -28,6 +28,10 @@ const deleteCategoryStatus = (id) => {
   return api.delete(`/api/crm/category-request-status/${id}/`);
 };
 
+const fetchRequestScreenshot = (data) => {
+  return api.post(`/api/crm/requests/screenshot/`, data);
+};
+
 const requestService = {
   getRequests,
   getRequestStatuses,
@@ -36,5 +40,6 @@ const requestService = {
   updateStatus,
   deleteStatus,
   deleteCategoryStatus,
+  fetchRequestScreenshot
 };
 export default requestService;
