@@ -2,14 +2,15 @@
 import { useEffect, useState } from "react";
 
 // UI Imports
-import { MenuItem, Select, TablePagination } from "@mui/material";
+import { Box, CircularProgress, IconButton, MenuItem, Modal, Select, TablePagination, Tooltip, Typography } from "@mui/material";
+
 
 // UI Components Imports
 import SearchField from "../component/fields/SearchField";
 import Loader from "../component/common/Loader";
 import NoDataFound from "../component/common/NoDataFound";
 import RequestStatusModal from "../component/request/RequestStatusModal";
-
+import ResponseStatusModal from "../component/request/RequestStatusModal";
 // Third part Imports
 import { useTranslation } from "react-i18next";
 
@@ -22,6 +23,9 @@ import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 // Utils imports
 import { paginationRowOptions, searchFields } from "../lib/FieldConstants";
 import { formateDateTime, handleSort } from "../lib/CommonFunctions";
+import { IoClose, IoEyeOutline } from "react-icons/io5";
+import { GridDeleteIcon } from "@mui/x-data-grid";
+import axios from "axios";
 
 const Request = () => {
   const { t } = useTranslation();
@@ -35,7 +39,34 @@ const Request = () => {
   const [requestStatuses, setRequestStatuses] = useState(null);
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
+  const [loading, setLoading] = useState(false);
+  const [imageSrc, setImageSrc] = useState('');
+  const [error, setError] = useState(null);
+  const [open, setOpen] = useState(false);
 
+  const fetchScreenshot = async (url, request_id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await requestService.fetchRequestScreenshot({ url, request_id });
+      setImageSrc(`data:image/png;base64,${response.data.image}`);
+    } catch (err) {
+      setError('Failed to load screenshot');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClickOpen = (requested_website, request_id) => {
+    setOpen(true);
+    fetchScreenshot(requested_website, request_id );
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setImageSrc('');
+    setError(null);
+  };
   const handleSortHandler = (field) => {
     handleSort(
       field,
@@ -73,14 +104,12 @@ const Request = () => {
       let searchValues = "";
       for (const searchfield in searchParams) {
         if (searchParams[searchfield] !== "") {
-          searchValues += `&search_${[searchfield]}=${
-            searchParams[searchfield]
-          }`;
+          searchValues += `&search_${[searchfield]}=${searchParams[searchfield]
+            }`;
         }
       }
-      const params = `?page=${
-        page + 1
-      }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
+      const params = `?page=${page + 1
+        }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
       const requestData = await requestService.getRequests(params);
       setTotalCount(requestData?.data?.count);
       setAllRequests(requestData?.data?.data);
@@ -146,9 +175,8 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("id")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                      }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                        }`}
                     >
                       {t("searchbox.requestId")}
                       {sortField === "id" ? (
@@ -176,9 +204,8 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("created_at")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                      }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                        }`}
                     >
                       {t("searchbox.dateCreated")}
                       {sortField === "created_at" ? (
@@ -206,9 +233,8 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("sender_email")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                      }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                        }`}
                     >
                       {t("searchbox.from")}
                       {sortField === "from" ? (
@@ -236,9 +262,8 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("request_type")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                      }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                        }`}
                     >
                       {t("searchbox.requestType")}
                       {sortField === "request_type" ? (
@@ -266,9 +291,8 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("requested_website")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                      }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                        }`}
                     >
                       {t("searchbox.requestdetail")}
                       {sortField === "requestdetail" ? (
@@ -298,9 +322,8 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("status")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                      }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                        }`}
                     >
                       {t("searchbox.status")}
                       {sortField === "status" ? (
@@ -328,9 +351,8 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("action_done")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${
-                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                      }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                        }`}
                     >
                       {t("searchbox.actionsDone")}
                       {sortField === "action_done" ? (
@@ -399,14 +421,95 @@ const Request = () => {
                           </td>
                           <td>{el.request_type}</td>
                           <td>
-                            <a
-                              href={el.requested_website}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-brand-500 hover:text-brand-600 font-medium line-clamp-2 break-words"
-                            >
-                              {el.requested_website}
-                            </a>
+
+
+
+                            <div className="flex">
+                              <div className="mr-2">
+                                <IconButton onClick={() => handleClickOpen(el.requested_website, el.id)}>
+                                  <IoEyeOutline size={20} />
+                                </IconButton>
+                              </div>
+                              <a
+                                href={el.requested_website}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-brand-500 hover:text-brand-600 font-medium line-clamp-2 break-words"
+                              >
+                                {el.requested_website}
+                              </a>
+                              <Modal
+                                open={open}
+                                onClose={handleClose}
+                                style={{backgroundColor: '#ffffff08', opacity:0.09}}
+                                slotProps={{
+                                  backdrop: {
+                                    sx: {
+                                      // backgroundColor: 'transparent', 
+                                      // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                      
+                                    }
+                                  }
+                                }}
+                                // BackdropProps={{
+                                //   style: {
+                                //     backgroundColor: 'transparent', // Semi-transparent background
+                                //   },
+                                // }}
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    position: 'relative',
+                                    bgcolor: '#fff',
+                                    // p: 4, 
+                                    borderRadius: 2,
+                                    width: '50vw',
+                                    height: '60vh',
+                                    textAlign: 'center',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    
+                                  }}
+                                >
+                                  {/* Close Button */}
+                                  <IconButton
+                                    aria-label="close"
+                                    onClick={handleClose}
+                                    sx={{
+                                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                      position: 'absolute',
+                                      top: 2,
+                                      right: 8,
+                                    }}
+                                  >
+                                    <IoClose />
+                                  </IconButton>
+
+                                  {/* Content */}
+                                  {loading ? (
+                                    <CircularProgress />
+                                  ) : error ? (
+                                    <Typography color="error">{error}</Typography>
+                                  ) : (
+                                    <img
+                                      src={imageSrc}
+                                      
+                                      alt="Screenshot"
+                                      width="100%"
+                                      height="100%"
+                                      style={{ borderRadius: 8 }}
+                                    />
+                                  )}
+                                </Box>
+                              </Modal>
+
+                            </div>
                             <br />
                             <p className="line-clamp-4 break-words">
                               {el.text}
