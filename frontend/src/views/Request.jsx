@@ -56,7 +56,6 @@ const Request = () => {
       setLoading(false);
     }
   };
-
   const handleClickOpen = (requested_website, request_id) => {
     setOpen(true);
     fetchScreenshot(requested_website, request_id );
@@ -86,6 +85,19 @@ const Request = () => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  const handleImageClick = () => {
+    const newTab = window.open();
+    newTab.document.body.innerHTML = `
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <img src="${imageSrc}" alt="Screenshot" style="width: 100%; height: 100%;" />
+    `;
   };
 
   const fetchRequestStatuses = async () => {
@@ -503,7 +515,8 @@ const Request = () => {
                                       alt="Screenshot"
                                       width="100%"
                                       height="100%"
-                                      style={{ borderRadius: 8 }}
+                                      onClick={handleImageClick}
+                                      style={{ borderRadius: 8, cursor: 'pointer'  }}
                                     />
                                   )}
                                 </Box>
