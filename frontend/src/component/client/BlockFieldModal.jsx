@@ -267,7 +267,6 @@ function BlockFieldModal({
         (acc, curr) => Object.assign(acc, curr),
         {}
       );
-      console.log("newValues", newValues);
 
       clientsService
         .createBlockField({
@@ -305,7 +304,7 @@ function BlockFieldModal({
       fetchFormDataByBlockIdHandler(
         setIsLoading,
         setFieldData,
-        `field_id=${editData?.id}&block_id=${blockId}`
+        `field_id=${editData?.id}&block_id=${editData?.block}`
       );
     } else {
       fetchFormDataByBlockIdHandler(
@@ -596,7 +595,8 @@ function BlockFieldModal({
                             multiple
                             value={selectedFields}
                             onChange={handleChange}
-                            className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded-lg outline-none w-full p-2 text-black bg-white"
+                            disabled={modalFields?.length ? false : true}
+                            className="[&_div]:p-0.5 [&_fieldset]:border-none disabled:cursor-not-allowed appearance-none border rounded-lg outline-none w-full p-2 text-black bg-white"
                             placeholder="Select any field"
                           >
                             {modalFields?.map((item) => (
