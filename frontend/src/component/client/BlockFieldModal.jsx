@@ -251,19 +251,24 @@ function BlockFieldModal({
     } else {
       let newDataValues = [];
       for (const newValue in data) {
-        newDataValues.push({
-          [newValue]: data[newValue,{
+        newDataValues.push(
+          {
+            [newValue]: data[newValue],
+          },
+          {
             other_columns_added: selectedFields?.map((i, index) => ({
               field_id: i,
               display_order: index + 1,
             })),
-          }],
-        });
+          }
+        );
       }
       const newValues = newDataValues.reduce(
         (acc, curr) => Object.assign(acc, curr),
         {}
       );
+      console.log("newValues", newValues);
+
       clientsService
         .createBlockField({
           ...newValues,
@@ -331,10 +336,6 @@ function BlockFieldModal({
           id: field.id,
           field_name: field.field_name,
         }));
-
-  console.log("fieldData", fieldData);
-  console.log("blockFormData", blockFormData);
-  console.log("modalFields", modalFields);
 
   useEffect(() => {
     if (editData?.id) {
