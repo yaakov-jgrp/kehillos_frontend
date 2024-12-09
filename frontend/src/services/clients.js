@@ -43,6 +43,10 @@ const getFullformData = (params = "") => {
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     return api.get(`/api/client/field/?lang=${lang}${params}`);
 }
+const getFormDataByBlockId = (params) => {
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    return api.get(`/api/client/field/?lang=${lang}&${params}`);
+}
 
 const createBlockField = (formData) => {
     return api.post("/api/client/field/", formData)
@@ -92,6 +96,7 @@ const clientsService = {
     importClients,
     exportClients,
     getFullformData,
+    getFormDataByBlockId,
     createBlockField,
     deleteBlockField,
     updateBlockField,

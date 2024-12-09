@@ -47,7 +47,7 @@ const ClientsForm = () => {
   });
 
   const showModalHandler = () => {
-    setShowModal(!showModal);
+    setShowModal(true);
   };
 
   const addBlockFieldModalHandler = (value, id) => {
@@ -88,15 +88,17 @@ const ClientsForm = () => {
     reorderedItems.splice(curr, 1);
     reorderedItems.splice(now, 0, draggedItem);
     const updated = reorderedItems.map((item, index) => {
+      const otherColumnsAdded = item?.other_columns_added?.filter(i=>i?.id !== item?.id)
       return {
         id: isBlock ? item.block_id : item.id,
         display_order: index + 1,
+        other_columns_added: otherColumnsAdded?.map((i)=>({field_id: i?.id, display_order: i?.display_order}))
       };
     });
     return updated;
   };
 
-  const getChangedFieldsPos = async (currentPos, newPos, isBlock, blockId) => {
+  const getChangedFieldsPos = async (currentPos, newPos, isBlock, blockFieldData) => {
     let updatedData;
     if (isBlock) {
       const blocksData = JSON.parse(JSON.stringify(fullFormData));
@@ -114,7 +116,7 @@ const ClientsForm = () => {
       };
     } else {
       const blockData = fullFormData.filter(
-        (block) => block.block_id === blockId
+        (block) => block.block_id === blockFieldData?.block_id
       );
       const updateFields = orderChangeHandler(
         currentPos,
@@ -128,7 +130,7 @@ const ClientsForm = () => {
       };
     }
     const res = await clientsService.updateBlockField(updatedData);
-  };
+  };  
 
   useEffect(() => {
     fetchFullformDataHandler(setIsLoading, setFullFormData);
@@ -237,7 +239,7 @@ const ClientsForm = () => {
                               currentPos,
                               newPos,
                               false,
-                              blockData.block_id
+                              blockData
                             )
                           }
                         >
@@ -245,7 +247,78 @@ const ClientsForm = () => {
                             const isCheckBox = checkBoxConstants.includes(
                               field.data_type.value
                             );
-                            return (
+                            
+                            return (field?.other_columns_added?.length ? (
+                              <div
+                                className={`mb-2 flex gap-1 items-center `}
+                                key={index}
+                              >
+                                {field?.other_columns_added?.map((col) => {
+                                  
+                                  return(
+                                  <div
+                                    className={`mb-2 px-2 flex gap-1 grow ${
+                                      isCheckBox
+                                        ? "items-center justify-end flex-row-reverse"
+                                        : "flex-col"
+                                    }`}
+                                  >
+                                    <div
+                                      className={`flex items-center justify-between ${
+                                        isCheckBox ? "ml-2 w-full" : "mb-1"
+                                      }`}
+                                    >
+                                      <div className="flex items-center">
+                                        <label
+                                          className={`block text-gray-11 text-md font-normal`}
+                                        >
+                                          {lang === "he"
+                                            ? col?.field_name_language.he
+                                            : col?.field_name}
+                                        </label>
+                                        <p className="text-md mx-1 capitalize text-gray-10 font-normal">{`(${col?.data_type?.label})`}</p>
+                                      </div>
+                                      <div className="flex items-center">
+                                        {col?.is_editable && (
+                                          <EditButtonIcon
+                                            extra="mr-2"
+                                            onClick={() =>
+                                              editBlockFieldModalHandler(
+                                                col,
+                                                false
+                                              )
+                                            }
+                                          />
+                                        )}
+                                        {col?.is_delete && (
+                                          <img
+                                            src={BinIcon}
+                                            alt="BinIcon"
+                                            className="mr-2 hover:cursor-pointer"
+                                            onClick={() => {
+                                              setDeleteMethod((prev) => ({
+                                                type: col?.id,
+                                                value: false,
+                                              }));
+                                              setConfirmationModal(true);
+                                            }}
+                                          />
+                                        )}
+                                        {/* <PiDotsSixVerticalBold className="cursor-grab z-20" /> */}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <CustomField
+                                        disabled={true}
+                                        value={col?.defaultvalue}
+                                        field={col}
+                                      />
+                                    </div>
+                                  </div>
+                                )})}
+                                <PiDotsSixVerticalBold className="cursor-grab z-20" />
+                              </div>
+                            ) : (
                               <div
                                 className={`mb-2 px-2 flex gap-1 ${
                                   isCheckBox
@@ -306,7 +379,7 @@ const ClientsForm = () => {
                                   />
                                 </div>
                               </div>
-                            );
+                            ));
                           })}
                         </Draggable>
                       </div>
@@ -324,6 +397,7 @@ const ClientsForm = () => {
             editData={editData}
             block={isAddBlock}
             blockId={activeBlock}
+            setIsLoading={setIsLoading}
             onClick={() =>
               fetchFullformDataHandler(setIsLoading, setFullFormData)
             }

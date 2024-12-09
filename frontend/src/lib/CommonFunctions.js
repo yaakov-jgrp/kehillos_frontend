@@ -27,6 +27,19 @@ export const fetchFullformDataHandler = async (
   }, 500);
 };
 
+export const fetchFormDataByBlockIdHandler = async (
+  setIsLoading,
+  setBlockFormData,
+  params
+) => {
+  setIsLoading(true);
+  const res = await clientsService.getFormDataByBlockId(params);
+  setBlockFormData(res.data.result);
+  setTimeout(() => {
+    setIsLoading(false);
+  }, 500);
+};
+
 export const fetchActiveformDataHandler = async (setIsLoading) => {
   setIsLoading(true);
   setTimeout(() => {
