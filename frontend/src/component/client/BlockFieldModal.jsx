@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 
 // UI Imports
-import { MenuItem, Select } from "@mui/material";
+import { Box, MenuItem, Select, Typography } from "@mui/material";
 
 // UI Components Imports
 import ErrorMessage from "../common/ErrorMessage";
@@ -28,11 +28,22 @@ import {
   checkBoxValues,
   dataTypes,
 } from "../../lib/FieldConstants";
+import { fetchFormDataByBlockIdHandler } from "../../lib/CommonFunctions";
 
-function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
+function BlockFieldModal({
+  block,
+  blockId,
+  setShowModal,
+  onClick,
+  editData,
+  setIsLoading,
+}) {
   const { t } = useTranslation();
   const [selectValue, setSelectValue] = useState("");
   const [selectedValues, setSelectedValues] = useState([]);
+  const [selectedFields, setSelectedFields] = useState([]);
+  const [blockFormData, setBlockFormData] = useState(null);
+  const [fieldData, setFieldData] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
   const [defaultValues, setDefaultValues] = useState(
     block
@@ -189,6 +200,10 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
           fields: [
             {
               id: editData?.block_id,
+              other_columns_added: selectedFields?.map((i, index) => ({
+                field_id: i,
+                display_order: index + 1,
+              })),
               ...updateValues,
             },
           ],
@@ -215,6 +230,10 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
           fields: [
             {
               id: editData.id,
+              other_columns_added: selectedFields?.map((i, index) => ({
+                field_id: i,
+                display_order: index + 1,
+              })),
               ...updateValues,
             },
           ],
@@ -232,16 +251,27 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     } else {
       let newDataValues = [];
       for (const newValue in data) {
-        newDataValues.push({
-          [newValue]: data[newValue],
-        });
+        newDataValues.push(
+          {
+            [newValue]: data[newValue],
+          },
+          {
+            other_columns_added: selectedFields?.map((i, index) => ({
+              field_id: i,
+              display_order: index + 1,
+            })),
+          }
+        );
       }
       const newValues = newDataValues.reduce(
         (acc, curr) => Object.assign(acc, curr),
         {}
       );
+
       clientsService
-        .createBlockField(newValues)
+        .createBlockField({
+          ...newValues,
+        })
         .then((res) => {
           reset();
           setShowModal(false);
@@ -261,9 +291,59 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     }
   };
 
+  const handleChange = (event) => {
+    setSelectedFields(event.target.value);
+  };
+
   useEffect(() => {
     initModal();
   }, []);
+
+  useEffect(() => {
+    if (blockId && editData?.id) {
+      fetchFormDataByBlockIdHandler(
+        setIsLoading,
+        setFieldData,
+        `field_id=${editData?.id}&block_id=${editData?.block}`
+      );
+    } else {
+      fetchFormDataByBlockIdHandler(
+        setIsLoading,
+        setBlockFormData,
+        `block_fields=True&block_id=${blockId}`
+      );
+    }
+  }, [blockId]);
+
+  const blockMap = blockFormData?.flatMap((block) =>
+    block?.field?.map((field) => ({
+      id: field.id,
+      field_name: field.field_name,
+    }))
+  );
+
+  const fieldMap = fieldData?.map((field) => ({
+    id: field.id,
+    field_name: field.field_name,
+    // selected: field?.selected,
+  }));
+
+  const modalFields =
+    blockId && editData?.id
+      ? fieldMap
+      : blockFormData?.map((field) => ({
+          id: field.id,
+          field_name: field.field_name,
+        }));
+
+  useEffect(() => {
+    if (editData?.id) {
+      const defaultSelected = fieldData
+        ?.filter((i) => i?.selected === true)
+        .map((i) => i.id);
+      setSelectedFields(defaultSelected || []);
+    }
+  }, [editData, fieldData]);
 
   return (
     <div className="fixed left-0 bottom-0 z-[1000] h-screen w-screen bg-[#00000080] flex justify-center items-center">
@@ -503,6 +583,57 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                           )}
                         </>
                       )}
+
+                      {editData?.other_row_added === false ||
+                      editData === null ? (
+                        <div className="my-1">
+                          <label className="block text-gray-11 text-md font-normal my-1">
+                            Select Fields
+                          </label>
+
+                          <Select
+                            multiple
+                            value={selectedFields}
+                            onChange={handleChange}
+                            disabled={modalFields?.length ? false : true}
+                            className="[&_div]:p-0.5 [&_fieldset]:border-none disabled:cursor-not-allowed appearance-none border rounded-lg outline-none w-full p-2 text-black bg-white"
+                            placeholder="Select any field"
+                          >
+                            {modalFields?.map((item) => (
+                              <MenuItem key={item?.id} value={item?.id}>
+                                {item?.field_name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 0.5,
+                              marginTop: "8px",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            {selectedFields?.map((value) => (
+                              <div
+                                key={value}
+                                className="border-2 border-[#3f51b5] px-4 py-2 rounded-full"
+                              >
+                                <Typography variant="body2">
+                                  {
+                                    modalFields?.find(
+                                      (item) => item.id === value
+                                    )?.field_name
+                                  }
+                                </Typography>
+                              </div>
+                            ))}
+                            {/* {modalFields?.find((item) => item?.id === selectedFields)?.field_name} */}
+                          </Box>
+                        </div>
+                      ) : null}
+
                       <div className="flex flex-col mt-2">
                         <div className="flex my-2 gap-6">
                           <Controller
