@@ -20,7 +20,8 @@ export const fetchFullformDataHandler = async (
   setFullFormData
 ) => {
   setIsLoading(true);
-  const res = await clientsService.getFullformData();
+  const params = `&clients=True`
+  const res = await clientsService.getFullformData(params);
   setFullFormData(res.data.result);
   setTimeout(() => {
     setIsLoading(false);
