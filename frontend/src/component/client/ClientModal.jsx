@@ -41,6 +41,7 @@ const ClientModal = ({
   dayjs.extend(utc);
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [defaultValues, setDefaultValues] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const schemaHandler = (type, name, required) => {
     let validation;
@@ -134,6 +135,7 @@ const ClientModal = ({
   };
 
   const submitForm = async (data, e) => {
+    setIsLoading(true);
     console.log("submitting form");
     console.log("form submit data",data);
     // alert('submitting form');
@@ -177,8 +179,10 @@ const ClientModal = ({
           setShowModal(!showModal);
           setClientRefresh(!clientRefresh);
           onClick();
+          setIsLoading(false);
         })
         .catch((err) => {
+          setIsLoading(false);
           errorsToastHandler(err.response.data.error);
         });
     } else {
@@ -195,11 +199,14 @@ const ClientModal = ({
             setShowModal(!showModal);
             setClientRefresh(!clientRefresh);
             onClick();
+            setIsLoading(false);
           })
           .catch((err) => {
+            setIsLoading(false);
             errorsToastHandler(err.response.data.error);
           });
       } else {
+        setIsLoading(false);
         toast.error("No fields to update");
       }
     }
@@ -590,7 +597,8 @@ const ClientModal = ({
                       {t("netfree.close")}
                     </button>
                     <button
-                      className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
+                    disabled={isLoading}
+                      className="text-white disabled:cursor-not-allowed disabled:bg-brand-700 disabled:opacity-2 text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                       type="submit"
                     >
                       {t("netfree.save")}
