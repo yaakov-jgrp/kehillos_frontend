@@ -49,6 +49,12 @@ input[type="number"] {
   margin: 0 8px;
 }
 
+.wrap {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
 /* Ensure scrollbar is always visible */
 /* html {
   overflow-y: scroll;

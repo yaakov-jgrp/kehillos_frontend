@@ -554,12 +554,14 @@ function FormDetails() {
 
                                           {activeFormState.conditions
                                             .filter(
-                                              (condition) =>
+                                              (condition) =>{
+                                                console.log(condition, " form condition")
+                                                return(
                                                 condition.fieldId ===
                                                   field.id &&
-                                                condition.operator === "AND"
+                                                condition.operator === "AND")}
                                             )
-                                            .map((condition) => (
+                                            .map((condition) =>(
                                               <div
                                                 className="flex items-end gap-4 my-4"
                                                 key={condition.id}
@@ -645,12 +647,15 @@ function FormDetails() {
                                                   </Select>
                                                 </div>
                                                 <div className="w-full">
+                                                  
                                                   <input
+                                                  id={condition.id}
                                                     className="pl-2 appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full py-[10px] text-gray-11 font-normal"
                                                     value={condition.value}
                                                     placeholder={t(
                                                       "forms.value_placeholder"
                                                     )}
+                                                    disabled={condition.condition === "is_empty" || condition.condition === "is_not_empty"}
                                                     onChange={(e) =>
                                                       editFieldConditionHandler(
                                                         condition.id,
@@ -674,7 +679,6 @@ function FormDetails() {
                                                 </div>
                                               </div>
                                             ))}
-
                                           <button
                                             className="w-fit h-[40px] px-4 rounded-lg flex cursor-pointer items-center text-brand-500 font-normal text-md border border-brand-500"
                                             onClick={() =>
@@ -796,6 +800,7 @@ function FormDetails() {
                                                   <input
                                                     className="pl-2 appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full py-[10px] text-gray-11 font-normal"
                                                     value={condition.value}
+                                                    disabled={condition.condition === "is_empty" || condition.condition === "is_not_empty"}
                                                     placeholder={t(
                                                       "forms.value_placeholder"
                                                     )}
