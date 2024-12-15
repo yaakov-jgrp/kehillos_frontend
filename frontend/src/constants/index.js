@@ -38,8 +38,8 @@ export const FORM_FIELD_CONDITIONS = {
     { id: 6, name: "Doesn't Ends With", slug: "not_ends_with" },
     { id: 7, name: "Contains", slug: "contains" },
     { id: 8, name: "Doesn't Contains", slug: "not_contains" },
-    { id: 9, name: "Is empty", slug: "is_empty" },
-    { id: 10, name: "Is not empty", slug: "is_not_empty" },
+    { id: 9, name: "Is empty", slug: "is_empty", disable: true },
+    { id: 10, name: "Is not empty", slug: "is_not_empty" , disable: true },
   ],
 };
 

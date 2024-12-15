@@ -281,8 +281,8 @@ function Forms() {
                             )}{" "}
                             #{el.id}
                           </td>
-                          <td>{el.name}</td>
-                          <td>{el.description}</td>
+                          <td><p className="wrap pr-4">{el.name}</p></td>
+                          <td><p className="wrap pr-4">{el.description}</p></td>
                           <td>{el.createdAt}</td>
                           <td>{el.lastEditedAt}</td>
                           <td>

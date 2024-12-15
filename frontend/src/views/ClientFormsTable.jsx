@@ -441,7 +441,7 @@ function ClientFormsTable() {
                           key={el.id}
                         >
                           <td>#{el.id}</td>
-                          {displayFields.name && <td>{el.name}</td>}
+                          {displayFields.name && <td><p className="wrap pr-4">{el.name}</p></td>}
                           {displayFields.clientId && <td>#{el.clientId}</td>}
                           {displayFields.createdAt && <td>{el.createdAt}</td>}
                           {displayFields.lastEditedAt && (
