@@ -834,11 +834,11 @@
     "editForm": "ערוך טופס",
     "remark": "הערה",
     "versionName": "שם גרסה",
-    "versionComments": "הערות",
-    "comment": "הֶעָרָה",
+    "versionComments": "הערות גרסה",
+    "comment": "הערה",
     "clientsForm": "טופס הלקוח",
-    "enter": "לְהַכנִיס",
-    "value": "עֵרֶך",
+    "enter": "הכנס",
+    "value": "ערך",
     "clientsForms": "טפסי לקוח"
   }
 }
