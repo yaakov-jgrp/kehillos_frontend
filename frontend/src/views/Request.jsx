@@ -23,7 +23,7 @@ import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 // Utils imports
 import { paginationRowOptions, searchFields } from "../lib/FieldConstants";
 import { formateDateTime, handleSort } from "../lib/CommonFunctions";
-import { IoClose, IoEyeOutline } from "react-icons/io5";
+import { IoArrowBackCircle, IoClose, IoEyeOutline, IoReloadCircleOutline } from "react-icons/io5";
 import { GridDeleteIcon } from "@mui/x-data-grid";
 import axios from "axios";
 
@@ -44,11 +44,11 @@ const Request = () => {
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const fetchScreenshot = async (url, request_id) => {
+  const fetchScreenshot = async (url, request_id, refetch) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await requestService.fetchRequestScreenshot({ url, request_id });
+      const response = await requestService.fetchRequestScreenshot({ url, request_id, refetch });
       setImageSrc(`data:image/png;base64,${response.data.image}`);
     } catch (err) {
       setError('Failed to load screenshot');
@@ -56,10 +56,12 @@ const Request = () => {
       setLoading(false);
     }
   };
-  const handleClickOpen = (requested_website, request_id) => {
+  const handleClickOpen = (requested_website, request_id, refetch = false) => {
     setOpen(true);
-    fetchScreenshot(requested_website, request_id );
+    fetchScreenshot(requested_website, request_id, refetch);
   };
+
+
 
   const handleClose = () => {
     setOpen(false);
@@ -387,7 +389,7 @@ const Request = () => {
               </th>
             </tr>
           </thead>
-          <tbody className="[&_td]:min-w-[9rem] [&_td]:max-w-[18rem]">
+          <tbody className="[&_td]:min-w-[12rem] [&_td]:max-w-[20rem]">
             {isLoading ? (
               <tr>
                 <td colSpan="6">
@@ -432,14 +434,17 @@ const Request = () => {
                             </a>
                           </td>
                           <td>{el.request_type}</td>
-                          <td>
+                          <td className="px-2" >
 
 
 
-                            <div className="flex">
-                              <div className="mr-2">
+                            <div className="flex align-center">
+                              <div className="flex flex-row mr-1">
                                 <IconButton onClick={() => handleClickOpen(el.requested_website, el.id)}>
                                   <IoEyeOutline size={20} />
+                                </IconButton>
+                                <IconButton onClick={() => handleClickOpen(el.requested_website, el.id, true)}>
+                                  <IoReloadCircleOutline size={20} />
                                 </IconButton>
                               </div>
                               <a
