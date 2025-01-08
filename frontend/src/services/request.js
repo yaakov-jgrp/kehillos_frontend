@@ -4,6 +4,10 @@ const getRequests = (params) => {
   return api.get(`/api/crm/requests/${params}`);
 };
 
+const fetchRequestScreenshot = (data) => {
+  return api.post("/api/crm/requests/screenshot/", data);
+};
+
 const getRequestStatuses = (params) => {
   return api.get(`/api/crm/requests-status/${params}`);
 };
@@ -33,6 +37,8 @@ const requestService = {
   getRequestStatuses,
   updateRequestStatus,
   createRequestStatus,
+  fetchRequestScreenshot,
+  deleteCategoryStatus,
   updateStatus,
   deleteStatus,
   deleteCategoryStatus,

@@ -1,5 +1,5 @@
 // React imports
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 // UI Components Imports
 import ToggleSwitch from "../common/ToggleSwitch";
@@ -9,44 +9,30 @@ import CrossIcon from "../../assets/images/cross.svg";
 import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
 
-// API services
-import clientsService from "../../services/clients";
-
-const DisplayFieldsModal = ({
-  showModal,
-  setShowModal,
-  formValues,
-  displayFields,
-  onClick,
-}) => {
+const DisplayFieldsModal = ({ showModal, setShowModal, onClick }) => {
   const { t } = useTranslation();
-  const defaultValues = formValues;
-  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  const defaultDisplayFields = {
+    name: true,
+    clientId: true,
+    createdAt: true,
+    lastEditedAt: true,
+  };
 
-  const submitForm = async (data, e) => {
-    e.preventDefault();
-    let formData = {
-      fields: [],
-    };
+  const [displayFields, setDisplayFields] = useState(
+    JSON.parse(localStorage.getItem("displayFields")) || defaultDisplayFields
+  );
 
-    displayFields.forEach((field) => {
-      formData.fields.push({
-        id: field.id,
-        display: data[field.field_slug],
-        other_columns_added: field?.other_columns_added?.filter(i=>i?.id !== field?.id)?.map((i) => ({
-          field_id: i?.id,
-          display_order: i?.display_order,
-        })),
-      });
-    });
+  useEffect(() => {
+    localStorage.setItem("displayFields", JSON.stringify(displayFields));
+  }, [displayFields]);
 
-    const res = await clientsService.updateBlockField(formData);
+  const submitForm = () => {
     setShowModal(false);
-    onClick();
+    onClick(displayFields);
   };
 
   const { control, handleSubmit } = useForm({
-    defaultValues,
+    defaultValues: displayFields,
     mode: "onBlur",
   });
 
@@ -58,56 +44,46 @@ const DisplayFieldsModal = ({
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
               <div className="min-w-300px md:min-w-[400px] overflow-y-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 <form
-                  style={{
-                    width: "100%",
-                    position: "relative",
-                  }}
-                  method="post"
+                  style={{ width: "100%", position: "relative" }}
                   noValidate
                   autoComplete="off"
-                  onSubmit={handleSubmit((data, e) => submitForm(data, e))}
+                  onSubmit={handleSubmit(submitForm)}
                 >
                   <div className="flex items-center justify-between border-b border-b-[#E3E5E6] p-5 rounded-t">
                     <h3 className="text-lg font-medium">
                       {t("clients.display")}
                     </h3>
-                    <button
-                      className=""
-                      onClick={() => setShowModal(false)}
-                      type="button"
-                    >
+                    <button onClick={() => setShowModal(false)} type="button">
                       <img src={CrossIcon} alt="cross-icon" />
                     </button>
                   </div>
 
                   <div className="relative p-6 flex-auto max-h-[calc(90vh-170px)] overflow-y-auto">
-                    {displayFields.length > 0 &&
-                      displayFields.map((fieldData, index) => {
-                        return (
-                          <div
-                            className="flex items-center justify-between mb-4"
-                            key={index}
-                          >
-                            <label className="block text-gray-10 text-md font-normal">
-                              {lang === "he"
-                                ? fieldData?.field_name_language.he
-                                : fieldData?.field_name}
-                            </label>
-                            <Controller
-                              name={fieldData?.field_slug}
-                              control={control}
-                              render={({ field: { value, onChange } }) => {
-                                return (
-                                  <ToggleSwitch
-                                    clickHandler={onChange}
-                                    selected={value}
-                                  />
-                                );
+                    {Object.keys(displayFields).map((field, index) => (
+                      <div
+                        className="flex items-center justify-between mb-4"
+                        key={index}
+                      >
+                        <label className="block text-gray-10 text-md font-normal">
+                          {t(`forms.${field}`)}
+                        </label>
+                        <Controller
+                          name={field}
+                          control={control}
+                          render={({ field: { value, onChange } }) => (
+                            <ToggleSwitch
+                              clickHandler={(val) => {
+                                setDisplayFields((prev) => ({
+                                  ...prev,
+                                  [field]: val.target.checked,
+                                }));
                               }}
+                              selected={displayFields[field]}
                             />
-                          </div>
-                        );
-                      })}
+                          )}
+                        />
+                      </div>
+                    ))}
                   </div>
 
                   <div className="flex items-center justify-center gap-2 my-8">

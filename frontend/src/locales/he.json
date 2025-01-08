@@ -846,6 +846,8 @@
     "description": "תיאור",
     "dateCreated": "תאריך יצירה",
     "dateFilledOut": "תאריך מילוי",
+    "createdAt": "תאריך מילוי",
+    "lastEditedAt": "תאריך עריכה אחרון",
     "datelastEdited": "תאריך עריכה אחרון",
     "formCreation": "יצירת טופס",
     "formName": "שם טופס",
@@ -873,9 +875,11 @@
     "editForm": "ערוך טופס",
     "remark": "הערה",
     "versionName": "שם גרסה",
-    "versionComments": "הערות",
+    "versionComments": "הערות גרסה",
     "comment": "הערה",
-    "clientsForm": "טופס לקוח",
-    "enter": "הכנס"
+    "clientsForm": "טופס הלקוח",
+    "enter": "הכנס",
+    "value": "ערך",
+    "clientsForms": "טפסי לקוח"
   }
 }

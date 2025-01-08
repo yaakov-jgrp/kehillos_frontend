@@ -38,6 +38,8 @@ import {
   formatDate,
 } from "../utils/helpers";
 import EditClientFormModal from "../component/forms/EditClientFormModal";
+import DisplayFieldsModal from "../component/forms/DisplayFieldsModal";
+import FilterModal from "../component/forms/FilterModal";
 
 function ClientFormsTable() {
   // states
@@ -58,6 +60,64 @@ function ClientFormsTable() {
   const [showEditClientFormModal, setShowEditClientFormModal] = useState(false);
   const [clientId, setClientId] = useState(0);
   const [clientFormId, setClientFormId] = useState(0);
+  const [showVisibilityModal, setShowVisibilityModal] = useState(false);
+  const [displayFields, setDisplayFields] = useState(
+    JSON.parse(localStorage.getItem("displayFields")) || {
+      name: true,
+      clientId: true,
+      createdAt: true,
+      lastEditedAt: true,
+    }
+  );
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [filters, setFilters] = useState([]);
+  const [appliedFilter, setAppliedFilter] = useState(null);
+
+  function applyFilters(filters, clientForms) {
+    const applyCondition = (form, filter) => {
+      const { attr_name, condition, value } = filter;
+      const formValue = form[attr_name].toString();
+      switch (condition) {
+        case "equals":
+          return formValue === value;
+        case "not_equals":
+          return formValue !== value;
+        case "starts_with":
+          return formValue.startsWith(value);
+        case "not_starts_with":
+          return !formValue.startsWith(value);
+        case "ends_with":
+          return formValue.endsWith(value);
+        case "not_ends_with":
+          return !formValue.endsWith(value);
+        case "contains":
+          return formValue.includes(value);
+        case "not_contains":
+          return !formValue.includes(value);
+        case "is_empty":
+          return formValue === "";
+        case "is_not_empty":
+          return formValue !== "";
+        default:
+          return false;
+      }
+    };
+
+    const andFilters = filters.filter((f) => f.operator === "AND");
+    const orFilters = filters.filter((f) => f.operator === "OR");
+
+    return clientForms.filter((form) => {
+      const andPass = andFilters.every((filter) =>
+        applyCondition(form, filter)
+      );
+
+      const orPass =
+        orFilters.length === 0 ||
+        orFilters.some((filter) => applyCondition(form, filter));
+
+      return andPass && orPass;
+    });
+  }
 
   // handlers
   const handleChangePage = (event, newPage) => {
@@ -94,6 +154,16 @@ function ClientFormsTable() {
           createdAt: formatDate(clientForm.createdAt),
           lastEditedAt: formatDate(clientForm.lastEditedAt),
         }));
+        const storedFilters = JSON.parse(
+          localStorage.getItem("clientFormsFilters")
+        );
+        if (storedFilters?.length > 0) {
+          storedFilters.forEach((item) => {
+            if (item.default) {
+              payload = applyFilters(item.filters, payload);
+            }
+          });
+        }
         setTotalCount(allFormsPayload?.data?.count);
       }
       setAllClientForms(payload);
@@ -155,27 +225,83 @@ function ClientFormsTable() {
     }
   };
 
+  const setAndStoreFilters = (payload) => {
+    setFilters(payload);
+    localStorage.setItem("clientFormsFilters", JSON.stringify(payload));
+  };
+
+  const fetchFiltersHandler = async () => {
+    try {
+      const storedFilters = JSON.parse(
+        localStorage.getItem("clientFormsFilters")
+      );
+      if (storedFilters?.length > 0) {
+        setFilters(storedFilters);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const applyFilterHandler = async (filter, value) => {
+    filter["default"] = value;
+    const payload = filters.map((item) => {
+      if (item.id === filter.id) {
+        return filter;
+      }
+      return {
+        ...item,
+        default: false,
+      };
+    });
+    setAndStoreFilters(payload);
+    if (value) {
+      setAppliedFilter(filter);
+    } else {
+      setAppliedFilter(null);
+      fetchFormsData();
+    }
+  };
+
   // effects
   useEffect(() => {
-    const searchTimer = setTimeout(() => fetchFormsData(), 500);
-    return () => clearTimeout(searchTimer);
+    const savedFields = JSON.parse(localStorage.getItem("displayFields"));
+    if (savedFields) {
+      setDisplayFields(savedFields);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFormsData();
   }, [lang, page, rowsPerPage, JSON.stringify(searchParams)]);
+
+  useEffect(() => {
+    if (appliedFilter && appliedFilter.default) {
+      const filteredForms = applyFilters(appliedFilter.filters, allClientForms);
+      setAllClientForms(filteredForms);
+    }
+  }, [appliedFilter]);
 
   return (
     <div className="w-full bg-white rounded-3xl shadow-custom">
       <div className="flex justify-between items-center py-4 px-7 text-gray-11 font-medium text-2xl">
         {t("forms.forms")}
         <div className="flex items-center gap-2">
-          <button
-            className={`w-[90px] rounded-lg py-1 text-[14px] font-medium dark:bg-brand-400 text-[#0B99FF] dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-1 justify-center items-center border border-[#0B99FF]`}
-            onClick={() => null}
-          >
-            <img src={FilterIcon} alt="visibility_icon" />
-            {t("clients.filters")}
-          </button>
+          <FilterModal
+            fetchFiltersHandler={fetchFiltersHandler}
+            fetchFullFormData={fetchFormsData}
+            fetchClientsData={fetchFormsData}
+            applyFilterHandler={applyFilterHandler}
+            fullFormData={allClientForms}
+            filters={filters}
+            setFilters={setFilters}
+            // showModal={showFilterModal}
+            // setShowModal={setShowFilterModal}
+            setAppliedFilter={setAppliedFilter}
+          />
           <button
             className={`w-[116px] rounded-lg py-1 text-[14px] font-semibold dark:bg-brand-400 text-gray-11 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-2 justify-center items-center border border-[#E3E5E6]`}
-            onClick={() => null}
+            onClick={() => setShowVisibilityModal((prev) => !prev)}
           >
             <img src={VisibilityIcon} alt="visibility_icon" />
             {t("clients.visibility")}
@@ -185,7 +311,6 @@ function ClientFormsTable() {
               lang === "he" ? "w-[150px]" : "w-[170px]"
             } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
             onClick={() => {
-              // TOOD: Open the create new client form modal
               setShowClientFormModal(true);
               return null;
             }}
@@ -214,61 +339,69 @@ function ClientFormsTable() {
                 />
               </th>
 
-              <th className="pr-3 pb-2 pt-1">
-                <SearchField
-                  variant="auth"
-                  extra="mb-2"
-                  label={t("forms.name")}
-                  id="userName"
-                  type="text"
-                  placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) => searchResult("name", e.target.value)}
-                  name="name"
-                />
-              </th>
+              {displayFields.name && (
+                <th className="pr-3 pb-2 pt-1">
+                  <SearchField
+                    variant="auth"
+                    extra="mb-2"
+                    label={t("forms.name")}
+                    id="userName"
+                    type="text"
+                    placeholder={t("searchbox.placeHolder")}
+                    onChange={(e) => searchResult("name", e.target.value)}
+                    name="name"
+                  />
+                </th>
+              )}
 
-              <th className="pr-3 pb-2 pt-1">
-                <SearchField
-                  variant="auth"
-                  extra="mb-2"
-                  label={t("forms.clientId")}
-                  id="clientId"
-                  type="text"
-                  placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) => searchResult("clientId", e.target.value)}
-                  name="clientId"
-                />
-              </th>
+              {displayFields.clientId && (
+                <th className="pr-3 pb-2 pt-1">
+                  <SearchField
+                    variant="auth"
+                    extra="mb-2"
+                    label={t("forms.clientId")}
+                    id="clientId"
+                    type="text"
+                    placeholder={t("searchbox.placeHolder")}
+                    onChange={(e) => searchResult("clientId", e.target.value)}
+                    name="clientId"
+                  />
+                </th>
+              )}
 
-              <th className="pr-3 pb-2 pt-1">
-                <SearchField
-                  variant="auth"
-                  extra="mb-2"
-                  label={t("forms.dateFilledOut")}
-                  id="dateFilledOut"
-                  type="text"
-                  placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) =>
-                    searchResult("dateFilledOut", e.target.value)
-                  }
-                  name="dateFilledOut"
-                />
-              </th>
+              {displayFields.createdAt && (
+                <th className="pr-3 pb-2 pt-1">
+                  <SearchField
+                    variant="auth"
+                    extra="mb-2"
+                    label={t("forms.dateFilledOut")}
+                    id="dateFilledOut"
+                    type="text"
+                    placeholder={t("searchbox.placeHolder")}
+                    onChange={(e) =>
+                      searchResult("dateFilledOut", e.target.value)
+                    }
+                    name="dateFilledOut"
+                  />
+                </th>
+              )}
 
-              <th className="pr-3 pb-2 pt-1">
-                <SearchField
-                  variant="auth"
-                  extra="mb-2"
-                  label={t("forms.datelastEdited")}
-                  id="datelastEdited"
-                  type="text"
-                  placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) =>
-                    searchResult("datelastEdited", e.target.value)
-                  }
-                  name="datelastEdited"
-                />
-              </th>
+              {displayFields.lastEditedAt && (
+                <th className="pr-3 pb-2 pt-1">
+                  <SearchField
+                    variant="auth"
+                    extra="mb-2"
+                    label={t("forms.datelastEdited")}
+                    id="datelastEdited"
+                    type="text"
+                    placeholder={t("searchbox.placeHolder")}
+                    onChange={(e) =>
+                      searchResult("datelastEdited", e.target.value)
+                    }
+                    name="datelastEdited"
+                  />
+                </th>
+              )}
 
               <th className="pr-3 pb-2 pt-1">
                 <div
@@ -308,10 +441,12 @@ function ClientFormsTable() {
                           key={el.id}
                         >
                           <td>#{el.id}</td>
-                          <td>{el.name}</td>
-                          <td>#{el.clientId}</td>
-                          <td>{el.createdAt}</td>
-                          <td>{el.lastEditedAt}</td>
+                          {displayFields.name && <td><p className="wrap pr-4">{el.name}</p></td>}
+                          {displayFields.clientId && <td>#{el.clientId}</td>}
+                          {displayFields.createdAt && <td>{el.createdAt}</td>}
+                          {displayFields.lastEditedAt && (
+                            <td>{el.lastEditedAt}</td>
+                          )}
                           <td>
                             <div className="h-auto w-full flex items-center justify-center gap-2">
                               <button
@@ -358,6 +493,14 @@ function ClientFormsTable() {
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+
+      {showVisibilityModal && (
+        <DisplayFieldsModal
+          showModal={showVisibilityModal}
+          setShowModal={setShowVisibilityModal}
+          onClick={(updatedFields) => setDisplayFields(updatedFields)}
+        />
+      )}
 
       {showClientFormModal && (
         <CreateClientFormModal

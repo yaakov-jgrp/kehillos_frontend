@@ -83,7 +83,10 @@ export default function CreateClientFormModal({
 
   const fetchClientsData = async () => {
     const params = `?page=${1}&lang=${"en"}&page_size=${50}`;
+    // ::REAL DATA::
     const clientsData = await clientsService.getClients(params);
+
+    // ::MOCKED DATA::
     // const clientsData = CLIENTS;
     setAllClients(clientsData.data.data);
     const clientIdVar = clientId ? clientId : clientsData.data.data[0].id;

@@ -49,7 +49,7 @@ const ClientsForm = () => {
   });
 
   const showModalHandler = () => {
-    setShowModal(!showModal);
+    setShowModal(true);
   };
 
   const addBlockFieldModalHandler = (value, id) => {
@@ -97,15 +97,17 @@ const ClientsForm = () => {
     reorderedItems.splice(curr, 1);
     reorderedItems.splice(now, 0, draggedItem);
     const updated = reorderedItems.map((item, index) => {
+      const otherColumnsAdded = item?.other_columns_added?.filter(i=>i?.id !== item?.id)
       return {
         id: isBlock ? item.block_id : item.id,
         display_order: index + 1,
+        other_columns_added: otherColumnsAdded?.map((i)=>({field_id: i?.id, display_order: i?.display_order}))
       };
     });
     return updated;
   };
 
-  const getChangedFieldsPos = async (currentPos, newPos, isBlock, blockId) => {
+  const getChangedFieldsPos = async (currentPos, newPos, isBlock, blockFieldData) => {
     let updatedData;
     if (isBlock) {
       const blocksData = JSON.parse(JSON.stringify(fullFormData));
@@ -123,7 +125,7 @@ const ClientsForm = () => {
       };
     } else {
       const blockData = fullFormData.filter(
-        (block) => block.block_id === blockId
+        (block) => block.block_id === blockFieldData?.block_id
       );
       const updateFields = orderChangeHandler(
         currentPos,
@@ -137,7 +139,7 @@ const ClientsForm = () => {
       };
     }
     const res = await clientsService.updateBlockField(updatedData);
-  };
+  };  
 
   useEffect(() => {
     fetchFullformDataHandler(setIsLoading, setFullFormData);
@@ -305,7 +307,7 @@ const ClientsForm = () => {
                               currentPos,
                               newPos,
                               false,
-                              blockData.block_id
+                              blockData
                             )
                           }
                         >
@@ -380,7 +382,7 @@ const ClientsForm = () => {
                                   />
                                 </div>
                               </div>
-                            );
+                            )
                           })}
                         </CustomDraggable>
                       </div>
@@ -398,6 +400,7 @@ const ClientsForm = () => {
             editData={editData}
             block={isAddBlock}
             blockId={activeBlock}
+            setIsLoading={setIsLoading}
             onClick={() =>
               fetchFullformDataHandler(setIsLoading, setFullFormData)
             }

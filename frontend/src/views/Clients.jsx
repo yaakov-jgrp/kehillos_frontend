@@ -364,7 +364,9 @@ const Clients = () => {
                                   )
                                 }
                                 className={`flex cursor-pointer items-center justify-between w-full ${
-                                  lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                                  lang === "he"
+                                    ? "text-[16.5px]"
+                                    : "text-[15px]"
                                 }`}
                               >
                                 {lang === "he"
