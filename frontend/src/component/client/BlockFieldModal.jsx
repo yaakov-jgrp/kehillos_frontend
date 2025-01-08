@@ -123,6 +123,13 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
     resolver: yupResolver(schema),
   });
 
+  const widthPercentage = [
+    { label: "25%", value: 25 },
+    { label: "50%", value: 50 },
+    { label: "75%", value: 75 },
+    { label: "100%", value: 100 },
+  ];
+
   const initModal = () => {
     setFormLoading(true);
     if (editData) {
@@ -139,6 +146,7 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
         }
         setValue("name", editData?.field_name);
         setValue("data_type", editData?.data_type.value);
+        setValue("field_width_percentage", editData?.field_width_percentage);
         setValue("defaultvalue", editData?.defaultvalue || "");
         setValue("required", editData?.required);
         setValue("unique", editData?.unique);
@@ -503,6 +511,43 @@ function BlockFieldModal({ block, blockId, setShowModal, onClick, editData }) {
                           )}
                         </>
                       )}
+
+                      {widthPercentage.length > 0 && (
+                        <>
+                          <label className="block text-gray-11 text-md font-normal my-1">
+                            Width Percentage
+                          </label>
+                          <Controller
+                            name="field_width_percentage"
+                            control={control}
+                            render={({
+                              field: { value, onChange, onBlur },
+                            }) => (
+                              <Select
+                                MenuProps={{
+                                  sx: {
+                                    maxHeight: "250px",
+                                  },
+                                }}
+                                className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                value={value}
+                                placeholder="Select Width Percentage"
+                              >
+                                {widthPercentage?.map((el) => {
+                                  return el ? (
+                                    <MenuItem key={el?.value} value={el?.value}>
+                                      {el?.label}
+                                    </MenuItem>
+                                  ) : null;
+                                })}
+                              </Select>
+                            )}
+                          />
+                        </>
+                      )}
+
                       <div className="flex flex-col mt-2">
                         <div className="flex my-2 gap-6">
                           <Controller

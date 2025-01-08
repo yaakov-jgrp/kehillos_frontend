@@ -30,6 +30,7 @@ import { PiDotsSixVerticalBold } from "react-icons/pi";
 // Utils imports
 import { checkBoxConstants } from "../lib/FieldConstants";
 import { fetchFullformDataHandler } from "../lib/CommonFunctions";
+import CustomDraggable from "../component/client/CustomDraggble";
 
 const ClientsForm = () => {
   const { t } = useTranslation();
@@ -41,6 +42,7 @@ const ClientsForm = () => {
   const [isAddBlock, setIsAddBlock] = useState(false);
   const [editData, setEditData] = useState(null);
   const [confirmationModal, setConfirmationModal] = useState(false);
+  const [customDragWidth, setCustomDragWidth] = useState("auto");
   const [deleteMethod, setDeleteMethod] = useState({
     type: "",
     value: "",
@@ -81,6 +83,13 @@ const ClientsForm = () => {
     setEditData(editableData);
     showModalHandler();
   };
+  // const editBlockFieldModalHandler = (data, isBlock) => {
+  //   const editableData = JSON.parse(JSON.stringify(data));
+  //   if (isBlock) delete editableData.field;
+  //   setIsAddBlock(isBlock);
+  //   setEditData(editableData);
+  //   showModalHandler();
+  // };
 
   const orderChangeHandler = (curr, now, items, isBlock) => {
     const reorderedItems = items;
@@ -133,6 +142,64 @@ const ClientsForm = () => {
   useEffect(() => {
     fetchFullformDataHandler(setIsLoading, setFullFormData);
   }, [fetchFullformDataHandler, lang]);
+
+  const widthOpts = {
+    25: "25%",
+    50: "50%",
+    75: "75%",
+    100: "100%",
+  };
+
+  const FieldItem =(field)=>{return (<div
+    style={{
+      width: field?.field_width_percentage
+        ? widthOpts[field?.field_width_percentage]
+        : "100%",
+    }}
+    className={`mb-2 px-2 flex gap-1 ${
+      isCheckBox ? "items-center justify-end flex-row-reverse" : "flex-col"
+    }`}
+    key={index}
+  >
+    <div
+      className={`flex items-center justify-between ${
+        isCheckBox ? "ml-2 w-full" : "mb-1"
+      }`}
+    >
+      <div className="flex items-center">
+        <label className={`block text-gray-11 text-md font-normal`}>
+          {lang === "he" ? field?.field_name_language.he : field?.field_name}
+        </label>
+        <p className="text-md mx-1 capitalize text-gray-10 font-normal">{`(${field?.data_type?.label})`}</p>
+      </div>
+      <div className="flex items-center">
+        {field?.is_editable && (
+          <EditButtonIcon
+            extra="mr-2"
+            onClick={() => editBlockFieldModalHandler(field, false)}
+          />
+        )}
+        {field?.is_delete && (
+          <img
+            src={BinIcon}
+            alt="BinIcon"
+            className="mr-2 hover:cursor-pointer"
+            onClick={() => {
+              setDeleteMethod((prev) => ({
+                type: field?.id,
+                value: false,
+              }));
+              setConfirmationModal(true);
+            }}
+          />
+        )}
+        <PiDotsSixVerticalBold className="cursor-grab z-20" />
+      </div>
+    </div>
+    <div>
+      <CustomField disabled={true} value={field?.defaultvalue} field={field} />
+    </div>
+  </div>)};
 
   return (
     <div className="w-full bg-white rounded-3xl shadow-custom flex flex-col gap-4 p-4">
@@ -231,8 +298,9 @@ const ClientsForm = () => {
                   >
                     {blockData.field.length > 0 ? (
                       <div className="flex flex-col gap-4">
-                        <Draggable
-                          onPosChange={(currentPos, newPos) =>
+                        <CustomDraggable
+                          style={{ width: customDragWidth }}
+                          onPositionChange={(currentPos, newPos) =>
                             getChangedFieldsPos(
                               currentPos,
                               newPos,
@@ -245,8 +313,14 @@ const ClientsForm = () => {
                             const isCheckBox = checkBoxConstants.includes(
                               field.data_type.value
                             );
+
                             return (
                               <div
+                                style={{
+                                  width: field?.field_width_percentage
+                                    ? field?.field_width_percentage
+                                    : "100%",
+                                }}
                                 className={`mb-2 px-2 flex gap-1 ${
                                   isCheckBox
                                     ? "items-center justify-end flex-row-reverse"
@@ -308,7 +382,7 @@ const ClientsForm = () => {
                               </div>
                             );
                           })}
-                        </Draggable>
+                        </CustomDraggable>
                       </div>
                     ) : (
                       <p className="px-2">{t("clients.noFields")}</p>
