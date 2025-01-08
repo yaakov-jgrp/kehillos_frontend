@@ -57,11 +57,18 @@ function DetailsTabPanel(props) {
                         : blockData.block
                     }
                   >
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-wrap gap-y-4">
                       {blockData.field.length > 0 ? (
                         <>
                           {blockData.field.map((field, index) => (
-                            <div key={index}>
+                            <div 
+                              key={index} 
+                              style={{
+                                width: field?.field_width_percentage
+                                  ? `${field?.field_width_percentage}%`
+                                  : "100%",
+                              }} 
+                            >
                               <IndividualEditField
                                 field={field}
                                 clientData={clientData}

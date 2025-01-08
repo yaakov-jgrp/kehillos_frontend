@@ -134,6 +134,13 @@ function BlockFieldModal({
     resolver: yupResolver(schema),
   });
 
+  const widthPercentage = [
+    { label: "25%", value: 25 },
+    { label: "50%", value: 50 },
+    { label: "75%", value: 75 },
+    { label: "100%", value: 100 },
+  ];
+
   const initModal = () => {
     setFormLoading(true);
     if (editData) {
@@ -150,6 +157,7 @@ function BlockFieldModal({
         }
         setValue("name", editData?.field_name);
         setValue("data_type", editData?.data_type.value);
+        setValue("field_width_percentage", editData?.field_width_percentage);
         setValue("defaultvalue", editData?.defaultvalue || "");
         setValue("required", editData?.required);
         setValue("unique", editData?.unique);
@@ -584,55 +592,41 @@ function BlockFieldModal({
                         </>
                       )}
 
-                      {editData?.other_row_added === false ||
-                      editData === null ? (
-                        <div className="my-1">
+                      {widthPercentage.length > 0 && (
+                        <>
                           <label className="block text-gray-11 text-md font-normal my-1">
-                            Select Fields
+                            Width Percentage
                           </label>
-
-                          <Select
-                            multiple
-                            value={selectedFields}
-                            onChange={handleChange}
-                            disabled={modalFields?.length ? false : true}
-                            className="[&_div]:p-0.5 [&_fieldset]:border-none disabled:cursor-not-allowed appearance-none border rounded-lg outline-none w-full p-2 text-black bg-white"
-                            placeholder="Select any field"
-                          >
-                            {modalFields?.map((item) => (
-                              <MenuItem key={item?.id} value={item?.id}>
-                                {item?.field_name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 0.5,
-                              marginTop: "8px",
-                              flexWrap: "wrap",
-                            }}
-                          >
-                            {selectedFields?.map((value) => (
-                              <div
-                                key={value}
-                                className="border-2 border-[#3f51b5] px-4 py-2 rounded-full"
+                          <Controller
+                            name="field_width_percentage"
+                            control={control}
+                            render={({
+                              field: { value, onChange, onBlur },
+                            }) => (
+                              <Select
+                                MenuProps={{
+                                  sx: {
+                                    maxHeight: "250px",
+                                  },
+                                }}
+                                className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                value={value}
+                                placeholder="Select Width Percentage"
                               >
-                                <Typography variant="body2">
-                                  {
-                                    modalFields?.find(
-                                      (item) => item.id === value
-                                    )?.field_name
-                                  }
-                                </Typography>
-                              </div>
-                            ))}
-                            {/* {modalFields?.find((item) => item?.id === selectedFields)?.field_name} */}
-                          </Box>
-                        </div>
-                      ) : null}
+                                {widthPercentage?.map((el) => {
+                                  return el ? (
+                                    <MenuItem key={el?.value} value={el?.value}>
+                                      {el?.label}
+                                    </MenuItem>
+                                  ) : null;
+                                })}
+                              </Select>
+                            )}
+                          />
+                        </>
+                      )}
 
                       <div className="flex flex-col mt-2">
                         <div className="flex my-2 gap-6">
