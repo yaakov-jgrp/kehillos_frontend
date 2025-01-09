@@ -177,6 +177,8 @@
     "add": "Add",
     "defaultValue": "Default Value",
     "unique": "Unique",
+    "width_percentage": "Width Percentage",
+    "select_width_percentage": "Select Width Percentage",
     "display": "Display",
     "visibility": "Visibility",
     "displayOrder": "Display Order",

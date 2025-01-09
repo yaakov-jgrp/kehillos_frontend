@@ -595,7 +595,7 @@ function BlockFieldModal({
                       {widthPercentage.length > 0 && (
                         <>
                           <label className="block text-gray-11 text-md font-normal my-1">
-                            Width Percentage
+                            {t("clients.width_percentage")}
                           </label>
                           <Controller
                             name="field_width_percentage"
@@ -613,7 +613,7 @@ function BlockFieldModal({
                                 onChange={onChange}
                                 onBlur={onBlur}
                                 value={value}
-                                placeholder="Select Width Percentage"
+                                placeholder={t("clients.select_width_percentage")}
                               >
                                 {widthPercentage?.map((el) => {
                                   return el ? (
