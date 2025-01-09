@@ -157,6 +157,8 @@
     "add": "הוסף",
     "defaultValue": "ערך ברירת מחדל",
     "unique": "ייחודי",
+    "width_percentage": "אחוז רוחב",
+    "select_width_percentage": "בחר אחוז רוחב",
     "display": "בחר עמדות להצגה",
     "visibility": "עמדות",
     "displayOrder": "הצג סדר",
