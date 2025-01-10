@@ -444,7 +444,6 @@ const ClientModal = ({
                                       zIndex: 9999,
                                     },
                                   }}
-                              
                                   className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-black bg-white"
                                   onChange={onChange}
                                   value={value}
@@ -468,7 +467,7 @@ const ClientModal = ({
                           </div>
                         </div>
                       </Grid>
-
+                      <div style={{}} className="flex flex-wrap pl-3">
                       {fullFormData
                         .filter(
                           (field) => field?.data_type?.value !== "checkbox"
@@ -480,14 +479,24 @@ const ClientModal = ({
                           const isFile = field?.data_type?.value === "file";
                           console.log(field);
                           return (
-                            <Grid item xs={12} sm={6} md={4} key={index}>
-                              <div className="flex flex-col mb-6">
+                            <div 
+                              className=" px-2" 
+                              style={{
+                                width: field?.field_width_percentage
+                                  ? `${field?.field_width_percentage}%`
+                                  : "100%",
+                              }} 
+                              key={index}
+                            >
+                              <div
+                                className="flex flex-col mb-6 w-full"
+                              >
                                 <FieldLabel>
                                   {lang === "he"
                                     ? field.field_name_language.he
                                     : field?.field_name}
                                 </FieldLabel>
-                                <div className="">
+                                <div className="w-full">
                                   <Controller
                                     name={field.field_slug}
                                     control={control}
@@ -537,7 +546,7 @@ const ClientModal = ({
                                   )}
                                 </div>
                               </div>
-                            </Grid>
+                            </div>
                           );
                         })}
 
@@ -585,6 +594,7 @@ const ClientModal = ({
                             </Grid>
                           );
                         })}
+                        </div>
                     </Grid>
                   </div>
 
@@ -597,7 +607,7 @@ const ClientModal = ({
                       {t("netfree.close")}
                     </button>
                     <button
-                    disabled={isLoading}
+                      disabled={isLoading}
                       className="text-white disabled:cursor-not-allowed disabled:bg-brand-700 disabled:opacity-2 text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                       type="submit"
                     >
