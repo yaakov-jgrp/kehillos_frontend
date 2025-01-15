@@ -177,7 +177,8 @@ const Clients = () => {
   };
 
   const exportClientsHandler = async () => {
-    const res = await clientsService.exportClients();
+    const param = `?filter_ids=${appliedFilter?.id}`;
+    const res = await clientsService.exportClients(appliedFilter?.id ? param : '');
     var url = "data:text/csv;charset=utf-8,%EF%BB%BF" + res.data;
     var a = document.createElement("a");
     a.href = url;

@@ -254,7 +254,15 @@ export default function CreateClientFormModal({
       ) {
         const isCheckBox = checkBoxConstants.includes(field.data_type.value);
         return (
-          <div className="mb-2 px-2 flex flex-col gap-1" key={index}>
+          <div 
+            style={{
+              width: field?.field_width_percentage
+                ? `${field?.field_width_percentage}%`
+                : "100%",
+            }} 
+            className="mb-2 px-2 flex flex-col gap-1" 
+            key={index}
+          >
             <div
               className={`flex items-center justify-between ${
                 isCheckBox ? "ml-2 w-full" : "mb-1"
@@ -502,7 +510,7 @@ export default function CreateClientFormModal({
                           }}
                         >
                           {activeFormState.fields.length > 0 ? (
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="flex flex-wrap gap-y-4">
                               {renderFields(
                                 activeFormState.fields.filter(
                                   (field) => field.blockId === blockData.id
