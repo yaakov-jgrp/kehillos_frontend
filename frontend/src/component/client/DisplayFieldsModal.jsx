@@ -33,6 +33,10 @@ const DisplayFieldsModal = ({
       formData.fields.push({
         id: field.id,
         display: data[field.field_slug],
+        other_columns_added: field?.other_columns_added?.filter(i=>i?.id !== field?.id)?.map((i) => ({
+          field_id: i?.id,
+          display_order: i?.display_order,
+        })),
       });
     });
 

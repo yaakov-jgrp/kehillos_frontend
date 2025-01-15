@@ -50,6 +50,8 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import ClientFormsTable from "./views/ClientFormsTable";
 import Config from "./views/apiConfig";
+import Automation from "./views/Automation";
+import AutomationDetails from "./views/AutomationDetails";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -154,6 +156,21 @@ function App() {
       name: t("clients.clientFormSettings"),
       path: "settings/formSettings",
       component: <ClientsForm />,
+    },
+    {
+      name: t("sidebar.automation"),
+      path: "settings/automation",
+      component: <Automation />,
+    },
+    {
+      name: t("sidebar.automation"),
+      path: "settings/automation/new-workflow",
+      component: <AutomationDetails />,
+    },
+    {
+      name: t("sidebar.automation"),
+      path: "settings/automation/:id",
+      component: <AutomationDetails />,
     },
     {
       name: t("sidebar.formCreation"),

@@ -56,6 +56,7 @@ const Clients = () => {
   const [netfreeprofiles, setNetfreeProfiles] = useState(null);
   const [fullFormData, setFullFormData] = useState(null);
   const [showDisplayModal, setShowDisplayModal] = useState(false);
+  const [clientRefresh, setClientRefresh] = useState(false);
   const [displayFields, setDisplayFields] = useState([]);
   const [displayFormValues, setDisplayFormValues] = useState({});
   const [page, setPage] = useState(0);
@@ -208,7 +209,7 @@ const Clients = () => {
       fetchNetfreeProfiles();
     }, 500);
     return () => clearTimeout(searchTimer);
-  }, [page, rowsPerPage, lang, JSON.stringify(searchParams)]);
+  }, [page, rowsPerPage, lang, JSON.stringify(searchParams), clientRefresh]);
 
   useEffect(() => {
     fetchFullFormData();
@@ -220,6 +221,8 @@ const Clients = () => {
         <ClientModal
           showModal={clientModal}
           setShowModal={setClientModal}
+          setClientRefresh={setClientRefresh}
+          clientRefresh={clientRefresh}
           newClient={newClient}
           client={editClient}
           netfreeProfiles={netfreeprofiles}

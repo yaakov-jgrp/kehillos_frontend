@@ -2,7 +2,7 @@
 import i18next from "i18next";
 import React, { useEffect, useState } from "react";
 
-const ToggleSwitch = ({ selected, clickHandler }) => {
+const ToggleSwitch = ({ selected, clickHandler, disabled }) => {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
@@ -26,6 +26,7 @@ const ToggleSwitch = ({ selected, clickHandler }) => {
         type="checkbox"
         className="sr-only"
         checked={checked}
+        disabled={disabled}
         onChange={handleChange}
       />
       <span
