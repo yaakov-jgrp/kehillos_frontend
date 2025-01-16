@@ -35,8 +35,8 @@ const importClients = (fileData) => {
     return api.post(`/api/client/import/`, fileData);
 }
 
-const exportClients = () => {
-    return api.get("/api/client/export/");
+const exportClients = (filterId = '') => {
+    return api.get(`/api/client/export/${filterId}`);
 }
 
 const getFullformData = (params = "") => {
