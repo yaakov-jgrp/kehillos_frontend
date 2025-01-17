@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 
 // UI Imports
-import { MenuItem, Select } from "@mui/material";
+import { Checkbox, FormControlLabel, MenuItem, Select } from "@mui/material";
 
 // UI Components Imports
 import ErrorMessage from "../../common/ErrorMessage";
@@ -28,6 +28,66 @@ function UserModal({
 }) {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  console.log('user',user);
+  
+
+  const permissionObj = [
+    {
+      id: 1,
+      title: "Clients",
+      permissionType: ["Read", "Write", "Update", 'Delete'],
+    },
+    {
+      id: 2,
+      title: "Forms",
+      permissionType: ["Read", "Write", "Update", 'Delete'],
+    },
+    {
+      id: 3,
+      title: "Requests",
+      permissionType: ["Read", "Write", "Update", 'Delete'],
+    },
+    {
+      id: 4,
+      title: "FieldConfiguration",
+      permissionType: ["Read", "Write", "Update", 'Delete'],
+    },
+    {
+      id: 5,
+      title: "Automation",
+      permissionType: ["Read", "Write", "Update", 'Delete'],
+    },
+    {
+      id: 6,
+      title: "FormCreation",
+      permissionType: ["Read", "Write", "Update", 'Delete'],
+    },
+    {
+      id: 7,
+      title: "ClientFields",
+      permissionType: ["Read", "Write", "Update", 'Delete'],
+    },
+    {
+      id: 8,
+      title: "Users",
+      permissionType: ["Read", "Write", "Update", 'Delete'],
+    },
+    {
+      id: 9,
+      title: "NetFree",
+      permissionType: ["Read", "Write", "Update", 'Delete'],
+    },
+    {
+      id: 10,
+      title: "Emails",
+      permissionType: ["Read", "Write", "Update", 'Delete'],
+    },
+    {
+      id: 11,
+      title: "LogsHistory",
+      permissionType: ["Read", "Write", "Update", 'Delete'],
+    },
+  ];
 
   const [defaultValues, setDefaultValues] = useState({
     name: "",
@@ -35,6 +95,19 @@ function UserModal({
     password: "",
     user_type: userTypes[0].value,
   });
+
+  const [permissions, setPermissions] = useState(
+    permissionObj.map((permission) => ({
+      name: permission.title,
+      read: false,
+      write: false,
+      update: false,
+      delete: false,
+    }))
+  );
+
+  console.log('permissions>>>>',permissions);
+  
 
   const schema = yup.object().shape({
     name: yup
@@ -76,7 +149,9 @@ function UserModal({
   const {
     control,
     setValue,
+    getValues,
     reset,
+    watch,
     formState: { errors },
     handleSubmit,
   } = useForm({
@@ -85,13 +160,28 @@ function UserModal({
     resolver: yupResolver(schema),
   });
 
+  const selectedUserType = watch('user_type');
+
+  const handleCheckboxChange = (permissionName, type, isChecked) => {
+    setPermissions((prevPermissions) =>
+      prevPermissions.map((permission) =>
+        permission.name === permissionName
+          ? { ...permission, [type.toLowerCase()]: isChecked}
+          : permission
+      )
+    );
+  };
+
   const submitForm = async (data, e) => {
     e.preventDefault();
+    
+    const payload = selectedUserType === 'normal_user' ? { ...data, permissions } : { ...data};
+   
     try {
       if (newUser) {
-        const res = await authService.createUser(data);
+        const res = await authService.createUser(payload);
       } else {
-        const res = await authService.editUser(data, user?.id);
+        const res = await authService.editUser(payload, user?.id);
       }
       setShowModal(false);
       reset();
@@ -108,6 +198,25 @@ function UserModal({
       setValue("user_type", user?.user_type);
     }
   }, []);
+
+  useEffect(() => {
+    if (user?.permissions) {
+      const updatedPermissions = permissionObj.map((permission) => {
+        const userPermission = user.permissions.find(
+          (p) => p.name === permission.title
+        );
+        return {
+          name: permission.title,
+          read: userPermission?.is_read || false,
+          write: userPermission?.is_write || false,
+          update: userPermission?.is_update || false,
+          delete: userPermission?.is_delete || false,
+        };
+      });
+
+      setPermissions(updatedPermissions);
+    }
+  }, [user]);
 
   return (
     <>
@@ -251,6 +360,41 @@ function UserModal({
                         )}
                       </div>
                     </div>
+                    {selectedUserType === 'normal_user' ? <div className="mb-6 flex flex-col gap-1 w-full">
+                      <FieldLabel>{t("permissions")}</FieldLabel>
+                      {permissionObj?.map((permission) => (
+                        <div
+                          key={permission.id}
+                          className="mb-4 flex items-center gap-4 justify-between"
+                        >
+                          <h4 className="font-semibold">{permission.title}</h4>
+                          <div className="flex gap-4">
+                            {permission?.permissionType?.map((type) => (
+                              <FormControlLabel
+                                key={type}
+                                control={
+                                  <Checkbox
+                                    checked={
+                                      permissions.find((p) => p.name === permission.title)[
+                                        type.toLowerCase()
+                                      ]
+                                    }
+                                    onChange={(e) =>
+                                      handleCheckboxChange(
+                                        permission.title,
+                                        type,
+                                        e.target.checked
+                                      )
+                                    }
+                                  />
+                                }
+                                label={type}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div> : null}
                   </div>
 
                   <div className="flex items-center justify-center gap-2 mb-6">
