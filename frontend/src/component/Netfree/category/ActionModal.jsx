@@ -113,7 +113,7 @@ const ActionModal = ({
   const getRequestStatusList = async () => {
     try {
       const params = `?lang=${lang}`;
-      const res = await requestService.getRequestStatuses(params);
+      const res = await requestService.getRequestStatusesNetfree(params);
       setRequestStatuses(res.data.data);
     } catch (error) {
       console.log(error);
@@ -121,7 +121,7 @@ const ActionModal = ({
   };
 
   const getTemplates = async () => {
-    const response = await emailService.getTemplates();
+    const response = await emailService.getTemplatesnetfree();
     setTemplateList(response.data.data);
   };
 

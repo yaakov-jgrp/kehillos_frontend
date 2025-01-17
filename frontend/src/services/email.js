@@ -5,6 +5,11 @@ const getTemplates = () => {
     .get('/api/crm/template/')
 }
 
+const getTemplatesnetfree = () => {
+  return api
+    .get('/api/crm/netfree-template/')
+}
+
 const addNewTemplate = (data) => {
   return api
     .post('/api/crm/template/', data)
@@ -60,6 +65,7 @@ const deleteTemplatingText = (id) => {
 
 const emailService = {
   getTemplates,
+  getTemplatesnetfree,
   addNewTemplate,
   updateTemplate,
   getSingleTemplate,

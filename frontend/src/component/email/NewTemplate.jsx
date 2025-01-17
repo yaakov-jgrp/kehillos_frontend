@@ -233,7 +233,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   const fetchFormDataTags = async () => {
     setloadingTags(true);
     try {
-      const res = await clientsService.getFullformData(
+      const res = await clientsService.getFullformEmailPageData(
         "&field_email_template=true"
       );
       setMergeTagsData(res.data.result);

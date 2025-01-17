@@ -135,7 +135,7 @@ const Clients = () => {
 
   const fetchFullFormData = async () => {
     try {
-      const formData = await clientsService.getFullformData();
+      const formData = await clientsService.getFullformClientsPageData();
       let formFields = [];
       formData.data.result.forEach((block) => {
         block.field.forEach((field) => {
@@ -172,7 +172,7 @@ const Clients = () => {
   };
 
   const fetchNetfreeProfiles = async () => {
-    const profilesListData = await categoryService.getProfilesList();
+    const profilesListData = await categoryService.getProfilesListClientsPages();
     setNetfreeProfiles(profilesListData.data.data);
   };
 

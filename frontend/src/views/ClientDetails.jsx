@@ -68,7 +68,7 @@ function ClientDetails() {
     setIsloading(true);
     try {
       // ::REAL DATA::
-      const profilesData = await categoryService.getProfilesList();
+      const profilesData = await categoryService.getProfilesListClientsPages();
       const netfreeProfiles = profilesData.data.data;
       clientsService
         .getClient(id)
@@ -108,7 +108,7 @@ function ClientDetails() {
 
   const fetchNetfreeProfiles = async () => {
     // ::REAL DATA::
-    const profilesListData = await categoryService.getProfilesList();
+    const profilesListData = await categoryService.getProfilesListClientsPages();
 
     // ::MOCKED DATA::
     // const profilesListData = PROFILE_LIST;
@@ -117,7 +117,7 @@ function ClientDetails() {
 
   const fetchFullFormData = async () => {
     // ::REAL DATA::
-    const formData = await clientsService.getFullformData();
+    const formData = await clientsService.getFullformClientsPageData();
 
     // ::MOCKED DATA::
     // const formData = FULL_FORM_DATA;

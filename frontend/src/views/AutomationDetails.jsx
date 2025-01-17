@@ -147,7 +147,7 @@ function AutomationDetails() {
 
   const fetchFullFormData = async () => {
     try {
-      const formData = await clientsService.getFullformData();
+      const formData = await clientsService.getFullformAutomationPageData();
       let formFields = [];
       formData.data.result.forEach((block) => {
         block.field.forEach((field) => {

@@ -8,6 +8,9 @@ const createNewForm = (data) => {
 const getAllForms = (params) => {
   return api.get(`/api/forms/get-forms/${params}`);
 };
+const getAllFormsFormsPage = (params) => {
+  return api.get(`/api/forms/get-forms-formspage/${params}`);
+};
 
 const deleteForm = (id) => {
   return api.delete(`/api/forms/delete-form/${id}`);
@@ -67,6 +70,7 @@ const createNewClientFormVersion = (data) => {
 
 const formService = {
   createNewForm,
+  getAllFormsFormsPage,
   getAllForms,
   deleteForm,
   createNewCondition,

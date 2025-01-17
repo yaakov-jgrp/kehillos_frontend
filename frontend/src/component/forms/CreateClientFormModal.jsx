@@ -64,7 +64,7 @@ export default function CreateClientFormModal({
       const params = `?page=${
         page + 1
       }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
-      const allFormsPayload = await formsService.getAllForms(params);
+      const allFormsPayload = await formsService.getAllFormsFormsPage(params);
       if (
         allFormsPayload?.data?.results &&
         allFormsPayload.data.results.length > 0
@@ -84,7 +84,7 @@ export default function CreateClientFormModal({
   const fetchClientsData = async () => {
     const params = `?page=${1}&lang=${"en"}&page_size=${50}`;
     // ::REAL DATA::
-    const clientsData = await clientsService.getClients(params);
+    const clientsData = await clientsService.getClientsFormsPage(params);
 
     // ::MOCKED DATA::
     // const clientsData = CLIENTS;
