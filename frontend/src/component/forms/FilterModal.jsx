@@ -593,7 +593,9 @@ function FilterModal({
                                                   value={field?.slug}
                                                   key={i}
                                                 >
-                                                  {field.name}
+                                                  {/* {field.name} */}
+                                                  {lang === "he" ? field.name.he : field.name.en}
+
                                                 </MenuItem>
                                               ))}
                                             </Select>
@@ -751,7 +753,8 @@ function FilterModal({
                                                   value={field?.slug}
                                                   key={i}
                                                 >
-                                                  {field.name}
+                                                  {/* {field.name} */}
+                                                  {lang === "he" ? field.name.he : field.name.en}
                                                 </MenuItem>
                                               ))}
                                             </Select>

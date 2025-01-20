@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 // UI Imports
 import { Box, CircularProgress, IconButton, MenuItem, Modal, Select, TablePagination, Tooltip, Typography } from "@mui/material";
 
+import { FaInfo } from "react-icons/fa";
 
 // UI Components Imports
 import SearchField from "../component/fields/SearchField";
@@ -421,8 +422,18 @@ const Request = () => {
                               rel="noreferrer"
                               className="text-gray-11 hover:text-gray-10 font-medium"
                             >
+                              <span>
+                              <IconButton
+                                onClick={() => window.location.href = `/client/${el.customer_id}`}
+                                className="ml-2"
+                              >
+                                <FaInfo size={15} />
+                              </IconButton>
+                              </span>
                               #{el.customer_id}
                               <br />
+                              
+                              
                             </a>
                             {el.username}
                             <br />
@@ -432,6 +443,7 @@ const Request = () => {
                             >
                               {el.sender_email}
                             </a>
+                           
                           </td>
                           <td>{el.request_type}</td>
                           <td className="px-2" >
