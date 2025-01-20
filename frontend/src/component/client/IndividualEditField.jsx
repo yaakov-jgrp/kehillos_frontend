@@ -6,6 +6,7 @@ import EditButtonIcon from "../common/EditButton";
 import CustomField from "../fields/CustomField";
 import ErrorMessage from "../common/ErrorMessage";
 import FileViewModal from "../common/FileViewModal";
+import { TiTick } from "react-icons/ti";
 
 // Third part Imports
 import dayjs from "dayjs";
@@ -36,11 +37,27 @@ function IndividualEditField({ field, clientData, setClientData }) {
     [field?.field_slug]: field?.value,
   });
   const [showFile, setShowFile] = useState(false);
-
+  const phonePatterns = [
+    /^050-41\d-\d{4}$/,
+    /^052-71\d-\d{4}$/,
+    /^052-76\d-\d{4}$/,
+    /^054-84\d-\d{4}$/,
+    /^054-85\d-\d{4}$/,
+    /^053-31\d-\d{4}$/,
+    /^053-41\d-\d{4}$/,
+    /^058-32\d-\d{4}$/,
+    /^055-67\d-\d{4}$/,
+    /^055-32\d-\d{4}$/,
+    /^055-52\d-\d{4}$/,
+  ];
+  
   const data_type = field.data_type.value;
   const isDate = DateFieldConstants.includes(field.data_type.value);
   const isFile = field?.data_type?.value === "file";
 
+  const isPhoneNumberOk = (phoneNumber) => {
+    return phonePatterns.some((pattern) => pattern.test(phoneNumber));
+  };
   const schemaHandler = (type, name, required) => {
     let validation;
     if (type.value === "email") {
@@ -240,6 +257,10 @@ function IndividualEditField({ field, clientData, setClientData }) {
             ) : (
               <>
                 <p className="text-sm mx-4 text-gray-11 font-medium flex items-center">
+                : 
+                {data_type === "phone" && isPhoneNumberOk(fieldValue) && (
+                    <TiTick color="green" />)}
+                  
                   {emptyValues.includes(fieldValue) ? (
                     ""
                   ) : linkTypes.includes(data_type) ? (
@@ -249,7 +270,7 @@ function IndividualEditField({ field, clientData, setClientData }) {
                       }
                       className="hover:text-gray-10"
                     >
-                      : {fieldValue}
+                     {fieldValue}
                     </a>
                   ) : data_type === "checkbox" ? (
                     <CustomField
@@ -258,8 +279,9 @@ function IndividualEditField({ field, clientData, setClientData }) {
                       disabled={true}
                     />
                   ) : (
-                    `: ${fieldValue}`
+                    ` ${fieldValue}`
                   )}
+                  
                   {data_type === "file" &&
                     !emptyValues.includes(fieldValue) && (
                       <FaEye
@@ -281,5 +303,4 @@ function IndividualEditField({ field, clientData, setClientData }) {
     </div>
   );
 }
-
 export default IndividualEditField;

@@ -26,6 +26,8 @@ import PinIcon from "../assets/pin.svg";
 import RepeatableIcon from "../assets/images/repeat_able_icon.svg";
 import CopyIcon from "../assets/images/copy_icon.svg";
 import ConditionsIcon from "../assets/images/condition_icon.svg";
+import ConditionsIconGreen from "../assets/images/condition_icon_green.svg";
+
 import { IoIosAdd } from "react-icons/io";
 
 // Utils imports
@@ -90,7 +92,25 @@ function FormDetails() {
     setIsAddBlock(flag);
     setShowModal(true);
   };
-
+  const duplicateFieldHandler = (field) => {
+    const newField = {
+      ...field,
+      id: Math.random() + Date.now(),
+      name: `${field.name} (Copy)`,
+    };
+  
+    const newConditions = activeFormState.conditions
+      .filter((condition) => condition.fieldId === field.id)
+      .map((condition) => ({
+        ...condition,
+        id: Math.random() + Date.now(),
+        fieldId: newField.id,
+      }));
+  
+    dispatch(setFields([...activeFormState.fields, newField]));
+    dispatch(setConditions([...activeFormState.conditions, ...newConditions]));
+  };
+  
   const editBlockFieldModalHandler = (data, isBlock) => {
     let editableData = JSON.parse(JSON.stringify(data));
     setIsAddBlock(isBlock);
@@ -197,6 +217,8 @@ function FormDetails() {
   };
 
   const addFieldConditionHandler = async (fieldId, operator) => {
+    const lastField = activeFormState.fields[activeFormState.fields.length - 1]?.name
+
     if (!isFloat(fieldId)) {
       console.log("Calling API for adding a condition.");
       const newCondition = await formService.createNewCondition({
@@ -216,7 +238,7 @@ function FormDetails() {
           {
             fieldId,
             id: Math.random() + Date.now(),
-            field: "",
+            field: lastField || "",
             condition: "",
             value: "",
             operator,
@@ -224,6 +246,7 @@ function FormDetails() {
         ])
       );
     }
+    
   };
 
   const editFieldConditionHandler = (conditionId, key, value) => {
@@ -319,6 +342,8 @@ function FormDetails() {
 
     fetchActiveFormHandler();
   }, [id]);
+
+ 
 
   return (
     <div className="w-full bg-white rounded-3xl shadow-custom">
@@ -467,6 +492,9 @@ function FormDetails() {
                                 const isCheckBox = checkBoxConstants.includes(
                                   field.data_type.value
                                 );
+                                const hasConditions = activeFormState.conditions.some(
+                                  (condition) => condition.fieldId === field.id
+                                );
                                 return (
                                   <div
                                     className={`mb-2 px-2 flex gap-1 flex-col`}
@@ -495,7 +523,9 @@ function FormDetails() {
                                         >
                                           <img
                                             className="cursor-pointer mr-2"
-                                            src={ConditionsIcon}
+                                            // src={ConditionsIcon}
+                                            src={hasConditions ? ConditionsIconGreen : ConditionsIcon}
+                
                                             alt="conditions_icon"
                                           />
                                         </button>
@@ -503,6 +533,9 @@ function FormDetails() {
                                           className="cursor-pointer mr-2"
                                           src={CopyIcon}
                                           alt="copy_icon"
+                                          onClick={() =>
+                                            duplicateFieldHandler(field)
+                                          }
                                         />
                                         <EditButtonIcon
                                           extra="mr-2"
@@ -554,14 +587,12 @@ function FormDetails() {
 
                                           {activeFormState.conditions
                                             .filter(
-                                              (condition) =>{
-                                                console.log(condition, " form condition")
-                                                return(
+                                              (condition) =>
                                                 condition.fieldId ===
                                                   field.id &&
-                                                condition.operator === "AND")}
+                                                condition.operator === "AND"
                                             )
-                                            .map((condition) =>(
+                                            .map((condition) => (
                                               <div
                                                 className="flex items-end gap-4 my-4"
                                                 key={condition.id}
@@ -640,7 +671,7 @@ function FormDetails() {
                                                           key={index}
                                                           value={condition.slug}
                                                         >
-                                                          {condition.name}
+                                                         {lang === "he" ? condition.name.he : condition.name.en}
                                                         </MenuItem>
                                                       )
                                                     )}
@@ -722,6 +753,7 @@ function FormDetails() {
                                                     labelId="demo-select-small-label"
                                                     id="demo-select-small"
                                                     className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
+                                                    // value={condition.field}
                                                     value={condition.field}
                                                     MenuProps={{
                                                       sx: {
@@ -790,7 +822,7 @@ function FormDetails() {
                                                           key={index}
                                                           value={condition.slug}
                                                         >
-                                                          {condition.name}
+                                                           {lang === "he" ? condition.name.he : condition.name.en}
                                                         </MenuItem>
                                                       )
                                                     )}
