@@ -24,18 +24,29 @@ import FormsIcon from "../../assets/images/forms.svg";
 import FormsDarkIcon from "../../assets/images/forms_dark.svg";
 import ClientFormsTable from "../../views/ClientFormsTable";
 import Config from "../../views/apiConfig";
+import { USER_DETAILS } from "../../constants";
 
 const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
+  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const permissions = userDetails?.permissions || [];
+  const permissionsObjects = permissions.reduce((acc, permission) => {
+    const variableName = `${permission?.name?.toLowerCase()}Permission`;
+    acc[variableName] = permission;
+    return acc;
+  }, {});  
+
   const routes = [
-    {
+    permissionsObjects?.clientsPermission?.is_read || userDetails?.organization_admin
+    ?{
       name: t("sidebar.clients"),
       path: "clients",
       type: "menu",
       icon: <HiOutlineUserGroup className="h-6 w-6" />,
       component: <Clients />,
-    },
-    {
+    }:null,
+    permissionsObjects?.formsPermission?.is_read || userDetails?.organization_admin
+    ?{
       name: t("sidebar.forms"),
       path: "client-forms",
       type: "menu",
@@ -48,76 +59,77 @@ const Sidebar = ({ open, onClose }) => {
         />
       ),
       component: <ClientFormsTable />,
-    },
-    {
+    }:null,
+    permissionsObjects?.requestsPermission?.is_read || userDetails?.organization_admin
+    ? {
       name: t("sidebar.request"),
       path: "request",
       type: "menu",
       icon: <MdOutlineContactSupport className="h-6 w-6" />,
       component: <Request />,
-    },
-    {
+    } : null,
+    permissionsObjects?.fieldconfigurationPermission?.is_read || userDetails?.organization_admin ? {
       name: t("Field Configuration"),
       path: "settings/config",
       type: "menu",
       icon: <IoLogoBuffer className="h-6 w-6" />,
       component: <Config />,
-    },
+    } : null,
     {
       name: t("sidebar.settings"),
       type: "top-menu",
       icon: <MdOutlineSettings className="h-6 w-6" />,
       children: [
-        {
+        permissionsObjects?.automationPermission?.is_read || userDetails?.organization_admin ? {
           name: t("sidebar.automation"),
           path: "settings/automation",
           type: "menu",
           icon: <img src={FormsSvg} className="h-5 w-5" />,
           component: <ClientsForm />,
-        },
-        {
+        } : null,
+        permissionsObjects?.formcreationPermission?.is_read || userDetails?.organization_admin ? {
           name: t("sidebar.formCreation"),
           path: "settings/forms",
           type: "menu",
           icon: <img src={FormsSvg} className="h-5 w-5" />,
           component: <ClientsForm />,
-        },
-        {
+        } : null,
+        permissionsObjects?.clientfieldsPermission?.is_read || userDetails?.organization_admin ? {
           name: t("sidebar.clients"),
           path: "settings/formSettings",
           type: "menu",
           icon: <HiOutlineUserGroup className="h-6 w-6" />,
           component: <ClientsForm />,
-        },
-        {
+        } : null,
+        permissionsObjects?.usersPermission?.is_read || userDetails?.organization_admin ? {
           name: t("sidebar.users"),
           path: "settings/users",
           type: "menu",
           icon: <HiOutlineUsers className="h-6 w-6" />,
           component: <Users />,
-        },
-        {
+        } : null,
+        permissionsObjects?.netfreePermission?.is_read || userDetails?.organization_admin ? {
           name: t("sidebar.netfree"),
           path: "settings/netfree",
           type: "menu",
           icon: <NetfreeIcon className="h-6 w-6" />,
           component: <NetFree />,
-        },
-        {
+        } : null,
+        permissionsObjects?.emailsPermission?.is_read || userDetails?.organization_admin ? {
           name: t("sidebar.emails"),
           path: "settings/emails",
           type: "menu",
           icon: <MdOutlineEmail className="h-6 w-6" />,
           component: <Emails />,
-        },
-        {
+        } : null,
+        permissionsObjects?.logshistoryPermission?.is_read || userDetails?.organization_admin ? {
           name: t("sidebar.logs"),
           path: "settings/logs",
           type: "menu",
           icon: <IoLogoBuffer className="h-6 w-6" />,
           component: <Logs />,
-        },
-      ],
+        } : null,
+      ].filter(Boolean),
     },
     {
       name: t("sidebar.logout"),
@@ -125,7 +137,8 @@ const Sidebar = ({ open, onClose }) => {
       type: "button",
       icon: <MdLogout className="h-6 w-6" />,
     },
-  ];
+  ].filter(Boolean);
+  
 
   return (
     <div

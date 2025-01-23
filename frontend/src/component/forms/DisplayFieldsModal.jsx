@@ -9,7 +9,7 @@ import CrossIcon from "../../assets/images/cross.svg";
 import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
 
-const DisplayFieldsModal = ({ showModal, setShowModal, onClick }) => {
+const DisplayFieldsModal = ({ showModal, setShowModal, onClick, disabled }) => {
   const { t } = useTranslation();
   const defaultDisplayFields = {
     name: true,
@@ -72,6 +72,7 @@ const DisplayFieldsModal = ({ showModal, setShowModal, onClick }) => {
                           control={control}
                           render={({ field: { value, onChange } }) => (
                             <ToggleSwitch
+                              disabled={disabled}
                               clickHandler={(val) => {
                                 setDisplayFields((prev) => ({
                                   ...prev,
@@ -95,7 +96,8 @@ const DisplayFieldsModal = ({ showModal, setShowModal, onClick }) => {
                       {t("netfree.close")}
                     </button>
                     <button
-                      className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
+                      disabled={disabled}
+                      className="text-white disabled:cursor-not-allowed text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                       type="submit"
                     >
                       {t("netfree.save")}

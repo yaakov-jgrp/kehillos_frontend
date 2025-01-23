@@ -47,6 +47,12 @@ export default function SignIn() {
           localStorage.setItem(ACCESS_TOKEN_KEY, data.data.access);
           localStorage.setItem(REFRESH_TOKEN_KEY, data.data.refresh);
           localStorage.setItem(USER_DETAILS, JSON.stringify(data.data?.user));
+          const permissionsObjects = data.data?.user?.permissions.reduce((acc, permission) => {
+            const variableName = `${permission.name.toLowerCase()}Permission`;
+            acc[variableName] = permission;
+            return acc;
+          }, {});  
+          localStorage.setItem('permissionsObjects', JSON.stringify(permissionsObjects));
           navigate("/clients");
         } else {
           setAlert(t("auth.loginFailed"), "error");

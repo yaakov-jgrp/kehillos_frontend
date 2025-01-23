@@ -6,7 +6,7 @@ const getClients = (params) => {
 }
 const getClientsFormsPage = (params) => {
     return api
-        .get(`/api/client/get-forms-clients${params}`);
+        .get(`/api/client/get-forms-clients/${params}`);
 }
 
 const getClient = (id, params = "") => {

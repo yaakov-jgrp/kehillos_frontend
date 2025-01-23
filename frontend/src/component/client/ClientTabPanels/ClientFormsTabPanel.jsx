@@ -42,7 +42,7 @@ import { RiHistoryLine } from "react-icons/ri";
 import { Accordion } from "@chakra-ui/react";
 import { FieldVersionHistory } from "../../forms/FieldVersionHistory";
 
-export const ClientFormsTabPanel = ({ clientId }) => {
+export const ClientFormsTabPanel = ({ clientId, disabled }) => {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const { first_name } = JSON.parse(localStorage.getItem("user_details"));
@@ -302,9 +302,10 @@ export const ClientFormsTabPanel = ({ clientId }) => {
       <div className="flex justify-between items-center py-4 px-7 text-gray-11 font-medium text-2xl">
         {t("forms.allForms")}
         <button
+          disabled={disabled}
           className={`${
             lang === "he" ? "w-[150px]" : "w-[170px]"
-          } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+          } ${disabled ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'} h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
           onClick={() => {
             setShowClientFormModal(true);
           }}

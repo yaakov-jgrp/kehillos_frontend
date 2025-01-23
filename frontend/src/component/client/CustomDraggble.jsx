@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 // import "./customDraggable.css";
 
-const CustomDraggable = ({ children, onPositionChange, style }) => {
+const CustomDraggable = ({ children, onPositionChange, style, updatePermission, mainClass='' }) => {
   const [items, setItems] = useState(children);
   const [draggingIndex, setDraggingIndex] = useState(null);
 
@@ -29,16 +29,16 @@ const CustomDraggable = ({ children, onPositionChange, style }) => {
   };
 
   return (
-    <div className="draggable-container flex flex-wrap">
+    <div className={`draggable-container flex flex-wrap ${mainClass}`}>
       {items.map((item, index) => {
         const itemWidth = item.props?.style?.width;
         return(
         <div
           key={index}
-          className={`draggable-item ${draggingIndex === index ? "dragging" : ""}`}
+          className={`draggable-item ${mainClass} ${draggingIndex === index ? "dragging" : ""}`}
           draggable
-          onDragStart={() => handleDragStart(index)}
-          onDragEnter={() => handleDragEnter(index)}
+          onDragStart={updatePermission ? ()=>{} : () => handleDragStart(index)}
+          onDragEnter={updatePermission ? ()=>{} : () => handleDragEnter(index)}
           onDragEnd={handleDragEnd}
           style={{
             ...style, // Existing styles

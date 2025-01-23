@@ -41,6 +41,7 @@ import {
   linkTypes,
   paginationRowOptions,
 } from "../lib/FieldConstants";
+import { USER_DETAILS } from "../constants";
 
 const Clients = () => {
   const { t } = useTranslation();
@@ -48,6 +49,10 @@ const Clients = () => {
   dayjs.extend(utc);
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const tableRef = useRef(null);
+  const permissionsObjects = JSON.parse(localStorage.getItem('permissionsObjects')) || {};
+  const clientsPermission = permissionsObjects?.clientsPermission;
+  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const organizationAdmin = userDetails?.organization_admin;
   const [isLoading, setIsLoading] = useState(true);
   const [allClients, setAllClients] = useState([]);
   const [clientModal, setClientModal] = useState(false);
@@ -68,7 +73,8 @@ const Clients = () => {
   const [appliedFilter, setAppliedFilter] = useState(null);
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
-
+  const writePermission = organizationAdmin ? false : clientsPermission ? !clientsPermission?.is_write : false
+  
   const handleSortHandler = (field, type) => {
     handleSort(
       field,
@@ -220,6 +226,8 @@ const Clients = () => {
     <div className="w-full bg-white rounded-3xl mt-1 shadow-custom">
       {allClients && netfreeprofiles && editClient && clientModal && (
         <ClientModal
+          organizationAdmin={organizationAdmin}
+          clientsPermission={clientsPermission}
           showModal={clientModal}
           setShowModal={setClientModal}
           setClientRefresh={setClientRefresh}
@@ -257,6 +265,7 @@ const Clients = () => {
         <div className="flex gap-4">
           {fullFormData && (
             <FilterModal
+              disabled={writePermission}
               fetchFiltersHandler={fetchFiltersHandler}
               fetchFullFormData={fetchFullFormData}
               fetchClientsData={fetchClientsData}
@@ -268,24 +277,27 @@ const Clients = () => {
             />
           )}
           <button
-            className={`w-[116px] rounded-lg py-1 text-[14px] font-semibold dark:bg-brand-400 text-gray-11 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-2 justify-center items-center border border-[#E3E5E6]`}
+            className={`w-[116px] disabled:cursor-not-allowed rounded-lg py-1 text-[14px] font-semibold dark:bg-brand-400 text-gray-11 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-2 justify-center items-center border border-[#E3E5E6]`}
             onClick={() => setShowDisplayModal(!showDisplayModal)}
           >
             <img src={VisibilityIcon} alt="visibility_icon" />
             {t("clients.visibility")}
           </button>
           <CsvImporter
+            disabled={writePermission}
             formFields={fullFormData}
             fetchClientsData={fetchClientsData}
           />
           <button
-            className={`w-[75px] rounded-lg py-1 text-[14px] font-medium text-gray-11 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6]`}
+            disabled={writePermission}
+            className={`w-[75px] disabled:cursor-not-allowed rounded-lg py-1 text-[14px] font-medium text-gray-11 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6]`}
             onClick={exportClientsHandler}
           >
             {t("clients.export")}
           </button>
           <button
-            className={`w-[172px] rounded-lg py-2 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+            disabled={writePermission}
+            className={`w-[172px] disabled:cursor-not-allowed rounded-lg py-2 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
             onClick={() => {
               setNewClient(true);
               setClientModal(true);
@@ -566,6 +578,7 @@ const Clients = () => {
 
       {showDisplayModal && (
         <DisplayFieldsModal
+          disabled={organizationAdmin ? false : clientsPermission ? !clientsPermission?.is_update : false}
           formValues={displayFormValues}
           displayFields={displayFields}
           onClick={() => {

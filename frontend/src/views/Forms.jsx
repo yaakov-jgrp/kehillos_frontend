@@ -29,7 +29,7 @@ import { paginationRowOptions } from "../lib/FieldConstants";
 // API services
 
 // Utils imports
-import { ACTIVE_FORM, FORM_FIELD_CONDITIONS } from "../constants";
+import { ACTIVE_FORM, FORM_FIELD_CONDITIONS, USER_DETAILS } from "../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveForm } from "../redux/activeFormSlice";
 import { setAllFormsState } from "../redux/allFormsSlice";
@@ -50,6 +50,26 @@ function Forms() {
   const allForms = useSelector((state) => state.allFormsState.allForms);
   const [allFormsLocalState, setAllFormsLocalState] = useState([]);
   const [activeFormId, setActiveFormId] = useState(null);
+  const permissionsObjects =
+      JSON.parse(localStorage.getItem("permissionsObjects")) || {};
+    const formcreationPermission = permissionsObjects?.formcreationPermission;
+    const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+    const organizationAdmin = userDetails?.organization_admin;
+    const writePermission = organizationAdmin
+      ? false
+      : formcreationPermission
+      ? !formcreationPermission?.is_write
+      : false;
+    const updatePermission = organizationAdmin
+      ? false
+      : formcreationPermission
+      ? !formcreationPermission?.is_update
+      : false;
+    const deletePermission = organizationAdmin
+      ? false
+      : formcreationPermission
+      ? !formcreationPermission?.is_delete
+      : false;
 
   // handlers
   const handleChangePage = (event, newPage) => {
@@ -146,11 +166,12 @@ function Forms() {
     <div className="w-full bg-white rounded-3xl shadow-custom">
       <div className="flex justify-between items-center py-4 px-7 text-gray-11 font-medium text-2xl">
         {t("forms.formsManagement")}
-        <Link to="/settings/forms/new-form">
+        <Link  to={writePermission ? "" : "/settings/forms/new-form"}>
           <button
+          disabled={writePermission}
             className={`${
               lang === "he" ? "w-[150px]" : "w-[170px]"
-            } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+            } disabled:cursor-not-allowed h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
             onClick={() => {
               localStorage.setItem("activeForm", JSON.stringify(ACTIVE_FORM));
               dispatch(setActiveForm(ACTIVE_FORM));
@@ -287,11 +308,11 @@ function Forms() {
                           <td>{el.lastEditedAt}</td>
                           <td>
                             <div className="h-auto w-full flex items-center justify-center gap-2">
-                              <Link to={`/settings/forms/${el.id}`}>
+                              <Link to={updatePermission ? '' : `/settings/forms/${el.id}`}>
                                 <img
                                   src={PencilIcon}
                                   alt="PencilIcon"
-                                  className="hover:cursor-pointer"
+                                  className={updatePermission ? "hover:cursor-not-allowed" : "hover:cursor-pointer"}
                                   onClick={() => {
                                     const payload =
                                       convertDataForShowingForms(el);
@@ -306,8 +327,8 @@ function Forms() {
                               <img
                                 src={BinIcon}
                                 alt="BinIcon"
-                                className="hover:cursor-pointer"
-                                onClick={() => {
+                                className={deletePermission ? "hover:cursor-not-allowed" : "hover:cursor-pointer"}
+                                onClick={deletePermission ? ()=>{} : () => {
                                   setActiveFormId(el.id);
                                   setConfirmationModal(true);
                                 }}

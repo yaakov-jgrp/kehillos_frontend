@@ -36,6 +36,7 @@ export default function CreateClientFormModal({
   setShowModal,
   setShowSuccessModal,
   clientId,
+  formCb
 }) {
   const { t } = useTranslation();
 
@@ -188,6 +189,7 @@ export default function CreateClientFormModal({
       );
       setShowSuccessModal(true);
       setShowModal(false);
+      if(formCb){formCb()}
     } catch (error) {
       toast.error(JSON.stringify(error));
       console.log(error);

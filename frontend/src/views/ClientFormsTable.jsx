@@ -40,6 +40,7 @@ import {
 import EditClientFormModal from "../component/forms/EditClientFormModal";
 import DisplayFieldsModal from "../component/forms/DisplayFieldsModal";
 import FilterModal from "../component/forms/FilterModal";
+import { USER_DETAILS } from "../constants";
 
 function ClientFormsTable() {
   // states
@@ -72,6 +73,26 @@ function ClientFormsTable() {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [filters, setFilters] = useState([]);
   const [appliedFilter, setAppliedFilter] = useState(null);
+  const permissionsObjects =
+    JSON.parse(localStorage.getItem("permissionsObjects")) || {};
+  const formsPermission = permissionsObjects?.formsPermission;
+  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const organizationAdmin = userDetails?.organization_admin;
+  const writePermission = organizationAdmin
+    ? false
+    : formsPermission
+    ? !formsPermission?.is_write
+    : false;
+  const updatePermission = organizationAdmin
+    ? false
+    : formsPermission
+    ? !formsPermission?.is_update
+    : false;
+  const deletePermission = organizationAdmin
+    ? false
+    : formsPermission
+    ? !formsPermission?.is_delete
+    : false;
 
   function applyFilters(filters, clientForms) {
     const applyCondition = (form, filter) => {
@@ -273,14 +294,14 @@ function ClientFormsTable() {
 
   useEffect(() => {
     fetchFormsData();
-  }, [lang, page, rowsPerPage, JSON.stringify(searchParams)]);
+  }, [lang, page, rowsPerPage, JSON.stringify(searchParams)], displayFields);
 
   useEffect(() => {
     if (appliedFilter && appliedFilter.default) {
       const filteredForms = applyFilters(appliedFilter.filters, allClientForms);
       setAllClientForms(filteredForms);
     }
-  }, [appliedFilter]);
+  }, [appliedFilter, displayFields]);
 
   return (
     <div className="w-full bg-white rounded-3xl shadow-custom">
@@ -288,6 +309,9 @@ function ClientFormsTable() {
         {t("forms.forms")}
         <div className="flex items-center gap-2">
           <FilterModal
+            writePermission={writePermission}
+            deletePermission={deletePermission}
+            updatePermission={updatePermission}
             fetchFiltersHandler={fetchFiltersHandler}
             fetchFullFormData={fetchFormsData}
             fetchClientsData={fetchFormsData}
@@ -307,9 +331,10 @@ function ClientFormsTable() {
             {t("clients.visibility")}
           </button>
           <button
+            disabled={writePermission}
             className={`${
               lang === "he" ? "w-[150px]" : "w-[170px]"
-            } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+            } h-[40px] disabled:cursor-not-allowed rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
             onClick={() => {
               setShowClientFormModal(true);
               return null;
@@ -459,8 +484,8 @@ function ClientFormsTable() {
                               <img
                                 src={BinIcon}
                                 alt="BinIcon"
-                                className="hover:cursor-pointer"
-                                onClick={() => {
+                                className={`${deletePermission ? "hover:cursor-not-allowed" : "hover:cursor-pointer"}`}
+                                onClick={deletePermission ? ()=>{} : () => {
                                   setActiveFormId(el.id);
                                   setConfirmationModal(true);
                                 }}
@@ -499,6 +524,7 @@ function ClientFormsTable() {
           showModal={showVisibilityModal}
           setShowModal={setShowVisibilityModal}
           onClick={(updatedFields) => setDisplayFields(updatedFields)}
+          disabled={updatePermission}
         />
       )}
 
@@ -507,6 +533,7 @@ function ClientFormsTable() {
           setShowModal={setShowClientFormModal}
           setShowSuccessModal={setShowSuccessModal}
           clientId={null}
+          formCb={fetchFormsData}
         />
       )}
 

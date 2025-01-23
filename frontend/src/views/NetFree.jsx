@@ -29,6 +29,7 @@ import BlueDownArrowIcon from "../assets/images/blue_down_arrow.svg";
 import { categoryFilters } from "../lib/FieldConstants";
 import { MenuItem, Select } from "@mui/material";
 import { deleteNetfreeStatus } from "../lib/CommonFunctions";
+import { USER_DETAILS } from "../constants";
 
 const NetFree = () => {
   const [tab, setTab] = useState(0);
@@ -67,6 +68,26 @@ const NetFree = () => {
   const NetfreePageTabs = [t("netfree.categories"), t("netfree.websites")];
   const [currentProfileTab, setCurrentProfileTab] = useState(0);
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const permissionsObjects =
+    JSON.parse(localStorage.getItem("permissionsObjects")) || {};
+  const netfreePermission = permissionsObjects?.netfreePermission;
+  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const organizationAdmin = userDetails?.organization_admin;
+  const writePermission = organizationAdmin
+    ? false
+    : netfreePermission
+    ? !netfreePermission?.is_write
+    : false;
+  const updatePermission = organizationAdmin
+    ? false
+    : netfreePermission
+    ? !netfreePermission?.is_update
+    : false;
+  const deletePermission = organizationAdmin
+    ? false
+    : netfreePermission
+    ? !netfreePermission?.is_delete
+    : false;
 
   // Handlers
 
@@ -377,7 +398,8 @@ const NetFree = () => {
               borderRadius="30"
             />
             <button
-              className={`w-[140px] rounded-lg py-2 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+              disabled={writePermission}
+              className={`w-[140px] disabled:cursor-not-allowed rounded-lg py-2 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
               onClick={() => {
                 setShowProfileModal(!showProfileModal);
                 setNewProfile(true);
@@ -455,19 +477,30 @@ const NetFree = () => {
                 </p>
               </div>
               <div className="h-auto flex items-center gap-2">
-                <EditButtonIcon extra="" onClick={editProfileHandler} />
+                <EditButtonIcon
+                  extra={
+                    updatePermission
+                      ? "hover:cursor-not-allowed"
+                      : "hover:cursor-pointer"
+                  }
+                  onClick={updatePermission ? () => {} : editProfileHandler}
+                />
                 <img
                   src={ContentCopyIcon}
                   alt="ContentCopyIcon"
-                  onClick={duplicateProfileHandler}
-                  className="cursor-pointer w-5"
+                  onClick={writePermission ? () => {} : duplicateProfileHandler}
+                  className={`${
+                    writePermission ? "cursor-not-allowed" : "cursor-pointer"
+                  } w-5`}
                 />
                 {!activeProfile.is_default && (
                   <img
                     src={BinIcon}
                     alt="BinIcon"
-                    className="cursor-pointer"
-                    onClick={deleteProfileHandler}
+                    className={`${
+                      deletePermission ? "cursor-not-allowed" : "cursor-pointer"
+                    }`}
+                    onClick={deletePermission ? () => {} : deleteProfileHandler}
                   />
                 )}
               </div>
@@ -491,12 +524,20 @@ const NetFree = () => {
               {t("netfree.defaultAction")}
             </h5>
             <AddButtonIcon
-              extra={""}
-              onClick={() => {
-                setIsDefaultActionSelectOpen(true);
-                setTrafficAction(false);
-                enableActionUpdate();
-              }}
+              extra={
+                writePermission
+                  ? "hover:cursor-not-allowed"
+                  : "hover:cursor-pointer"
+              }
+              onClick={
+                writePermission
+                  ? () => {}
+                  : () => {
+                      setIsDefaultActionSelectOpen(true);
+                      setTrafficAction(false);
+                      enableActionUpdate();
+                    }
+              }
             />
           </div>
           <div className="h-[110px] scrollbar-hide">
@@ -538,7 +579,10 @@ const NetFree = () => {
             <div className="flex items-center justify-between border-b border-b-[#F2F2F2] py-2 px-4">
               <div className="flex items-center gap-2">
                 <ToggleSwitch
-                  clickHandler={updateDefaultTrafficHandler}
+                  disabled={writePermission}
+                  clickHandler={
+                    writePermission ? () => {} : updateDefaultTrafficHandler
+                  }
                   selected={defaultTraffic}
                 />
                 <h5 className="font-medium text-[16px] text-gray-11">
@@ -546,8 +590,12 @@ const NetFree = () => {
                 </h5>
               </div>
               <AddButtonIcon
-                extra={""}
-                onClick={() => {
+                extra={
+                  writePermission
+                    ? "hover:cursor-not-allowed"
+                    : "hover:cursor-pointer"
+                }
+                onClick={writePermission ? ()=>{} : () => {
                   setIsDefaultActionSelectOpen(true);
                   setTrafficAction(true);
                   enableActionUpdate();
@@ -564,8 +612,8 @@ const NetFree = () => {
                     >
                       {el.label}
                       <img
-                        onClick={() => deleteDefaultAction(el.id)}
-                        className="cursor-pointer w-[10px] -mt-[0.8px]"
+                        onClick={deletePermission ? ()=>{} : () => deleteDefaultAction(el.id)}
+                        className={`${deletePermission ? 'cursor-not-allowed' : 'cursor-pointer'} w-[10px] -mt-[0.8px]`}
                         src={RedCrossIcon}
                         alt="RedCrossIcon"
                       />
@@ -576,10 +624,10 @@ const NetFree = () => {
                   <div className="text-gray-10 font-medium whitespace-break-spaces text-[12px] mb-2 relative py-1 px-4 bg-[#F4F7FE] rounded-full flex gap-2">
                     {trafficStatus.email_request_status.label}
                     <img
-                      onClick={() =>
+                      onClick={deletePermission ? ()=>{} : () =>
                         deleteNetfreeStatus(trafficStatus.id, getActionsList)
                       }
-                      className="cursor-pointer"
+                      className={`${deletePermission ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                       src={RedCrossIcon}
                       alt="RedCrossIcon"
                     />
@@ -699,11 +747,12 @@ const NetFree = () => {
             setCurrentSearchTerm={setCurrentSearchTerm}
             currentActionSearchTerm={currentActionSearchTerm}
             setCurrentActionSearchTerm={setCurrentActionSearchTerm}
+            writePermission={writePermission}
           />
         )}
 
         {tab === 1 && (
-          <Websites currentTab={currentTab} handleTabChange={handleChange} />
+          <Websites writePermission={writePermission} updatePermission={updatePermission} deletePermission={deletePermission} currentTab={currentTab} handleTabChange={handleChange} />
         )}
       </div>
 

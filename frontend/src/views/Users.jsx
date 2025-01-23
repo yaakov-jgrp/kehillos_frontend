@@ -27,6 +27,7 @@ import PencilIcon from "../assets/images/pencil.svg";
 
 // Utils imports
 import { paginationRowOptions } from "../lib/FieldConstants";
+import { USER_DETAILS } from "../constants";
 
 function Users() {
   const { t, i18n } = useTranslation();
@@ -51,6 +52,26 @@ function Users() {
   const [totalCount, setTotalCount] = useState(100);
   const [searchParams, setSearchParams] = useState({});
   const [confirmationModal, setConfirmationModal] = useState(false);
+  const permissionsObjects =
+    JSON.parse(localStorage.getItem("permissionsObjects")) || {};
+  const usersPermission = permissionsObjects?.usersPermission;
+  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const organizationAdmin = userDetails?.organization_admin;
+  const writePermission = organizationAdmin
+    ? false
+    : usersPermission
+    ? !usersPermission?.is_write
+    : false;
+  const updatePermission = organizationAdmin
+    ? false
+    : usersPermission
+    ? !usersPermission?.is_update
+    : false;
+  const deletePermission = organizationAdmin
+    ? false
+    : usersPermission
+    ? !usersPermission?.is_delete
+    : false;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -120,9 +141,10 @@ function Users() {
       <div className="flex justify-between items-center py-4 px-7 text-gray-11 font-medium text-2xl">
         {t("sidebar.users")}
         <button
+          disabled={writePermission}
           className={`${
             lang === "he" ? "w-[150px]" : "w-[128px]"
-          } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+          } disabled:cursor-not-allowed h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
           onClick={() => {
             setUserModal(true);
             setNewUser(true);
@@ -237,16 +259,16 @@ function Users() {
                               <img
                                 src={PencilIcon}
                                 alt="PencilIcon"
-                                className="hover:cursor-pointer"
-                                onClick={() => {
+                                className={updatePermission ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
+                                onClick={updatePermission ? ()=>{} : () => {
                                   editUserHandler(el);
                                 }}
                               />
                               <img
                                 src={BinIcon}
                                 alt="BinIcon"
-                                className="hover:cursor-pointer"
-                                onClick={() => {
+                                className={deletePermission ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
+                                onClick={deletePermission ? ()=>{} : () => {
                                   setEditUser(el);
                                   setConfirmationModal(true);
                                 }}

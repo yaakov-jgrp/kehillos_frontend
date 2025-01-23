@@ -37,6 +37,9 @@ function EmailTemplating({
   setTemplatingModal,
   setNewText,
   setEditText,
+  writePermission, 
+  updatePermission, 
+  deletePermission
 }) {
   const { t, i18n } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -138,6 +141,9 @@ function EmailTemplating({
             {templatingTexts.map((template) => {
               return (
                 <TemplateTextCard
+                  writePermission={writePermission}
+                  updatePermission={updatePermission}
+                  deletePermission={deletePermission}
                   template={template}
                   onEdit={() => {
                     editTextHandler(template);
