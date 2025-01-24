@@ -8,6 +8,10 @@ const getClientsFormsPage = (params) => {
     return api
         .get(`/api/client/get-forms-clients/${params}`);
 }
+const getClientsFormsDetailPage = (params) => {
+    return api
+        .get(`/api/client/get-forms-client-detail/${params}`);
+}
 
 const getClient = (id, params = "") => {
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -106,6 +110,7 @@ const exportSampleFormat = () => {
 const clientsService = {
     getClients,
     getClientsFormsPage,
+    getClientsFormsDetailPage,
     getClient,
     saveClient,
     updateClient,

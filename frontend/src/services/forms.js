@@ -11,6 +11,9 @@ const getAllForms = (params) => {
 const getAllFormsFormsPage = (params) => {
   return api.get(`/api/forms/get-forms-formspage/${params}`);
 };
+const getAllFormsPage = (params) => {
+  return api.get(`/api/client/get-forms-formspage/${params}`);
+};
 
 const deleteForm = (id) => {
   return api.delete(`/api/forms/delete-form/${id}`);
@@ -59,9 +62,15 @@ const deleteClientForm = (id) => {
 const getSingleClientForms = (clientId) => {
   return api.get(`/api/forms/client-forms/${clientId}`);
 };
+const getSingleClientPage = (clientId) => {
+  return api.get(`/api/client/client-forms/${clientId}`);
+};
 
 const getSingleClientFormDetails = (formId) => {
   return api.get(`/api/forms/client-form-details/${formId}`);
+};
+const getSingleClientFormDetailsPage = (formId) => {
+  return api.get(`/api/client/client-form-details/${formId}`);
 };
 
 const createNewClientFormVersion = (data) => {
@@ -71,6 +80,7 @@ const createNewClientFormVersion = (data) => {
 const formService = {
   createNewForm,
   getAllFormsFormsPage,
+  getAllFormsPage,
   getAllForms,
   deleteForm,
   createNewCondition,
@@ -84,7 +94,9 @@ const formService = {
   deleteClientForm,
   getAllClientsForms,
   getSingleClientForms,
+  getSingleClientPage,
   getSingleClientFormDetails,
+  getSingleClientFormDetailsPage,
   createNewClientFormVersion,
 };
 

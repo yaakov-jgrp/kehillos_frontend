@@ -209,7 +209,7 @@ function ClientFormsTable() {
 
   const fetchClientFormsDetailsData = async (formId) => {
     try {
-      const formDetailPayload = await formsService.getSingleClientFormDetails(
+      const formDetailPayload = await formsService.getSingleClientFormDetailsPage(
         formId
       );
       if (formDetailPayload.data) {

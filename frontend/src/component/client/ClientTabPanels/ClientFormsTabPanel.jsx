@@ -75,7 +75,7 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
     setIsLoading(true);
     try {
       let payload = [];
-      const allFormsPayload = await formsService.getSingleClientForms(clientId);
+      const allFormsPayload = await formsService.getSingleClientPage(clientId);
       if (
         allFormsPayload?.data?.results &&
         allFormsPayload.data.results.length > 0
@@ -100,7 +100,7 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
 
   const fetchFormsDetailsData = async (formId) => {
     try {
-      const formDetailPayload = await formsService.getSingleClientFormDetails(
+      const formDetailPayload = await formsService.getSingleClientFormDetailsPage(
         formId
       );
       if (formDetailPayload.data) {
