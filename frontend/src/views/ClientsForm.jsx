@@ -1,5 +1,5 @@
 // React imports
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 // UI Imports
 import { Accordion } from "@chakra-ui/react";
@@ -32,6 +32,7 @@ import { checkBoxConstants } from "../lib/FieldConstants";
 import { fetchFullformDataHandler } from "../lib/CommonFunctions";
 import CustomDraggable from "../component/client/CustomDraggble";
 import { USER_DETAILS } from "../constants";
+import { UserContext } from "../Hooks/permissionContext";
 
 const ClientsForm = () => {
   const { t } = useTranslation();
@@ -48,25 +49,29 @@ const ClientsForm = () => {
     type: "",
     value: "",
   });
-  const permissionsObjects =
-    JSON.parse(localStorage.getItem("permissionsObjects")) || {};
-  const clientfieldsPermission = permissionsObjects?.clientfieldsPermission;
-  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const { userDetails, permissions } = useContext(UserContext);
+  // const permissionsObjects = permissions;
+  // const clientfieldsPermission = permissions?.clientfieldsPermission;
+  // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  console.log('permissions?.clientfieldsPermission',permissions?.clientfieldsPermission);
+  console.log('userDetails?.organization_admin',userDetails?.organization_admin);
+  
   const organizationAdmin = userDetails?.organization_admin;
+  
   const writePermission = organizationAdmin
     ? false
-    : clientfieldsPermission
-    ? !clientfieldsPermission?.is_write
+    : permissions?.clientfieldsPermission
+    ? !permissions?.clientfieldsPermission?.is_write
     : false;
   const updatePermission = organizationAdmin
     ? false
-    : clientfieldsPermission
-    ? !clientfieldsPermission?.is_update
+    : permissions?.clientfieldsPermission
+    ? !permissions?.clientfieldsPermission?.is_update
     : false;
   const deletePermission = organizationAdmin
     ? false
-    : clientfieldsPermission
-    ? !clientfieldsPermission?.is_delete
+    : permissions?.clientfieldsPermission
+    ? !permissions?.clientfieldsPermission?.is_delete
     : false;
 
   const showModalHandler = () => {

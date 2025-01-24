@@ -1,5 +1,5 @@
 // React imports
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 // UI Components Imports
 import InputField from "../../component/fields/InputField";
@@ -24,6 +24,7 @@ import Logo from "../../assets/images/Kehillos_Logo.svg";
 
 // Custom hooks imports
 import useAlert from "../../Hooks/useAlert";
+import { UserContext } from "../../Hooks/permissionContext";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export default function SignIn() {
     email: null,
     password: null,
   };
-
+const { setAccessToken } = useContext(UserContext);
   const [formdata, setFormData] = useState(formObject);
   const { t } = useTranslation();
   const { setAlert } = useAlert();
@@ -46,6 +47,7 @@ export default function SignIn() {
           localStorage.setItem("logo_url", data.data.user.organization_logo_url);
           localStorage.setItem(ACCESS_TOKEN_KEY, data.data.access);
           localStorage.setItem(REFRESH_TOKEN_KEY, data.data.refresh);
+          setAccessToken(data.data.access)
           localStorage.setItem(USER_DETAILS, JSON.stringify(data.data?.user));
           const permissionsObjects = data.data?.user?.permissions.reduce((acc, permission) => {
             const variableName = `${permission.name.toLowerCase()}Permission`;

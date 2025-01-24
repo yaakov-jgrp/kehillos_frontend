@@ -1,5 +1,5 @@
 // React and React Router Imports imports
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 
 // UI Imports
@@ -37,6 +37,7 @@ import { toast } from "react-toastify";
 import { convertDataForShowingForms, formatDate } from "../utils/helpers";
 import ToggleSwitch from "../component/common/ToggleSwitch";
 import automationService from "../services/automation";
+import { UserContext } from "../Hooks/permissionContext";
 
 function Automation() {
   // states
@@ -49,15 +50,16 @@ function Automation() {
   const [searchParams, setSearchParams] = useState({});
   const [confirmationModal, setConfirmationModal] = useState(false);
   const dispatch = useDispatch();
+  const { userDetails, permissions } = useContext(UserContext);
   //   const allForms = useSelector((state) => state.allFormsState.allForms);
   const [allFormsLocalState, setAllFormsLocalState] = useState([]);
   const [activeFormId, setActiveFormId] = useState(null);
   const [status, setStatus] = useState(false);
   //   const [automationFormData, setAutomationFormData] = useState([]);
-  const permissionsObjects =
-    JSON.parse(localStorage.getItem("permissionsObjects")) || {};
-  const automationPermission = permissionsObjects?.automationPermission;
-  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  // const permissionsObjects =
+  //   JSON.parse(localStorage.getItem("permissionsObjects")) || {};
+  const automationPermission = permissions?.automationPermission;
+  // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
   const organizationAdmin = userDetails?.organization_admin;
   const writePermission = organizationAdmin
     ? false
@@ -74,6 +76,9 @@ function Automation() {
     : automationPermission
     ? !automationPermission?.is_delete
     : false;
+
+    console.log('automationPermission?.is_delete',automationPermission?.is_delete);
+    
 
   // handlers
   const handleChangePage = (event, newPage) => {

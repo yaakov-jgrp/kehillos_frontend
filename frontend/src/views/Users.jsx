@@ -1,5 +1,5 @@
 // React imports
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 // UI Imports
 import { TablePagination } from "@mui/material";
@@ -28,6 +28,7 @@ import PencilIcon from "../assets/images/pencil.svg";
 // Utils imports
 import { paginationRowOptions } from "../lib/FieldConstants";
 import { USER_DETAILS } from "../constants";
+import { UserContext } from "../Hooks/permissionContext";
 
 function Users() {
   const { t, i18n } = useTranslation();
@@ -52,10 +53,11 @@ function Users() {
   const [totalCount, setTotalCount] = useState(100);
   const [searchParams, setSearchParams] = useState({});
   const [confirmationModal, setConfirmationModal] = useState(false);
-  const permissionsObjects =
-    JSON.parse(localStorage.getItem("permissionsObjects")) || {};
-  const usersPermission = permissionsObjects?.usersPermission;
-  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const { userDetails, permissions } = useContext(UserContext);
+  // const permissionsObjects =
+  //   JSON.parse(localStorage.getItem("permissionsObjects")) || {};
+  const usersPermission = permissions?.usersPermission;
+  // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
   const organizationAdmin = userDetails?.organization_admin;
   const writePermission = organizationAdmin
     ? false

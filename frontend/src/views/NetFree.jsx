@@ -1,5 +1,5 @@
 // React imports
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 // UI Components Imports
 import Categories from "../component/Netfree/category/Index";
@@ -30,6 +30,7 @@ import { categoryFilters } from "../lib/FieldConstants";
 import { MenuItem, Select } from "@mui/material";
 import { deleteNetfreeStatus } from "../lib/CommonFunctions";
 import { USER_DETAILS } from "../constants";
+import { UserContext } from "../Hooks/permissionContext";
 
 const NetFree = () => {
   const [tab, setTab] = useState(0);
@@ -68,10 +69,11 @@ const NetFree = () => {
   const NetfreePageTabs = [t("netfree.categories"), t("netfree.websites")];
   const [currentProfileTab, setCurrentProfileTab] = useState(0);
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const permissionsObjects =
-    JSON.parse(localStorage.getItem("permissionsObjects")) || {};
-  const netfreePermission = permissionsObjects?.netfreePermission;
-  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const { userDetails, permissions } = useContext(UserContext);
+  // const permissionsObjects =
+  //   JSON.parse(localStorage.getItem("permissionsObjects")) || {};
+  const netfreePermission = permissions?.netfreePermission;
+  // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
   const organizationAdmin = userDetails?.organization_admin;
   const writePermission = organizationAdmin
     ? false

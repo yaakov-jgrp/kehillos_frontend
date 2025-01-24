@@ -1,5 +1,5 @@
 // React and React Router Imports imports
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 
 // UI Imports
@@ -35,6 +35,7 @@ import { setActiveForm } from "../redux/activeFormSlice";
 import { setAllFormsState } from "../redux/allFormsSlice";
 import { toast } from "react-toastify";
 import { convertDataForShowingForms, formatDate } from "../utils/helpers";
+import { UserContext } from "../Hooks/permissionContext";
 
 function Forms() {
   // states
@@ -50,10 +51,11 @@ function Forms() {
   const allForms = useSelector((state) => state.allFormsState.allForms);
   const [allFormsLocalState, setAllFormsLocalState] = useState([]);
   const [activeFormId, setActiveFormId] = useState(null);
-  const permissionsObjects =
-      JSON.parse(localStorage.getItem("permissionsObjects")) || {};
-    const formcreationPermission = permissionsObjects?.formcreationPermission;
-    const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const { userDetails, permissions } = useContext(UserContext);
+  // const permissionsObjects =
+  //     JSON.parse(localStorage.getItem("permissionsObjects")) || {};
+    const formcreationPermission = permissions?.formcreationPermission;
+    // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
     const organizationAdmin = userDetails?.organization_admin;
     const writePermission = organizationAdmin
       ? false

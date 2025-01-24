@@ -1,5 +1,5 @@
 // React imports
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 // UI Imports
 import { Box, CircularProgress, IconButton, MenuItem, Modal, Select, TablePagination, Tooltip, Typography } from "@mui/material";
@@ -28,6 +28,7 @@ import { GridDeleteIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import { USER_DETAILS } from "../constants";
 import { update } from "lodash";
+import { UserContext } from "../Hooks/permissionContext";
 
 const Request = () => {
   const { t } = useTranslation();
@@ -45,10 +46,11 @@ const Request = () => {
   const [imageSrc, setImageSrc] = useState('');
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
-  const permissionsObjects =
-      JSON.parse(localStorage.getItem("permissionsObjects")) || {};
-    const requestsPermission = permissionsObjects?.requestsPermission;
-    const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const { userDetails, permissions } = useContext(UserContext);
+  // const permissionsObjects =
+  //     JSON.parse(localStorage.getItem("permissionsObjects")) || {};
+    const requestsPermission = permissions?.requestsPermission;
+    // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
     const organizationAdmin = userDetails?.organization_admin;
     const writePermission = organizationAdmin
       ? false

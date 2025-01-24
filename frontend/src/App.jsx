@@ -52,6 +52,7 @@ import ClientFormsTable from "./views/ClientFormsTable";
 import Config from "./views/apiConfig";
 import Automation from "./views/Automation";
 import AutomationDetails from "./views/AutomationDetails";
+import UserProvider from "./Hooks/permissionContext";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -239,35 +240,37 @@ function App() {
   return (
     <Provider store={store}>
       <ThemeProvider theme={themeWithLocale}>
-        <Router>
-          <Routes>
-            <Route exact path="/signin" element={<SignIn />} />
-            <Route
-              element={
-                <RouteGuard token={ACCESS_TOKEN_KEY} routeRedirect="/signin" />
-              }
-            >
+        <UserProvider>
+          <Router>
+            <Routes>
+              <Route exact path="/signin" element={<SignIn />} />
               <Route
-                path="/*"
-                element={<Navigate to={routes[0].path} replace />}
-              />
-              {routes.map((prop, key) => {
-                return (
-                  <Route
-                    path={`/${prop.path}`}
-                    element={
-                      <DefaultLayout route={prop}>
-                        {prop.component}
-                      </DefaultLayout>
-                    }
-                    key={key}
-                  />
-                );
-              })}
-            </Route>
-          </Routes>
-        </Router>
-        <ToastContainer autoClose={2000} />
+                element={
+                  <RouteGuard token={ACCESS_TOKEN_KEY} routeRedirect="/signin" />
+                }
+              >
+                <Route
+                  path="/*"
+                  element={<Navigate to={routes[0].path} replace />}
+                />
+                {routes.map((prop, key) => {
+                  return (
+                    <Route
+                      path={`/${prop.path}`}
+                      element={
+                        <DefaultLayout route={prop}>
+                          {prop.component}
+                        </DefaultLayout>
+                      }
+                      key={key}
+                    />
+                  );
+                })}
+              </Route>
+            </Routes>
+          </Router>
+          <ToastContainer autoClose={2000} />
+        </UserProvider>
       </ThemeProvider>
     </Provider>
   );

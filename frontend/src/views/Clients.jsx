@@ -1,5 +1,5 @@
 // React imports
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useContext, useEffect, useRef, useState } from "react";
 
 // UI Imports
 import { TablePagination } from "@mui/material";
@@ -42,6 +42,7 @@ import {
   paginationRowOptions,
 } from "../lib/FieldConstants";
 import { USER_DETAILS } from "../constants";
+import { UserContext } from "../Hooks/permissionContext";
 
 const Clients = () => {
   const { t } = useTranslation();
@@ -49,9 +50,10 @@ const Clients = () => {
   dayjs.extend(utc);
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const tableRef = useRef(null);
-  const permissionsObjects = JSON.parse(localStorage.getItem('permissionsObjects')) || {};
-  const clientsPermission = permissionsObjects?.clientsPermission;
-  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const { userDetails, permissions } = useContext(UserContext);
+  // const permissionsObjects = JSON.parse(localStorage.getItem('permissionsObjects')) || {};
+  const clientsPermission = permissions?.clientsPermission;
+  // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
   const organizationAdmin = userDetails?.organization_admin;
   const [isLoading, setIsLoading] = useState(true);
   const [allClients, setAllClients] = useState([]);
