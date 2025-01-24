@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 // React imports
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 // Third part Imports
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 // Icon imports
 import DashIcon from "../icons/DashIcon";
+import { UserContext } from "../../Hooks/permissionContext";
 
 export function SidebarLinks(props) {
   const { i18n } = useTranslation();
@@ -16,6 +17,7 @@ export function SidebarLinks(props) {
 
   const { routes } = props;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { setAccessToken } = useContext(UserContext);
 
   // verifies if routeName is the one active (in browser input)
   const activeRoute = (route) => {
@@ -119,6 +121,7 @@ export function SidebarLinks(props) {
     const navigate = useNavigate();
     const logout = () => {
       clearLocalStorage();
+      setAccessToken(null)
       navigate("/signin");
     };
     return routes.map((route, index) => {
