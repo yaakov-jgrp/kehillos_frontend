@@ -1,5 +1,5 @@
 // React imports
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 // UI Imports
 import { Accordion } from "@chakra-ui/react";
@@ -31,6 +31,8 @@ import { PiDotsSixVerticalBold } from "react-icons/pi";
 import { checkBoxConstants } from "../lib/FieldConstants";
 import { fetchFullformDataHandler } from "../lib/CommonFunctions";
 import CustomDraggable from "../component/client/CustomDraggble";
+import { USER_DETAILS } from "../constants";
+import { UserContext } from "../Hooks/permissionContext";
 
 const ClientsForm = () => {
   const { t } = useTranslation();
@@ -47,6 +49,30 @@ const ClientsForm = () => {
     type: "",
     value: "",
   });
+  const { userDetails, permissions } = useContext(UserContext);
+  // const permissionsObjects = permissions;
+  // const clientfieldsPermission = permissions?.clientfieldsPermission;
+  // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  console.log('permissions?.clientfieldsPermission',permissions?.clientfieldsPermission);
+  console.log('userDetails?.organization_admin',userDetails?.organization_admin);
+  
+  const organizationAdmin = userDetails?.organization_admin;
+  
+  const writePermission = organizationAdmin
+    ? false
+    : permissions?.clientfieldsPermission
+    ? !permissions?.clientfieldsPermission?.is_write
+    : false;
+  const updatePermission = organizationAdmin
+    ? false
+    : permissions?.clientfieldsPermission
+    ? !permissions?.clientfieldsPermission?.is_update
+    : false;
+  const deletePermission = organizationAdmin
+    ? false
+    : permissions?.clientfieldsPermission
+    ? !permissions?.clientfieldsPermission?.is_delete
+    : false;
 
   const showModalHandler = () => {
     setShowModal(true);
@@ -177,8 +203,8 @@ const ClientsForm = () => {
       <div className="flex items-center">
         {field?.is_editable && (
           <EditButtonIcon
-            extra="mr-2"
-            onClick={() => editBlockFieldModalHandler(field, false)}
+            extra={`mr-2 ${updatePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}`}
+            onClick={updatePermission ? ()=>{} : () => editBlockFieldModalHandler(field, false)}
           />
         )}
         {field?.is_delete && (
@@ -219,11 +245,13 @@ const ClientsForm = () => {
         <div className="flex-[0.3]">
           <h5 className="text-start text-[12px] py-2 md:text-[20px] font-medium text-gray-11 w-[100%] flex items-center justify-between border-b border-[#F2F2F2] mb-4">
             {t("clients.blocks")}
-            <AddButtonIcon onClick={() => addBlockFieldModalHandler(true)} />
+            <AddButtonIcon disabled={writePermission} onClick={() => addBlockFieldModalHandler(true)} />
           </h5>
           {fullFormData && !isLoading && fullFormData.length > 0 ? (
             <div className="border border-[#F2F2F2] rounded-lg p-1">
-              <Draggable
+              <CustomDraggable
+                mainClass={'w-full'}
+                updatePermission={updatePermission}
                 onPosChange={(currentPos, newPos) =>
                   getChangedFieldsPos(currentPos, newPos, true)
                 }
@@ -241,8 +269,8 @@ const ClientsForm = () => {
                     <div className="flex items-center">
                       {blockData?.is_editable && (
                         <EditButtonIcon
-                          extra="mr-2"
-                          onClick={() =>
+                          extra={`mr-2 ${updatePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}`}
+                          onClick={updatePermission ? ()=>{} : () =>
                             editBlockFieldModalHandler(blockData, true)
                           }
                         />
@@ -251,8 +279,8 @@ const ClientsForm = () => {
                         <img
                           src={BinIcon}
                           alt="BinIcon"
-                          className="mr-2 hover:cursor-pointer"
-                          onClick={() => {
+                          className={`mr-2 ${deletePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}`}
+                          onClick={deletePermission ? ()=>{} : () => {
                             setDeleteMethod((prev) => ({
                               type: blockData.block_id,
                               value: true,
@@ -261,11 +289,11 @@ const ClientsForm = () => {
                           }}
                         />
                       )}
-                      <PiDotsSixVerticalBold className="cursor-grab z-20" />
+                      <PiDotsSixVerticalBold className={`${updatePermission ? 'cursor-not-allowed' : 'cursor-grab'} z-20`} />
                     </div>
                   </BlockButton>
                 ))}
-              </Draggable>
+              </CustomDraggable>
             </div>
           ) : (
             <p>{t("clients.noSections")}</p>
@@ -288,6 +316,7 @@ const ClientsForm = () => {
                 fullFormData.map((blockData, index) => (
                   <CustomAccordion
                     key={index}
+                    writePermission={writePermission}
                     showAddButton={true}
                     title={
                       lang === "he"
@@ -301,6 +330,7 @@ const ClientsForm = () => {
                     {blockData.field.length > 0 ? (
                       <div className="flex flex-col gap-4">
                         <CustomDraggable
+                          updatePermission={updatePermission}
                           style={{ width: customDragWidth }}
                           onPositionChange={(currentPos, newPos) =>
                             getChangedFieldsPos(
@@ -348,8 +378,8 @@ const ClientsForm = () => {
                                   <div className="flex items-center">
                                     {field?.is_editable && (
                                       <EditButtonIcon
-                                        extra="mr-2"
-                                        onClick={() =>
+                                      extra={`mr-2 ${updatePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}`}
+                                        onClick={updatePermission ? ()=>{} : () =>
                                           editBlockFieldModalHandler(
                                             field,
                                             false
@@ -361,8 +391,8 @@ const ClientsForm = () => {
                                       <img
                                         src={BinIcon}
                                         alt="BinIcon"
-                                        className="mr-2 hover:cursor-pointer"
-                                        onClick={() => {
+                                        className={`mr-2 ${deletePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}`}
+                                        onClick={deletePermission ? ()=>{} : () => {
                                           setDeleteMethod((prev) => ({
                                             type: field?.id,
                                             value: false,
@@ -371,7 +401,7 @@ const ClientsForm = () => {
                                         }}
                                       />
                                     )}
-                                    <PiDotsSixVerticalBold className="cursor-grab z-20" />
+                                    <PiDotsSixVerticalBold className={`${updatePermission ? 'cursor-not-allowed' : 'cursor-grab'} z-20`} />
                                   </div>
                                 </div>
                                 <div>

@@ -36,6 +36,8 @@ const ClientModal = ({
   onClick,
   netfreeProfiles,
   fullFormData,
+  clientsPermission,
+  organizationAdmin
 }) => {
   const { t } = useTranslation();
   dayjs.extend(utc);
@@ -607,7 +609,7 @@ const ClientModal = ({
                       {t("netfree.close")}
                     </button>
                     <button
-                      disabled={isLoading}
+                      disabled={organizationAdmin ? false : !clientsPermission?.is_write || isLoading }
                       className="text-white disabled:cursor-not-allowed disabled:bg-brand-700 disabled:opacity-2 text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                       type="submit"
                     >

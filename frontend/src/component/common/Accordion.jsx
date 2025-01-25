@@ -13,7 +13,7 @@ import {
 // UI Components Imports
 import AddButtonIcon from "./AddButton";
 
-function CustomAccordion({ title, children, onClick, showAddButton }) {
+function CustomAccordion({ title, children, onClick, showAddButton, writePermission }) {
   return (
     <AccordionItem className="p-2 mb-4 rounded-lg bg-[#ffffff] border border-[#E3E5E6]">
       {({ isExpanded }) => (
@@ -29,7 +29,7 @@ function CustomAccordion({ title, children, onClick, showAddButton }) {
                 {title}
               </p>
               {isExpanded && showAddButton && (
-                <AddButtonIcon extra={""} onClick={onClick} />
+                <AddButtonIcon disabled={writePermission} extra={""} onClick={onClick} />
               )}
             </Box>
             <AccordionIcon fontSize="1.5rem" />

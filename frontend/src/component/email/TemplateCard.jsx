@@ -15,7 +15,7 @@ import EditButtonIcon from "../common/EditButton";
 import { useTranslation } from "react-i18next";
 import { DEFAULT_LANGUAGE } from "../../constants";
 
-function TemplateCard({ duplicateTemplate, onEdit, deleteTemplate, template }) {
+function TemplateCard({ duplicateTemplate, onEdit, deleteTemplate, template, writePermission, updatePermission, deletePermission }) {
   const [deleteModal, setDeleteModal] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t } = useTranslation();
@@ -53,33 +53,33 @@ function TemplateCard({ duplicateTemplate, onEdit, deleteTemplate, template }) {
             } top-14 md:top-16 flex flex-col gap-3 shadow-md rounded-lg p-2`}
           >
             <div
-              className="flex items-center gap-2 cursor-pointer"
-              onClick={() => onEdit(template.id)}
+              className={`flex items-center gap-2 ${updatePermission ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              onClick={updatePermission ? ()=>{} : () => onEdit(template.id)}
             >
-              <EditButtonIcon />
+              <EditButtonIcon extra={updatePermission ? 'cursor-not-allowed' : 'cursor-pointer'}/>
               <p className="text-md">{t("emails.edit")}</p>
             </div>
 
             <div
-              className="flex items-center gap-2 cursor-pointer"
-              onClick={() => duplicateTemplate(template.id)}
+              className={`flex items-center gap-2 ${writePermission ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              onClick={writePermission ? ()=>{} : () => duplicateTemplate(template.id)}
             >
               <img
                 src={CopyIcon}
                 alt="CopyIcon"
-                className="w-5 hover:cursor-pointer"
+                className={`w-5 ${writePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}`}
               />
               <p className="text-md">{t("emails.duplicate")}</p>
             </div>
 
             <div
-              className="flex items-center gap-2 cursor-pointer"
-              onClick={() => setDeleteModal(true)}
+              className={`flex items-center gap-2 ${deletePermission ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              onClick={deletePermission ? ()=>{} : () => setDeleteModal(true)}
             >
               <img
                 src={BinIcon}
                 alt="BinIcon"
-                className="hover:cursor-pointer"
+                className={deletePermission ? "hover:cursor-not-alloed" : "hover:cursor-pointer"}
               />
               <p className="text-md">{t("emails.delete")}</p>
             </div>

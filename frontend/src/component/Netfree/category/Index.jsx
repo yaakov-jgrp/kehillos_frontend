@@ -52,6 +52,7 @@ const Categories = ({
   setCurrentSearchTerm,
   currentActionSearchTerm,
   setCurrentActionSearchTerm,
+  writePermission
 }) => {
   const { t, i18n } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -546,8 +547,10 @@ const Categories = ({
                       )}
                       {
                         <AddButtonIcon
-                          extra={""}
-                          onClick={() => {
+                          extra={writePermission
+                            ? "hover:cursor-not-allowed"
+                            : "hover:cursor-pointer"}
+                          onClick={writePermission ? ()=>{} : () => {
                             setTrafficAction(false);
                             enableActionUpdate(el);
                             setIsDefaultActionSelectOpen(false);

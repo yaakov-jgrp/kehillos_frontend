@@ -16,7 +16,7 @@ import emailEditorHe from "../../locales/emailEditorHe.json";
 // Custom hooks imports
 import useAlert from "../../Hooks/useAlert";
 
-const NewTemplate = ({ editableTemplateId, onSave }) => {
+const NewTemplate = ({ editableTemplateId, onSave, writePermission, updatePermission, deletePermission }) => {
   const formObject = {
     name: "",
     to: "$admin_email",
@@ -233,7 +233,7 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
   const fetchFormDataTags = async () => {
     setloadingTags(true);
     try {
-      const res = await clientsService.getFullformData(
+      const res = await clientsService.getFullformEmailPageData(
         "&field_email_template=true"
       );
       setMergeTagsData(res.data.result);
@@ -345,7 +345,8 @@ const NewTemplate = ({ editableTemplateId, onSave }) => {
 
               <div className="flex justify-center">
                 <button
-                  className={`w-[150px] h-[40px] linear rounded-lg text-base font-medium transition duration-200 !z-[10] ${
+                  disabled={writePermission}
+                  className={`disabled:cursor-not-allowed w-[150px] h-[40px] linear rounded-lg text-base font-medium transition duration-200 !z-[10] ${
                     formValidate()
                       ? "bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white"
                       : "bg-gray-300"

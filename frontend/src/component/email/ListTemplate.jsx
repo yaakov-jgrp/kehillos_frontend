@@ -34,7 +34,7 @@ const smtpFormObject = {
   imap_port: 993
 };
 
-const ListTemplate = ({ newTemplate, onEdit }) => {
+const ListTemplate = ({ newTemplate, onEdit, writePermission, updatePermission, deletePermission }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -263,8 +263,8 @@ const ListTemplate = ({ newTemplate, onEdit }) => {
                 
                 <button
                   type="submit"
-                  disabled={!smtpFormValidate()}
-                  className={`text-sm linear rounded-lg p-2 font-medium transition duration-200 ${
+                  disabled={!smtpFormValidate() || writePermission}
+                  className={`disabled:cursor-not-allowed text-sm linear rounded-lg p-2 font-medium transition duration-200 ${
                     smtpFormValidate()
                       ? "bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white"
                       : "bg-gray-300"
@@ -323,7 +323,8 @@ const ListTemplate = ({ newTemplate, onEdit }) => {
               />
             )}
             <button
-              className={`mt-5 w-[180px] h-[40px] rounded-lg text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-1`}
+            disabled={writePermission}
+              className={`disabled:cursor-not-allowed mt-5 w-[180px] h-[40px] rounded-lg text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-1`}
               onClick={
                 currentTab === 0
                   ? newTemplate
@@ -352,6 +353,9 @@ const ListTemplate = ({ newTemplate, onEdit }) => {
                 {filterdTemplateList.map((template) => {
                   return (
                     <TemplateCard
+                      writePermission={writePermission}
+                      updatePermission={updatePermission}
+                      deletePermission={deletePermission}
                       key={template.id}
                       template={template}
                       onEdit={onEdit}
@@ -367,6 +371,9 @@ const ListTemplate = ({ newTemplate, onEdit }) => {
 
         {currentTab === 1 && (
           <EmailTemplating
+            writePermission={writePermission}
+            updatePermission={updatePermission}
+            deletePermission={deletePermission}
             templatingModal={templatingModal}
             newText={newText}
             editText={editText}

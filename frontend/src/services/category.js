@@ -125,6 +125,11 @@ const getProfilesList = (params = "") => {
   return api.get(`/api/crm/netfree-categories-profile/?lang=${lang}&${params}`);
 };
 
+const getProfilesListClientsPages = (params = "") => {
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  return api.get(`/api/client/netfree-categories-profile/?lang=${lang}&${params}`);
+};
+
 const createFilterProfile = (data) => {
   return api.post(`/api/crm/netfree-categories-profile/`, data);
 };
@@ -153,6 +158,7 @@ const categoryService = {
   getDefaultTraffic,
   updateCategories,
   updateNetfreeTraffic,
+  getProfilesListClientsPages,
   updateActionInCategory,
   searchSiteSetting,
   getProfilesList,

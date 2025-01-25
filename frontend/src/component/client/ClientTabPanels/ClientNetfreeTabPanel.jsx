@@ -30,6 +30,7 @@ function ClientNetfreeTabPanel(props) {
     isLoading,
     setClientData,
     clientData,
+    disabled,
     ...other
   } = props;
   const { t } = useTranslation();
@@ -165,7 +166,7 @@ function ClientNetfreeTabPanel(props) {
                           </p>
                         )}
                       </div>
-                      <EditButtonIcon onClick={editHandler} />
+                      <EditButtonIcon extra={disabled ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'} onClick={disabled ? ()=>{} : editHandler} />
                     </>
                   )}
                 </div>
