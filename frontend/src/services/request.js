@@ -11,6 +11,9 @@ const fetchRequestScreenshot = (data) => {
 const getRequestStatuses = (params) => {
   return api.get(`/api/crm/requests-status/${params}`);
 };
+const getRequestStatusesNetfree = (params) => {
+  return api.get(`/api/crm/netfree-requests-status/${params}`);
+};
 
 const updateRequestStatus = (data) => {
   return api.put(`/api/crm/requests/`, data);
@@ -35,6 +38,7 @@ const deleteCategoryStatus = (id) => {
 const requestService = {
   getRequests,
   getRequestStatuses,
+  getRequestStatusesNetfree,
   updateRequestStatus,
   createRequestStatus,
   fetchRequestScreenshot,

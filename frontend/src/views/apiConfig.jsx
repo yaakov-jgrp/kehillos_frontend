@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { USER_DETAILS } from '../constants';
 
 const Config = () => {
   const [triggerFields, setTriggerFields] = useState([]);
@@ -12,6 +13,16 @@ const Config = () => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 5000); // Hide notification after 5 seconds
   };
+  const permissionsObjects =
+    JSON.parse(localStorage.getItem("permissionsObjects")) || {};
+  const fieldconfigurationPermission = permissionsObjects?.fieldconfigurationPermission;
+  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const organizationAdmin = userDetails?.organization_admin;
+  const updatePermission = organizationAdmin
+      ? false
+      : fieldconfigurationPermission
+      ? !fieldconfigurationPermission?.is_update
+      : false;
 
   const updateData = async () => {
     try {
@@ -138,8 +149,9 @@ const Config = () => {
       />
       
       <button 
+        disabled={updatePermission}
         onClick={updateData}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        className="w-full bg-blue-600 disabled:cursor-not-allowed hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
       >
         Update API Configuration
       </button>

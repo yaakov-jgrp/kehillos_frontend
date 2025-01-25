@@ -11,7 +11,7 @@ const EditButtonIcon = (props) => {
     <img
       src={PencilIcon}
       alt="PencilIcon"
-      className={`${extra} w-4 h-4 hover:cursor-pointer`}
+      className={`w-4 h-4 ${extra}`}
       onClick={props.onClick}
     />
   );

@@ -26,7 +26,7 @@ import { MdDelete } from "react-icons/md";
 import CrossIcon from "../../assets/images/cross.svg";
 import BinIcon from "../../assets/images/bin.svg";
 
-function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
+function RequestStatusModal({ updatePermission, deletePermission, writePermission, requestStatuses, fetchRequestStatuses }) {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [showForm, setShowForm] = useState(false);
@@ -151,7 +151,9 @@ function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
           <div className="flex items-start justify-between px-2 p-1 shadow-md rounded-t ">
             <h3 className="text-md font-medium">{t("requests.status")}</h3>
             <AddButtonIcon
-              onClick={() => {
+             disabled={writePermission}
+             extra={`${writePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}`}
+              onClick={writePermission ? ()=>{} : () => {
                 showFormHandler(null);
                 setValue("name", "");
               }}
@@ -194,8 +196,8 @@ function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
                     >
                       <div className="flex items-center p-2">
                         <EditButtonIcon
-                          extra="mx-1 h-[18px] w-[18px]"
-                          onClick={() => {
+                          extra={`mx-1 h-[18px] w-[18px] ${updatePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}`}
+                          onClick={updatePermission ? ()=>{} : () => {
                             showFormHandler(status);
                             setValue("name", status.label);
                           }}
@@ -203,8 +205,8 @@ function RequestStatusModal({ requestStatuses, fetchRequestStatuses }) {
                         <img
                           src={BinIcon}
                           alt="BinIcon"
-                          className="mx-1 hover:cursor-pointer"
-                          onClick={() => deleteStatusHandler(status.value)}
+                          className={`mx-1 ${deletePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'} `}
+                          onClick={deletePermission ? ()=>{} : () => deleteStatusHandler(status.value)}
                         />
                       </div>
                     </Popover>

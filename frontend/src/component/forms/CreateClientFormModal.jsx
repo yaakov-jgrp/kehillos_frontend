@@ -36,6 +36,7 @@ export default function CreateClientFormModal({
   setShowModal,
   setShowSuccessModal,
   clientId,
+  formCb
 }) {
   const { t } = useTranslation();
 
@@ -64,7 +65,7 @@ export default function CreateClientFormModal({
       const params = `?page=${
         page + 1
       }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
-      const allFormsPayload = await formsService.getAllForms(params);
+      const allFormsPayload = await formsService.getAllFormsPage(params);
       if (
         allFormsPayload?.data?.results &&
         allFormsPayload.data.results.length > 0
@@ -84,7 +85,7 @@ export default function CreateClientFormModal({
   const fetchClientsData = async () => {
     const params = `?page=${1}&lang=${"en"}&page_size=${50}`;
     // ::REAL DATA::
-    const clientsData = await clientsService.getClients(params);
+    const clientsData = await clientsService.getClientsFormsDetailPage(params);
 
     // ::MOCKED DATA::
     // const clientsData = CLIENTS;
@@ -188,6 +189,7 @@ export default function CreateClientFormModal({
       );
       setShowSuccessModal(true);
       setShowModal(false);
+      if(formCb){formCb()}
     } catch (error) {
       toast.error(JSON.stringify(error));
       console.log(error);
