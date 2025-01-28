@@ -451,7 +451,7 @@ const Request = () => {
                             >
                               <span>
                               <IconButton
-                                onClick={() => window.location.href = `/client/${el.customer_id}`}
+                                onClick={() => window.location.href = `/clients/${el.customer_id}`}
                                 className="ml-2"
                               >
                                 <FaInfo size={15} />

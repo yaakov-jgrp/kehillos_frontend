@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import CrossIcon from "../../assets/images/cross.svg";
 import AddCircleIcon from "../../assets/images/add_circle.svg";
 import { useTranslation } from "react-i18next";
-import { MenuItem, Select } from "@mui/material";
+import { MenuItem, Select, Stack, TextField } from "@mui/material";
+import Autocomplete from '@mui/material/Autocomplete';
 import { Accordion } from "@chakra-ui/react";
 import CustomAccordion from "../common/Accordion";
 import PhoneInput from "react-phone-number-input";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import FilterIcon from "../../assets/images/filter_alt.svg";
+
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { handleNumberkeyPress } from "../../lib/CommonFunctions";
 import {
@@ -31,6 +34,7 @@ import { CLIENTS } from "../../constants";
 import { toast } from "react-toastify";
 import formService from "../../services/forms";
 import clientsService from "../../services/clients";
+import SearchFilterModal from "./SearchFilterModal";
 
 export default function CreateClientFormModal({
   setShowModal,
@@ -50,22 +54,21 @@ export default function CreateClientFormModal({
   const [formId, setFormId] = useState("");
   const [allClients, setAllClients] = useState([]);
   const [allForms, setAllForms] = useState([]);
-
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [activeSwitch, setActiveSwitch] = useState("id");
   const fetchFormsData = async () => {
     try {
       let payload = [];
       let searchValues = "";
       for (const searchfield in searchParams) {
         if (searchParams[searchfield] !== "") {
-          searchValues += `&search_${[searchfield]}=${
-            searchParams[searchfield]
-          }`;
+          searchValues += `&search_${[searchfield]}=${searchParams[searchfield]
+            }`;
         }
       }
-      const params = `?page=${
-        page + 1
-      }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
-      const allFormsPayload = await formsService.getAllFormsPage(params);
+      const params = `?page=${page + 1
+        }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
+      const allFormsPayload = await formsService.getAllForms(params);
       if (
         allFormsPayload?.data?.results &&
         allFormsPayload.data.results.length > 0
@@ -76,14 +79,14 @@ export default function CreateClientFormModal({
       }
       console.log(payload);
       setAllForms(payload);
-      setTimeout(() => {}, 500);
+      setTimeout(() => { }, 500);
     } catch (error) {
       console.log(error);
     }
   };
 
   const fetchClientsData = async () => {
-    const params = `?page=${1}&lang=${"en"}&page_size=${50}`;
+    const params = `?page=${1}&lang=${"en"}&page_size=${500}`;
     // ::REAL DATA::
     const clientsData = await clientsService.getClientsFormsDetailPage(params);
 
@@ -266,9 +269,8 @@ export default function CreateClientFormModal({
             key={index}
           >
             <div
-              className={`flex items-center justify-between ${
-                isCheckBox ? "ml-2 w-full" : "mb-1"
-              }`}
+              className={`flex items-center justify-between ${isCheckBox ? "ml-2 w-full" : "mb-1"
+                }`}
             >
               <div className="flex items-center">
                 <label className="block text-gray-700 text-md font-normal">
@@ -405,7 +407,7 @@ export default function CreateClientFormModal({
     console.log(allForms.filter((form) => form.id === formId)[0]);
     setActiveFormState(allForms.filter((form) => form.id === formId)[0]);
   }, [formId, allForms]);
-
+  console.log(clientValue, "selected client 1");
   return (
     <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
       <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
@@ -413,20 +415,32 @@ export default function CreateClientFormModal({
           <div className="scrollbar-hide w-[60vw] h-[35rem] overflow-y-auto border-0 rounded-xl shadow-lg relative flex flex-col bg-white outline-none focus:outline-none">
             <div className="flex items-center justify-between border-b border-b-[#E3E5E6] rounded-t px-4 py-2">
               <h3 className="text-lg font-medium">{t("forms.addNewForm")}</h3>
-              <button
-                className=""
-                onClick={() => setShowModal(false)}
-                type="button"
-              >
-                <img src={CrossIcon} alt="cross-icon" />
-              </button>
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <button
+                  className={`w-[90px] rounded-lg py-1 text-[14px] font-medium dark:bg-brand-400 text-[#0B99FF] dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-1 justify-center items-center border border-[#0B99FF]`}
+                  onClick={() => setShowFilterModal(true)}
+                >
+                  <img src={FilterIcon} alt="visibility_icon" />
+                  {t("clients.filters")}
+                </button>
+                <button
+                  className=""
+                  onClick={() => setShowModal(false)}
+                  type="button"
+                >
+                  <img src={CrossIcon} alt="cross-icon" />
+                </button>
+              </div>
+
             </div>
 
             <div className="bg-[#F9FBFC] rounded-lg m-4 px-4 pt-4">
               <div className="flex items-center gap-2 w-full border-b border-b-[#E3E5E6] pb-4">
                 <div className="w-full">
                   <p>{t("forms.client")}</p>
-                  <Select
+
+                  {/*  PREVIOUS SELECT DONOT REMOVE */}
+                  {/* <Select
                     labelId="client-select-label"
                     id="client-select"
                     className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
@@ -449,10 +463,116 @@ export default function CreateClientFormModal({
                     </MenuItem>
                     {allClients.map((client) => (
                       <MenuItem key={client.id} value={client.id}>
-                        #{client.id} {client.full_name}
+                        #{client.id} {client.first_name} {client.last_name}
                       </MenuItem>
                     ))}
-                  </Select>
+                  </Select> */}
+                  {/* <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    placeholder={`Search by ${activeSwitch}`}
+
+                    className="[&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-md outline-none w-full  text-gray-11 bg-white"
+                    sx={{
+                      height: "45px"
+                    }}
+                    size="small"
+                    options={allClients}
+                    getOptionLabel={(client) => {
+                      switch (activeSwitch) {
+                        case "name":
+                          return `${client.first_name || ""} ${client.last_name || ""}`.trim();
+                        case "email":
+                          return client.email != "" ? client.email : `${client.first_name} ${client.last_name}`;
+                        case "id":
+                        default:
+                          return `#${client.id}` || "";
+                      }
+                    }}
+                    // sx={{ width: 300 }}
+                    value={clientValue}
+                    onChange={(e) => {
+                      const selectedClient = allClients.find(client => {
+                        switch (activeSwitch) {
+                          case "name":
+                            return `${client.first_name} ${client.last_name}`.trim() === e.target.value;
+                          case "email":
+                            return client.email === e.target.value;
+                          case "id":
+                          default:
+                            return `#${client.id}` === e.target.value;
+                        }
+                      });
+                      return setClientValue(selectedClient ? selectedClient.id : null);
+                      // console.log(selectedClient, "selected");
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        placeholder={`Search by ${activeSwitch}`}
+
+                        // onChange={(e) => {
+                        //   const selectedClient = allClients.find(client => {
+                        //     switch (activeSwitch) {
+                        //       case "name":
+                        //         return `${client.first_name} ${client.last_name}`.trim() === e.target.value;
+                        //       case "email":
+                        //         return client.email === e.target.value;
+                        //       case "id":
+                        //       default:
+                        //         return `#${client.id}` === e.target.value;
+                        //     }
+                        //   });
+                        //   // console.log(selectedClient, "selected");
+                        // }}
+                        {...params}
+                      //label={`Search by ${activeSwitch}`}
+                      />
+                    )}
+                  /> */}
+                  {/*  PREVIOUS SELECT DONOT REMOVE */}
+
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    placeholder={`Search by ${activeSwitch}`}
+                    className="[&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-md outline-none w-full text-gray-11 bg-white"
+                    sx={{
+                      height: "45px"
+                    }}
+                    size="small"
+                    options={allClients}
+                    getOptionLabel={(client) => {
+                      switch (activeSwitch) {
+                        case "name":
+                          return `${client.first_name || ""} ${client.last_name || ""}`.trim();
+                        case "email":
+                          return client.email !== "" ? client.email : `${client.first_name} ${client.last_name}`;
+                        case "id":
+                        default:
+                          return `#${client.id}` || "";
+                      }
+                    }}
+                    value={allClients.find(client => client.id === clientValue) || null}
+                    onChange={(event, newValue) => {
+                      setClientValue(newValue ? newValue.id : null);
+                      console.log(newValue, "selected");
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        placeholder={`Search by ${activeSwitch}`}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {/* {loading ? <CircularProgress color="inherit" size={20} /> : null} */}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
                 </div>
                 <div className="w-full">
                   <p>{t("forms.form")}</p>
@@ -548,9 +668,8 @@ export default function CreateClientFormModal({
                 <div className="mt-4 p-2 flex justify-center items-center">
                   <button
                     disabled={!clientValue || !activeFormState}
-                    className={`${
-                      lang === "he" ? "w-[150px]" : "w-[170px]"
-                    } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+                    className={`${lang === "he" ? "w-[150px]" : "w-[170px]"
+                      } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
                     onClick={() => {
                       submitFormHandler();
                     }}
@@ -562,6 +681,7 @@ export default function CreateClientFormModal({
           </div>
         </div>
       </div>
+      {showFilterModal && <SearchFilterModal setShowFilterModal={setShowFilterModal} activeSwitch={activeSwitch} setActiveSwitch={setActiveSwitch} />}
     </div>
   );
 }
