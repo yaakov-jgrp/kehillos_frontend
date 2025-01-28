@@ -367,7 +367,22 @@
     "Equals": "Equals",
     "deleteUser": "Delete User",
     "addProfile": "Add Profile",
-    "searchUrl": "Search URL"
+    "searchUrl": "Search URL",
+    "clients": "Clients",
+    "forms": "Forms",
+    "requests": "Requests",
+    "fieldConfiguration": "FieldConfiguration",
+    "automation": "Automation",
+    "formCreation": "FormCreation",
+    "clientFields": "ClientFields",
+    "users": "Users",
+    "netFree": "NetFree",
+    "emails": "Emails",
+    "logsHistory": "LogsHistory",
+    "read": "Read",
+    "write": "Write",
+    "update": "Update",
+    "delete": "Delete"
   },
   "searchbox": {
     "placeHolder": "Search",

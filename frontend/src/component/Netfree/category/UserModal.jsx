@@ -28,8 +28,6 @@ function UserModal({
 }) {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-  console.log('user',user);
-  
 
   const permissionObj = [
     {
@@ -88,7 +86,7 @@ function UserModal({
       permissionType: ["Read", "Write", "Update", 'Delete'],
     },
   ];
-
+  
   const [defaultValues, setDefaultValues] = useState({
     name: "",
     email: "",
@@ -105,9 +103,6 @@ function UserModal({
       delete: false,
     }))
   );
-
-  console.log('permissions>>>>',permissions);
-  
 
   const schema = yup.object().shape({
     name: yup
@@ -199,14 +194,33 @@ function UserModal({
     }
   }, []);
 
+  const hebrewPermission = {
+    "Clients": "לקוחות",
+    "Forms": "טפסים",
+    "Requests": "בקשות",
+    "FieldConfiguration": "תצורת שדה",
+    "Automation": "אוטומציה",
+    "FormCreation": "יצירת טופס",
+    "ClientFields": "שדות לקוח",
+    "Users": "משתמשים",
+    "NetFree": "נטפרי",
+    "Emails": "אימיילים",
+    "LogsHistory": "היסטוריית לוגים",
+    "Read": "קריאה",
+    "Write": "כתיבה",
+    "Update": "עדכון",
+    "Delete": "מחיקה"
+}
+
   useEffect(() => {
     if (user?.permissions) {
       const updatedPermissions = permissionObj.map((permission) => {
         const userPermission = user.permissions.find(
           (p) => p.name === permission.title
         );
+        
         return {
-          name: permission.title,
+          name: lang === 'he' ? hebrewPermission[userPermission?.title] : userPermission?.title,
           read: userPermission?.is_read || false,
           write: userPermission?.is_write || false,
           update: userPermission?.is_update || false,
@@ -361,13 +375,13 @@ function UserModal({
                       </div>
                     </div>
                     {selectedUserType === 'normal_user' ? <div className="mb-6 flex flex-col gap-1 w-full">
-                      <FieldLabel>{t("permissions")}</FieldLabel>
+                      <FieldLabel>{t("users.permissions")}</FieldLabel>
                       {permissionObj?.map((permission) => (
                         <div
-                          key={permission.id}
+                          key={permission?.id}
                           className="mb-4 flex items-center gap-4 justify-between"
                         >
-                          <h4 className="font-semibold">{permission.title}</h4>
+                          <h4 className="font-semibold">{lang === 'he' ? hebrewPermission[permission?.title] : permission?.title}</h4>
                           <div className="flex gap-4">
                             {permission?.permissionType?.map((type) => (
                               <FormControlLabel
@@ -375,20 +389,20 @@ function UserModal({
                                 control={
                                   <Checkbox
                                     checked={
-                                      permissions.find((p) => p.name === permission.title)[
+                                      permissions.find((p) => p?.name === lang === 'he' ? hebrewPermission[permission?.title] : permission?.title)[
                                         type.toLowerCase()
                                       ]
                                     }
                                     onChange={(e) =>
                                       handleCheckboxChange(
-                                        permission.title,
+                                        permission?.title,
                                         type,
                                         e.target.checked
                                       )
                                     }
                                   />
                                 }
-                                label={type}
+                                label={lang === 'he' ? hebrewPermission[type] : type}
                               />
                             ))}
                           </div>

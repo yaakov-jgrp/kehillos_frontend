@@ -138,7 +138,8 @@
   "users": {
     "admin": "מנהל מערכת",
     "normal": "רגיל",
-    "userType": "סוג משתמש"
+    "userType": "סוג משתמש",
+    "permissions": "הרשאות"
   },
   "clients": {
     "title": "לקוחות",
@@ -334,7 +335,8 @@
     "Equals": "שווים",
     "deleteUser": "מחק משתמש",
     "addProfile": "הוסף פרופיל",
-    "searchUrl": "חפש קטגוריה של אתר"
+    "searchUrl": "חפש קטגוריה של אתר",
+    "permissions": "הרשאות"
   },
   "searchbox": {
     "placeHolder": "חיפוש",
