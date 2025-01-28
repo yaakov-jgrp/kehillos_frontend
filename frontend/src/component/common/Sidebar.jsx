@@ -31,7 +31,6 @@ const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
   const permissionsObjects = JSON.parse(localStorage.getItem('permissionsObjects')) || {};
   const { userDetails, permissions } = useContext(UserContext);
-  console.log('permissions >>>',permissions);
 
   const routes = [
     permissions?.clientsPermission?.is_read || userDetails?.organization_admin

@@ -8,10 +8,7 @@ const UserProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
   const [permissions, setPermissions] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  console.log('accessToken>>>',accessToken);
-  
+  const [loading, setLoading] = useState(true);  
 
   const fetchUserDetails = async () => {
     try {
@@ -44,9 +41,10 @@ const UserProvider = ({ children }) => {
   useEffect(() => {
     if (accessToken || localStorage.getItem(ACCESS_TOKEN_KEY)) {
       fetchUserDetails(); // Initial fetch
-
       const interval = setInterval(() => {
-        fetchUserDetails(); // Refresh every 10 seconds
+        if(accessToken || localStorage.getItem(ACCESS_TOKEN_KEY)){
+          fetchUserDetails(); // Refresh every 10 seconds
+        }
       }, 10000);
 
       return () => clearInterval(interval); // Cleanup on unmount
