@@ -26,13 +26,17 @@ import categoryService from "../services/category";
 import { MdDelete } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { ClientFormsTabPanel } from "../component/client/ClientTabPanels/ClientFormsTabPanel";
-import { FULL_FORM_DATA, PROFILE_LIST, SINGLE_CLIENT_DATA } from "../constants";
+import { FULL_FORM_DATA, PROFILE_LIST, SINGLE_CLIENT_DATA, USER_DETAILS } from "../constants";
 
 function ClientDetails() {
   const { id } = useParams();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  const permissionsObjects = JSON.parse(localStorage.getItem('permissionsObjects')) || {};
+  const clientsPermission = permissionsObjects?.clientsPermission;
+  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const organizationAdmin = userDetails?.organization_admin;
   const tabs = [
     t("sidebar.details"),
     t("sidebar.netfree"),
@@ -68,7 +72,7 @@ function ClientDetails() {
     setIsloading(true);
     try {
       // ::REAL DATA::
-      const profilesData = await categoryService.getProfilesList();
+      const profilesData = await categoryService.getProfilesListClientsPages();
       const netfreeProfiles = profilesData.data.data;
       clientsService
         .getClient(id)
@@ -108,7 +112,7 @@ function ClientDetails() {
 
   const fetchNetfreeProfiles = async () => {
     // ::REAL DATA::
-    const profilesListData = await categoryService.getProfilesList();
+    const profilesListData = await categoryService.getProfilesListClientsPages();
 
     // ::MOCKED DATA::
     // const profilesListData = PROFILE_LIST;
@@ -117,7 +121,7 @@ function ClientDetails() {
 
   const fetchFullFormData = async () => {
     // ::REAL DATA::
-    const formData = await clientsService.getFullformData();
+    const formData = await clientsService.getFullformClientsPageData();
 
     // ::MOCKED DATA::
     // const formData = FULL_FORM_DATA;
@@ -227,7 +231,8 @@ function ClientDetails() {
                         onClick={() => editClientHandler(clientData)}
                       /> */}
                           <button
-                            className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none flex justify-center gap-2"
+                            disabled={organizationAdmin ? false : clientsPermission ? !clientsPermission?.is_delete : false}
+                            className="text-white disabled:cursor-not-allowed text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none flex justify-center gap-2"
                             onClick={() => setConfirmationModal(true)}
                           >
                             <img src={WhiteBin} alt="WhiteBin" />
@@ -248,6 +253,7 @@ function ClientDetails() {
 
                 {value === 1 && netfreeprofiles && (
                   <ClientNetfreeTabPanel
+                    disabled={organizationAdmin ? false : clientsPermission ? !clientsPermission?.is_update : false}
                     isLoading={isLoading}
                     setNetfreeProfile={setNetfreeProfile}
                     clientData={clientData}
@@ -263,7 +269,7 @@ function ClientDetails() {
                   <RequestsTabPanel id={id} value={value} index={2} />
                 )}
 
-                {value === 3 && <ClientFormsTabPanel clientId={id} />}
+                {value === 3 && <ClientFormsTabPanel disabled={organizationAdmin ? false : clientsPermission ? !clientsPermission?.is_write : false} clientId={id} />}
               </Box>
             ) : (
               t("clients.noClientFound") + " " + id

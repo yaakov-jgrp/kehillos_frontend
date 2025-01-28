@@ -1,5 +1,5 @@
 // React imports
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 // UI Imports
 import { Box, CircularProgress, IconButton, MenuItem, Modal, Select, TablePagination, Tooltip, Typography } from "@mui/material";
@@ -27,6 +27,9 @@ import { formateDateTime, handleSort } from "../lib/CommonFunctions";
 import { IoArrowBackCircle, IoClose, IoEyeOutline, IoReloadCircleOutline } from "react-icons/io5";
 import { GridDeleteIcon } from "@mui/x-data-grid";
 import axios from "axios";
+import { USER_DETAILS } from "../constants";
+import { update } from "lodash";
+import { UserContext } from "../Hooks/permissionContext";
 
 const Request = () => {
   const { t } = useTranslation();
@@ -44,6 +47,27 @@ const Request = () => {
   const [imageSrc, setImageSrc] = useState('');
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
+  const { userDetails, permissions } = useContext(UserContext);
+  // const permissionsObjects =
+  //     JSON.parse(localStorage.getItem("permissionsObjects")) || {};
+    const requestsPermission = permissions?.requestsPermission;
+    // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+    const organizationAdmin = userDetails?.organization_admin;
+    const writePermission = organizationAdmin
+      ? false
+      : requestsPermission
+      ? !requestsPermission?.is_write
+      : false;
+    const updatePermission = organizationAdmin
+      ? false
+      : requestsPermission
+      ? !requestsPermission?.is_update
+      : false;
+    const deletePermission = organizationAdmin
+      ? false
+      : requestsPermission
+      ? !requestsPermission?.is_delete
+      : false;
 
   const fetchScreenshot = async (url, request_id, refetch) => {
     setLoading(true);
@@ -174,6 +198,9 @@ const Request = () => {
       <div className="flex py-4 px-7 justify-between text-gray-11 font-medium text-2xl">
         {t("requests.title")}
         <RequestStatusModal
+          writePermission={writePermission}
+          updatePermission={updatePermission}
+          deletePermission={deletePermission}
           requestStatuses={requestStatuses}
           fetchRequestStatuses={fetchRequestStatuses}
         />
@@ -447,15 +474,12 @@ const Request = () => {
                           </td>
                           <td>{el.request_type}</td>
                           <td className="px-2" >
-
-
-
                             <div className="flex align-center">
                               <div className="flex flex-row mr-1">
-                                <IconButton onClick={() => handleClickOpen(el.requested_website, el.id)}>
+                                <IconButton className="disabled:cursor-not-allowed" disabled={writePermission} onClick={() => handleClickOpen(el.requested_website, el.id)}>
                                   <IoEyeOutline size={20} />
                                 </IconButton>
-                                <IconButton onClick={() => handleClickOpen(el.requested_website, el.id, true)}>
+                                <IconButton className="disabled:cursor-not-allowed" disabled={writePermission} onClick={() => handleClickOpen(el.requested_website, el.id, true)}>
                                   <IoReloadCircleOutline size={20} />
                                 </IconButton>
                               </div>
@@ -547,12 +571,13 @@ const Request = () => {
                           </td>
                           <td className="px-2">
                             <Select
+                              disabled={updatePermission}
                               MenuProps={{
                                 sx: {
                                   maxHeight: "250px",
                                 },
                               }}
-                              className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-1 text-black bg-white"
+                              className={`[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-1 text-black ${update ? 'bg-[#ECECEC]' : 'bg-white'}`}
                               onChange={(e) => {
                                 const updateData = {
                                   status_id: e.target.value,

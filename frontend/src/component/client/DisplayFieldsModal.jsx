@@ -18,10 +18,12 @@ const DisplayFieldsModal = ({
   formValues,
   displayFields,
   onClick,
+  disabled
 }) => {
   const { t } = useTranslation();
   const defaultValues = formValues;
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+console.log('disabled',disabled);
 
   const submitForm = async (data, e) => {
     e.preventDefault();
@@ -33,6 +35,10 @@ const DisplayFieldsModal = ({
       formData.fields.push({
         id: field.id,
         display: data[field.field_slug],
+        other_columns_added: field?.other_columns_added?.filter(i=>i?.id !== field?.id)?.map((i) => ({
+          field_id: i?.id,
+          display_order: i?.display_order,
+        })),
       });
     });
 
@@ -115,7 +121,8 @@ const DisplayFieldsModal = ({
                       {t("netfree.close")}
                     </button>
                     <button
-                      className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
+                      disabled={disabled}
+                      className={`${disabled ? 'disabled:cursor-not-allowed' : '' } text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none`}
                       type="submit"
                     >
                       {t("netfree.save")}

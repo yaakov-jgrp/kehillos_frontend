@@ -20,7 +20,7 @@ import { FaDownload } from "react-icons/fa";
 // Utils imports
 import { heIL } from "../../locales/reactCsvImporterHe";
 
-function CsvImporter({ formFields, fetchClientsData }) {
+function CsvImporter({ formFields, fetchClientsData, disabled }) {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [isOpen, setIsOpen] = useState(false);
@@ -54,7 +54,8 @@ function CsvImporter({ formFields, fetchClientsData }) {
   return (
     <>
       <button
-        className={`w-[79px] rounded-lg py-1 px-2 text-[14px] text-gray-11 font-medium dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6]`}
+        disabled={disabled}
+        className={`w-[79px] disabled:cursor-not-allowed rounded-lg py-1 px-2 text-[14px] text-gray-11 font-medium dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6]`}
         onClick={() => {
           setIsOpen(true);
         }}

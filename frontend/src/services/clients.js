@@ -4,6 +4,14 @@ const getClients = (params) => {
     return api
         .get(`/api/client/${params}`);
 }
+const getClientsFormsPage = (params) => {
+    return api
+        .get(`/api/client/get-forms-clients/${params}`);
+}
+const getClientsFormsDetailPage = (params) => {
+    return api
+        .get(`/api/client/get-forms-client-detail/${params}`);
+}
 
 const getClient = (id, params = "") => {
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -20,7 +28,7 @@ const saveClient = (clientData) => {
 }
 
 const updateClient = (clientData, id) => {
-    return api.post(`/api/client/${id}/`, clientData, {
+    return api.put(`/api/client/${id}/`, clientData, {
         headers: {
             "Content-Type": "multipart/form-data"
         }
@@ -35,13 +43,29 @@ const importClients = (fileData) => {
     return api.post(`/api/client/import/`, fileData);
 }
 
-const exportClients = () => {
-    return api.get("/api/client/export/");
+const exportClients = (filterId = '') => {
+    return api.get(`/api/client/export/${filterId}`);
 }
 
 const getFullformData = (params = "") => {
     const lang = localStorage.getItem("DEFAULT_LANGUAGE");
     return api.get(`/api/client/field/?lang=${lang}${params}`);
+}
+const getFullformClientsPageData = (params = "") => {
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    return api.get(`/api/client/client-page-field/?lang=${lang}${params}`);
+}
+const getFullformAutomationPageData = (params = "") => {
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    return api.get(`/api/client/automation-page-field/?lang=${lang}${params}`);
+}
+const getFullformEmailPageData = (params = "") => {
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    return api.get(`/api/client/email-page-field/?lang=${lang}${params}`);
+}
+const getFormDataByBlockId = (params) => {
+    const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+    return api.get(`/api/client/field/?lang=${lang}&${params}`);
 }
 
 const createBlockField = (formData) => {
@@ -85,6 +109,8 @@ const exportSampleFormat = () => {
 
 const clientsService = {
     getClients,
+    getClientsFormsPage,
+    getClientsFormsDetailPage,
     getClient,
     saveClient,
     updateClient,
@@ -92,6 +118,10 @@ const clientsService = {
     importClients,
     exportClients,
     getFullformData,
+    getFullformClientsPageData,
+    getFullformAutomationPageData,
+    getFullformEmailPageData,
+    getFormDataByBlockId,
     createBlockField,
     deleteBlockField,
     updateBlockField,

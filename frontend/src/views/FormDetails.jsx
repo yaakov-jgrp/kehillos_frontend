@@ -485,7 +485,7 @@ function FormDetails() {
                         }}
                       >
                         {activeFormState.fields.length > 0 ? (
-                          <div className="flex flex-col gap-4">
+                          <div className="flex flex-wrap gap-y-4">
                             {activeFormState.fields
                               .filter((field) => field.blockId === blockData.id)
                               .map((field, index) => {
@@ -499,6 +499,11 @@ function FormDetails() {
                                   <div
                                     className={`mb-2 px-2 flex gap-1 flex-col`}
                                     key={index}
+                                    style={{
+                                      width: field?.field_width_percentage
+                                        ? `${field?.field_width_percentage}%`
+                                        : "100%",
+                                    }} 
                                   >
                                     <div
                                       className={`flex items-center justify-between ${

@@ -40,6 +40,7 @@ export default function CreateClientFormModal({
   setShowModal,
   setShowSuccessModal,
   clientId,
+  formCb
 }) {
   const { t } = useTranslation();
 
@@ -87,7 +88,7 @@ export default function CreateClientFormModal({
   const fetchClientsData = async () => {
     const params = `?page=${1}&lang=${"en"}&page_size=${500}`;
     // ::REAL DATA::
-    const clientsData = await clientsService.getClients(params);
+    const clientsData = await clientsService.getClientsFormsDetailPage(params);
 
     // ::MOCKED DATA::
     // const clientsData = CLIENTS;
@@ -191,6 +192,7 @@ export default function CreateClientFormModal({
       );
       setShowSuccessModal(true);
       setShowModal(false);
+      if(formCb){formCb()}
     } catch (error) {
       toast.error(JSON.stringify(error));
       console.log(error);
@@ -257,7 +259,15 @@ export default function CreateClientFormModal({
       ) {
         const isCheckBox = checkBoxConstants.includes(field.data_type.value);
         return (
-          <div className="mb-2 px-2 flex flex-col gap-1" key={index}>
+          <div 
+            style={{
+              width: field?.field_width_percentage
+                ? `${field?.field_width_percentage}%`
+                : "100%",
+            }} 
+            className="mb-2 px-2 flex flex-col gap-1" 
+            key={index}
+          >
             <div
               className={`flex items-center justify-between ${isCheckBox ? "ml-2 w-full" : "mb-1"
                 }`}
@@ -622,7 +632,7 @@ export default function CreateClientFormModal({
                           }}
                         >
                           {activeFormState.fields.length > 0 ? (
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="flex flex-wrap gap-y-4">
                               {renderFields(
                                 activeFormState.fields.filter(
                                   (field) => field.blockId === blockData.id

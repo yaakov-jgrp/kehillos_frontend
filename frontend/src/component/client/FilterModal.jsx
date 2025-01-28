@@ -39,6 +39,7 @@ function FilterModal({
   fetchClientsData,
   fetchFullFormData,
   applyFilterHandler,
+  disabled
 }) {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -266,7 +267,8 @@ function FilterModal({
         {t("clients.filters")}
       </label> */}
       <button
-        className={`w-[90px] rounded-lg py-1 text-[14px] font-medium dark:bg-brand-400 text-[#0B99FF] dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-1 justify-center items-center border border-[#0B99FF]`}
+        disabled={disabled}
+        className={`w-[90px] disabled:cursor-not-allowed rounded-lg py-1 text-[14px] font-medium dark:bg-brand-400 text-[#0B99FF] dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-1 justify-center items-center border border-[#0B99FF]`}
         onClick={handleFilterClick}
       >
         <img src={FilterIcon} alt="visibility_icon" />

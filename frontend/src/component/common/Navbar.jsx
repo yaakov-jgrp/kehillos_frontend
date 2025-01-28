@@ -28,7 +28,7 @@ const Navbar = (props) => {
     return item;
   });
 
-  console.log(routeTextArray);
+  console.log('routeTextArray>>>>>>>>',routeTextArray);
 
   return (
     <nav
