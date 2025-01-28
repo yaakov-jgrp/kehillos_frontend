@@ -158,7 +158,8 @@
   "users": {
     "admin": "Admin",
     "normal": "Regular",
-    "userType": "User Type"
+    "userType": "User Type",
+    "permissions": "Permissions"
   },
   "clients": {
     "title": "Clients",
