@@ -11,7 +11,13 @@ const AddButtonIcon = (props) => {
     props.onClick();
   };
   return (
-    <button disabled={disabled} className={`bg-[#F4F7FE] rounded-full p-1 hover:cursor-pointer ${disabled ? 'disabled:cursor-not-allowed' : 'disabled:cursor-pointer'}`} onClick={clickHandler}>
+    <button
+      disabled={disabled}
+      className={`bg-[#F4F7FE] rounded-full p-1 hover:cursor-pointer ${
+        disabled ? "disabled:cursor-not-allowed" : "disabled:cursor-pointer"
+      }`}
+      onClick={clickHandler}
+    >
       <BsPlusCircleFill
         className={`${extra} bg-white rounded-full text-[#0B99FF] w-5 h-5`}
       />

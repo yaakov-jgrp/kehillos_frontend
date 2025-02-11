@@ -597,11 +597,15 @@ const NetFree = () => {
                     ? "hover:cursor-not-allowed"
                     : "hover:cursor-pointer"
                 }
-                onClick={writePermission ? ()=>{} : () => {
-                  setIsDefaultActionSelectOpen(true);
-                  setTrafficAction(true);
-                  enableActionUpdate();
-                }}
+                onClick={
+                  writePermission
+                    ? () => {}
+                    : () => {
+                        setIsDefaultActionSelectOpen(true);
+                        setTrafficAction(true);
+                        enableActionUpdate();
+                      }
+                }
               />
             </div>
             <div className="h-[110px] scrollbar-hide">
@@ -614,8 +618,16 @@ const NetFree = () => {
                     >
                       {el.label}
                       <img
-                        onClick={deletePermission ? ()=>{} : () => deleteDefaultAction(el.id)}
-                        className={`${deletePermission ? 'cursor-not-allowed' : 'cursor-pointer'} w-[10px] -mt-[0.8px]`}
+                        onClick={
+                          deletePermission
+                            ? () => {}
+                            : () => deleteDefaultAction(el.id)
+                        }
+                        className={`${
+                          deletePermission
+                            ? "cursor-not-allowed"
+                            : "cursor-pointer"
+                        } w-[10px] -mt-[0.8px]`}
                         src={RedCrossIcon}
                         alt="RedCrossIcon"
                       />
@@ -626,10 +638,20 @@ const NetFree = () => {
                   <div className="text-gray-10 font-medium whitespace-break-spaces text-[12px] mb-2 relative py-1 px-4 bg-[#F4F7FE] rounded-full flex gap-2">
                     {trafficStatus.email_request_status.label}
                     <img
-                      onClick={deletePermission ? ()=>{} : () =>
-                        deleteNetfreeStatus(trafficStatus.id, getActionsList)
+                      onClick={
+                        deletePermission
+                          ? () => {}
+                          : () =>
+                              deleteNetfreeStatus(
+                                trafficStatus.id,
+                                getActionsList
+                              )
                       }
-                      className={`${deletePermission ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                      className={`${
+                        deletePermission
+                          ? "cursor-not-allowed"
+                          : "cursor-pointer"
+                      }`}
                       src={RedCrossIcon}
                       alt="RedCrossIcon"
                     />
@@ -754,7 +776,13 @@ const NetFree = () => {
         )}
 
         {tab === 1 && (
-          <Websites writePermission={writePermission} updatePermission={updatePermission} deletePermission={deletePermission} currentTab={currentTab} handleTabChange={handleChange} />
+          <Websites
+            writePermission={writePermission}
+            updatePermission={updatePermission}
+            deletePermission={deletePermission}
+            currentTab={currentTab}
+            handleTabChange={handleChange}
+          />
         )}
       </div>
 

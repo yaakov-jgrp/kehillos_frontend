@@ -2,21 +2,22 @@
 import { useEffect, useState } from "react";
 
 // UI Imports
-import { MenuItem, Select } from "@mui/material";
+import { CircularProgress, MenuItem, Select } from "@mui/material";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 // API services
-import categoryService from "../../../services/category";
-import emailService from "../../../services/email";
-import requestService from "../../../services/request";
+import categoryService from "../../services/category";
+import emailService from "../../services/email";
+import requestService from "../../services/request";
 
 // Icon imports
 import { AiTwotoneDelete } from "react-icons/ai";
-import CrossIcon from "../../../assets/images/cross.svg";
-import { handleNumberkeyPress } from "../../../lib/CommonFunctions";
+import CrossIcon from "../../assets/images/cross.svg";
+import { handleNumberkeyPress } from "../../lib/CommonFunctions";
+import Loader from "../common/Loader";
 
 // Initial state data
 const initialState = {
@@ -25,18 +26,12 @@ const initialState = {
   Custom: false,
 };
 
-const ActionModal = ({
+const RequestActionModal = ({
   showModal,
   setShowModal,
-  updateAction,
-  categoryId,
-  setDefaultAction,
-  isDefault,
-  editActionID,
-  setEditActionId,
-  trafficAction,
-  defaultStatus,
-  trafficStatus,
+  onSubmit,
+  onClose,
+  isLoading,
 }) => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [actionsList, setActionsList] = useState([]);
@@ -54,6 +49,7 @@ const ActionModal = ({
   const [requestStatuses, setRequestStatuses] = useState([]);
   const [showEmailTemplate, setShowEmailTemplate] = useState(false);
   const notify = (error) => toast.error(error);
+
   const handleAddInput = () => {
     setInputValues([...inputValues, ""]);
     setDeleteButtonsVisible([...deleteButtonsVisible, true]);
@@ -101,14 +97,10 @@ const ActionModal = ({
 
   const getActionsList = async () => {
     const response = await categoryService.getActions();
-    if (trafficAction) {
-      const trafficActions = response.data.data.filter(
-        (action) => action.is_template_action || action.id === 9999999
-      );
-      setActionsList(trafficActions);
-    } else {
-      setActionsList(response.data.data);
-    }
+    const updatedData = response.data.data.filter(
+      (action) => !action.is_request_status
+    );
+    setActionsList(updatedData);
   };
 
   const getRequestStatusList = async () => {
@@ -134,79 +126,7 @@ const ActionModal = ({
     setSelectedAction(actionId);
   };
 
-  const submitForm = async () => {
-    let data;
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-    const areEmailsValid = inputValues.every((value) => emailRegex.test(value));
-    if (selectedAction === "selectAction") {
-      notify("Please select action!!");
-      return;
-    }
-    if (showEmailTemplate) {
-      if (selectedTemplate === "selectTemplate") {
-        notify("Please select template!!");
-        return;
-      }
-      if (
-        !sendEmailTypes.Admin &&
-        !sendEmailTypes.Client &&
-        !sendEmailTypes.Custom
-      ) {
-        notify("Please select at least one action!!");
-        return;
-      }
-      if (sendEmailTypes.Custom && inputValues[0] === "") {
-        notify("Please enter email address!!");
-        return;
-      }
-      if (sendEmailTypes.Custom && !areEmailsValid) {
-        notify("Invalid email detected.");
-        return;
-      }
-      data = {
-        id: categoryId?.categories_id,
-        to_add: selectedAction,
-        inputs: {
-          email_to_admin: sendEmailTypes?.Admin,
-          email_to_client: sendEmailTypes?.Client,
-          custom_email: getCustomValues(),
-        },
-        template_id: selectedTemplate,
-      };
-    } else {
-      data = {
-        id: categoryId?.categories_id,
-        to_add: selectedAction,
-        inputs:
-          actionNeedsOtherFields.length > 0
-            ? {
-                amount: timeAmount === "" ? "1" : timeAmount,
-                openfor: timePeriod,
-              }
-            : {},
-      };
-      if (
-        actionsList.filter((el) => el.id == selectedAction)[0]
-          ?.is_request_status
-      ) {
-        data = {
-          ...data,
-          inputs: { ...data.inputs, email_request_status: selectedStatus },
-          is_status: true,
-        };
-      }
-    }
-
-    if (isDefault) {
-      await setDefaultAction(selectedAction, data);
-    } else {
-      if (editActionID) {
-        await updateAction(data, editActionID);
-      } else {
-        await updateAction(data, null);
-      }
-    }
-
+  const resetActionForm = () => {
     setSelectedAction("selectAction");
     setSelectedTemplate("selectTemplate");
     setActionNeedsOtherFields([]);
@@ -215,89 +135,81 @@ const ActionModal = ({
     setSendEmailTypes(initialState);
     setInputValues([""]);
     setDeleteButtonsVisible([false]);
-    setEditActionId(null);
-    setShowModal(false);
     setShowEmailTemplate(false);
   };
 
-  function findPartialMatch(searchString, arr, text) {
-    for (const item of arr) {
-      if (text === "label") {
-        if (searchString.includes(item.label)) {
-          return item.id;
-        }
-      } else {
-        if (searchString.includes(item.name)) {
-          return item.id;
-        }
+  const submitForm = async () => {
+    let data;
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    const areEmailsValid = inputValues.every((value) => emailRegex.test(value));
+    const {
+      Admin: emailToAdmin,
+      Client: emailToClient,
+      Custom: isCustomEmail,
+    } = sendEmailTypes;
+
+    if (selectedAction === "selectAction") {
+      notify("Please select action!!");
+      return;
+    }
+
+    if (showEmailTemplate) {
+      if (selectedTemplate === "selectTemplate") {
+        notify("Please select template!!");
+        return;
+      }
+
+      if (!emailToAdmin && !emailToClient && !isCustomEmail) {
+        notify("Please select at least one action!!");
+        return;
+      }
+
+      if (isCustomEmail && (!inputValues[0] || !areEmailsValid)) {
+        notify(
+          !inputValues[0]
+            ? "Please enter email address!!"
+            : "Invalid email detected."
+        );
+        return;
       }
     }
-    return null;
-  }
+    data = {
+      action_id: selectedAction,
+      ...(showEmailTemplate && {
+        email_inputs: showEmailTemplate
+          ? {
+              email_to_admin: emailToAdmin,
+              email_to_client: emailToClient,
+              custom_email: getCustomValues(),
+              template_id: selectedTemplate,
+            }
+          : {},
+      }),
+      ...(actionNeedsOtherFields.length > 0 && {
+        domain_url_inputs:
+          actionNeedsOtherFields.length > 0
+            ? {
+                amount: timeAmount === "" ? "1" : timeAmount,
+                openfor: timePeriod,
+              }
+            : {},
+      }),
+    };
 
-  const getActionUpdateValue = () => {
-    let obj = categoryId?.actions?.find((val) => val.id === editActionID);
-    if (
-      obj?.label.includes("Send email template") ||
-      obj?.label.includes("שלח תבנית אימייל")
-    ) {
-      const emailArray = obj?.custom_email
-        ?.split(",")
-        .map((email) => email.trim());
-      setInputValues(emailArray);
-      const updatedState = {
-        ...initialState,
-        Admin: obj.email_to_admin,
-        Client: obj.email_to_client,
-        Custom: obj.custom_email !== "",
-      };
-      setSendEmailTypes(updatedState);
-      const matchedId = findPartialMatch(obj?.label, actionsList, "label");
-      const matchedIdTemplate = findPartialMatch(
-        obj?.label,
-        templateList,
-        "name"
-      );
-      setSelectedAction(matchedId);
-      setSelectedTemplate(matchedIdTemplate);
-      setDeleteButtonsVisible([...deleteButtonsVisible, true]);
-    } else {
-      setInputValues([""]);
-      setSendEmailTypes(initialState);
-      setSelectedAction("selectAction");
-      setSelectedTemplate("selectTemplate");
-      setDeleteButtonsVisible([false]);
-    }
+    const res = await onSubmit(data);
+    resetActionForm();
+    setShowModal(false);
   };
 
   useEffect(() => {
     getActionsList();
     getTemplates();
     getRequestStatusList();
-  }, [trafficAction]);
+  }, []);
 
   useEffect(() => {
-    getActionUpdateValue();
-    let status = "selectStatus";
-    if (isDefault) {
-      status = defaultStatus?.email_request_status?.value || "selectStatus";
-      if (trafficAction) {
-        status = trafficStatus?.email_request_status?.value || "selectStatus";
-      }
-    } else {
-      status =
-        categoryId?.request_status?.email_request_status?.value ||
-        "selectStatus";
-    }
-    setSelectedStatus(status);
-  }, [
-    editActionID,
-    JSON.stringify(defaultStatus),
-    JSON.stringify(trafficStatus),
-    trafficAction,
-    JSON.stringify(categoryId),
-    isDefault,
-  ]);
+    resetActionForm();
+  }, [showModal]);
 
   useEffect(() => {
     if (!sendEmailTypes.Custom) {
@@ -320,7 +232,6 @@ const ActionModal = ({
                     className="bg-transparent border-0 text-black float-right"
                     onClick={() => {
                       setShowModal(false);
-                      setEditActionId(null);
                     }}
                   >
                     <img src={CrossIcon} alt="CrossIcon" />
@@ -417,7 +328,7 @@ const ActionModal = ({
                           required
                           type="number"
                           min={1}
-                          onKeyDown={handleNumberkeyPress}
+                          onKeyDownCapture={handleNumberkeyPress}
                           onChange={(e) => setTimeAmount(e.target.value)}
                         />
                       </div>
@@ -593,28 +504,28 @@ const ActionModal = ({
                     </div>
                   )}
                 </div>
-
-                {/* <div style={{ textAlign: 'center', color: 'red' }} >
-                  {error}
-                </div> */}
-
-                <div className="flex justify-center gap-2 mb-3 absolute bg-white bottom-0 left-[50%] transform -translate-x-1/2">
+                <div className="flex justify-center gap-2 mb-3 bg-white absolute bottom-0 left-[50%] transform -translate-x-1/2">
                   <button
                     className="text-gray-11 background-transparent font-normal py-2 text-sm outline-none w-[136px] focus:outline-none border border-gray-11 rounded-lg"
                     type="button"
                     onClick={() => {
                       setShowModal(false);
-                      setEditActionId(null);
+                      onClose();
                     }}
                   >
                     {t("netfree.close")}
                   </button>
                   <button
-                    className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
+                    className="text-white items-center justify-center flex text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                     type="button"
                     onClick={submitForm}
+                    disabled={isLoading}
                   >
-                    {t("netfree.save")}
+                    {isLoading ? (
+                      <CircularProgress color="inherit" size={18} />
+                    ) : (
+                      t("netfree.save")
+                    )}
                   </button>
                 </div>
               </div>
@@ -626,4 +537,4 @@ const ActionModal = ({
   );
 };
 
-export default ActionModal;
+export default RequestActionModal;

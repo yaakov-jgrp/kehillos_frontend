@@ -67,7 +67,7 @@ const routes = [
   },
   {
     name: t("sidebar.config"),
-    path: "settings/config",
+    path: "config",
     type: "menu",
     icon: <MdOutlineSettings className="h-6 w-6" />,
     component: <Config />,
