@@ -118,6 +118,7 @@ export default function CreateClientFormModal({
       newName: `${blockToRepeat.name} ${blocksArray.length}`,
       id: newBlockId,
       isRepeatable: false,
+      isRepeatableBlock: true,
     };
 
     // Find fields associated with the block
@@ -171,7 +172,7 @@ export default function CreateClientFormModal({
         .map((block) => ({
           id: block.id,
           name: block?.newName ? block?.newName : block.name,
-          isRepeatable: block.isRepeatable,
+          isRepeatable: block.isRepeatable || block.isRepeatableBlock,
         }));
       finalPayload.fields = activeFormState.fields
         .filter((field) => field.blockId !== blockToRemoveID)

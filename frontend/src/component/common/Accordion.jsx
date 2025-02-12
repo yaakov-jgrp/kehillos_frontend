@@ -12,8 +12,17 @@ import {
 
 // UI Components Imports
 import AddButtonIcon from "./AddButton";
+import RemoveButtonIcon from "./RemoveButton";
 
-function CustomAccordion({ title, children, onClick, showAddButton, writePermission }) {
+function CustomAccordion({ 
+  title, 
+  children, 
+  onClick, 
+  showAddButton, 
+  writePermission,
+  showRemoveButton,
+  onRemove 
+}) {
   return (
     <AccordionItem className="p-2 mb-4 rounded-lg bg-[#ffffff] border border-[#E3E5E6]">
       {({ isExpanded }) => (
@@ -28,8 +37,15 @@ function CustomAccordion({ title, children, onClick, showAddButton, writePermiss
               <p className="text-[20px] text-gray-11 font-medium capitalize">
                 {title}
               </p>
-              {isExpanded && showAddButton && (
-                <AddButtonIcon disabled={writePermission} extra={""} onClick={onClick} />
+              {isExpanded && (
+                <div className="flex items-center gap-2">
+                  {showAddButton && (
+                    <AddButtonIcon disabled={writePermission} extra={""} onClick={onClick} />
+                  )}
+                  {showRemoveButton && (
+                    <RemoveButtonIcon disabled={writePermission} extra={""} onClick={onRemove} />
+                  )}
+                </div>
               )}
             </Box>
             <AccordionIcon fontSize="1.5rem" />
