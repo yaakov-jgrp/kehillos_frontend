@@ -41,6 +41,10 @@ import { toast } from "react-toastify";
 import { RiHistoryLine } from "react-icons/ri";
 import { Accordion } from "@chakra-ui/react";
 import { FieldVersionHistory } from "../../forms/FieldVersionHistory";
+import AddButtonIcon from "../../common/AddButton";
+import RemoveButtonIcon from "../../common/RemoveButton";
+import DeleteConfirmationModal from "../../common/DeleteConfirmationModal";
+import AddConfirmationModal from "../../common/AddConfirmationModal";
 
 export const ClientFormsTabPanel = ({ clientId, disabled }) => {
   const { t } = useTranslation();
@@ -70,6 +74,76 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
   const [currentFieldHistoryId, setCurrentFieldsHistoryId] = useState(null);
   const [currentFieldBlockId, setCurrentFieldBlockId] = useState(null);
   const [showFieldHistoryBox, setShowFieldHistoryBox] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [blockToDelete, setBlockToDelete] = useState(null);
+  const [showAddBlockModal, setShowAddBlockModal] = useState(false);
+  const [blockToAdd, setBlockToAdd] = useState(null);
+  const [blockChanges, setBlockChanges] = useState({
+    added: [],
+    removed: [],
+    fieldChanges: {
+      added: [],
+      removed: [],
+    },
+  });
+
+  const cleanupBlockChanges = (changes) => {
+    // Clean up duplicate blocks
+    const addedIds = new Set(changes.added.map((block) => block.blockId));
+    const removedIds = new Set(changes.removed);
+    const duplicateIds = [...addedIds].filter((id) => removedIds.has(id));
+
+    // Clean up duplicate field changes
+    const fieldMap = new Map(); // Map to track field actions by field ID
+
+    console.log(changes);
+    // Process all field changes to identify duplicates
+    changes.fieldChanges.added.forEach((change) => {
+      const fieldId = change.id;
+      if (!fieldMap.has(fieldId)) {
+        fieldMap.set(fieldId, 'added');
+      } else {
+        // If we see a field twice with different actions, mark it for removal
+        const previousAction = fieldMap.get(fieldId);
+        if (previousAction !== 'added') {
+          fieldMap.set(fieldId, 'remove');
+        }
+      }
+    });
+
+    changes.fieldChanges.removed.forEach((change) => {
+      const fieldId = change.id;
+      if (!fieldMap.has(fieldId)) {
+        fieldMap.set(fieldId, 'removed');
+      } else {
+        // If we see a field twice with different actions, mark it for removal
+        const previousAction = fieldMap.get(fieldId);
+        if (previousAction !== 'removed') {
+          fieldMap.set(fieldId, 'remove');
+        }
+      }
+    });
+
+    // Filter out fields that have both added and removed actions
+    const cleanedFieldChangesAdded = changes.fieldChanges.added.filter((change) =>
+      fieldMap.get(change.id) !== 'remove'
+    );
+
+    const cleanedFieldChangesRemoved = changes.fieldChanges.removed.filter((change) =>
+      fieldMap.get(change.id) !== 'remove'
+    );
+
+    return {
+      added: changes.added.filter(
+        (block) => !duplicateIds.includes(block.blockId)
+      ),
+      removed: changes.removed.filter((id) => !duplicateIds.includes(id)),
+      fieldChanges: {
+        added: cleanedFieldChangesAdded,
+        removed: cleanedFieldChangesRemoved,
+      },
+    };
+  };
 
   const fetchFormsData = async () => {
     setIsLoading(true);
@@ -100,9 +174,8 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
 
   const fetchFormsDetailsData = async (formId) => {
     try {
-      const formDetailPayload = await formsService.getSingleClientFormDetailsPage(
-        formId
-      );
+      const formDetailPayload =
+        await formsService.getSingleClientFormDetailsPage(formId);
       if (formDetailPayload.data) {
         let payload = convertDataForShowingClientFormDetails(
           formDetailPayload.data
@@ -261,13 +334,52 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
       const dirtyFieldsPayload = dirtyFields.filter(
         (dirtyField) => dirtyField.current !== dirtyField.previous
       );
+
+      const finalBlockChanges = cleanupBlockChanges(blockChanges);
+
       const newVersionRequestPayload = {
         name: versionName,
         comment: versionComments,
         clientFormId: activeFormId,
         dirty_fields: dirtyFieldsPayload,
+        block_changes: {
+          added: finalBlockChanges.added,
+          removed: finalBlockChanges.removed,
+        },
+        field_changes: finalBlockChanges.fieldChanges,
       };
-      console.log(newVersionRequestPayload);
+
+      console.log("Saving form with changes:", newVersionRequestPayload);
+
+      // payload format;
+      // {
+      //   name: string,
+      //   comment: string,
+      //   clientFormId: string,
+      //   dirty_fields: Array<DirtyField>,
+      //   block_changes: {
+      //     added: Array<{
+      //       blockId: string,
+      //       name: string,
+      //       isRepeatable: boolean,
+      //       clientFormId: string,
+      //     }>,
+      //     removed: Array<string>,
+      //   },
+      //   field_changes: {
+      //     added: Array<{
+      //       id: string,
+      //       clientFormBlockId: string,
+      //       // ... other field properties
+      //     }>,
+      //     removed: Array<{
+      //       id: string,
+      //       clientFormBlockId: string,
+      //       // ... other field properties
+      //     }>,
+      //   },
+      // }
+
       const newVersionResponse = await formsService.createNewClientFormVersion(
         newVersionRequestPayload
       );
@@ -276,6 +388,7 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
       setVersionComments("");
       setShowFormAddVersionModal(false);
       setShowCommentAddedSuccessfullyModal(true);
+      setBlockChanges({ added: [], removed: [], fieldChanges: { added: [], removed: [] } }); // Reset all changes after successful save
     } catch (error) {
       toast.error(JSON.stringify(error));
       console.log(error);
@@ -283,6 +396,107 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
       setVersionComments("");
       setShowFormAddVersionModal(false);
     }
+  };
+
+  const confirmAddBlock = () => {
+    const block = blockToAdd;
+    const newBlockName = block.isRepeatable
+      ? (() => {
+          const baseName = block.name.replace(/\s+\d+$/, "");
+          return `${baseName} ${
+            Math.max(
+              ...activeForm.blocks
+                .filter((b) => b.name.replace(/\s+\d+$/, "") === baseName)
+                .map((b) => {
+                  const match = b.name.match(/\s(\d+)$/);
+                  return match ? parseInt(match[1], 10) : 0;
+                }),
+              0
+            ) + 1
+          }`;
+        })()
+      : block.name;
+    const newBlock = {
+      ...block,
+      id: `${block.id}_${Date.now()}`,
+      name: newBlockName,
+    };
+    const fieldsToClone = activeForm.fields.filter(
+      (field) => field.clientFormBlockId === block.id
+    );
+
+    const clonedFields = fieldsToClone.map((field) => ({
+      ...field,
+      id: `${field.id}_${Date.now()}`,
+      clientFormBlockId: newBlock.id,
+    }));
+
+    setBlockChanges((prev) => {
+      const newChanges = {
+        ...prev,
+        added: [
+          ...prev.added, 
+          { 
+            blockId: newBlock.id, 
+            name: newBlockName,
+            isRepeatable: newBlock.isRepeatable,
+            clientFormId: newBlock.clientFormId,
+          }],
+        fieldChanges: {
+          added: [
+            ...prev.fieldChanges.added,
+            ...clonedFields.map((field) => ({
+              ...field  // This will preserve all field properties
+            })),
+          ],
+          removed: prev.fieldChanges.removed,
+        },
+      };
+      return cleanupBlockChanges(newChanges);
+    });
+
+    setActiveForm((prev) => ({
+      ...prev,
+      blocks: [...prev.blocks, newBlock],
+      fields: [...prev.fields, ...clonedFields],
+    }));
+    setShowAddBlockModal(false);
+    setBlockToAdd(null);
+  };
+
+  const handleRemoveBlock = () => {
+    if (blockToDelete) {
+      const fieldsToRemove = activeForm.fields.filter(
+        (field) => field.clientFormBlockId === blockToDelete
+      );
+
+      setBlockChanges((prev) => {
+        const newChanges = {
+          ...prev,
+          removed: [...prev.removed, blockToDelete],
+          fieldChanges: {
+            added: prev.fieldChanges.added,
+            removed: [
+              ...prev.fieldChanges.removed,
+              ...fieldsToRemove.map((field) => ({
+                ...field  // This will preserve all field properties
+              })),
+            ],
+          },
+        };
+        return cleanupBlockChanges(newChanges);
+      });
+
+      setActiveForm((prev) => ({
+        ...prev,
+        blocks: prev.blocks.filter((b) => b.id !== blockToDelete),
+        fields: prev.fields.filter(
+          (f) => f.clientFormBlockId !== blockToDelete
+        ),
+      }));
+    }
+    setShowDeleteModal(false);
+    setBlockToDelete(null);
   };
 
   // effects
@@ -303,9 +517,9 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
         {t("forms.allForms")}
         <button
           disabled={disabled}
-          className={`${
-            lang === "he" ? "w-[150px]" : "w-[170px]"
-          } ${disabled ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'} h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+          className={`${lang === "he" ? "w-[150px]" : "w-[170px]"} ${
+            disabled ? "hover:cursor-not-allowed" : "hover:cursor-pointer"
+          } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
           onClick={() => {
             setShowClientFormModal(true);
           }}
@@ -436,7 +650,7 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
                   </>
                 ) : (
                   <tr className="h-[75px] text-center">
-                    <td colSpan={6}>
+                    <td colSpan="6">
                       <NoDataFound description={t("common.noDataFound")} />
                     </td>
                   </tr>
@@ -630,7 +844,16 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
                 >
                   <CustomAccordion
                     key={`${block.name}-${index}`}
-                    showAddButton={false}
+                    showAddButton={editMode && block.isRepeatable}
+                    showRemoveButton={editMode && block.isRepeatable}
+                    onClick={() => {
+                      setBlockToAdd(block);
+                      setShowAddBlockModal(true);
+                    }}
+                    onRemove={() => {
+                      setBlockToDelete(block.id);
+                      setShowDeleteModal(true);
+                    }}
                     title={block.name}
                   >
                     <div
@@ -876,6 +1099,20 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
           onClick={closeCommentAddedSuccessfullyModal}
         />
       )}
+      <DeleteConfirmationModal
+        showModal={showDeleteModal}
+        setShowModal={setShowDeleteModal}
+        onClick={handleRemoveBlock}
+        title={t("common.delete")}
+        message={t("forms.deleteBlockConfirmation")}
+      />
+      <AddConfirmationModal
+        showModal={showAddBlockModal}
+        setShowModal={setShowAddBlockModal}
+        onClick={confirmAddBlock}
+        title={t("common.add")}
+        message={t("forms.addBlockConfirmation")}
+      />
     </div>
   );
 };
