@@ -43,7 +43,7 @@ function FilterModal({
   setAppliedFilter,
   writePermission,
   deletePermission,
-  updatePermission
+  updatePermission,
 }) {
   const [showModal, setShowModal] = useState(false);
   const { t } = useTranslation();
@@ -352,7 +352,7 @@ function FilterModal({
                       <div className="flex items-center p-2 gap-2">
                         {filter?.default ? (
                           <button
-                           disabled={deletePermission}
+                            disabled={deletePermission}
                             className="text-red-500 background-transparent font-semibold uppercase px-3 py-1 text-sm outline-none focus:outline-none"
                             type="button"
                             onClick={() => {
@@ -364,13 +364,17 @@ function FilterModal({
                           </button>
                         ) : (
                           <button
-                          disabled={writePermission}
+                            disabled={writePermission}
                             className="text-white disabled:cursor-not-allowed mx-1 text-sm transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 px-3 py-1 rounded-lg shadow hover:shadow-lg outline-none focus:outline-none"
                             type="button"
-                            onClick={writePermission ? ()=>{} : () => {
-                              applyFilterHandler(filter, true);
-                              setMenuAnchorEl(null);
-                            }}
+                            onClick={
+                              writePermission
+                                ? () => {}
+                                : () => {
+                                    applyFilterHandler(filter, true);
+                                    setMenuAnchorEl(null);
+                                  }
+                            }
                           >
                             {t("clients.apply")}
                           </button>
@@ -379,14 +383,30 @@ function FilterModal({
                           <div className="w-[1.3px] h-6 bg-[#CCCCCC]"></div>
                         )}
                         <EditButtonIcon
-                          extra={`mx-1 h-[18px] w-[18px] ${updatePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}`}
-                          onClick={updatePermission ? ()=>{} : () => editFilterHandler(filter)}
+                          extra={`mx-1 h-[18px] w-[18px] ${
+                            updatePermission
+                              ? "hover:cursor-not-allowed"
+                              : "hover:cursor-pointer"
+                          }`}
+                          onClick={
+                            updatePermission
+                              ? () => {}
+                              : () => editFilterHandler(filter)
+                          }
                         />
                         <img
                           src={BinIcon}
                           alt="BinIcon"
-                          className={deletePermission ? "hover:cursor-not-allowed" : "hover:cursor-pointer"}
-                          onClick={deletePermission ? ()=>{} : () => deleteFilterHandler(filter?.id)}
+                          className={
+                            deletePermission
+                              ? "hover:cursor-not-allowed"
+                              : "hover:cursor-pointer"
+                          }
+                          onClick={
+                            deletePermission
+                              ? () => {}
+                              : () => deleteFilterHandler(filter?.id)
+                          }
                         />
                       </div>
                     </Popover>
@@ -600,8 +620,9 @@ function FilterModal({
                                                   key={i}
                                                 >
                                                   {/* {field.name} */}
-                                                  {lang === "he" ? field.name.he : field.name.en}
-
+                                                  {lang === "he"
+                                                    ? field.name.he
+                                                    : field.name.en}
                                                 </MenuItem>
                                               ))}
                                             </Select>
@@ -760,7 +781,9 @@ function FilterModal({
                                                   key={i}
                                                 >
                                                   {/* {field.name} */}
-                                                  {lang === "he" ? field.name.he : field.name.en}
+                                                  {lang === "he"
+                                                    ? field.name.he
+                                                    : field.name.en}
                                                 </MenuItem>
                                               ))}
                                             </Select>

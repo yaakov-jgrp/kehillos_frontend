@@ -35,6 +35,10 @@ const deleteCategoryStatus = (id) => {
   return api.delete(`/api/crm/category-request-status/${id}/`);
 };
 
+const addRequestActions = (data) => {
+  return api.put(`/api/crm/requests-manual-action/`, data);
+};
+
 const requestService = {
   getRequests,
   getRequestStatuses,
@@ -46,5 +50,6 @@ const requestService = {
   updateStatus,
   deleteStatus,
   deleteCategoryStatus,
+  addRequestActions,
 };
 export default requestService;

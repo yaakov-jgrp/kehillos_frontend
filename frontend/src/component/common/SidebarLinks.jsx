@@ -121,7 +121,7 @@ export function SidebarLinks(props) {
     const navigate = useNavigate();
     const logout = () => {
       clearLocalStorage();
-      setAccessToken(null)
+      setAccessToken(null);
       navigate("/signin");
     };
     return routes.map((route, index) => {

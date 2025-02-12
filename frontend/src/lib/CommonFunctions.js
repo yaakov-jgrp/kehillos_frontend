@@ -20,7 +20,7 @@ export const fetchFullformDataHandler = async (
   setFullFormData
 ) => {
   setIsLoading(true);
-  const params = `&clients=True`
+  const params = `&clients=True`;
   const res = await clientsService.getFullformData(params);
   setFullFormData(res.data.result);
   setTimeout(() => {
@@ -111,7 +111,7 @@ export const handleSort = (
 };
 
 export const handleNumberkeyPress = (e) => {
-  if (e.key == "e" || e.key == ".") {
+  if (!/^\d*$/.test(e.key) && e.key !== "Backspace") {
     e.preventDefault();
   }
 };

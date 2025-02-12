@@ -224,10 +224,10 @@ function App() {
     },
     {
       name: t("sidebar.config"),
-      path: "settings/config",
+      path: "config",
       type: "menu",
       icon: <IoLogoBuffer className="h-6 w-6" />,
-      component: <Config/>,
+      component: <Config />,
     },
     // {
     //   name: t('sidebar.profile'),
@@ -246,7 +246,10 @@ function App() {
               <Route exact path="/signin" element={<SignIn />} />
               <Route
                 element={
-                  <RouteGuard token={ACCESS_TOKEN_KEY} routeRedirect="/signin" />
+                  <RouteGuard
+                    token={ACCESS_TOKEN_KEY}
+                    routeRedirect="/signin"
+                  />
                 }
               >
                 <Route

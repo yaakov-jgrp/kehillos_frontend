@@ -37,7 +37,6 @@ const requestSuccessInterceptor = (config) => {
   if (authToken) {
     config.headers.Authorization = "Bearer " + authToken;
   }
-
   return config;
 };
 
@@ -58,8 +57,14 @@ api.interceptors.response.use(
         return api(originalRequest);
       }
     }
-    if (Object.keys(err?.response?.data?.errors).length > 0) {
-      errorsToastHandler(err.response.data.errors);
+    if (
+      (err.response.data.errors &&
+        Object.keys(err?.response?.data?.errors).length > 0) ||
+      err?.response?.data?.error
+    ) {
+      const errorMessage =
+        err?.response?.data?.error || err?.response?.data?.errors;
+      errorsToastHandler(errorMessage);
     }
     return Promise.reject(err);
   }

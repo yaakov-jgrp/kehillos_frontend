@@ -39,7 +39,7 @@ function FilterModal({
   fetchClientsData,
   fetchFullFormData,
   applyFilterHandler,
-  disabled
+  disabled,
 }) {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");

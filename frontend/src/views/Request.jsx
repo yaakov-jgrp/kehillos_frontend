@@ -2,7 +2,17 @@
 import { useContext, useEffect, useState } from "react";
 
 // UI Imports
-import { Box, CircularProgress, IconButton, MenuItem, Modal, Select, TablePagination, Tooltip, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  MenuItem,
+  Modal,
+  Select,
+  TablePagination,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 
 import { FaInfo } from "react-icons/fa";
 
@@ -11,7 +21,8 @@ import SearchField from "../component/fields/SearchField";
 import Loader from "../component/common/Loader";
 import NoDataFound from "../component/common/NoDataFound";
 import RequestStatusModal from "../component/request/RequestStatusModal";
-import ResponseStatusModal from "../component/request/RequestStatusModal";
+import RequestActionModal from "../component/request/RequestActionModal";
+
 // Third part Imports
 import { useTranslation } from "react-i18next";
 
@@ -24,12 +35,11 @@ import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 // Utils imports
 import { paginationRowOptions, searchFields } from "../lib/FieldConstants";
 import { formateDateTime, handleSort } from "../lib/CommonFunctions";
-import { IoArrowBackCircle, IoClose, IoEyeOutline, IoReloadCircleOutline } from "react-icons/io5";
-import { GridDeleteIcon } from "@mui/x-data-grid";
-import axios from "axios";
-import { USER_DETAILS } from "../constants";
+import { IoClose, IoEyeOutline, IoReloadCircleOutline } from "react-icons/io5";
 import { update } from "lodash";
 import { UserContext } from "../Hooks/permissionContext";
+import AddButtonIcon from "../component/common/AddButton";
+import { toast } from "react-toastify";
 
 const Request = () => {
   const { t } = useTranslation();
@@ -44,39 +54,46 @@ const Request = () => {
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [loading, setLoading] = useState(false);
-  const [imageSrc, setImageSrc] = useState('');
+  const [imageSrc, setImageSrc] = useState("");
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const { userDetails, permissions } = useContext(UserContext);
+  const [requestID, setRequestID] = useState(null);
+  const [showActionModal, setShowActionModal] = useState(false);
+  const [isActionLoading, setIsActionLoading] = useState(false);
   // const permissionsObjects =
   //     JSON.parse(localStorage.getItem("permissionsObjects")) || {};
-    const requestsPermission = permissions?.requestsPermission;
-    // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
-    const organizationAdmin = userDetails?.organization_admin;
-    const writePermission = organizationAdmin
-      ? false
-      : requestsPermission
-      ? !requestsPermission?.is_write
-      : false;
-    const updatePermission = organizationAdmin
-      ? false
-      : requestsPermission
-      ? !requestsPermission?.is_update
-      : false;
-    const deletePermission = organizationAdmin
-      ? false
-      : requestsPermission
-      ? !requestsPermission?.is_delete
-      : false;
+  const requestsPermission = permissions?.requestsPermission;
+  // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const organizationAdmin = userDetails?.organization_admin;
+  const writePermission = organizationAdmin
+    ? false
+    : requestsPermission
+    ? !requestsPermission?.is_write
+    : false;
+  const updatePermission = organizationAdmin
+    ? false
+    : requestsPermission
+    ? !requestsPermission?.is_update
+    : false;
+  const deletePermission = organizationAdmin
+    ? false
+    : requestsPermission
+    ? !requestsPermission?.is_delete
+    : false;
 
   const fetchScreenshot = async (url, request_id, refetch) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await requestService.fetchRequestScreenshot({ url, request_id, refetch });
+      const response = await requestService.fetchRequestScreenshot({
+        url,
+        request_id,
+        refetch,
+      });
       setImageSrc(`data:image/png;base64,${response.data.image}`);
     } catch (err) {
-      setError('Failed to load screenshot');
+      setError("Failed to load screenshot");
     } finally {
       setLoading(false);
     }
@@ -86,11 +103,9 @@ const Request = () => {
     fetchScreenshot(requested_website, request_id, refetch);
   };
 
-
-
   const handleClose = () => {
     setOpen(false);
-    setImageSrc('');
+    setImageSrc("");
     setError(null);
   };
   const handleSortHandler = (field) => {
@@ -143,12 +158,14 @@ const Request = () => {
       let searchValues = "";
       for (const searchfield in searchParams) {
         if (searchParams[searchfield] !== "") {
-          searchValues += `&search_${[searchfield]}=${searchParams[searchfield]
-            }`;
+          searchValues += `&search_${[searchfield]}=${
+            searchParams[searchfield]
+          }`;
         }
       }
-      const params = `?page=${page + 1
-        }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
+      const params = `?page=${
+        page + 1
+      }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
       const requestData = await requestService.getRequests(params);
       setTotalCount(requestData?.data?.count);
       setAllRequests(requestData?.data?.data);
@@ -184,6 +201,26 @@ const Request = () => {
     }
   };
 
+  const addRequestActionsData = async (data) => {
+    setIsActionLoading(true);
+    const updatedData = { ...data, email_request_id: requestID };
+    try {
+      const res = await requestService.addRequestActions(updatedData);
+      fetchRequestData();
+      toast.success(res.data.message);
+      return res;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const closeRequestActionModal = () => {
+    setRequestID(null);
+  };
+
   useEffect(() => {
     fetchRequestStatuses();
   }, [lang]);
@@ -206,7 +243,7 @@ const Request = () => {
         />
       </div>
       <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2">
-        <table className="!table text-[12px] md:text-[14px] mb-3">
+        <table className="!table text-[12px] md:text-[14px] mb-3 xl:w-full">
           <thead className="sticky top-0 z-10 [&_th]:min-w-[8.5rem] bg-[#F9FBFC]">
             <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
             <tr className="tracking-[-2%] mb-5">
@@ -217,8 +254,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("id")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                        }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                      }`}
                     >
                       {t("searchbox.requestId")}
                       {sortField === "id" ? (
@@ -246,8 +284,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("created_at")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                        }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                      }`}
                     >
                       {t("searchbox.dateCreated")}
                       {sortField === "created_at" ? (
@@ -275,8 +314,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("sender_email")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                        }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                      }`}
                     >
                       {t("searchbox.from")}
                       {sortField === "from" ? (
@@ -304,8 +344,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("request_type")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                        }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                      }`}
                     >
                       {t("searchbox.requestType")}
                       {sortField === "request_type" ? (
@@ -333,8 +374,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("requested_website")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                        }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                      }`}
                     >
                       {t("searchbox.requestdetail")}
                       {sortField === "requestdetail" ? (
@@ -364,8 +406,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("status")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                        }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                      }`}
                     >
                       {t("searchbox.status")}
                       {sortField === "status" ? (
@@ -393,8 +436,9 @@ const Request = () => {
                   label={
                     <p
                       onClick={() => handleSortHandler("action_done")}
-                      className={`flex cursor-pointer items-center justify-between w-full ${lang === "he" ? "text-[16.5px]" : "text-[15px]"
-                        }`}
+                      className={`flex cursor-pointer items-center justify-between w-full ${
+                        lang === "he" ? "text-[16.5px]" : "text-[15px]"
+                      }`}
                     >
                       {t("searchbox.actionsDone")}
                       {sortField === "action_done" ? (
@@ -450,17 +494,17 @@ const Request = () => {
                               className="text-gray-11 hover:text-gray-10 font-medium"
                             >
                               <span>
-                              <IconButton
-                                onClick={() => window.location.href = `/clients/${el.customer_id}`}
-                                className="ml-2"
-                              >
-                                <FaInfo size={15} />
-                              </IconButton>
+                                <IconButton
+                                  onClick={() =>
+                                    (window.location.href = `/clients/${el.customer_id}`)
+                                  }
+                                  className="ml-2"
+                                >
+                                  <FaInfo size={15} />
+                                </IconButton>
                               </span>
                               #{el.customer_id}
                               <br />
-                              
-                              
                             </a>
                             {el.username}
                             <br />
@@ -470,16 +514,31 @@ const Request = () => {
                             >
                               {el.sender_email}
                             </a>
-                           
                           </td>
                           <td>{el.request_type}</td>
-                          <td className="px-2" >
+                          <td className="px-2">
                             <div className="flex align-center">
                               <div className="flex flex-row mr-1">
-                                <IconButton className="disabled:cursor-not-allowed" disabled={writePermission} onClick={() => handleClickOpen(el.requested_website, el.id)}>
+                                <IconButton
+                                  className="disabled:cursor-not-allowed"
+                                  disabled={writePermission}
+                                  onClick={() =>
+                                    handleClickOpen(el.requested_website, el.id)
+                                  }
+                                >
                                   <IoEyeOutline size={20} />
                                 </IconButton>
-                                <IconButton className="disabled:cursor-not-allowed" disabled={writePermission} onClick={() => handleClickOpen(el.requested_website, el.id, true)}>
+                                <IconButton
+                                  className="disabled:cursor-not-allowed"
+                                  disabled={writePermission}
+                                  onClick={() =>
+                                    handleClickOpen(
+                                      el.requested_website,
+                                      el.id,
+                                      true
+                                    )
+                                  }
+                                >
                                   <IoReloadCircleOutline size={20} />
                                 </IconButton>
                               </div>
@@ -494,40 +553,26 @@ const Request = () => {
                               <Modal
                                 open={open}
                                 onClose={handleClose}
-                                style={{backgroundColor: '#ffffff08', opacity:0.09}}
-                                slotProps={{
-                                  backdrop: {
-                                    sx: {
-                                      // backgroundColor: 'transparent', 
-                                      // backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                      
-                                    }
-                                  }
-                                }}
-                                // BackdropProps={{
-                                //   style: {
-                                //     backgroundColor: 'transparent', // Semi-transparent background
-                                //   },
-                                // }}
                                 sx={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
+                                  backgroundColor: "#ffffff08",
+                                  opacity: 1,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
                                 }}
                               >
                                 <Box
                                   sx={{
-                                    position: 'relative',
-                                    bgcolor: '#fff',
-                                    // p: 4, 
+                                    position: "relative",
+                                    bgcolor: "#fff",
+                                    // p: 4,
                                     borderRadius: 2,
-                                    width: '50vw',
-                                    height: '60vh',
-                                    textAlign: 'center',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    
+                                    width: "50vw",
+                                    height: "60vh",
+                                    textAlign: "center",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                   }}
                                 >
                                   {/* Close Button */}
@@ -535,8 +580,9 @@ const Request = () => {
                                     aria-label="close"
                                     onClick={handleClose}
                                     sx={{
-                                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                      position: 'absolute',
+                                      backgroundColor:
+                                        "rgba(255, 255, 255, 0.1)",
+                                      position: "absolute",
                                       top: 2,
                                       right: 8,
                                     }}
@@ -548,21 +594,24 @@ const Request = () => {
                                   {loading ? (
                                     <CircularProgress />
                                   ) : error ? (
-                                    <Typography color="error">{error}</Typography>
+                                    <Typography color="error">
+                                      {error}
+                                    </Typography>
                                   ) : (
                                     <img
                                       src={imageSrc}
-                                      
                                       alt="Screenshot"
                                       width="100%"
                                       height="100%"
                                       onClick={handleImageClick}
-                                      style={{ borderRadius: 8, cursor: 'pointer'  }}
+                                      style={{
+                                        borderRadius: 8,
+                                        cursor: "pointer",
+                                      }}
                                     />
                                   )}
                                 </Box>
                               </Modal>
-
                             </div>
                             <br />
                             <p className="line-clamp-4 break-words">
@@ -577,7 +626,9 @@ const Request = () => {
                                   maxHeight: "250px",
                                 },
                               }}
-                              className={`[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-1 text-black ${update ? 'bg-[#ECECEC]' : 'bg-white'}`}
+                              className={`[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-1 text-black ${
+                                update ? "bg-[#ECECEC]" : "bg-white"
+                              }`}
                               onChange={(e) => {
                                 const updateData = {
                                   status_id: e.target.value,
@@ -599,14 +650,18 @@ const Request = () => {
                                 })}
                             </Select>
                           </td>
-                          <td className="flex justify-center gap-4 px-2 my-6">
+                          <td className="flex justify-center items-center gap-4 px-2 my-6">
                             {el.action_done ? (
                               <div className="bg-[#F4F7FE] px-2 py-1 rounded-lg">
                                 {el.action_done}
                               </div>
-                            ) : (
-                              "-"
-                            )}
+                            ) : null}
+                            <AddButtonIcon
+                              onClick={() => {
+                                setShowActionModal(true);
+                                setRequestID(el.id);
+                              }}
+                            />
                           </td>
                         </tr>
                       );
@@ -632,6 +687,13 @@ const Request = () => {
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+      <RequestActionModal
+        showModal={showActionModal}
+        setShowModal={setShowActionModal}
+        onClose={closeRequestActionModal}
+        onSubmit={addRequestActionsData}
+        isLoading={isActionLoading}
       />
     </div>
   );

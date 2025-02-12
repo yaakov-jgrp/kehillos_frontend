@@ -52,7 +52,7 @@ const Categories = ({
   setCurrentSearchTerm,
   currentActionSearchTerm,
   setCurrentActionSearchTerm,
-  writePermission
+  writePermission,
 }) => {
   const { t, i18n } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -377,13 +377,7 @@ const Categories = ({
 
   return (
     <div className="overflow-x-auto overflow-y-auto mb-12 w-full h-[30rem]">
-      {isLoading && (
-        <div className="flex justify-center items-center w-full h-full">
-          <span className="circle animate-loader"></span>
-          <span className="circle animate-loader animation-delay-200"></span>
-          <span className="circle animate-loader animation-delay-400"></span>
-        </div>
-      )}
+      {isLoading && <Loader className="!min-h-fit" />}
       {!isLoading && categoriesData && (
         <table className="!table text-[12px] overflow-y-auto w-full">
           <thead className="sticky top-0 z-10 bg-[#F9FBFC]">
@@ -547,14 +541,20 @@ const Categories = ({
                       )}
                       {
                         <AddButtonIcon
-                          extra={writePermission
-                            ? "hover:cursor-not-allowed"
-                            : "hover:cursor-pointer"}
-                          onClick={writePermission ? ()=>{} : () => {
-                            setTrafficAction(false);
-                            enableActionUpdate(el);
-                            setIsDefaultActionSelectOpen(false);
-                          }}
+                          extra={
+                            writePermission
+                              ? "hover:cursor-not-allowed"
+                              : "hover:cursor-pointer"
+                          }
+                          onClick={
+                            writePermission
+                              ? () => {}
+                              : () => {
+                                  setTrafficAction(false);
+                                  enableActionUpdate(el);
+                                  setIsDefaultActionSelectOpen(false);
+                                }
+                          }
                         />
                       }
                     </td>
