@@ -455,6 +455,7 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
       return cleanupBlockChanges(newChanges);
     });
 
+    
     setActiveForm((prev) => ({
       ...prev,
       blocks: [...prev.blocks, newBlock],
