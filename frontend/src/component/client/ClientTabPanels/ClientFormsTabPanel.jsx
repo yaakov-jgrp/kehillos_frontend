@@ -101,12 +101,12 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
     changes.fieldChanges.added.forEach((change) => {
       const fieldId = change.id;
       if (!fieldMap.has(fieldId)) {
-        fieldMap.set(fieldId, 'added');
+        fieldMap.set(fieldId, "added");
       } else {
         // If we see a field twice with different actions, mark it for removal
         const previousAction = fieldMap.get(fieldId);
-        if (previousAction !== 'added') {
-          fieldMap.set(fieldId, 'remove');
+        if (previousAction !== "added") {
+          fieldMap.set(fieldId, "remove");
         }
       }
     });
@@ -114,23 +114,23 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
     changes.fieldChanges.removed.forEach((change) => {
       const fieldId = change.id;
       if (!fieldMap.has(fieldId)) {
-        fieldMap.set(fieldId, 'removed');
+        fieldMap.set(fieldId, "removed");
       } else {
         // If we see a field twice with different actions, mark it for removal
         const previousAction = fieldMap.get(fieldId);
-        if (previousAction !== 'removed') {
-          fieldMap.set(fieldId, 'remove');
+        if (previousAction !== "removed") {
+          fieldMap.set(fieldId, "remove");
         }
       }
     });
 
     // Filter out fields that have both added and removed actions
-    const cleanedFieldChangesAdded = changes.fieldChanges.added.filter((change) =>
-      fieldMap.get(change.id) !== 'remove'
+    const cleanedFieldChangesAdded = changes.fieldChanges.added.filter(
+      (change) => fieldMap.get(change.id) !== "remove"
     );
 
-    const cleanedFieldChangesRemoved = changes.fieldChanges.removed.filter((change) =>
-      fieldMap.get(change.id) !== 'remove'
+    const cleanedFieldChangesRemoved = changes.fieldChanges.removed.filter(
+      (change) => fieldMap.get(change.id) !== "remove"
     );
 
     return {
@@ -317,6 +317,26 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
         })
       );
 
+      setBlockChanges((prevState) => {
+        const updatedFields = prevState.fieldChanges.added.map((field) => {
+          if (field.id === fieldId) {
+            return {
+              ...field,
+              defaultvalue: newValue,
+            };
+          }
+          return field;
+        });
+
+        return {
+          ...prevState,
+          fieldChanges: {
+            added: updatedFields,
+            removed: prevState.removed,
+          },
+        };
+      });
+
       return {
         ...prevState,
         fields: updatedFields,
@@ -388,7 +408,11 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
       setVersionComments("");
       setShowFormAddVersionModal(false);
       setShowCommentAddedSuccessfullyModal(true);
-      setBlockChanges({ added: [], removed: [], fieldChanges: { added: [], removed: [] } }); // Reset all changes after successful save
+      setBlockChanges({
+        added: [],
+        removed: [],
+        fieldChanges: { added: [], removed: [] },
+      }); // Reset all changes after successful save
     } catch (error) {
       toast.error(JSON.stringify(error));
       console.log(error);
@@ -435,18 +459,19 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
       const newChanges = {
         ...prev,
         added: [
-          ...prev.added, 
-          { 
-            blockId: newBlock.id, 
+          ...prev.added,
+          {
+            blockId: newBlock.id,
             name: newBlockName,
             isRepeatable: newBlock.isRepeatable,
             clientFormId: newBlock.clientFormId,
-          }],
+          },
+        ],
         fieldChanges: {
           added: [
             ...prev.fieldChanges.added,
             ...clonedFields.map((field) => ({
-              ...field  // This will preserve all field properties
+              ...field, // This will preserve all field properties
             })),
           ],
           removed: prev.fieldChanges.removed,
@@ -455,7 +480,6 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
       return cleanupBlockChanges(newChanges);
     });
 
-    
     setActiveForm((prev) => ({
       ...prev,
       blocks: [...prev.blocks, newBlock],
@@ -480,7 +504,7 @@ export const ClientFormsTabPanel = ({ clientId, disabled }) => {
             removed: [
               ...prev.fieldChanges.removed,
               ...fieldsToRemove.map((field) => ({
-                ...field  // This will preserve all field properties
+                ...field, // This will preserve all field properties
               })),
             ],
           },
