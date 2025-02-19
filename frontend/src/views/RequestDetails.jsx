@@ -206,10 +206,10 @@ const RequestDetails = () => {
             />
             <AttributesValues
               attr={t("requestDetails.status")}
-              value={JSON.stringify(
+              value={
                 RequestData?.data?.data?.status?.label ??
-                  RequestData?.data?.data?.status
-              )}
+                JSON.stringify(RequestData?.data?.data?.status)
+              }
             />
             <AttributesValues
               attr={t("requestDetails.requestType")}
