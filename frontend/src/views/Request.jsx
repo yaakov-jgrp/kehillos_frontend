@@ -40,10 +40,12 @@ import { update } from "lodash";
 import { UserContext } from "../Hooks/permissionContext";
 import AddButtonIcon from "../component/common/AddButton";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Request = () => {
   const { t } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [allRequest, setAllRequests] = useState([]);
   const [page, setPage] = useState(0);
@@ -59,6 +61,7 @@ const Request = () => {
   const [open, setOpen] = useState(false);
   const { userDetails, permissions } = useContext(UserContext);
   const [requestID, setRequestID] = useState(null);
+  const [sectorBlockUrls, setSectorBlockUrls] = useState([]);
   const [showActionModal, setShowActionModal] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
   // const permissionsObjects =
@@ -208,6 +211,7 @@ const Request = () => {
       const res = await requestService.addRequestActions(updatedData);
       fetchRequestData();
       toast.success(res.data.message);
+      setSectorBlockUrls([]);
       return res;
     } catch (error) {
       console.log(error);
@@ -219,6 +223,11 @@ const Request = () => {
 
   const closeRequestActionModal = () => {
     setRequestID(null);
+    setSectorBlockUrls([]);
+  };
+
+  const navigateToRequest = (id) => {
+    navigate(`/request/${id}`);
   };
 
   useEffect(() => {
@@ -480,7 +489,12 @@ const Request = () => {
                           className="h-[75px] border-b border-b-[#F2F2F2]"
                           key={el.id}
                         >
-                          <td className="py-12">#{el.id}</td>
+                          <td
+                            className="py-12 cursor-pointer"
+                            onClick={() => navigateToRequest(el.id)}
+                          >
+                            #{el.id}
+                          </td>
                           <td>
                             {formateDateTime(el.created_at).date}
                             <br />
@@ -652,7 +666,7 @@ const Request = () => {
                           </td>
                           <td className="flex justify-center items-center gap-4 px-2 my-6">
                             {el.action_done ? (
-                              <div className="bg-[#F4F7FE] px-2 py-1 rounded-lg">
+                              <div className="bg-[#F4F7FE] px-2 py-1 rounded-lg line-clamp-4 overflow-hidden">
                                 {el.action_done}
                               </div>
                             ) : null}
@@ -660,6 +674,14 @@ const Request = () => {
                               onClick={() => {
                                 setShowActionModal(true);
                                 setRequestID(el.id);
+                                if (
+                                  el.netfree_urls_data?.sector_block &&
+                                  el.netfree_urls_data?.sector_block.length > 0
+                                ) {
+                                  setSectorBlockUrls(
+                                    el.netfree_urls_data?.sector_block
+                                  );
+                                }
                               }}
                             />
                           </td>
@@ -694,6 +716,7 @@ const Request = () => {
         onClose={closeRequestActionModal}
         onSubmit={addRequestActionsData}
         isLoading={isActionLoading}
+        sectorBlockUrls={sectorBlockUrls}
       />
     </div>
   );

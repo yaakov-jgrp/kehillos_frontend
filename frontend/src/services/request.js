@@ -39,6 +39,16 @@ const addRequestActions = (data) => {
   return api.put(`/api/crm/requests-manual-action/`, data);
 };
 
+const fetchRequestDetails = (id) => {
+  return api.get(`/api/crm/requests/${id}/`);
+};
+
+const fetchManualActions = (id, params) => {
+  return api.get(
+    `/api/crm/requests-manual-action/?email_request_id=${id}${params}`
+  );
+};
+
 const requestService = {
   getRequests,
   getRequestStatuses,
@@ -51,5 +61,7 @@ const requestService = {
   deleteStatus,
   deleteCategoryStatus,
   addRequestActions,
+  fetchRequestDetails,
+  fetchManualActions,
 };
 export default requestService;
