@@ -17,6 +17,13 @@ import ClientsForm from "./views/ClientsForm";
 import Logs from "./views/Logs";
 import Users from "./views/Users";
 import EmailTemplating from "./views/EmailTemplating";
+import Forms from "./views/Forms";
+import RequestDetails from "./views/RequestDetails";
+import ClientFormsTable from "./views/ClientFormsTable";
+import Config from "./views/apiConfig";
+import Automation from "./views/Automation";
+import FormDetails from "./views/FormDetails";
+import AutomationDetails from "./views/AutomationDetails";
 import RouteGuard from "./component/common/RouteGuard";
 
 // CSS imports
@@ -33,6 +40,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Icon imports
 import { MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
@@ -44,15 +52,11 @@ import FormsDarkIcon from "../src/assets/images/forms_dark.svg";
 // Utils imports
 import { DEFAULT_LANGUAGE } from "./constants";
 import { ACCESS_TOKEN_KEY } from "./constants";
-import Forms from "./views/Forms";
-import FormDetails from "./views/FormDetails";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
-import ClientFormsTable from "./views/ClientFormsTable";
-import Config from "./views/apiConfig";
-import Automation from "./views/Automation";
-import AutomationDetails from "./views/AutomationDetails";
 import UserProvider from "./Hooks/permissionContext";
+
+const queryClient = new QueryClient();
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -195,6 +199,11 @@ function App() {
       component: <Request />,
     },
     {
+      name: t("sidebar.requestDetails"),
+      path: "request/:id",
+      component: <RequestDetails />,
+    },
+    {
       name: t("sidebar.netfree"),
       path: "settings/netfree",
       type: "menu",
@@ -238,44 +247,46 @@ function App() {
   ];
 
   return (
-    <Provider store={store}>
-      <ThemeProvider theme={themeWithLocale}>
-        <UserProvider>
-          <Router>
-            <Routes>
-              <Route exact path="/signin" element={<SignIn />} />
-              <Route
-                element={
-                  <RouteGuard
-                    token={ACCESS_TOKEN_KEY}
-                    routeRedirect="/signin"
-                  />
-                }
-              >
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <ThemeProvider theme={themeWithLocale}>
+          <UserProvider>
+            <Router>
+              <Routes>
+                <Route exact path="/signin" element={<SignIn />} />
                 <Route
-                  path="/*"
-                  element={<Navigate to={routes[0].path} replace />}
-                />
-                {routes.map((prop, key) => {
-                  return (
-                    <Route
-                      path={`/${prop.path}`}
-                      element={
-                        <DefaultLayout route={prop}>
-                          {prop.component}
-                        </DefaultLayout>
-                      }
-                      key={key}
+                  element={
+                    <RouteGuard
+                      token={ACCESS_TOKEN_KEY}
+                      routeRedirect="/signin"
                     />
-                  );
-                })}
-              </Route>
-            </Routes>
-          </Router>
-          <ToastContainer autoClose={2000} />
-        </UserProvider>
-      </ThemeProvider>
-    </Provider>
+                  }
+                >
+                  <Route
+                    path="/*"
+                    element={<Navigate to={routes[0].path} replace />}
+                  />
+                  {routes.map((prop, key) => {
+                    return (
+                      <Route
+                        path={`/${prop.path}`}
+                        element={
+                          <DefaultLayout route={prop}>
+                            {prop.component}
+                          </DefaultLayout>
+                        }
+                        key={key}
+                      />
+                    );
+                  })}
+                </Route>
+              </Routes>
+            </Router>
+            <ToastContainer autoClose={2000} />
+          </UserProvider>
+        </ThemeProvider>
+      </Provider>
+    </QueryClientProvider>
   );
 }
 

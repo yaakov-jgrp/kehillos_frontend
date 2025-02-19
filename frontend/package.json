@@ -20,6 +20,7 @@
     "@mui/x-data-grid": "^6.18.0",
     "@mui/x-date-pickers": "^6.17.0",
     "@reduxjs/toolkit": "^2.2.7",
+    "@tanstack/react-query": "^5.66.5",
     "axios": "^1.4.0",
     "dayjs": "^1.11.10",
     "framer-motion": "^10.12.16",
@@ -48,6 +49,7 @@
     "yup": "^1.3.2"
   },
   "devDependencies": {
+    "@tanstack/eslint-plugin-query": "^5.66.1",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^4.0.0",
