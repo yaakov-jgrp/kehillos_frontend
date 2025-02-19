@@ -490,7 +490,7 @@ const Request = () => {
                           key={el.id}
                         >
                           <td
-                            className="py-12 cursor-pointer"
+                            className="py-12 cursor-pointer text-brand-500 hover:text-brand-600"
                             onClick={() => navigateToRequest(el.id)}
                           >
                             #{el.id}
