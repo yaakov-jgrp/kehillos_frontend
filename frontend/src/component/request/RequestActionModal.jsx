@@ -16,8 +16,10 @@ import requestService from "../../services/request";
 // Icon imports
 import { AiTwotoneDelete } from "react-icons/ai";
 import CrossIcon from "../../assets/images/cross.svg";
+import { MdCheck } from "react-icons/md";
+
+// Utils imports
 import { handleNumberkeyPress } from "../../lib/CommonFunctions";
-import Loader from "../common/Loader";
 
 // Initial state data
 const initialState = {
@@ -32,6 +34,7 @@ const RequestActionModal = ({
   onSubmit,
   onClose,
   isLoading,
+  sectorBlockUrls,
 }) => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [actionsList, setActionsList] = useState([]);
@@ -48,6 +51,7 @@ const RequestActionModal = ({
   const [deleteButtonsVisible, setDeleteButtonsVisible] = useState([false]);
   const [requestStatuses, setRequestStatuses] = useState([]);
   const [showEmailTemplate, setShowEmailTemplate] = useState(false);
+  const [selectedSectorBlockUrls, setSelectedSectorBlockUrls] = useState([]);
   const notify = (error) => toast.error(error);
 
   const handleAddInput = () => {
@@ -136,6 +140,7 @@ const RequestActionModal = ({
     setInputValues([""]);
     setDeleteButtonsVisible([false]);
     setShowEmailTemplate(false);
+    setSelectedSectorBlockUrls([]);
   };
 
   const submitForm = async () => {
@@ -175,6 +180,7 @@ const RequestActionModal = ({
     }
     data = {
       action_id: selectedAction,
+      email_request_sector_block_url: selectedSectorBlockUrls,
       ...(showEmailTemplate && {
         email_inputs: showEmailTemplate
           ? {
@@ -232,6 +238,7 @@ const RequestActionModal = ({
                     className="bg-transparent border-0 text-black float-right"
                     onClick={() => {
                       setShowModal(false);
+                      onClose();
                     }}
                   >
                     <img src={CrossIcon} alt="CrossIcon" />
@@ -239,6 +246,54 @@ const RequestActionModal = ({
                 </div>
 
                 <div className="relative p-5 pb-20 flex flex-col gap-3 scrollbar-hide">
+                  {sectorBlockUrls.length > 0 && (
+                    <div>
+                      <label className="block text-gray-11 text-md mb-1">
+                        {t("requestDetails.sectorUrls")}
+                      </label>
+                      <Select
+                        MenuProps={{
+                          sx: {
+                            zIndex: 9999,
+                          },
+                        }}
+                        className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                        onChange={(e) => {
+                          setSelectedSectorBlockUrls(e.target.value);
+                        }}
+                        renderValue={(selected) => {
+                          if (selected.length === 0) {
+                            return (
+                              <em>{t("requestDetails.selectSectorUrl")}</em>
+                            );
+                          }
+
+                          return selected.join(", ");
+                        }}
+                        displayEmpty
+                        value={selectedSectorBlockUrls}
+                        multiple
+                      >
+                        <MenuItem value="" disabled>
+                          <em> {t("requestDetails.selectSectorUrl")} </em>
+                        </MenuItem>
+                        {sectorBlockUrls?.map((el, i) => {
+                          return el ? (
+                            <MenuItem
+                              key={i}
+                              value={el}
+                              className="!flex !justify-between items-center w-full"
+                            >
+                              {el}
+                              {selectedSectorBlockUrls.includes(el) && (
+                                <MdCheck />
+                              )}
+                            </MenuItem>
+                          ) : null;
+                        })}
+                      </Select>
+                    </div>
+                  )}
                   <div>
                     <label className="block text-gray-11 text-md mb-1">
                       {t("netfree.actions")}
