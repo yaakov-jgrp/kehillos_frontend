@@ -316,7 +316,7 @@ function ClientFormsTable() {
             }}
           >
             <img src={AddIcon} alt="add_icon" />
-            {t("forms.addNewForm")}
+            {t("forms.addNewForm")} 
           </button>
         </div>
       </div>
