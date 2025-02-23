@@ -2,8 +2,14 @@ import React, { useEffect, useState } from "react";
 import CrossIcon from "../../assets/images/cross.svg";
 import AddCircleIcon from "../../assets/images/add_circle.svg";
 import { useTranslation } from "react-i18next";
-import { MenuItem, Select, Stack, TextField } from "@mui/material";
-import Autocomplete from '@mui/material/Autocomplete';
+import {
+  CircularProgress,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+} from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import { Accordion } from "@chakra-ui/react";
 import CustomAccordion from "../common/Accordion";
 import PhoneInput from "react-phone-number-input";
@@ -35,6 +41,7 @@ import { toast } from "react-toastify";
 import formService from "../../services/forms";
 import clientsService from "../../services/clients";
 import SearchFilterModal from "./SearchFilterModal";
+import { set } from "lodash";
 
 export default function CreateClientFormModal({
   setShowModal,
@@ -53,21 +60,34 @@ export default function CreateClientFormModal({
   const [clientValue, setClientValue] = useState(null);
   const [formId, setFormId] = useState("");
   const [allClients, setAllClients] = useState([]);
+  const [allClientsFields, setAllClientsFields] = useState([]);
   const [allForms, setAllForms] = useState([]);
   const [showFilterModal, setShowFilterModal] = useState(false);
-  const [activeSwitch, setActiveSwitch] = useState("id");
+  const [activeSwitch, setActiveSwitch] = useState(["id"]);
+  const [loading, setLoading] = useState(false);
+
+  function getAllClientsUniqueKeys(arr) {
+    const keySet = new Set();
+    arr.forEach((obj) => {
+      Object.keys(obj).forEach((key) => keySet.add(key));
+    });
+    return Array.from(keySet);
+  }
+
   const fetchFormsData = async () => {
     try {
       let payload = [];
       let searchValues = "";
       for (const searchfield in searchParams) {
         if (searchParams[searchfield] !== "") {
-          searchValues += `&search_${[searchfield]}=${searchParams[searchfield]
-            }`;
+          searchValues += `&search_${[searchfield]}=${
+            searchParams[searchfield]
+          }`;
         }
       }
-      const params = `?page=${page + 1
-        }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
+      const params = `?page=${
+        page + 1
+      }&lang=${lang}&page_size=${rowsPerPage}${searchValues}`;
       const allFormsPayload = await formsService.getAllForms(params);
       if (
         allFormsPayload?.data?.results &&
@@ -79,21 +99,41 @@ export default function CreateClientFormModal({
       }
       console.log(payload);
       setAllForms(payload);
-      setTimeout(() => { }, 500);
+      setTimeout(() => {}, 500);
     } catch (error) {
       console.log(error);
     }
   };
 
   const fetchClientsData = async () => {
+    setLoading(true);
+    let allClientsData = [];
+    let page_count = 1;
+    let nextUrl = `?page=${page_count}&lang=en&page_size=10000`;
     const params = `?page=${1}&lang=${"en"}&page_size=${500}`;
-    // ::REAL DATA::
-    const clientsData = await clientsService.getClientsFormsDetailPage(params);
-
-    // ::MOCKED DATA::
-    // const clientsData = CLIENTS;
-    setAllClients(clientsData.data.data);
-    const clientIdVar = clientId ? clientId : clientsData.data.data[0].id;
+    try {
+      while (nextUrl) {
+        const response = await clientsService.getClients(nextUrl);
+        allClientsData = [...allClientsData, ...response.data.data];
+        // const { page, num_pages } = response.data;
+        // if (page >= num_pages) {
+        //   break;
+        // }
+        nextUrl = response.data.next
+          ? `?page=${++page_count}&lang=en&page_size=10000`
+          : null;
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+    const allClientsFieldsKeys = getAllClientsUniqueKeys(allClientsData);
+    console.log("All clients fields keys are:");
+    console.log(allClientsFieldsKeys);
+    setAllClientsFields(allClientsFieldsKeys);
+    setAllClients(allClientsData);
+    const clientIdVar = clientId ? clientId : allClientsData[0].id;
     setClientValue(clientIdVar);
   };
 
@@ -270,8 +310,9 @@ export default function CreateClientFormModal({
             key={index}
           >
             <div
-              className={`flex items-center justify-between ${isCheckBox ? "ml-2 w-full" : "mb-1"
-                }`}
+              className={`flex items-center justify-between ${
+                isCheckBox ? "ml-2 w-full" : "mb-1"
+              }`}
             >
               <div className="flex items-center">
                 <label className="block text-gray-700 text-md font-normal">
@@ -399,6 +440,17 @@ export default function CreateClientFormModal({
     });
   };
 
+  const getDisplayValue = (client, field) => {
+    const value = client[field];
+    if (value === null || value === undefined) {
+      return "";
+    } else if (typeof value === "object" && value.value) {
+      return value.value;
+    } else {
+      return String(value);
+    }
+  };
+
   useEffect(() => {
     fetchClientsData();
     fetchFormsData();
@@ -408,7 +460,7 @@ export default function CreateClientFormModal({
     console.log(allForms.filter((form) => form.id === formId)[0]);
     setActiveFormState(allForms.filter((form) => form.id === formId)[0]);
   }, [formId, allForms]);
-  console.log(clientValue, "selected client 1");
+
   return (
     <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
       <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
@@ -432,7 +484,6 @@ export default function CreateClientFormModal({
                   <img src={CrossIcon} alt="cross-icon" />
                 </button>
               </div>
-
             </div>
 
             <div className="bg-[#F9FBFC] rounded-lg m-4 px-4 pt-4">
@@ -532,28 +583,46 @@ export default function CreateClientFormModal({
                   /> */}
                   {/*  PREVIOUS SELECT DONOT REMOVE */}
 
-                  <Autocomplete
+                  {/* <Autocomplete
                     disablePortal
                     id="combo-box-demo"
-                    placeholder={`Search by ${activeSwitch}`}
+                    disabled={loading}
+                    placeholder={`Search by ${activeSwitch.join(", ")}`}
                     className="[&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-md outline-none w-full text-gray-11 bg-white"
                     sx={{
-                      height: "45px"
+                      height: "45px",
                     }}
                     size="small"
                     options={allClients}
                     getOptionLabel={(client) => {
-                      switch (activeSwitch) {
-                        case "name":
-                          return `${client.first_name || ""} ${client.last_name || ""}`.trim();
-                        case "email":
-                          return client.email !== "" ? client.email : `${client.first_name} ${client.last_name}`;
-                        case "id":
-                        default:
-                          return `#${client.id}` || "";
+                      const labels = [];
+                      if (activeSwitch.includes("id")) {
+                        labels.push(`#${client.id}` || "");
                       }
+                      if (activeSwitch.includes("name")) {
+                        labels.push(
+                          `${client.first_name || ""} ${
+                            client.last_name || ""
+                          }`.trim()
+                        );
+                      }
+                      if (activeSwitch.includes("email")) {
+                        if (activeSwitch.length === 1) {
+                          labels.push(
+                            client.email !== ""
+                              ? client.email
+                              : `${client.first_name} ${client.last_name}`
+                          );
+                        } else {
+                          labels.push(client.email);
+                        }
+                      }
+                      return labels.join(" | ");
                     }}
-                    value={allClients.find(client => client.id === clientValue) || null}
+                    value={
+                      allClients.find((client) => client.id === clientValue) ||
+                      null
+                    }
                     onChange={(event, newValue) => {
                       setClientValue(newValue ? newValue.id : null);
                       console.log(newValue, "selected");
@@ -561,12 +630,70 @@ export default function CreateClientFormModal({
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        placeholder={`Search by ${activeSwitch}`}
+                        placeholder={`Search by ${activeSwitch.join(", ")}`}
                         InputProps={{
                           ...params.InputProps,
                           endAdornment: (
                             <>
-                              {/* {loading ? <CircularProgress color="inherit" size={20} /> : null} */}
+                              {loading ? (
+                                <CircularProgress color="inherit" size={20} />
+                              ) : null}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  /> */}
+
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    disabled={loading}
+                    placeholder={`Search by ${activeSwitch.join(", ")}`}
+                    className="[&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-md outline-none w-full text-gray-11 bg-white"
+                    sx={{
+                      height: "45px",
+                    }}
+                    size="small"
+                    options={allClients}
+                    getOptionLabel={(client) => {
+                      const labels = activeSwitch
+                        .map((field) => {
+                          if (field === "id") {
+                            return `#${client.id || ""}`;
+                          }
+                          //  else if (field === "name") {
+                          //   return `${client["first_name_-_owner"] || ""} ${
+                          //     client.last_name || ""
+                          //   }`.trim();
+                          // }
+                          else {
+                            return getDisplayValue(client, field);
+                          }
+                        })
+                        .filter((label) => label !== "");
+                      return labels.join(" | ");
+                    }}
+                    value={
+                      allClients.find((client) => client.id === clientValue) ||
+                      null
+                    }
+                    onChange={(event, newValue) => {
+                      setClientValue(newValue ? newValue.id : null);
+                      console.log(newValue, "selected");
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        placeholder={`Search by ${activeSwitch.join(", ")}`}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {loading ? (
+                                <CircularProgress color="inherit" size={20} />
+                              ) : null}
                               {params.InputProps.endAdornment}
                             </>
                           ),
@@ -669,8 +796,9 @@ export default function CreateClientFormModal({
                 <div className="mt-4 p-2 flex justify-center items-center">
                   <button
                     disabled={!clientValue || !activeFormState}
-                    className={`${lang === "he" ? "w-[150px]" : "w-[170px]"
-                      } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
+                    className={`${
+                      lang === "he" ? "w-[150px]" : "w-[170px]"
+                    } h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
                     onClick={() => {
                       submitFormHandler();
                     }}
@@ -682,7 +810,14 @@ export default function CreateClientFormModal({
           </div>
         </div>
       </div>
-      {showFilterModal && <SearchFilterModal setShowFilterModal={setShowFilterModal} activeSwitch={activeSwitch} setActiveSwitch={setActiveSwitch} />}
+      {showFilterModal && (
+        <SearchFilterModal
+          setShowFilterModal={setShowFilterModal}
+          activeSwitch={activeSwitch}
+          setActiveSwitch={setActiveSwitch}
+          allClientsFields={allClientsFields}
+        />
+      )}
     </div>
   );
 }
