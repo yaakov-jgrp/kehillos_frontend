@@ -8,7 +8,7 @@ import EditButtonIcon from "../common/EditButton";
 import { useTranslation } from "react-i18next";
 import { DEFAULT_LANGUAGE } from "../../constants";
 
-function TemplateTextCard({ onEdit, deleteTemplate, template }) {
+function TemplateTextCard({ onEdit, deleteTemplate, template, writePermission, updatePermission, deletePermission }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t } = useTranslation();
   const lang = localStorage.getItem(DEFAULT_LANGUAGE);
@@ -68,21 +68,21 @@ function TemplateTextCard({ onEdit, deleteTemplate, template }) {
             } top-14 md:top-16 flex flex-col gap-3 shadow-md rounded-lg p-2`}
           >
             <div
-              className="flex items-center gap-2 cursor-pointer"
-              onClick={() => onEdit(template.id)}
+              className={`flex items-center gap-2 ${updatePermission ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              onClick={updatePermission ? ()=>{} : () => onEdit(template.id)}
             >
               <EditButtonIcon />
               <p className="text-md">{t("emails.edit")}</p>
             </div>
 
             <div
-              className="flex items-center gap-2 cursor-pointer"
-              onClick={deleteTemplate}
+              className={`flex items-center gap-2 ${deletePermission ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              onClick={deletePermission ? ()=>{} : deleteTemplate}
             >
               <img
                 src={BinIcon}
                 alt="BinIcon"
-                className="hover:cursor-pointer"
+                className={deletePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}
               />
               <p className="text-md">{t("emails.delete")}</p>
             </div>

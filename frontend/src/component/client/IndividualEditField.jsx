@@ -25,6 +25,7 @@ import { FaEye } from "react-icons/fa";
 // Utils imports
 import { DateFieldConstants, linkTypes } from "../../lib/FieldConstants";
 import { errorsToastHandler } from "../../lib/CommonFunctions";
+import { USER_DETAILS } from "../../constants";
 
 function IndividualEditField({ field, clientData, setClientData }) {
   const { t } = useTranslation();
@@ -33,10 +34,16 @@ function IndividualEditField({ field, clientData, setClientData }) {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [fieldValue, setfieldValue] = useState("");
   const [edit, setEdit] = useState(false);
+  const permissionsObjects = JSON.parse(localStorage.getItem('permissionsObjects')) || {};
+  const clientsPermission = permissionsObjects?.clientsPermission;
+  const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const organizationAdmin = userDetails?.organization_admin;
   const [defaultValues, setDefaultValues] = useState({
     [field?.field_slug]: field?.value,
   });
   const [showFile, setShowFile] = useState(false);
+  const editPermission = (!clientsPermission?.is_update && clientsPermission) && !organizationAdmin;
+
   const phonePatterns = [
     /^050-?41\d-?\d{4}$/,
     /^052-?71\d-?\d{4}$/,
@@ -298,8 +305,8 @@ function IndividualEditField({ field, clientData, setClientData }) {
                     )}
                 </p>
                 <EditButtonIcon
-                  extra="mr-2 justify-self-end"
-                  onClick={editShowHandler}
+                  extra={`mr-2 justify-self-end ${editPermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}`}
+                  onClick={editPermission ? ()=>{} : editShowHandler}
                 />
               </>
             )}

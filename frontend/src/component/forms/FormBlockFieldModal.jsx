@@ -158,6 +158,7 @@ function FormBlockFieldModal({
         setValue("name", editData?.name);
         setValue("data_type", editData?.data_type.value);
         setValue("defaultvalue", JSON.stringify(editData?.defaultvalue) || "");
+        setValue("field_width_percentage", editData?.field_width_percentage);
         setValue("required", editData?.required);
         setValue("unique", editData?.unique);
       }
@@ -188,6 +189,8 @@ function FormBlockFieldModal({
   };
 
   const submitForm = async (data, e) => {
+    console.log('activeForm>>>',activeForm);
+    
     e.preventDefault();
     if (editData) {
       let updatedData;
@@ -214,6 +217,7 @@ function FormBlockFieldModal({
                   ...editData,
                   name: data.name,
                   defaultvalue: data.defaultvalue,
+                  field_width_percentage: data?.field_width_percentage,
                   required: data.required,
                   unique: data.unique,
                 };
@@ -282,6 +286,8 @@ function FormBlockFieldModal({
           },
         };
         delete newFieldPayload.value;
+
+        
         if (!isFloat(blockId)) {
           const newField = await formService.createNewField(newFieldPayload);
           dispatch(setFields([...activeForm.fields, newField.data]));
@@ -289,6 +295,7 @@ function FormBlockFieldModal({
           dispatch(
             setFields([
               ...activeForm.fields,
+              
               { id: Math.random() + Date.now(), ...newFieldPayload },
             ])
           );
@@ -312,6 +319,13 @@ function FormBlockFieldModal({
   useEffect(() => {
     initModal();
   }, []);
+
+  const widthPercentage = [
+    { label: "25%", value: 25 },
+    { label: "50%", value: 50 },
+    { label: "75%", value: 75 },
+    { label: "100%", value: 100 },
+  ];
 
   return (
     <div className="fixed left-0 bottom-0 z-[1000] h-screen w-screen bg-[#00000080] flex justify-center items-center">
@@ -505,6 +519,7 @@ function FormBlockFieldModal({
                               />
                             </>
                           )}
+
                         </div>
                       ) : (
                         <>
@@ -573,6 +588,41 @@ function FormBlockFieldModal({
                               )}
                             </>
                           )}
+                        </>
+                      )}
+                      {widthPercentage.length > 0 && (
+                        <>
+                          <label className="block text-gray-11 text-md font-normal my-1">
+                            {t("clients.width_percentage")}
+                          </label>
+                          <Controller
+                            name="field_width_percentage"
+                            control={control}
+                            render={({
+                              field: { value, onChange, onBlur },
+                            }) => (
+                              <Select
+                                MenuProps={{
+                                  sx: {
+                                    maxHeight: "250px",
+                                  },
+                                }}
+                                className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                value={value}
+                                placeholder={t("clients.select_width_percentage")}
+                              >
+                                {widthPercentage?.map((el) => {
+                                  return el ? (
+                                    <MenuItem key={el?.value} value={el?.value}>
+                                      {el?.label}
+                                    </MenuItem>
+                                  ) : null;
+                                })}
+                              </Select>
+                            )}
+                          />
                         </>
                       )}
                       <div className="flex flex-col mt-2">

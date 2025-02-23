@@ -41,7 +41,7 @@ function CustomField(props) {
 
   return (
     <>
-      {TextFieldConstants.includes(data_type.value) && (
+      {TextFieldConstants.includes(data_type?.value) && (
         <input
           type={data_type.value}
           className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-2 text-gray-11 placeholder:text-gray-10 dark:placeholder:!text-gray-10"
@@ -53,7 +53,7 @@ function CustomField(props) {
           placeholder={`${t("forms.enter")} ${name}`}
         />
       )}
-      {NumberFieldConstants.includes(data_type.value) && (
+      {NumberFieldConstants.includes(data_type?.value) && (
         <input
           type="number"
           min="0"
@@ -67,7 +67,7 @@ function CustomField(props) {
           placeholder={`${t("forms.enter")} ${name}`}
         />
       )}
-      {data_type.value === "phone" && (
+      {data_type?.value === "phone" && (
         <PhoneInput
           labels={lang === "en" ? en : he}
           className="appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2 text-gray-11 [&>input]:outline-none [&>input]:bg-white placeholder:text-gray-10 dark:placeholder:!text-gray-10"
@@ -79,7 +79,7 @@ function CustomField(props) {
           placeholder={t("clients.enterNumber")}
         />
       )}
-      {data_type.value === "file" && (
+      {data_type?.value === "file" && (
         <label className="text-md flex items-center w-full appearance-none outline-none border border-[#E3E5E6] rounded-lg p-2.5 text-gray-11">
           <MdOutlineUploadFile
             style={{
@@ -89,7 +89,7 @@ function CustomField(props) {
           />
           {value?.name || value?.file_name || value}
           <input
-            type={data_type.value}
+            type={data_type?.value}
             required={required}
             onChange={onChange}
             onBlur={onBlur}
@@ -98,7 +98,7 @@ function CustomField(props) {
           />
         </label>
       )}
-      {data_type.value === "select" && (
+      {data_type?.value === "select" && (
         <Select
         MenuProps={{
           sx: {
@@ -127,7 +127,7 @@ function CustomField(props) {
           })}
         </Select>
       )}
-      {checkBoxConstants.includes(data_type.value) && (
+      {checkBoxConstants.includes(data_type?.value) && (
         <CustomCheckBox
           onChange={onChange}
           onBlur={onBlur}
@@ -135,7 +135,7 @@ function CustomField(props) {
           disabled={disabled}
         />
       )}
-      {DateFieldConstants.includes(data_type.value) && (
+      {DateFieldConstants.includes(data_type?.value) && (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
             className="appearance-none outline-none border border-[#E3E5E6] rounded-lg w-full p-0 text-black"

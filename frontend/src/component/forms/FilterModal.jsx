@@ -41,6 +41,9 @@ function FilterModal({
   fetchFiltersHandler,
   setFilters,
   setAppliedFilter,
+  writePermission,
+  deletePermission,
+  updatePermission
 }) {
   const [showModal, setShowModal] = useState(false);
   const { t } = useTranslation();
@@ -274,7 +277,8 @@ function FilterModal({
   return (
     <>
       <button
-        className={`w-[90px] rounded-lg py-1 text-[14px] font-medium dark:bg-brand-400 text-[#0B99FF] dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-1 justify-center items-center border border-[#0B99FF]`}
+        disabled={writePermission}
+        className={`w-[90px] disabled:cursor-not-allowed rounded-lg py-1 text-[14px] font-medium dark:bg-brand-400 text-[#0B99FF] dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex gap-1 justify-center items-center border border-[#0B99FF]`}
         onClick={handleFilterClick}
       >
         <img src={FilterIcon} alt="visibility_icon" />
@@ -348,6 +352,7 @@ function FilterModal({
                       <div className="flex items-center p-2 gap-2">
                         {filter?.default ? (
                           <button
+                           disabled={deletePermission}
                             className="text-red-500 background-transparent font-semibold uppercase px-3 py-1 text-sm outline-none focus:outline-none"
                             type="button"
                             onClick={() => {
@@ -359,9 +364,10 @@ function FilterModal({
                           </button>
                         ) : (
                           <button
-                            className="text-white mx-1 text-sm transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 px-3 py-1 rounded-lg shadow hover:shadow-lg outline-none focus:outline-none"
+                          disabled={writePermission}
+                            className="text-white disabled:cursor-not-allowed mx-1 text-sm transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 px-3 py-1 rounded-lg shadow hover:shadow-lg outline-none focus:outline-none"
                             type="button"
-                            onClick={() => {
+                            onClick={writePermission ? ()=>{} : () => {
                               applyFilterHandler(filter, true);
                               setMenuAnchorEl(null);
                             }}
@@ -373,14 +379,14 @@ function FilterModal({
                           <div className="w-[1.3px] h-6 bg-[#CCCCCC]"></div>
                         )}
                         <EditButtonIcon
-                          extra="mx-1 h-[18px] w-[18px]"
-                          onClick={() => editFilterHandler(filter)}
+                          extra={`mx-1 h-[18px] w-[18px] ${updatePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}`}
+                          onClick={updatePermission ? ()=>{} : () => editFilterHandler(filter)}
                         />
                         <img
                           src={BinIcon}
                           alt="BinIcon"
-                          className="hover:cursor-pointer"
-                          onClick={() => deleteFilterHandler(filter?.id)}
+                          className={deletePermission ? "hover:cursor-not-allowed" : "hover:cursor-pointer"}
+                          onClick={deletePermission ? ()=>{} : () => deleteFilterHandler(filter?.id)}
                         />
                       </div>
                     </Popover>

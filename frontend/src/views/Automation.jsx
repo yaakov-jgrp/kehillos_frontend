@@ -35,9 +35,11 @@ import { setActiveForm } from "../redux/activeFormSlice";
 import { setAllFormsState } from "../redux/allFormsSlice";
 import { toast } from "react-toastify";
 import { convertDataForShowingForms, formatDate } from "../utils/helpers";
+import ToggleSwitch from "../component/common/ToggleSwitch";
+import automationService from "../services/automation";
 import { UserContext } from "../Hooks/permissionContext";
 
-function Forms() {
+function Automation() {
   // states
   const { t, i18n } = useTranslation();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -48,30 +50,35 @@ function Forms() {
   const [searchParams, setSearchParams] = useState({});
   const [confirmationModal, setConfirmationModal] = useState(false);
   const dispatch = useDispatch();
-  const allForms = useSelector((state) => state.allFormsState.allForms);
+  const { userDetails, permissions } = useContext(UserContext);
+  //   const allForms = useSelector((state) => state.allFormsState.allForms);
   const [allFormsLocalState, setAllFormsLocalState] = useState([]);
   const [activeFormId, setActiveFormId] = useState(null);
-  const { userDetails, permissions } = useContext(UserContext);
+  const [status, setStatus] = useState(false);
+  //   const [automationFormData, setAutomationFormData] = useState([]);
   // const permissionsObjects =
-  //     JSON.parse(localStorage.getItem("permissionsObjects")) || {};
-    const formcreationPermission = permissions?.formcreationPermission;
-    // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
-    const organizationAdmin = userDetails?.organization_admin;
-    const writePermission = organizationAdmin
-      ? false
-      : formcreationPermission
-      ? !formcreationPermission?.is_write
-      : false;
-    const updatePermission = organizationAdmin
-      ? false
-      : formcreationPermission
-      ? !formcreationPermission?.is_update
-      : false;
-    const deletePermission = organizationAdmin
-      ? false
-      : formcreationPermission
-      ? !formcreationPermission?.is_delete
-      : false;
+  //   JSON.parse(localStorage.getItem("permissionsObjects")) || {};
+  const automationPermission = permissions?.automationPermission;
+  // const userDetails = JSON.parse(localStorage.getItem(USER_DETAILS)) || {};
+  const organizationAdmin = userDetails?.organization_admin;
+  const writePermission = organizationAdmin
+    ? false
+    : automationPermission
+    ? !automationPermission?.is_write
+    : false;
+  const updatePermission = organizationAdmin
+    ? false
+    : automationPermission
+    ? !automationPermission?.is_update
+    : false;
+  const deletePermission = organizationAdmin
+    ? false
+    : automationPermission
+    ? !automationPermission?.is_delete
+    : false;
+
+    console.log('automationPermission?.is_delete',automationPermission?.is_delete);
+    
 
   // handlers
   const handleChangePage = (event, newPage) => {
@@ -83,34 +90,28 @@ function Forms() {
     setPage(0);
   };
 
-  const fetchFormsData = async () => {
+  const handleUpdateStatus = async (e, el) => {
+    const data = {
+      status: el?.status === "active" ? "inactive" : "active",
+    };
+    const response = await automationService.updateStatus(el?.id, data);
+
+    if (response?.status === 200 || response?.status === 201) {
+      fetchWorkflowData();
+    }
+    // setStatus(response.data.data.is_active);
+  };
+
+  const fetchWorkflowData = async () => {
     setIsLoading(true);
     try {
       let payload = [];
       let searchValues = "";
-      for (const searchfield in searchParams) {
-        if (searchParams[searchfield] !== "") {
-          searchValues += `&search_${[searchfield]}=${
-            searchParams[searchfield]
-          }`;
-        }
-      }
-      const params = `?page=${
-        page + 1
-      }&page_size=${rowsPerPage}${searchValues}`;
-      const allFormsPayload = await formsService.getAllForms(params);
-      if (
-        allFormsPayload?.data?.results &&
-        allFormsPayload.data.results.length > 0
-      ) {
-        payload = allFormsPayload.data.results.map((form) => ({
-          ...form,
-          createdAt: formatDate(form.createdAt),
-          lastEditedAt: formatDate(form.lastEditedAt),
-        }));
-      }
-      dispatch(setAllFormsState(payload));
-      setAllFormsLocalState(payload);
+      const params = `?page=${page + 1}&page_size=${rowsPerPage}&lang=${lang}`;
+      const allFormsPayload = await automationService.getAutomationList(params);
+      console.log("allFormsPayload", allFormsPayload);
+
+      setAllFormsLocalState(allFormsPayload?.data?.data);
       setTimeout(() => {
         setIsLoading(false);
       }, 500);
@@ -122,12 +123,13 @@ function Forms() {
   };
 
   const deleteFormData = async () => {
+    
     try {
-      await formsService.deleteForm(activeFormId);
-      await fetchFormsData();
+      await automationService.deleteWorkflowData(activeFormId);
+      await fetchWorkflowData();
     } catch (e) {
-      toast.error(JSON.stringify(error));
-      console.log(error);
+      toast.error(JSON.stringify(e));
+      console.log(e);
     }
     setConfirmationModal(false);
   };
@@ -160,17 +162,17 @@ function Forms() {
   }, [searchParams]);
 
   useEffect(() => {
-    const searchTimer = setTimeout(() => fetchFormsData(), 500);
+    const searchTimer = setTimeout(() => fetchWorkflowData(), 500);
     return () => clearTimeout(searchTimer);
   }, [lang, page, rowsPerPage]);
 
   return (
     <div className="w-full bg-white rounded-3xl shadow-custom">
       <div className="flex justify-between items-center py-4 px-7 text-gray-11 font-medium text-2xl">
-        {t("forms.formsManagement")}
-        <Link  to={writePermission ? "" : "/settings/forms/new-form"}>
+        {t("automation.automation")}
+        <Link to={writePermission ? "" : "/settings/automation/new-workflow"}>
           <button
-          disabled={writePermission}
+            disabled={writePermission}
             className={`${
               lang === "he" ? "w-[150px]" : "w-[170px]"
             } disabled:cursor-not-allowed h-[40px] rounded-lg py-1 px-2 text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-2`}
@@ -180,7 +182,7 @@ function Forms() {
             }}
           >
             <img src={AddIcon} alt="add_icon" />
-            {t("forms.createNewForm")}
+            {t("automation.newWorkflow")}
           </button>
         </Link>
       </div>
@@ -194,12 +196,12 @@ function Forms() {
                 <SearchField
                   variant="auth"
                   extra="mb-2"
-                  label={t("clients.id")}
-                  id="userId"
+                  label={t("automation.status")}
+                  id="status"
                   type="text"
                   placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) => searchResult("id", e.target.value)}
-                  name="id"
+                  onChange={(e) => searchResult("status", e.target.value)}
+                  name="status"
                 />
               </th>
 
@@ -207,12 +209,12 @@ function Forms() {
                 <SearchField
                   variant="auth"
                   extra="mb-2"
-                  label={t("forms.name")}
-                  id="userName"
+                  label={t("automation.workflowName")}
+                  id="workflowName"
                   type="text"
                   placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) => searchResult("name", e.target.value)}
-                  name="name"
+                  onChange={(e) => searchResult("workflowName", e.target.value)}
+                  name="workflowName"
                 />
               </th>
 
@@ -220,40 +222,40 @@ function Forms() {
                 <SearchField
                   variant="auth"
                   extra="mb-2"
-                  label={t("forms.description")}
-                  id="description"
-                  type="text"
-                  placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) => searchResult("description", e.target.value)}
-                  name="description"
-                />
-              </th>
-
-              <th className="pr-3 pb-2 pt-1">
-                <SearchField
-                  variant="auth"
-                  extra="mb-2"
-                  label={t("forms.dateCreated")}
-                  id="dateCreated"
-                  type="text"
-                  placeholder={t("searchbox.placeHolder")}
-                  onChange={(e) => searchResult("dateCreated", e.target.value)}
-                  name="dateCreated"
-                />
-              </th>
-
-              <th className="pr-3 pb-2 pt-1">
-                <SearchField
-                  variant="auth"
-                  extra="mb-2"
-                  label={t("forms.datelastEdited")}
-                  id="datelastEdited"
+                  label={t("automation.workflowDescription")}
+                  id="workflow_description"
                   type="text"
                   placeholder={t("searchbox.placeHolder")}
                   onChange={(e) =>
-                    searchResult("datelastEdited", e.target.value)
+                    searchResult("workflow_description", e.target.value)
                   }
-                  name="datelastEdited"
+                  name="workflow_description"
+                />
+              </th>
+
+              <th className="pr-3 pb-2 pt-1">
+                <SearchField
+                  variant="auth"
+                  extra="mb-2"
+                  label={t("automation.triggerType")}
+                  id="trigger_type"
+                  type="text"
+                  placeholder={t("searchbox.placeHolder")}
+                  onChange={(e) => searchResult("trigger_type", e.target.value)}
+                  name="trigger_type"
+                />
+              </th>
+
+              <th className="pr-3 pb-2 pt-1">
+                <SearchField
+                  variant="auth"
+                  extra="mb-2"
+                  label={t("automation.conditions")}
+                  id="conditions"
+                  type="text"
+                  placeholder={t("searchbox.placeHolder")}
+                  onChange={(e) => searchResult("conditions", e.target.value)}
+                  name="conditions"
                 />
               </th>
 
@@ -286,36 +288,42 @@ function Forms() {
               </tr>
             ) : (
               <>
-                {allForms && allForms.length > 0 ? (
+                {allFormsLocalState && allFormsLocalState.length > 0 ? (
                   <>
-                    {allForms.map((el) => {
+                    {allFormsLocalState.map((el) => {
                       return (
                         <tr
                           className="h-[75px] border-b border-b-[#F2F2F2] py-12"
                           key={el.id}
                         >
                           <td>
-                            {el.isPined && (
-                              <img
-                                src={PinIcon}
-                                alt="pin-icon"
-                                className="inline"
-                              />
-                            )}{" "}
-                            #{el.id}
+                            <ToggleSwitch
+                              disabled={updatePermission}
+                              clickHandler={(e) => handleUpdateStatus(e, el)}
+                              selected={
+                                el?.status === "inactive" ? false : true
+                              }
+                            />
                           </td>
-                          <td><p className="wrap pr-4">{el.name}</p></td>
-                          <td><p className="wrap pr-4">{el.description}</p></td>
-                          <td>{el.createdAt}</td>
-                          <td>{el.lastEditedAt}</td>
+                          <td>{el.workflow_name}</td>
+                          <td>{el.workflow_description}</td>
+                          <td>{el.trigger_type}</td>
+                          <td>
+                            {el.conditions?.map(
+                              (i) => i?.condition + "," + " "
+                            )}
+                          </td>
+                          <td>
+                            {el.actions?.map((i) => i?.action_type + "," + " ")}
+                          </td>
                           <td>
                             <div className="h-auto w-full flex items-center justify-center gap-2">
-                              <Link to={updatePermission ? '' : `/settings/forms/${el.id}`}>
+                              <Link to={updatePermission ? '' : `/settings/automation/${el.id}`}>
                                 <img
                                   src={PencilIcon}
                                   alt="PencilIcon"
                                   className={updatePermission ? "hover:cursor-not-allowed" : "hover:cursor-pointer"}
-                                  onClick={() => {
+                                  onClick={updatePermission ? ()=>{} : () => {
                                     const payload =
                                       convertDataForShowingForms(el);
                                     localStorage.setItem(
@@ -375,4 +383,4 @@ function Forms() {
   );
 }
 
-export default Forms;
+export default Automation;
