@@ -224,6 +224,28 @@ const Clients = () => {
     fetchFullFormData();
   }, []);
 
+  const formatWhatsAppTime = (checkedAt) => {
+    if (!checkedAt) return "";
+    const now = dayjs();
+    const checkTime = dayjs(checkedAt);
+    const diffMinutes = now.diff(checkTime, 'minute');
+    const diffHours = now.diff(checkTime, 'hour');
+    const diffDays = now.diff(checkTime, 'day');
+
+    if (diffDays > 30) {
+      return "1 month ago";
+    } else if (diffDays >= 7) {
+      return checkTime.format("DD/MM/YYYY");
+    } else if (diffDays >= 1) {
+      return `${diffDays}d ago`;
+    } else if (diffHours >= 1) {
+      return `${diffHours}h ago`;
+    } else if (diffMinutes >= 10) {
+      return `${diffMinutes}m ago`;
+    }
+    return "now";
+  };
+
   return (
     <div className="w-full bg-white rounded-3xl mt-1 shadow-custom">
       {allClients && netfreeprofiles && editClient && clientModal && (
@@ -474,6 +496,36 @@ const Clients = () => {
                                         : value;
                                     break;
                                   default:
+                                    // Handle nested JSON objects (like phone fields)
+                                    if (typeof dataValue === "object" && dataValue !== null) {
+                                      if (dataValue.number) {
+                                        // Handle phone fields
+                                        const waStatus = dataValue.whatsapp_status || "unknown";
+                                        if (waStatus === "unknown") {
+                                          value = dataValue.number;
+                                        } else {
+                                          const waTime = formatWhatsAppTime(dataValue.whatsapp_checked_at);
+                                          const waClass = waStatus === "none" ? "text-red-500" : "text-green-600";
+                                          value = (
+                                            <>
+                                              {dataValue.number}{" "}
+                                              <span className={waClass}>
+                                                WA
+                                              </span>
+                                              {waStatus !== "none" && waTime && (
+                                                <span className="text-sm text-gray-500 ml-1">
+                                                  ({waTime})
+                                                </span>
+                                              )}
+                                            </>
+                                          );
+                                        }
+                                      } else if (dataValue.value) {
+                                        value = dataValue.value;
+                                      } else {
+                                        value = Object.values(dataValue).find((v) => v !== null) || "";
+                                      }
+                                    }
                                     break;
                                 }
                                 let isDate = false;
