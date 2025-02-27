@@ -83,21 +83,47 @@ export const handleSort = (
     let valueB = b[field];
     switch (type) {
       case "select":
-        valueA = a[field]?.value || a[field];
-        valueB = b[field]?.value || a[field];
+        valueA = valueA?.value || valueA;
+        valueB = valueB?.value || valueB;
         break;
       case "checkbox":
-        valueA = a[field]?.toString() || a[field];
-        valueB = b[field]?.toString() || a[field];
+        valueA = valueA?.toString() || valueA;
+        valueB = valueB?.toString() || valueB;
         break;
       case "file":
-        valueA = a[field]?.file_name || a[field];
-        valueB = b[field]?.file_name || a[field];
+        valueA = valueA?.file_name || valueA;
+        valueB = valueB?.file_name || valueB;
         break;
       default:
         break;
     }
 
+
+    if (typeof valueA === "object" && valueA !== null) {
+      let vA, vB;
+      if (valueA.number) {
+        // Handle phone fields
+        vA = valueA.number;
+        vB = valueB.number;
+      } else if (valueA.value) {
+        // Handle fields with value property
+        vA = valueA.value;
+        vB = valueB.value;
+      } else {
+        // For other objects, show first non-null value or empty string
+        vA = Object.values(valueA).find((v) => v !== null) || "";
+        vB = Object.values(valueB).find((v) => v !== null) || "";
+      }
+      
+      if (typeof vA === "number" && typeof vB === "number") {
+        return sortOrder === "asc" ? vA - vB : vB - vA;
+      } else if (typeof vA === "string" && typeof vB === "string") {
+        const cmp = vA.localeCompare(vB);
+        return sortOrder === "asc" ? cmp : -cmp;
+      } else {
+        return 0;
+      }
+    }
     if (typeof valueA === "number" && typeof valueB === "number") {
       return sortOrder === "asc" ? valueA - valueB : valueB - valueA;
     } else if (typeof valueA === "string" && typeof valueB === "string") {
