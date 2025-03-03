@@ -530,18 +530,27 @@ const Clients = () => {
                                           const waTime = formatWhatsAppTime(
                                             dataValue.whatsapp_checked_at
                                           );
-                                          const waClass =
-                                            waStatus === "none"
-                                              ? "text-red-500"
-                                              : "text-green-600";
-                                          value = {
-                                            type: "phone",
-                                            number: dataValue.number,
-                                            waStatus,
-                                            waTime,
-                                            waClass,
-                                          };
-                                          whatsAppNumber = true;
+                                          value = dataValue.number;
+                                          if (waStatus !== "none") {
+                                            value = (
+                                              <div className="flex items-center gap-1">
+                                                <span>{dataValue.number}</span>
+                                                <span className="text-green-600">WA</span>
+                                                {waTime && (
+                                                  <span className="text-sm text-gray-500">
+                                                    ({waTime})
+                                                  </span>
+                                                )}
+                                              </div>
+                                            );
+                                          } else {
+                                            value = (
+                                              <div className="flex items-center gap-1">
+                                                <span>{dataValue.number}</span>
+                                                <span className="text-red-500">WA</span>
+                                              </div>
+                                            );
+                                          }
                                         }
                                       } else if (dataValue.value) {
                                         value = dataValue.value;
@@ -584,67 +593,38 @@ const Clients = () => {
                                         {!emptyValues.includes(value) && (
                                           <>
                                             {isDate ? (
-                                              <p>
+                                              <span>
                                                 {dayjs(value).format(
                                                   "DD/MM/YYYY"
                                                 )}
-                                              </p>
+                                              </span>
+                                            ) : isNumber ? (
+                                              <span>{parseFloat(value)}</span>
+                                            ) : linkTypes.includes(
+                                                data_type
+                                              ) ? (
+                                              <a
+                                                href={
+                                                  data_type !== "phone"
+                                                    ? `mailto:${
+                                                        typeof value === "object"
+                                                          ? value.props.children[0].props.children
+                                                          : value
+                                                      }`
+                                                    : "#"
+                                                }
+                                                className="text-gray-11 hover:text-gray-10 font-normal"
+                                              >
+                                                {value}
+                                              </a>
+                                            ) : data_type === "checkbox" ? (
+                                              <CustomField
+                                                field={field}
+                                                value={value}
+                                                disabled={true}
+                                              />
                                             ) : (
-                                              <p>
-                                                {isNumber ? (
-                                                  parseFloat(value)
-                                                ) : linkTypes.includes(
-                                                    data_type
-                                                  ) ? (
-                                                  <a
-                                                    href={
-                                                      data_type !== "phone"
-                                                        ? `mailto:${
-                                                            whatsAppNumber
-                                                              ? value.number
-                                                              : value
-                                                          }`
-                                                        : "#"
-                                                    }
-                                                    className="text-gray-11 hover:text-gray-10 font-normal"
-                                                  >
-                                                    {whatsAppNumber ? (
-                                                      <>
-                                                        {value.number}{" "}
-                                                        <span
-                                                          className={
-                                                            value.waClass
-                                                          }
-                                                        >
-                                                          WA
-                                                        </span>
-                                                        {value.waStatus !==
-                                                          "none" &&
-                                                          value.waTime && (
-                                                            <span className="text-sm text-gray-500 ml-1">
-                                                              ({value.waTime})
-                                                            </span>
-                                                          )}
-                                                      </>
-                                                    ) : (
-                                                      value
-                                                    )}
-                                                  </a>
-                                                ) : (
-                                                  <>
-                                                    {data_type ===
-                                                    "checkbox" ? (
-                                                      <CustomField
-                                                        field={field}
-                                                        value={value}
-                                                        disabled={true}
-                                                      />
-                                                    ) : (
-                                                      value
-                                                    )}
-                                                  </>
-                                                )}
-                                              </p>
+                                              <span>{value}</span>
                                             )}
                                           </>
                                         )}
