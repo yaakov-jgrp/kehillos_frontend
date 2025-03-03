@@ -497,8 +497,7 @@ const Clients = () => {
                               fullFormData.map((field, i) => {
                                 const dataValue = client[field?.field_slug];
                                 const data_type = field?.data_type.value;
-                                let value = dataValue;
-                                let whatsAppNumber = false;
+                                let value = String(dataValue);
                                 switch (data_type) {
                                   case "file":
                                     value =
@@ -519,40 +518,7 @@ const Clients = () => {
                                       typeof dataValue === "object" &&
                                       dataValue !== null
                                     ) {
-                                      if (dataValue.number) {
-                                        // Handle phone fields
-                                        const waStatus =
-                                          dataValue.whatsapp_status ||
-                                          "unknown";
-                                        if (waStatus === "unknown") {
-                                          value = dataValue.number;
-                                        } else {
-                                          const waTime = formatWhatsAppTime(
-                                            dataValue.whatsapp_checked_at
-                                          );
-                                          value = dataValue.number;
-                                          if (waStatus !== "none") {
-                                            value = (
-                                              <div className="flex items-center gap-1">
-                                                <span>{dataValue.number}</span>
-                                                <span className="text-green-600">WA</span>
-                                                {waTime && (
-                                                  <span className="text-sm text-gray-500">
-                                                    ({waTime})
-                                                  </span>
-                                                )}
-                                              </div>
-                                            );
-                                          } else {
-                                            value = (
-                                              <div className="flex items-center gap-1">
-                                                <span>{dataValue.number}</span>
-                                                <span className="text-red-500">WA</span>
-                                              </div>
-                                            );
-                                          }
-                                        }
-                                      } else if (dataValue.value) {
+                                      if (dataValue.value) {
                                         value = dataValue.value;
                                       } else {
                                         value =
@@ -569,6 +535,25 @@ const Clients = () => {
                                 const emptyValues = ["", null];
                                 if (dateRegex.test(value)) {
                                   isDate = true;
+                                }
+
+                                // Special handling for phone display after basic value is set
+                                if (data_type === "phone" && typeof dataValue === "object" && dataValue.whatsapp_status) {
+                                  const waStatus = dataValue.whatsapp_status;
+                                  if (waStatus !== "unknown") {
+                                    const waTime = formatWhatsAppTime(dataValue.whatsapp_checked_at);
+                                    value = (
+                                      <div className="flex items-center gap-1">
+                                        <span>{dataValue.number}</span>
+                                        <span className={waStatus === "none" ? "text-red-500" : "text-green-600"}>
+                                          WA
+                                        </span>
+                                        {waStatus !== "none" && waTime && (
+                                          <span className="text-sm text-gray-500">({waTime})</span>
+                                        )}
+                                      </div>
+                                    );
+                                  }
                                 }
 
                                 return (
