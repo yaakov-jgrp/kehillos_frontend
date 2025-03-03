@@ -1,5 +1,11 @@
 // React imports
-import React, { Fragment, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  Fragment,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 // UI Imports
 import { TablePagination } from "@mui/material";
@@ -75,8 +81,12 @@ const Clients = () => {
   const [appliedFilter, setAppliedFilter] = useState(null);
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
-  const writePermission = organizationAdmin ? false : clientsPermission ? !clientsPermission?.is_write : false
-  
+  const writePermission = organizationAdmin
+    ? false
+    : clientsPermission
+    ? !clientsPermission?.is_write
+    : false;
+
   const handleSortHandler = (field, type) => {
     handleSort(
       field,
@@ -180,13 +190,16 @@ const Clients = () => {
   };
 
   const fetchNetfreeProfiles = async () => {
-    const profilesListData = await categoryService.getProfilesListClientsPages();
+    const profilesListData =
+      await categoryService.getProfilesListClientsPages();
     setNetfreeProfiles(profilesListData.data.data);
   };
 
   const exportClientsHandler = async () => {
     const param = `?filter_ids=${appliedFilter?.id}`;
-    const res = await clientsService.exportClients(appliedFilter?.id ? param : '');
+    const res = await clientsService.exportClients(
+      appliedFilter?.id ? param : ""
+    );
     var url = "data:text/csv;charset=utf-8,%EF%BB%BF" + res.data;
     var a = document.createElement("a");
     a.href = url;
@@ -228,9 +241,9 @@ const Clients = () => {
     if (!checkedAt) return "";
     const now = dayjs();
     const checkTime = dayjs(checkedAt);
-    const diffMinutes = now.diff(checkTime, 'minute');
-    const diffHours = now.diff(checkTime, 'hour');
-    const diffDays = now.diff(checkTime, 'day');
+    const diffMinutes = now.diff(checkTime, "minute");
+    const diffHours = now.diff(checkTime, "hour");
+    const diffDays = now.diff(checkTime, "day");
 
     if (diffDays > 30) {
       return "1 month ago";
@@ -340,7 +353,11 @@ const Clients = () => {
         >
           {fullFormData && fullFormData.length > 0 && (
             <thead className="sticky top-0 z-10 [&_th]:min-w-[13rem] bg-[#F9FBFC]">
-              <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
+              <tr className="tracking-[-2%] mb-5 relative">
+                <th colSpan={fullFormData.length + 1} className="p-0 h-0">
+                  <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute"></div>
+                </th>
+              </tr>
               <tr className="tracking-[-2%] mb-5">
                 <th className="pr-3">
                   <SearchField
@@ -481,6 +498,7 @@ const Clients = () => {
                                 const dataValue = client[field?.field_slug];
                                 const data_type = field?.data_type.value;
                                 let value = dataValue;
+                                let whatsAppNumber = false;
                                 switch (data_type) {
                                   case "file":
                                     value =
@@ -497,33 +515,41 @@ const Clients = () => {
                                     break;
                                   default:
                                     // Handle nested JSON objects (like phone fields)
-                                    if (typeof dataValue === "object" && dataValue !== null) {
+                                    if (
+                                      typeof dataValue === "object" &&
+                                      dataValue !== null
+                                    ) {
                                       if (dataValue.number) {
                                         // Handle phone fields
-                                        const waStatus = dataValue.whatsapp_status || "unknown";
+                                        const waStatus =
+                                          dataValue.whatsapp_status ||
+                                          "unknown";
                                         if (waStatus === "unknown") {
                                           value = dataValue.number;
                                         } else {
-                                          const waTime = formatWhatsAppTime(dataValue.whatsapp_checked_at);
-                                          const waClass = waStatus === "none" ? "text-red-500" : "text-green-600";
-                                          value = (
-                                            <>
-                                              {dataValue.number}{" "}
-                                              <span className={waClass}>
-                                                WA
-                                              </span>
-                                              {waStatus !== "none" && waTime && (
-                                                <span className="text-sm text-gray-500 ml-1">
-                                                  ({waTime})
-                                                </span>
-                                              )}
-                                            </>
+                                          const waTime = formatWhatsAppTime(
+                                            dataValue.whatsapp_checked_at
                                           );
+                                          const waClass =
+                                            waStatus === "none"
+                                              ? "text-red-500"
+                                              : "text-green-600";
+                                          value = {
+                                            type: "phone",
+                                            number: dataValue.number,
+                                            waStatus,
+                                            waTime,
+                                            waClass,
+                                          };
+                                          whatsAppNumber = true;
                                         }
                                       } else if (dataValue.value) {
                                         value = dataValue.value;
                                       } else {
-                                        value = Object.values(dataValue).find((v) => v !== null) || "";
+                                        value =
+                                          Object.values(dataValue).find(
+                                            (v) => v !== null
+                                          ) || "";
                                       }
                                     }
                                     break;
@@ -573,12 +599,36 @@ const Clients = () => {
                                                   <a
                                                     href={
                                                       data_type !== "phone"
-                                                        ? `mailto:${value}`
+                                                        ? `mailto:${
+                                                            whatsAppNumber
+                                                              ? value.number
+                                                              : value
+                                                          }`
                                                         : "#"
                                                     }
                                                     className="text-gray-11 hover:text-gray-10 font-normal"
                                                   >
-                                                    {value}
+                                                    {whatsAppNumber ? (
+                                                      <>
+                                                        {value.number}{" "}
+                                                        <span
+                                                          className={
+                                                            value.waClass
+                                                          }
+                                                        >
+                                                          WA
+                                                        </span>
+                                                        {value.waStatus !==
+                                                          "none" &&
+                                                          value.waTime && (
+                                                            <span className="text-sm text-gray-500 ml-1">
+                                                              ({value.waTime})
+                                                            </span>
+                                                          )}
+                                                      </>
+                                                    ) : (
+                                                      value
+                                                    )}
                                                   </a>
                                                 ) : (
                                                   <>
@@ -632,7 +682,13 @@ const Clients = () => {
 
       {showDisplayModal && (
         <DisplayFieldsModal
-          disabled={organizationAdmin ? false : clientsPermission ? !clientsPermission?.is_update : false}
+          disabled={
+            organizationAdmin
+              ? false
+              : clientsPermission
+              ? !clientsPermission?.is_update
+              : false
+          }
           formValues={displayFormValues}
           displayFields={displayFields}
           onClick={() => {
