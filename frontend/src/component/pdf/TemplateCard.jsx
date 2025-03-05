@@ -1,0 +1,103 @@
+// React imports
+import React, { useState } from "react";
+
+// UI components imports
+import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
+
+// Icon imports
+import { MdDelete, MdEdit } from "react-icons/md";
+import { HiDuplicate } from "react-icons/hi";
+import PdfIcon from "../../assets/images/pdf.svg";
+import DotsIcon from "../../assets/images/dots.svg";
+import CopyIcon from "../../assets/images/content_copy.svg";
+import BinIcon from "../../assets/images/bin.svg";
+import EditButtonIcon from "../common/EditButton";
+import { useTranslation } from "react-i18next";
+import { DEFAULT_LANGUAGE } from "../../constants";
+
+function TemplateCard({ duplicateTemplate, onEdit, deleteTemplate, template, writePermission, updatePermission, deletePermission }) {
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t } = useTranslation();
+  const lang = localStorage.getItem(DEFAULT_LANGUAGE);
+
+  return (
+    <>
+      <div
+        className="bg-white shadow-custom relative h-[200px] p-5 rounded-lg w-[360px] break-words flex flex-col gap-4 overflow-visible scrollbar-hide"
+        key={template.id}
+      >
+        <div className="flex items-center justify-between">
+          <img src={PdfIcon} alt="PdfIcon" className="w-8 h-8" />
+          <button onClick={() => setIsMenuOpen((prevState) => !prevState)}>
+            <img src={DotsIcon} alt="DotsIcon" />
+          </button>
+        </div>
+
+        <div>
+          <p className="text-gray-11 text-[20px] md:text-[24px] font-medium">
+            {template.name}
+          </p>
+          <p className="text-gray-11 text-[14px] font-normal">
+            {t("pdfs.templateDescription")}
+          </p>
+        </div>
+
+        {isMenuOpen && (
+          <div
+            className={`bg-white w-[175px] absolute z-10 ${
+              lang === "he" ? "-left-2" : "-right-2"
+            } ${
+              lang === "he" ? "md:left-6" : "md:right-6"
+            } top-14 md:top-16 flex flex-col gap-3 shadow-md rounded-lg p-2`}
+          >
+            <div
+              className={`flex items-center gap-2 ${updatePermission ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              onClick={updatePermission ? ()=>{} : () => onEdit(template.id)}
+            >
+              <EditButtonIcon extra={updatePermission ? 'cursor-not-allowed' : 'cursor-pointer'}/>
+              <p className="text-md">{t("pdfs.edit")}</p>
+            </div>
+
+            <div
+              className={`flex items-center gap-2 ${writePermission ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              onClick={writePermission ? ()=>{} : () => duplicateTemplate(template.id)}
+            >
+              <img
+                src={CopyIcon}
+                alt="CopyIcon"
+                className={`w-5 ${writePermission ? 'hover:cursor-not-allowed' : 'hover:cursor-pointer'}`}
+              />
+              <p className="text-md">{t("pdfs.duplicate")}</p>
+            </div>
+
+            <div
+              className={`flex items-center gap-2 ${deletePermission ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              onClick={deletePermission ? ()=>{} : () => setDeleteModal(true)}
+            >
+              <img
+                src={BinIcon}
+                alt="BinIcon"
+                className={deletePermission ? "hover:cursor-not-alloed" : "hover:cursor-pointer"}
+              />
+              <p className="text-md">{t("pdfs.delete")}</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {deleteModal && (
+        <DeleteConfirmationModal
+          showModal={deleteModal}
+          setShowModal={setDeleteModal}
+          onClick={() => {
+            deleteTemplate(template.id);
+            setDeleteModal(false);
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+export default TemplateCard;

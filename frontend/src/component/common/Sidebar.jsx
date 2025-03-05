@@ -15,6 +15,7 @@ import {
   MdOutlineEmail,
   MdLogout,
   MdOutlineSettings,
+  MdEditDocument,
 } from "react-icons/md";
 import { IoLogoBuffer } from "react-icons/io";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
@@ -139,6 +140,16 @@ const Sidebar = ({ open, onClose }) => {
               path: "settings/emails",
               type: "menu",
               icon: <MdOutlineEmail className="h-6 w-6" />,
+              component: <Emails />,
+            }
+          : null,
+        permissions?.pdfsPermission?.is_read ||
+        userDetails?.organization_admin
+          ? {
+              name: t("sidebar.pdfs"),
+              path: "settings/pdfs",
+              type: "menu",
+              icon: <MdEditDocument className="h-6 w-6" />,
               component: <Emails />,
             }
           : null,

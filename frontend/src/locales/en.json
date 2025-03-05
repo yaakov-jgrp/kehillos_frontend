@@ -76,6 +76,7 @@
     "websites": "Websites",
     "netfree": "NetFree",
     "emails": "Emails",
+    "pdfs": "Pdfs",
     "profile": "Profile",
     "logout": "Logout",
     "formCreation": "Form Creation",
@@ -253,6 +254,7 @@
     "users": "users",
     "netfree": "netfree",
     "emails": "emails",
+    "pdfs": "pdfs",
     "logs": "logs",
     "templating": "templating",
     "forms": "Form Settings"

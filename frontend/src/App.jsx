@@ -10,6 +10,7 @@ import SignIn from "./views/auth/SignIn";
 import DefaultLayout from "./layout/DefaultLayout";
 import Request from "./views/Request";
 import Emails from "./views/Emails";
+import Pdfs from "./views/Pdfs";
 import NetFree from "./views/NetFree";
 import Clients from "./views/Clients";
 import ClientDetails from "./views/ClientDetails";
@@ -43,7 +44,7 @@ import { ToastContainer } from "react-toastify";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Icon imports
-import { MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
+import { MdEditDocument, MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
 import { IoLogoBuffer } from "react-icons/io";
 import FormsIcon from "../src/assets/images/forms.svg";
@@ -223,6 +224,13 @@ function App() {
       type: "menu",
       icon: <MdOutlineSettings className="h-6 w-6" />,
       component: <EmailTemplating />,
+    },
+    {
+      name: t("sidebar.pdft"),
+      path: "settings/pdfs",
+      type: "menu",
+      icon: <MdEditDocument className="h-6 w-6" />,
+      component: <Pdfs />,
     },
     {
       name: t("sidebar.logs"),

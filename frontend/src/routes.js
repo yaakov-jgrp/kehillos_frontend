@@ -4,6 +4,7 @@ import React from "react";
 // UI Components Imports
 import Request from "./views/Request";
 import Emails from "./views/Emails";
+import Pdfs from "./views/Pdfs";
 import NetFree from "./views/NetFree";
 import Clients from "./views/Clients";
 import ClientDetails from "./views/ClientDetails";
@@ -64,6 +65,13 @@ const routes = [
     type: "menu",
     icon: <MdOutlineSettings className="h-6 w-6" />,
     component: <EmailTemplating />,
+  },
+  {
+    name: t("sidebar.pdfs"),
+    path: "settings/pdfs",
+    type: "menu",
+    icon: <MdOutlineSettings className="h-6 w-6" />,
+    component: <Pdfs />,
   },
   {
     name: t("sidebar.config"),
