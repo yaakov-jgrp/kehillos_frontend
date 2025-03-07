@@ -1,45 +1,65 @@
 // React imports
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
-import EmailEditor from "react-email-editor";
+import PdfEditor from "react-email-editor";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 
 // API services
-import emailService from "../../services/email";
-import clientsService from "../../services/clients";
+import clientsService from "../../../services/clients";
 
 // Utils imports
-import { DEFAULT_LANGUAGE } from "../../constants";
-import emailEditorHe from "../../locales/emailEditorHe.json";
+import { DEFAULT_LANGUAGE } from "../../../constants";
+import pdfEditorHe from "../../../locales/pdfEditorHe.json";
 
 // Custom hooks imports
-import useAlert from "../../Hooks/useAlert";
+import useAlert from "../../../Hooks/useAlert";
+import pdfService from "../../../services/pdf";
 
-const NewTemplate = ({
-  editableTemplateId,
-  onSave,
+const ExportFormPanel = ({
   writePermission,
-  updatePermission,
-  deletePermission,
+  clientId,
+  clientData,
+  netfreeprofile,
 }) => {
   const formObject = {
     name: "",
-    to: "$admin_email",
-    subject: "",
     message: "",
   };
   const { t } = useTranslation();
   const { setAlert } = useAlert();
-  const emailEditorRef = useRef(null);
+  const pdfEditorRef = useRef(null);
   const defaultLanguageValue = localStorage.getItem(DEFAULT_LANGUAGE);
   const [formdata, setFormData] = useState(formObject);
   const [loadingTemplate, setLoadingTemplate] = useState(false);
   const [loadingTags, setloadingTags] = useState(true);
   const [mergeTagsData, setMergeTagsData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [templateList, setTemplateList] = useState([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState(null);
+  const [isEditorReady, setIsEditorReady] = useState(false);
+
+  useEffect(() => {
+    const getTemplates = async () => {
+      setIsLoading(true);
+      const response = await pdfService.getTemplates();
+      setTemplateList(response.data.data);
+      setIsLoading(false);
+    };
+    getTemplates();
+  }, []);
+
+  useEffect(() => {
+    if(templateList?.length > 0) {
+      setSelectedTemplateId(templateList[0].id);
+    }
+  }, [templateList]);
 
   const onReady = () => {
-    emailEditorRef.current.editor.setMergeTags({
+    setIsEditorReady(true);
+    pdfEditorRef.current.editor.setMergeTags({
       request: {
         name: t("email_builder.requests"),
         mergeTags: {
@@ -136,10 +156,6 @@ const NewTemplate = ({
         },
       },
     });
-
-    if (editableTemplateId) {
-      emailEditorRef.current.editor.loadDesign(formdata.message);
-    }
   };
 
   const exportHtml = () => {
@@ -148,7 +164,7 @@ const NewTemplate = ({
         design: null,
         html: null,
       };
-      emailEditorRef.current.editor.exportHtml((data) => {
+      pdfEditorRef.current.editor.exportHtml((data) => {
         messageBody.design = data.design;
         messageBody.html = data.html;
         resolve(messageBody);
@@ -156,106 +172,86 @@ const NewTemplate = ({
     });
   };
 
-  const saveTemplate = async (event) => {
+  const downloadPdf = async (event) => {
     event.preventDefault();
     // parse tokenized data
     let data = JSON.parse(JSON.stringify(formdata));
     data.message = await exportHtml();
-    for (let item in data) {
-      if (item === "to" || item === "subject") {
-        data[item] = data[item].replaceAll("$", "");
-      }
-    }
-    if (editableTemplateId) {
+    if (selectedTemplateId && clientId) {
       // update existing template
-      await emailService
-        .updateTemplate({
-          id: editableTemplateId,
-          name: data.name,
-          email_to: data.to,
-          subject: data.subject,
+      await pdfService
+        .exportPdfFile({
+          clientId,
+          clientData,
+          netfreeprofile,
           body: data.message,
         })
         .then((response) => {
-          setAlert(t("emails.templateUpdated"), "success");
+          // download pdf file here.
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute(
+            "download",
+            `${clientId}_${data.name}_${new Date().toISOString().substr(0, 10).replace(/-/g, "_")}_${new Date().getHours()}${new Date().getMinutes()}.pdf`
+          );
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
         })
         .catch((error) => {
-          setAlert(t("emails.templateUpdateFailed"), "error");
-        });
-    } else {
-      // add new template
-      await emailService
-        .addNewTemplate({
-          name: data.name,
-          email_to: data.to,
-          subject: data.subject,
-          body: data.message,
-        })
-        .then((response) => {
-          setAlert(t("emails.templateAdded"), "success");
-        })
-        .catch((error) => {
-          setAlert(t("emails.templateAddFailed"), "error");
+          setAlert(t("pdfs.download_pdf_error"), "error");
         });
     }
-    setFormData(formObject);
-    onSave();
-  };
-
-  const handleInput = (event) => {
-    setFormData({ ...formdata, [event.target.name]: event.target.value });
   };
 
   const formValidate = () => {
-    if (!formdata.name || !formdata.to || !formdata.subject) {
-      return false;
-    }
+    // if (!formdata.name || !formdata.to || !formdata.subject) {
+    //   return false;
+    // }
     return true;
   };
 
-  const fetchEditableTemplateData = async () => {
-    setLoadingTemplate(true);
-    let response = await emailService.getSingleTemplate(editableTemplateId);
-    response = response.data.data;
-    // parse back the response data to form data with dynamic token
-    for (let key in response) {
-      if (key === "email_to" || key === "subject") {
-        response[key] = response[key]
-          .split(/[, ]/)
-          .map((word) => {
-            return word.includes("_") ? `$${word}` : word;
-          })
-          .join(" ");
-      }
-    }
-    setFormData({
-      name: response.name,
-      to: response.email_to,
-      subject: response.subject,
-      message: response.design,
-    });
-    setLoadingTemplate(false);
-  };
+  useEffect(() => {
+    if (!selectedTemplateId) return;
+    const fetchEditableTemplateData = async () => {
+      setLoadingTemplate(true);
+      setIsEditorReady(false);
+      let response = await pdfService.getSingleTemplate(selectedTemplateId);
+      response = response.data.data;
 
-  const fetchFormDataTags = async () => {
-    setloadingTags(true);
-    try {
-      const res = await clientsService.getFullformEmailPageData(
-        "&field_email_template=true"
-      );
-      console.log("result", res.data.result);
-      setMergeTagsData(res.data.result);
-      setloadingTags(false);
-    } catch (error) {
-      console.log(error);
-      setloadingTags(false);
-    }
-  };
+      console.log("response", response.design);
+      console.log("form", clientData);
+      setFormData({
+        name: response.name,
+        message: response.design,
+      });
+      setLoadingTemplate(false);
+    };
+    fetchEditableTemplateData();
+  }, [selectedTemplateId]);
 
   useEffect(() => {
-    if (editableTemplateId) {
-      fetchEditableTemplateData();
+    if (isEditorReady && formdata.message) {
+      pdfEditorRef.current?.editor?.loadDesign(formdata.message);
     }
+  }, [isEditorReady, formdata.message]);
+
+  useEffect(() => {
+    const fetchFormDataTags = async () => {
+      setloadingTags(true);
+      try {
+        const res = await clientsService.getFullformEmailPageData(
+          "&field_email_template=true"
+        );
+        console.log("result", res.data.result);
+        setMergeTagsData(res.data.result);
+        setloadingTags(false);
+      } catch (error) {
+        console.log(error);
+        setloadingTags(false);
+      }
+    };
     fetchFormDataTags();
   }, [defaultLanguageValue]);
 
@@ -263,8 +259,7 @@ const NewTemplate = ({
     locale: defaultLanguageValue,
     textDirection: defaultLanguageValue === "he" ? "rtl" : "ltr",
     translations: {
-      [defaultLanguageValue]:
-        defaultLanguageValue === "he" ? emailEditorHe : {}, // Assuming you have similar JSON files for other languages
+      [defaultLanguageValue]: defaultLanguageValue === "he" ? pdfEditorHe : {}, // Assuming you have similar JSON files for other languages
     },
     tools: {
       text: {
@@ -306,49 +301,49 @@ const NewTemplate = ({
   return (
     <div className="w-full flex flex-col md:flex-row gap-4">
       <div className="bg-white rounded-3xl w-full shadow-custom pb-4">
-        <p className="text-gray-11 font-medium text-2xl p-7">
-          {t("emails.emailTemplate")}
-        </p>
-        <form onSubmit={saveTemplate}>
+        <div className="flex justify-between items-center py-4 px-7 text-gray-11 font-medium text-2xl">
+          {t("pdfs.export_pdfs")}
+          <div className="w-full mb-4 flex items-center justify-end gap-5 mt-5">
+            <label className="text-sm text-navy-700 dark:text-white">
+              {t("pdfs.selectTemplate")}
+            </label>
+            <select
+              className="text-sm text-navy-700 bg-white border-[1px] py-1 px-2 outline-none rounded-md"
+              value={selectedTemplateId || ""}
+              onChange={(e) => setSelectedTemplateId(Number(e.target.value))}
+              disabled={isLoading}
+            >
+              {templateList.map((template) => (
+                <option key={template.id} value={template.id}>
+                  {template.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <form onSubmit={downloadPdf}>
           <div className="px-7 flex gap-4 text-gray-11 [&_input]:border-[1px] [&_textarea]:border-[1px] [&_input]:outline-none [&_textarea]:outline-0 [&_input]:w-full [&_textarea]:w-full [&_input]:!px-4 [&_textarea]:!px-4 [&_input]:!py-1 [&_textarea]:!py-1">
             <div className="w-[100%] [&_tr]:h-10">
-              <div className="flex my-2 w-full gap-4">
-                <td className="w-1/2 md:w-1/5">{t("emails.templateName")}</td>
-                <input
-                  className="text-[13px] rounded-md h-[40px]"
-                  id="templateName"
-                  type="text"
-                  value={formdata.name}
-                  onChange={handleInput}
-                  name="name"
-                  placeholder={t("emails.templateName")}
-                />
-              </div>
-
-              <div className="flex my-2 w-full gap-4">
-                <td className="w-1/2 md:w-1/5">{t("emails.subject")}</td>
-                <input
-                  className="text-[13px] rounded-md h-[40px]"
-                  id="emailSubject"
-                  type="text"
-                  placeholder={t("emails.subject")}
-                  value={formdata.subject}
-                  onChange={handleInput}
-                  name="subject"
-                />
-              </div>
-
               <div className="w-full my-5 h-[calc(100vh-330px)] [&_iframe]:!min-w-[100%] [&_iframe]:!h-[calc(100vh-330px)] [&_div]:!max-h-[calc(100vh-330px)] relative">
                 {!loadingTemplate && !loadingTags ? (
-                  <>
-                    <EmailEditor
-                      ref={emailEditorRef}
-                      onReady={onReady}
-                      options={defaultLanguageValue === "he" ? option : null}
-                    />
-                    <div className="w-[400px] h-12 bg-[#EEEEEE] absolute bottom-0 right-[0px]"></div>
-                  </>
-                ) : null}
+                  <PdfEditor
+                    ref={pdfEditorRef}
+                    onReady={onReady}
+                    options={defaultLanguageValue === "he" ? option : null}
+                  />
+                ) : (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "200px",
+                    }}
+                  >
+                    <CircularProgress />
+                  </Box>
+                )}
+                <div className="w-[400px] h-12 bg-[#EEEEEE] absolute bottom-0 right-[0px]"></div>
               </div>
 
               <div className="flex justify-center">
@@ -360,7 +355,7 @@ const NewTemplate = ({
                       : "bg-gray-300"
                   }`}
                 >
-                  {t("emails.save")}
+                  {t("pdfs.export")}
                 </button>
               </div>
             </div>
@@ -371,4 +366,4 @@ const NewTemplate = ({
   );
 };
 
-export default NewTemplate;
+export default ExportFormPanel;

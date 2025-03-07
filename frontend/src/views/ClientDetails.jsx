@@ -27,6 +27,7 @@ import { MdDelete } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { ClientFormsTabPanel } from "../component/client/ClientTabPanels/ClientFormsTabPanel";
 import { FULL_FORM_DATA, PROFILE_LIST, SINGLE_CLIENT_DATA, USER_DETAILS } from "../constants";
+import ExportFormPanel from "../component/client/ClientTabPanels/ExportFormPanel";
 
 function ClientDetails() {
   const { id } = useParams();
@@ -42,6 +43,7 @@ function ClientDetails() {
     t("sidebar.netfree"),
     t("sidebar.request"),
     t("sidebar.forms"),
+    t("sidebar.export1"),
   ];
   const [isLoading, setIsloading] = useState(false);
   const [clientData, setClientData] = useState(null);
@@ -270,6 +272,7 @@ function ClientDetails() {
                 )}
 
                 {value === 3 && <ClientFormsTabPanel disabled={organizationAdmin ? false : clientsPermission ? !clientsPermission?.is_write : false} clientId={id} />}
+                {value === 4 && <ExportFormPanel clientId={id} clientData={clientData} netfreeprofile={netfreeprofile} />}
               </Box>
             ) : (
               t("clients.noClientFound") + " " + id

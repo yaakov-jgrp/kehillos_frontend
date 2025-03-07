@@ -1,35 +1,14 @@
-// React imports
-import { useEffect, useRef, useState } from "react";
-
-// Third party Imports
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Designer } from "@pdfme/ui";
-import { BLANK_PDF } from "@pdfme/common";
+import { BLANK_PDF, checkTemplate, cloneDeep } from "@pdfme/common";
 
-// API services
 import pdfService from "../../services/pdf";
-
-// Utils imports
 import { DEFAULT_LANGUAGE } from "../../constants";
-
-// Custom hooks imports
 import useAlert from "../../Hooks/useAlert";
+import { getBlankTemplate, getFontsData, getPlugins } from "./helper";
 
-const formObject = {
-  name: "",
-  template: {
-    basePdf: BLANK_PDF,
-    schemas: [[
-      {
-        type: 'text',
-        position: { x: 0, y: 0 },
-        width: 50,
-        height: 10,
-        name: 'field1'
-      }
-    ]]
-  }
-};
+const STORAGE_KEY = "pdfTemplate";
 
 const NewTemplate = ({
   editableTemplateId,
@@ -42,56 +21,64 @@ const NewTemplate = ({
   const { setAlert } = useAlert();
   const designerRef = useRef(null);
   const containerRef = useRef(null);
-  const defaultLanguageValue = localStorage.getItem(DEFAULT_LANGUAGE);
   const [loadingTemplate, setLoadingTemplate] = useState(false);
-  const [designer, setDesigner] = useState(null);
-  const [formdata, setFormData] = useState({
+  const designer = useRef(null);
+  const [formData, setFormData] = useState({
     name: "",
-    template: null
+    template: getBlankTemplate()
   });
 
-  const initDesigner = () => {
-    if (!containerRef.current || designer) return;
+  const initDesigner = useCallback(async () => {
+    if (!containerRef.current || designer.current) return;
 
     try {
-      const template = {
-        basePdf: BLANK_PDF,
-        schemas: [[
-          {
-            type: 'text',
-            position: { x: 0, y: 0 },
-            width: 50,
-            height: 10,
-            name: 'field1'
-          }
-        ]]
-      };
+      let template = getBlankTemplate();
+      const savedTemplate = localStorage.getItem(STORAGE_KEY);
 
-      const newDesigner = new Designer({
+      if (savedTemplate) {
+        try {
+          const templateJson = JSON.parse(savedTemplate);
+          checkTemplate(templateJson);
+          template = templateJson;
+        } catch (error) {
+          console.error('Invalid saved template:', error);
+          localStorage.removeItem('pdfTemplate');
+        }
+      }
+
+      designer.current = new Designer({
         domContainer: containerRef.current,
-        template
+        template,
+        options: {
+          lang: localStorage.getItem(DEFAULT_LANGUAGE) || 'en',
+          theme: {
+            token: { colorPrimary: "#4f46e5" }
+          },
+          font: getFontsData()
+        },
+        plugins: getPlugins()
       });
 
-      setDesigner(newDesigner);
-      designerRef.current = newDesigner;
       setFormData(prev => ({ ...prev, template }));
     } catch (error) {
       console.error("Error initializing designer:", error);
       setAlert(t("pdfs.designerInitFailed"), "error");
     }
-  };
+  }, [setAlert, t]);
 
   const saveTemplate = async (event) => {
     event.preventDefault();
-    if (!designer) return;
-
-    const template = designer.getTemplate();
-    const data = {
-      name: formdata.name,
-      template: JSON.stringify(template),
-    };
+    if (!designer.current) return;
 
     try {
+      const template = designer.current.getTemplate();
+      const data = {
+        name: formData.name,
+        template: JSON.stringify(template),
+      };
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(template));
+
       if (editableTemplateId) {
         await pdfService.updateTemplate({
           id: editableTemplateId,
@@ -102,9 +89,11 @@ const NewTemplate = ({
         await pdfService.addNewTemplate(data);
         setAlert(t("pdfs.templateAdded"), "success");
       }
-      setFormData(formObject);
+      
+      setFormData({ name: "", template: getBlankTemplate() });
       onSave();
     } catch (error) {
+      console.error('Error saving template:', error);
       setAlert(
         editableTemplateId
           ? t("pdfs.templateUpdateFailed")
@@ -115,28 +104,41 @@ const NewTemplate = ({
   };
 
   const handleInput = (event) => {
-    setFormData({ ...formdata, [event.target.name]: event.target.value });
+    setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
   const handleFileInput = async (event) => {
     const file = event.target.files[0];
-    if (file && file.type === "application/pdf") {
+    if (!file) return;
+    
+    if (file.type !== "application/pdf") {
+      setAlert(t("pdfs.invalidFileType"), "error");
+      return;
+    }
+
+    try {
       const reader = new FileReader();
       reader.onload = async (e) => {
         const basePdf = e.target.result;
-        if (designer) {
-          designer.updateTemplate({
-            ...formdata.template,
-            basePdf,
-          });
+        if (designer.current) {
+          const newTemplate = cloneDeep(designer.current.getTemplate());
+          newTemplate.basePdf = basePdf;
+          designer.current.updateTemplate(newTemplate);
+          setFormData(prev => ({ ...prev, template: newTemplate }));
         }
       };
+      reader.onerror = () => {
+        setAlert(t("pdfs.fileReadError"), "error");
+      };
       reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Error handling PDF file:", error);
+      setAlert(t("pdfs.fileProcessError"), "error");
     }
   };
 
   const formValidate = () => {
-    if (!formdata.name || !designer?.getTemplate()?.basePdf) {
+    if (!formData.name || !designer.current?.getTemplate()?.basePdf) {
       return false;
     }
     return true;
@@ -148,24 +150,25 @@ const NewTemplate = ({
       const response = await pdfService.getSingleTemplate(editableTemplateId);
       const templateData = response.data.data;
       const parsedTemplate = JSON.parse(templateData.template);
-      
-      // Ensure template has required structure
-      if (!parsedTemplate.schemas || !Array.isArray(parsedTemplate.schemas)) {
-        parsedTemplate.schemas = [[{
-          type: 'text',
-          position: { x: 0, y: 0 },
-          width: 50,
-          height: 10,
-        }]];
+
+      try {
+        checkTemplate(parsedTemplate);
+      } catch (error) {
+        console.error('Invalid template structure:', error);
+        parsedTemplate.schemas = getBlankTemplate().schemas;
       }
-      
+
+      if (designer.current) {
+        designer.current.updateTemplate(parsedTemplate);
+      }
+
       setFormData({
         name: templateData.name,
         template: parsedTemplate,
       });
     } catch (error) {
-      setFormData(formObject); // Reset to default template on error
       console.error("Error fetching template:", error);
+      setFormData({ name: "", template: getBlankTemplate() });
       setAlert(t("pdfs.templateFetchFailed"), "error");
     }
     setLoadingTemplate(false);
@@ -180,11 +183,11 @@ const NewTemplate = ({
   useEffect(() => {
     initDesigner();
     return () => {
-      if (designer) {
-        designer.destroy();
+      if (designer.current) {
+        designer.current?.destroy();
       }
     };
-  }, []);  
+  }, []);
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-4">
@@ -201,7 +204,7 @@ const NewTemplate = ({
                   className="text-[13px] rounded-md h-[40px]"
                   id="templateName"
                   type="text"
-                  value={formdata.name}
+                  value={formData.name}
                   onChange={handleInput}
                   name="name"
                   placeholder={t("pdfs.templateName")}

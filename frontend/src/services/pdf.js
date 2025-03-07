@@ -30,6 +30,17 @@ const deleteTemplate = (id) => {
     .delete(`/api/crm/template/?id=${id}`)
 }
 
+const exportPdfFile = (data) => {
+  return api
+    .post(`/api/crm/export-pdf/${data.clientId}`, data, {
+      responseType: 'blob',
+      headers: {
+        'Accept': 'application/pdf',
+        'Content-Type': 'application/json'
+      },
+    })
+}
+
 const sendEmail = (data) => {
   return api
     .post(`/api/crm/send-email`, data)
@@ -77,6 +88,7 @@ const pdfService = {
   getTemplatingTexts,
   createTemplatingText,
   updateTemplatingText,
-  deleteTemplatingText
+  deleteTemplatingText,
+  exportPdfFile,
 }
 export default pdfService;
