@@ -10,7 +10,6 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json;charset=utf-8",
   },
-  withCredentials: true
 });
 
 const refreshAccessToken = async () => {

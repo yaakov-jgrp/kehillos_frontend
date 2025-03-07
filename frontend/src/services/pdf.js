@@ -32,12 +32,12 @@ const deleteTemplate = (id) => {
 
 const exportPdfFile = (data) => {
   return api
-    .post(`/api/crm/export-pdf/${data.clientId}`, data, {
+    .post(`/api/crm/export-pdf/${data.clientId}/`, data, {
       responseType: 'blob',
       headers: {
         'Accept': 'application/pdf',
         'Content-Type': 'application/json'
-      },
+      }
     })
 }
 
