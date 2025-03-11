@@ -598,7 +598,7 @@ const ActionModal = ({
                   {error}
                 </div> */}
 
-                <div className="flex justify-center gap-2 mb-3 absolute bg-white bottom-0 left-[50%] transform -translate-x-1/2">
+                <div className="flex justify-center gap-2 pb-3 absolute bg-white bottom-0 left-[50%] transform -translate-x-1/2">
                   <button
                     className="text-gray-11 background-transparent font-normal py-2 text-sm outline-none w-[136px] focus:outline-none border border-gray-11 rounded-lg"
                     type="button"

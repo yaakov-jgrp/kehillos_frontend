@@ -32,7 +32,7 @@ export default function SignIn() {
     email: null,
     password: null,
   };
-const { setAccessToken } = useContext(UserContext);
+  const { setAccessToken } = useContext(UserContext);
   const [formdata, setFormData] = useState(formObject);
   const { t } = useTranslation();
   const { setAlert } = useAlert();
@@ -44,23 +44,34 @@ const { setAccessToken } = useContext(UserContext);
       .then((data) => {
         if (data.status === 200) {
           setAlert(t("auth.loginSuccess"), "success");
-          localStorage.setItem("logo_url", data.data.user.organization_logo_url);
+          localStorage.setItem(
+            "logo_url",
+            data.data.user.organization_logo_url
+          );
           localStorage.setItem(ACCESS_TOKEN_KEY, data.data.access);
           localStorage.setItem(REFRESH_TOKEN_KEY, data.data.refresh);
-          setAccessToken(data.data.access)
+          setAccessToken(data.data.access);
           localStorage.setItem(USER_DETAILS, JSON.stringify(data.data?.user));
-          const permissionsObjects = data.data?.user?.permissions.reduce((acc, permission) => {
-            const variableName = `${permission.name.toLowerCase()}Permission`;
-            acc[variableName] = permission;
-            return acc;
-          }, {});  
-          localStorage.setItem('permissionsObjects', JSON.stringify(permissionsObjects));
+          const permissionsObjects = data.data?.user?.permissions.reduce(
+            (acc, permission) => {
+              const variableName = `${permission.name.toLowerCase()}Permission`;
+              acc[variableName] = permission;
+              return acc;
+            },
+            {}
+          );
+          localStorage.setItem(
+            "permissionsObjects",
+            JSON.stringify(permissionsObjects)
+          );
           navigate("/clients");
         } else {
           setAlert(t("auth.loginFailed"), "error");
         }
       })
       .catch((error) => {
+        console.log(error);
+
         setAlert(error.response.data.message, "error");
       });
   };

@@ -20,6 +20,7 @@ import { MdCheck } from "react-icons/md";
 
 // Utils imports
 import { handleNumberkeyPress } from "../../lib/CommonFunctions";
+import ToggleSwitch from "../common/ToggleSwitch";
 
 // Initial state data
 const initialState = {
@@ -28,13 +29,12 @@ const initialState = {
   Custom: false,
 };
 
-const RequestActionModal = ({
+const EmailTemplateModal = ({
   showModal,
   setShowModal,
   onSubmit,
   onClose,
   isLoading,
-  sectorBlockUrls,
 }) => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [actionsList, setActionsList] = useState([]);
@@ -51,7 +51,7 @@ const RequestActionModal = ({
   const [deleteButtonsVisible, setDeleteButtonsVisible] = useState([false]);
   const [requestStatuses, setRequestStatuses] = useState([]);
   const [showEmailTemplate, setShowEmailTemplate] = useState(false);
-  const [selectedSectorBlockUrls, setSelectedSectorBlockUrls] = useState([]);
+  const [actionStatus, setActionStatus] = useState(false);
   const notify = (error) => toast.error(error);
 
   const handleAddInput = () => {
@@ -102,7 +102,7 @@ const RequestActionModal = ({
   const getActionsList = async () => {
     const response = await categoryService.getActions();
     const updatedData = response.data.data.filter(
-      (action) => !action.is_request_status
+      (action) => action.is_template_action
     );
     setActionsList(updatedData);
   };
@@ -140,7 +140,6 @@ const RequestActionModal = ({
     setInputValues([""]);
     setDeleteButtonsVisible([false]);
     setShowEmailTemplate(false);
-    setSelectedSectorBlockUrls([]);
   };
 
   const submitForm = async () => {
@@ -180,7 +179,7 @@ const RequestActionModal = ({
     }
     data = {
       action_id: selectedAction,
-      email_request_sector_block_url: selectedSectorBlockUrls,
+      status: actionStatus,
       ...(showEmailTemplate && {
         email_inputs: showEmailTemplate
           ? {
@@ -246,54 +245,6 @@ const RequestActionModal = ({
                 </div>
 
                 <div className="relative p-5 pb-20 flex flex-col gap-3 scrollbar-hide">
-                  {sectorBlockUrls.length > 0 && (
-                    <div>
-                      <label className="block text-gray-11 text-md mb-1">
-                        {t("requestDetails.sectorUrls")}
-                      </label>
-                      <Select
-                        MenuProps={{
-                          sx: {
-                            zIndex: 9999,
-                          },
-                        }}
-                        className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                        onChange={(e) => {
-                          setSelectedSectorBlockUrls(e.target.value);
-                        }}
-                        renderValue={(selected) => {
-                          if (selected.length === 0) {
-                            return (
-                              <em>{t("requestDetails.selectSectorUrl")}</em>
-                            );
-                          }
-
-                          return selected.join(", ");
-                        }}
-                        displayEmpty
-                        value={selectedSectorBlockUrls}
-                        multiple
-                      >
-                        <MenuItem value="" disabled>
-                          <em> {t("requestDetails.selectSectorUrl")} </em>
-                        </MenuItem>
-                        {sectorBlockUrls?.map((el, i) => {
-                          return el ? (
-                            <MenuItem
-                              key={i}
-                              value={el}
-                              className="!flex !justify-between items-center w-full"
-                            >
-                              {el}
-                              {selectedSectorBlockUrls.includes(el) && (
-                                <MdCheck />
-                              )}
-                            </MenuItem>
-                          ) : null;
-                        })}
-                      </Select>
-                    </div>
-                  )}
                   <div>
                     <label className="block text-gray-11 text-md mb-1">
                       {t("netfree.actions")}
@@ -446,6 +397,17 @@ const RequestActionModal = ({
                       {selectedTemplate !== "selectTemplate" && (
                         <>
                           <div className="" style={{ display: "grid" }}>
+                            <div className="flex items-center my-2 w-full gap-4">
+                              <td className="w-1/2 md:w-1/5">
+                                {t("automation.status")}
+                              </td>
+                              <ToggleSwitch
+                                clickHandler={(e) =>
+                                  setActionStatus(e.target.checked)
+                                }
+                                selected={actionStatus}
+                              />
+                            </div>
                             <div
                               style={{
                                 display: "flex",
@@ -592,4 +554,4 @@ const RequestActionModal = ({
   );
 };
 
-export default RequestActionModal;
+export default EmailTemplateModal;
