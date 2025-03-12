@@ -11,15 +11,12 @@ import { toast } from "react-toastify";
 // API services
 import categoryService from "../../services/category";
 import emailService from "../../services/email";
-import requestService from "../../services/request";
 
 // Icon imports
 import { AiTwotoneDelete } from "react-icons/ai";
 import CrossIcon from "../../assets/images/cross.svg";
-import { MdCheck } from "react-icons/md";
 
 // Utils imports
-import { handleNumberkeyPress } from "../../lib/CommonFunctions";
 import ToggleSwitch from "../common/ToggleSwitch";
 
 // Initial state data
@@ -37,19 +34,16 @@ const EmailTemplateModal = ({
   isLoading,
 }) => {
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
-  const [actionsList, setActionsList] = useState([]);
   const { t } = useTranslation();
   const [templateList, setTemplateList] = useState([]);
   const [selectedAction, setSelectedAction] = useState("selectAction");
   const [timeAmount, setTimeAmount] = useState("");
   const [timePeriod, setTimePeriod] = useState("Hours");
-  const [selectedStatus, setSelectedStatus] = useState("selectStatus");
   const [selectedTemplate, setSelectedTemplate] = useState("selectTemplate");
   const [actionNeedsOtherFields, setActionNeedsOtherFields] = useState([]);
   const [sendEmailTypes, setSendEmailTypes] = useState(initialState);
   const [inputValues, setInputValues] = useState([""]);
   const [deleteButtonsVisible, setDeleteButtonsVisible] = useState([false]);
-  const [requestStatuses, setRequestStatuses] = useState([]);
   const [showEmailTemplate, setShowEmailTemplate] = useState(false);
   const [actionStatus, setActionStatus] = useState(false);
   const notify = (error) => toast.error(error);
@@ -92,42 +86,22 @@ const EmailTemplateModal = ({
     return customEmailValue;
   };
 
-  const periods = [
-    { label: t("netfree.minutes"), value: "Minutes" },
-    { label: t("netfree.hours"), value: "Hours" },
-    { label: t("netfree.days"), value: "Days" },
-    { label: t("netfree.weeks"), value: "Weeks" },
-  ];
-
   const getActionsList = async () => {
     const response = await categoryService.getActions();
     const updatedData = response.data.data.filter(
       (action) => action.is_template_action
     );
-    setActionsList(updatedData);
-  };
-
-  const getRequestStatusList = async () => {
-    try {
-      const params = `?lang=${lang}`;
-      const res = await requestService.getRequestStatusesNetfree(params);
-      setRequestStatuses(res.data.data);
-    } catch (error) {
-      console.log(error);
-    }
+    const actionId = updatedData[0]?.id;
+    const selected = updatedData.find((el) => el.id == actionId);
+    const isNeeded = selected.label.split("").filter((el) => el === "X");
+    setActionNeedsOtherFields(isNeeded);
+    setSelectedAction(actionId);
+    setShowEmailTemplate(true);
   };
 
   const getTemplates = async () => {
     const response = await emailService.getTemplatesnetfree();
     setTemplateList(response.data.data);
-  };
-
-  const setActionValue = (e) => {
-    const actionId = e.target.value;
-    const selected = actionsList.find((el) => el.id == actionId);
-    const isNeeded = selected.label.split("").filter((el) => el === "X");
-    setActionNeedsOtherFields(isNeeded);
-    setSelectedAction(actionId);
   };
 
   const resetActionForm = () => {
@@ -209,7 +183,6 @@ const EmailTemplateModal = ({
   useEffect(() => {
     getActionsList();
     getTemplates();
-    getRequestStatusList();
   }, []);
 
   useEffect(() => {
@@ -245,127 +218,6 @@ const EmailTemplateModal = ({
                 </div>
 
                 <div className="relative p-5 pb-20 flex flex-col gap-3 scrollbar-hide">
-                  <div>
-                    <label className="block text-gray-11 text-md mb-1">
-                      {t("netfree.actions")}
-                    </label>
-                    <Select
-                      MenuProps={{
-                        sx: {
-                          zIndex: 9999,
-                        },
-                      }}
-                      className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                      onChange={(e) => {
-                        setActionValue(e);
-                        const isTemplateAction = actionsList.filter(
-                          (el) => el.id === e.target.value
-                        )[0]?.is_template_action;
-                        const templateActionObject = actionsList.filter(
-                          (el) => el.id === e.target.value
-                        )[0];
-                        if (
-                          isTemplateAction ||
-                          (!isTemplateAction &&
-                            lang === "he" &&
-                            templateActionObject?.label === "שלח תבנית אימייל")
-                        ) {
-                          setShowEmailTemplate(true);
-                        } else {
-                          setShowEmailTemplate(false);
-                        }
-                      }}
-                      value={selectedAction}
-                      placeholder="Select Action"
-                    >
-                      <MenuItem value={"selectAction"} disabled>
-                        {t("netfree.selectAction")}
-                      </MenuItem>
-                      {actionsList?.map((el) => {
-                        return el ? (
-                          <MenuItem key={el.id} value={el.id}>
-                            {el.label}
-                          </MenuItem>
-                        ) : null;
-                      })}
-                    </Select>
-                  </div>
-
-                  {actionsList.filter((el) => el.id == selectedAction)[0]
-                    ?.is_request_status && (
-                    <div>
-                      <label className="block text-gray-11 text-md mb-1">
-                        {t("netfree.changeStatus")}
-                      </label>
-                      <Select
-                        MenuProps={{
-                          sx: {
-                            zIndex: 9999,
-                          },
-                        }}
-                        className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                        onChange={(e) => setSelectedStatus(e.target.value)}
-                        value={selectedStatus}
-                        placeholder="Select status"
-                      >
-                        <MenuItem value={"selectStatus"} disabled>
-                          {t("netfree.selectStatus")}
-                        </MenuItem>
-                        {requestStatuses.length > 0 &&
-                          requestStatuses?.map((el) => {
-                            return el ? (
-                              <MenuItem key={el.value} value={el.value}>
-                                {el.label}
-                              </MenuItem>
-                            ) : null;
-                          })}
-                      </Select>
-                    </div>
-                  )}
-
-                  {actionNeedsOtherFields.length >= 2 ? (
-                    <div className="flex flex-col gap-2">
-                      <div>
-                        <label className="block text-gray-11 text-md mb-1">
-                          {t("netfree.amount")}
-                        </label>
-                        <input
-                          className="shadow appearance-none outline-none border rounded w-full py-2 px-1 text-black"
-                          required
-                          type="number"
-                          min={1}
-                          onKeyDownCapture={handleNumberkeyPress}
-                          onChange={(e) => setTimeAmount(e.target.value)}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-gray-11 text-md mb-1">
-                          {t("netfree.openfor")}
-                        </label>
-                        <Select
-                          MenuProps={{
-                            sx: {
-                              zIndex: 9999,
-                            },
-                          }}
-                          className="shadow [&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                          onChange={(e) => setTimePeriod(e.target.value)}
-                          value={timePeriod}
-                          placeholder="Select period"
-                        >
-                          {periods?.map((el, i) => {
-                            return el ? (
-                              <MenuItem key={i} value={el.value}>
-                                {el.label}
-                              </MenuItem>
-                            ) : null;
-                          })}
-                        </Select>
-                      </div>
-                    </div>
-                  ) : null}
-
                   {showEmailTemplate && (
                     <div>
                       <label className="block text-gray-11 text-md mb-1">
