@@ -39,101 +39,101 @@ const NewTemplateUnlayer = ({
 
   const onReady = () => {
     pdfEditorRef.current.editor.setMergeTags({
-      request: {
-        name: t("email_builder.requests"),
-        mergeTags: {
-          // Note the use of 'mergeTags' instead of 'children' for nesting
-          $request_id: {
-            name: t("requests.$requestId"),
-            value: "{request_id}",
-          },
-          $client_name: {
-            name: t("requests.$clinetName"),
-            value: "{client_name}",
-          },
-          $client_email: {
-            name: t("requests.$clientEmail"),
-            value: "{client_email}",
-          },
-          $domain_requested: {
-            name: t("requests.$domainRequested"),
-            value: "{domain_requested}",
-          },
-          $admin_email: {
-            name: t("requests.$adminEmail"),
-            value: "{admin_email}",
-          },
-        },
-      },
+      // request: {
+      //   name: t("email_builder.requests"),
+      //   mergeTags: {
+      //     // Note the use of 'mergeTags' instead of 'children' for nesting
+      //     $request_id: {
+      //       name: t("requests.$requestId"),
+      //       value: "{request_id}",
+      //     },
+      //     $client_name: {
+      //       name: t("requests.$clinetName"),
+      //       value: "{client_name}",
+      //     },
+      //     $client_email: {
+      //       name: t("requests.$clientEmail"),
+      //       value: "{client_email}",
+      //     },
+      //     $domain_requested: {
+      //       name: t("requests.$domainRequested"),
+      //       value: "{domain_requested}",
+      //     },
+      //     $admin_email: {
+      //       name: t("requests.$adminEmail"),
+      //       value: "{admin_email}",
+      //     },
+      //   },
+      // },
       client: {
         name: t("email_builder.clients"),
         mergeTags: mergeTagsData.client,
       },
-      netfree_traffic: {
-        name: t("email_builder.netfree_traffic"),
-        mergeTags: {
-          $traffic_recording_open_domain_pre_text: {
-            name: t("email_builder.open_domain_pre_text"),
-            value: "{traffic_recording_open_domain_pre_text}",
-          },
-          $traffic_recording_open_domain_list: {
-            name: t("email_builder.open_domain_list"),
-            value: "{traffic_recording_open_domain_list}",
-          },
-          $traffic_recording_open_domain_after_text: {
-            name: t("email_builder.open_domain_after_text"),
-            value: "{traffic_recording_open_domain_after_text}",
-          },
-          $traffic_recording_open_url_pre_text: {
-            name: t("email_builder.open_url_pre_text"),
-            value: "{traffic_recording_open_url_pre_text}",
-          },
-          $traffic_recording_open_url_list: {
-            name: t("email_builder.open_url_list"),
-            value: "{traffic_recording_open_url_list}",
-          },
-          $traffic_recording_open_url_after_text: {
-            name: t("email_builder.open_url_after_text"),
-            value: "{traffic_recording_open_url_after_text}",
-          },
-          $traffic_recording_blocked_pre_text: {
-            name: t("email_builder.blocked_pre_text"),
-            value: "{traffic_recording_blocked_pre_text}",
-          },
-          $traffic_recording_blocked_list: {
-            name: t("email_builder.blocked_list"),
-            value: "{traffic_recording_blocked_list}",
-          },
-          $traffic_recording_blocked_after_text: {
-            name: t("email_builder.blocked_after_text"),
-            value: "{traffic_recording_blocked_after_text}",
-          },
-          $traffic_recording_open_domain_temporary_pre_text: {
-            name: t("email_builder.open_domain_temporary_pre_text"),
-            value: "{traffic_recording_open_domain_temporary_pre_text}",
-          },
-          $traffic_recording_open_domain_temporary: {
-            name: t("email_builder.open_domain_temporary"),
-            value: "{traffic_recording_open_domain_temporary}",
-          },
-          $traffic_recording_open_domain_temporary_after_text: {
-            name: t("email_builder.open_domain_temporary_after_text"),
-            value: "{traffic_recording_open_domain_temporary_after_text}",
-          },
-          $traffic_recording_open_url_temporary_pre_text: {
-            name: t("email_builder.open_url_temporary_pre_text"),
-            value: "{traffic_recording_open_url_temporary_pre_text}",
-          },
-          $traffic_recording_open_url_temporary: {
-            name: t("email_builder.open_url_temporary"),
-            value: "{traffic_recording_open_url_temporary}",
-          },
-          $traffic_recording_open_url_temporary_after_text: {
-            name: t("email_builder.open_url_temporary_after_text"),
-            value: "{traffic_recording_open_url_temporary_after_text}",
-          },
-        },
-      },
+      // netfree_traffic: {
+      //   name: t("email_builder.netfree_traffic"),
+      //   mergeTags: {
+      //     $traffic_recording_open_domain_pre_text: {
+      //       name: t("email_builder.open_domain_pre_text"),
+      //       value: "{traffic_recording_open_domain_pre_text}",
+      //     },
+      //     $traffic_recording_open_domain_list: {
+      //       name: t("email_builder.open_domain_list"),
+      //       value: "{traffic_recording_open_domain_list}",
+      //     },
+      //     $traffic_recording_open_domain_after_text: {
+      //       name: t("email_builder.open_domain_after_text"),
+      //       value: "{traffic_recording_open_domain_after_text}",
+      //     },
+      //     $traffic_recording_open_url_pre_text: {
+      //       name: t("email_builder.open_url_pre_text"),
+      //       value: "{traffic_recording_open_url_pre_text}",
+      //     },
+      //     $traffic_recording_open_url_list: {
+      //       name: t("email_builder.open_url_list"),
+      //       value: "{traffic_recording_open_url_list}",
+      //     },
+      //     $traffic_recording_open_url_after_text: {
+      //       name: t("email_builder.open_url_after_text"),
+      //       value: "{traffic_recording_open_url_after_text}",
+      //     },
+      //     $traffic_recording_blocked_pre_text: {
+      //       name: t("email_builder.blocked_pre_text"),
+      //       value: "{traffic_recording_blocked_pre_text}",
+      //     },
+      //     $traffic_recording_blocked_list: {
+      //       name: t("email_builder.blocked_list"),
+      //       value: "{traffic_recording_blocked_list}",
+      //     },
+      //     $traffic_recording_blocked_after_text: {
+      //       name: t("email_builder.blocked_after_text"),
+      //       value: "{traffic_recording_blocked_after_text}",
+      //     },
+      //     $traffic_recording_open_domain_temporary_pre_text: {
+      //       name: t("email_builder.open_domain_temporary_pre_text"),
+      //       value: "{traffic_recording_open_domain_temporary_pre_text}",
+      //     },
+      //     $traffic_recording_open_domain_temporary: {
+      //       name: t("email_builder.open_domain_temporary"),
+      //       value: "{traffic_recording_open_domain_temporary}",
+      //     },
+      //     $traffic_recording_open_domain_temporary_after_text: {
+      //       name: t("email_builder.open_domain_temporary_after_text"),
+      //       value: "{traffic_recording_open_domain_temporary_after_text}",
+      //     },
+      //     $traffic_recording_open_url_temporary_pre_text: {
+      //       name: t("email_builder.open_url_temporary_pre_text"),
+      //       value: "{traffic_recording_open_url_temporary_pre_text}",
+      //     },
+      //     $traffic_recording_open_url_temporary: {
+      //       name: t("email_builder.open_url_temporary"),
+      //       value: "{traffic_recording_open_url_temporary}",
+      //     },
+      //     $traffic_recording_open_url_temporary_after_text: {
+      //       name: t("email_builder.open_url_temporary_after_text"),
+      //       value: "{traffic_recording_open_url_temporary_after_text}",
+      //     },
+      //   },
+      // },
     });
 
     if (editableTemplateId) {
@@ -227,8 +227,6 @@ const NewTemplateUnlayer = ({
     }
     setFormData({
       name: response.name,
-      to: response.email_to,
-      subject: response.subject,
       message: response.design,
     });
     setLoadingTemplate(false);
@@ -355,7 +353,7 @@ const NewTemplateUnlayer = ({
                       : "bg-gray-300"
                   }`}
                 >
-                  {t("emails.save")}
+                  {t("pdfs.save")}
                 </button>
               </div>
             </div>

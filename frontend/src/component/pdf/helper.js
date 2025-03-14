@@ -3,7 +3,6 @@ import {
   getInputFromTemplate,
   getDefaultFont,
 } from "@pdfme/common";
-import { Form, Viewer, Designer } from "@pdfme/ui";
 import { generate } from "@pdfme/generator";
 
 import {
@@ -23,9 +22,11 @@ import {
   checkbox,
   radioGroup,
 } from "@pdfme/schemas";
+import { mergetag } from "./mergetag";
 
 export const getPlugins = () => {
   return {
+    MergeTag: mergetag,
     Text: text,
     "Multi-Variable Text": multiVariableText,
     Table: table,

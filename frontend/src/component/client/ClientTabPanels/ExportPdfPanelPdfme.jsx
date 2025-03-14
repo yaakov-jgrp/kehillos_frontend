@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import { checkTemplate, getInputFromTemplate } from "@pdfme/common";
-import { Form } from "@pdfme/ui";
+import { Viewer } from "@pdfme/ui";
 import { generate } from "@pdfme/generator";
 import {
   getBlankTemplate,
@@ -97,15 +97,16 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
       const response = await pdfService.getSingleTemplate(selectedTemplateId);
       const data = response.data.data;
       template = JSON.parse(data.design);
-      console.log("templateJson", template);
-      checkTemplate(template);
+      const processData = await clientsService.processPdfTemplate(clientId, template);
+      const processedTemplate = processData.data;
+      checkTemplate(processedTemplate);
 
-      let inputs = getInputFromTemplate(template);
+      let inputs = getInputFromTemplate(processedTemplate);
 
-      // Initialize the Form component
-      ui.current = new Form({
+      // Initialize the Viewer component
+      ui.current = new Viewer({
         domContainer: uiRef.current,
-        template,
+        template: processedTemplate,
         inputs,
         options: {
           font: getFontsData(),
@@ -170,21 +171,7 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
 
   useEffect(() => {
     if (!selectedTemplateId) return;
-    const fetchEditableTemplateData = async () => {
-      setLoadingTemplate(true);
-      setIsEditorReady(false);
-      let response = await pdfService.getSingleTemplate(selectedTemplateId);
-      response = response.data.data;
-
-      console.log("response", response.design);
-      console.log("form", clientData);
-      setFormData({
-        name: response.name,
-        message: response.design,
-      });
-      setLoadingTemplate(false);
-    };
-    fetchEditableTemplateData();
+    buildUi();
   }, [selectedTemplateId]);
 
   useEffect(() => {
@@ -287,7 +274,6 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
               <div className="w-[100%] [&_tr]:h-10">
                 <div className="w-full my-5 h-[calc(100vh-330px)] relative">
                   <div ref={uiRef} className="flex-1 w-full min-h-[600px]" />
-                  <div className="w-[400px] h-12 bg-[#EEEEEE] absolute bottom-0 right-[0px]"></div>
                 </div>
 
                 <div className="flex justify-center">

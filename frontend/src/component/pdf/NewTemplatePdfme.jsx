@@ -19,7 +19,6 @@ const NewTemplatePdfme = ({
 }) => {
   const { t } = useTranslation();
   const { setAlert } = useAlert();
-  const designerRef = useRef(null);
   const containerRef = useRef(null);
   const [loadingTemplate, setLoadingTemplate] = useState(false);
   const designer = useRef(null);
@@ -34,10 +33,7 @@ const NewTemplatePdfme = ({
     try {
       let template = getBlankTemplate();
 
-      const plugins = {
-        ...getPlugins(),
-        MergeTag: mergetag,
-      };
+      const plugins = getPlugins();
 
       designer.current = new Designer({
         domContainer: containerRef.current,
