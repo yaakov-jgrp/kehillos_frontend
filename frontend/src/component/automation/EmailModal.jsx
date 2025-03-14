@@ -51,6 +51,16 @@ function EmailModal({
       subject: isEdit ? editData.subject : "",
       html: "",
       status: isEdit ? (editData?.status === "active" ? true : false) : false,
+      email_to_admin: isEdit
+        ? editData?.email_to_admin
+          ? true
+          : false
+        : false,
+      email_to_client: isEdit
+        ? editData?.email_to_client
+          ? true
+          : false
+        : false,
     },
   });
 
@@ -106,7 +116,7 @@ function EmailModal({
   //   setValue("status", !editData.status);
   // };
 
-  console.log("editData", editData);
+  // console.log("editData", editData);
 
   const onSubmit = async (formdata) => {
     const exportedMessage = await exportHtml();
@@ -120,7 +130,7 @@ function EmailModal({
       status: formdata?.status === true ? "active" : "inactive",
     };
 
-    console.log("fullFormData", fullFormData);
+    // console.log("fullFormData", fullFormData);
 
     handleActionArrayManupulation(editData, actionArray, fullFormData);
     setShowModal("");
@@ -241,9 +251,11 @@ function EmailModal({
   };
 
   const watchStatus = watch("status");
+  const watchEmailToAdmin = watch("email_to_admin");
+  const watchEmailToClient = watch("email_to_client");
 
   return (
-    <div className="fixed w-full left-0 bottom-0 z-[1000] h-screen w-screen bg-[#00000080] flex justify-center items-center">
+    <div className="fixed left-0 bottom-0 z-[1000] h-screen w-screen bg-[#00000080] flex justify-center items-center">
       <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-[9999] outline-none focus:outline-none">
         <div className="relative w-full flex justify-center items-center my-6 mx-auto ">
           <div className="max-h-[90vh] min-w-[90%] max-w-[90%] md:min-w-[90%] p-5 md:max-w-[90%] overflow-y-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
@@ -266,9 +278,9 @@ function EmailModal({
               <div className="px-7 flex gap-4 text-gray-11 [&_input]:border-[1px] [&_textarea]:border-[1px] [&_input]:outline-none [&_textarea]:outline-0 [&_input]:w-full [&_textarea]:w-full [&_input]:!px-4 [&_textarea]:!px-4 [&_input]:!py-1 [&_textarea]:!py-1">
                 <div className="w-[100%] [&_tr]:h-10">
                   <div className="flex items-center my-2 w-full gap-4">
-                    <td className="w-1/2 md:w-1/5">
+                    <label className="w-1/2 md:w-1/5">
                       {t("automation.actionTitle")}
-                    </td>
+                    </label>
                     <input
                       className="text-[13px] rounded-md h-[40px]"
                       {...register("action_title")}
@@ -282,9 +294,9 @@ function EmailModal({
                   </div>
 
                   <div className="flex my-2 w-full gap-4">
-                    <td className="w-1/2 md:w-1/5">
+                    <label className="w-1/2 md:w-1/5">
                       {t("automation.toEmail")}
-                    </td>
+                    </label>
                     <input
                       className="text-[13px] rounded-md h-[40px]"
                       type="email"
@@ -297,9 +309,9 @@ function EmailModal({
                   </div>
 
                   <div className="flex items-center my-2 w-full gap-4">
-                    <td className="w-1/2 md:w-1/5">
+                    <label className="w-1/2 md:w-1/5">
                       {t("automation.subject")}
-                    </td>
+                    </label>
                     <input
                       className="text-[13px] rounded-md h-[40px]"
                       {...register("subject")}
@@ -311,10 +323,32 @@ function EmailModal({
                   </div>
 
                   <div className="flex items-center my-2 w-full gap-4">
-                    <td className="w-1/2 md:w-1/5">{t("automation.status")}</td>
+                    <label className="w-1/2 md:w-1/5">
+                      {t("automation.status")}
+                    </label>
                     <ToggleSwitch
                       clickHandler={(e) => setValue("status", e.target.checked)}
                       selected={watchStatus}
+                    />
+                  </div>
+                  <div className="flex my-2 w-full gap-4">
+                    <label className="w-1/2 md:w-1/5">
+                      {t("netfree.SendtoAdmin")}
+                    </label>
+                    <input
+                      className="text-[13px] !w-auto rounded-md h-[40px]"
+                      type="checkbox"
+                      {...register("email_to_admin")}
+                    />
+                  </div>
+                  <div className="flex my-2 w-full gap-4">
+                    <label className="w-1/2 md:w-1/5">
+                      {t("netfree.SendtoClien")}
+                    </label>
+                    <input
+                      className="text-[13px] !w-auto rounded-md h-[40px]"
+                      type="checkbox"
+                      {...register("email_to_client")}
                     />
                   </div>
 

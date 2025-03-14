@@ -12,7 +12,7 @@ const ConditonForm = ({
   errors,
   filterOptions,
   deleteFilterCondition,
-  addConditionHandler
+  addConditionHandler,
 }) => {
   const { t } = useTranslation();
   return (
@@ -333,6 +333,10 @@ const ConditonForm = ({
           <IoIosAdd style={{ color: "#0B99FF" }} size="1.5rem" />{" "}
           {t("clients.addCondition")}
         </button>
+
+        {errors?.filters && errors?.filters.message && (
+          <ErrorMessage message={errors?.filters.message} />
+        )}
       </div>
     </div>
   );

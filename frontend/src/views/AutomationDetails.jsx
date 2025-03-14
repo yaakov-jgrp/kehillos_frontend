@@ -24,6 +24,9 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import EmailTemplateModal from "../component/automation/EmailTemplateModal";
+import emailService from "../services/email";
+import { toast } from "react-toastify";
 
 function AutomationDetails() {
   const { id } = useParams();
@@ -47,6 +50,46 @@ function AutomationDetails() {
   const [yearlyDate, setYearlyDate] = useState(null);
   const [selectedDates, setSelectedDates] = useState([]);
   const [currentDate, setCurrentDate] = useState(null);
+  const [isEmailTemplateLoading, setIsEmailTemplateLoading] = useState(false);
+
+  const onEmailTemplateModalSubmit = async (data) => {
+    setIsEmailTemplateLoading(true);
+    const templateId = data.email_inputs.template_id;
+    try {
+      if (templateId) {
+        const templateResponse = await emailService.getSingleTemplate(
+          templateId
+        );
+        if (templateResponse?.data?.data) {
+          const fullFormData = {
+            action_title: templateResponse?.data?.data?.name,
+            action_type: "send_email",
+            to_email: data.email_inputs.custom_email,
+            subject: templateResponse?.data?.data?.subject,
+            html: templateResponse?.data?.data?.html,
+            design: templateResponse?.data?.data?.design,
+            id: templateResponse?.data?.data?.id,
+            status: data?.status === true ? "active" : "inactive",
+            email_to_admin: data?.email_inputs?.email_to_admin,
+            email_to_client: data?.email_inputs?.email_to_client,
+          };
+          handleActionArrayManupulation({}, actionArray, fullFormData);
+        } else {
+          throw new Error(t("emails.errorFetchingTemplate"));
+        }
+      }
+      setAction(null);
+    } catch (error) {
+      console.log(error);
+      toast.error(t("emails.errorFetchingTemplate"));
+    } finally {
+      setIsEmailTemplateLoading(false);
+    }
+  };
+
+  const emailTemplateModalClose = () => {
+    setAction(null);
+  };
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -272,13 +315,14 @@ function AutomationDetails() {
   const convertToDateStrings = (dates) => {
     return dates?.map(({ month, day }) => {
       const year = dayjs().year(); // Assuming current year, change this if necessary
-      return dayjs(`${year}-${month}-${day}`).format('YYYY-MM-DD');
+      return dayjs(`${year}-${month}-${day}`).format("YYYY-MM-DD");
     });
   };
 
   const submitFormHandler = async (data, e) => {
     e.preventDefault();
     setIsLoading(true);
+    console.log("Submit form handler", data);
 
     const createPayload = (value) => {
       let payload = {};
@@ -298,7 +342,7 @@ function AutomationDetails() {
         payload = {
           frequency: "specific_date",
           time: time,
-          specific_date: dayjs(specificDate).format('YYYY-MM-DD'),
+          specific_date: dayjs(specificDate).format("YYYY-MM-DD"),
         };
       } else if (value === "monthly_by_date") {
         payload = {
@@ -317,9 +361,6 @@ function AutomationDetails() {
       return payload;
     };
 
-    console.log('createPayload(data?.frequency, data)',createPayload(data?.frequency, data));
-    
-
     const payload = {
       workflow_name: data?.workflow_name,
       workflow_description: data?.workflow_description,
@@ -328,15 +369,12 @@ function AutomationDetails() {
       trigger_type: data?.triggerType,
       // frequency: data?.frequency,
       ...(data?.triggerType === "updated" && { recurrence: data?.recurrence }),
-      ...(data?.triggerType === "scheduled" &&
-        createPayload(selectedSchedule)),
+      ...(data?.triggerType === "scheduled" && createPayload(selectedSchedule)),
       conditions: id ? filtersData : prepareRequestData,
       actions: actionArray?.length ? actionArray : [],
       ...(id && { id: id }),
     };
 
-    console.log('data',data);
-    
     const updatePayload = {
       id: id,
       workflow_name: data?.workflow_name,
@@ -381,9 +419,6 @@ function AutomationDetails() {
     setValue("selectedDay", event.target.value);
   };
 
-  console.log('selectedDay',selectedDay);
-  
-
   const fetchAutomationDataById = async () => {
     try {
       const response = await automationService.getAutomationListById(id);
@@ -401,7 +436,9 @@ function AutomationDetails() {
         setAction("addAction");
         setTime(response?.data?.time);
         setSelectedWeekDay(response?.data?.days_of_week || []);
-        setSelectedDates(convertToDateStrings(response?.data?.specific_dates_year) || []);
+        setSelectedDates(
+          convertToDateStrings(response?.data?.specific_dates_year) || []
+        );
         setSelectedDay(response?.data?.days_of_month || []);
         setSpecificDate(dayjs(response?.data?.specific_date));
         console.log("response>>>>>", response?.data?.days_of_month);
@@ -622,7 +659,9 @@ function AutomationDetails() {
                     <MenuItem value="monthly_by_date">
                       {t("automation.monthlyByDate")}
                     </MenuItem>
-                    <MenuItem value="yearly_by_date">{t("automation.yearly")}</MenuItem>
+                    <MenuItem value="yearly_by_date">
+                      {t("automation.yearly")}
+                    </MenuItem>
                   </Select>
                 </FormControl>
               </div>
@@ -886,6 +925,15 @@ function AutomationDetails() {
           actionType={action}
           setActionArray={setActionArray}
           handleActionArrayManupulation={handleActionArrayManupulation}
+        />
+      )}
+      {action === "send_email_template" && (
+        <EmailTemplateModal
+          showModal={action === "send_email_template"}
+          setShowModal={(value) => setAction(null)}
+          onSubmit={onEmailTemplateModalSubmit}
+          onClose={emailTemplateModalClose}
+          isLoading={isEmailTemplateLoading}
         />
       )}
       {action === "send_email" && (
