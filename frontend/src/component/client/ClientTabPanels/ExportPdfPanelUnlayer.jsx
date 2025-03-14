@@ -18,11 +18,7 @@ import pdfEditorHe from "../../../locales/pdfEditorHe.json";
 import useAlert from "../../../Hooks/useAlert";
 import pdfService from "../../../services/pdf";
 
-const ExportPdfPanelUnlayer = ({
-  clientId,
-  clientData,
-  netfreeprofile,
-}) => {
+const ExportPdfPanelUnlayer = ({ clientId, clientData, netfreeprofile }) => {
   const formObject = {
     name: "",
     message: "",
@@ -44,7 +40,9 @@ const ExportPdfPanelUnlayer = ({
     const getTemplates = async () => {
       setIsLoading(true);
       const response = await pdfService.getTemplates();
-      const data = response.data.data.filter((template) => template.type === "unlayer");
+      const data = response.data.data.filter(
+        (template) => template.type === "unlayer"
+      );
       setTemplateList(data);
       setIsLoading(false);
     };
@@ -70,7 +68,7 @@ const ExportPdfPanelUnlayer = ({
         preview: false,
       },
     });
-    pdfEditorRef.current.editor.showPreview('tablet');
+    pdfEditorRef.current.editor.showPreview("tablet");
   };
 
   const exportHtml = () => {
@@ -143,8 +141,11 @@ const ExportPdfPanelUnlayer = ({
 
       console.log("response", response.design);
       console.log("form", clientData);
-      
-      const processData = await clientsService.processPdfTemplate(clientId, response.design);
+
+      const processData = await clientsService.processPdfTemplate(
+        clientId,
+        response.design
+      );
       const processedTemplate = processData.data;
       setFormData({
         name: response.name,
@@ -229,10 +230,8 @@ const ExportPdfPanelUnlayer = ({
   return (
     <div className="w-full flex flex-col md:flex-row gap-4">
       <div className="bg-white rounded-3xl w-full shadow-custom pb-4">
-        <div className="flex justify-between items-center py-4 px-7 text-gray-11 font-medium text-2xl">
-          <div className="w-full">
-            {t("pdfs.export")}
-          </div>
+        <div className="flex justify-between items-center px-7 text-gray-11 font-medium text-2xl">
+          <div className="w-full">{t("pdfs.export")}</div>
           <div className="w-full mb-4 flex items-center justify-end gap-5 mt-5">
             <label className="text-sm text-navy-700 dark:text-white">
               {t("pdfs.selectTemplate")}
@@ -256,11 +255,14 @@ const ExportPdfPanelUnlayer = ({
             <div className="w-[100%] [&_tr]:h-10">
               <div className="w-full my-5 h-[calc(100vh-330px)] [&_iframe]:!min-w-[100%] [&_iframe]:!h-[calc(100vh-330px)] [&_div]:!max-h-[calc(100vh-330px)] relative">
                 {!loadingTemplate && !loadingTags ? (
-                  <PdfEditor
-                    ref={pdfEditorRef}
-                    onReady={onReady}
-                    options={defaultLanguageValue === "he" ? option : null}
-                  />
+                  <>
+                    <PdfEditor
+                      ref={pdfEditorRef}
+                      onReady={onReady}
+                      options={defaultLanguageValue === "he" ? option : null}
+                    />
+                    <div className="w-[425px] h-12 bg-[#F9F9F9] absolute bottom-0 right-[0px]"></div>
+                  </>
                 ) : (
                   <Box
                     sx={{

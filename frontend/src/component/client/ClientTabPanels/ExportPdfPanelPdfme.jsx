@@ -246,7 +246,7 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
     <div className="flex flex-col gap-4">
       <div className="w-full flex flex-col md:flex-row gap-4">
         <div className="bg-white rounded-3xl w-full shadow-custom pb-4">
-          <div className="flex justify-between items-center py-4 px-7 text-gray-11 font-medium text-2xl">
+          <div className="flex justify-between items-center px-7 text-gray-11 font-medium text-2xl">
             <div className="w-full">{t("pdfs.export")}</div>
             <div className="w-full mb-4 flex items-center justify-end gap-5 mt-5">
               <label className="text-sm text-navy-700 dark:text-white">

@@ -324,7 +324,7 @@ function EmailModal({
                       onLoad={onReady}
                       options={defaultLanguageValue === "he" ? option : null}
                     />
-                    <div className="w-[400px] h-12 bg-[#EEEEEE] absolute bottom-0 right-[0px]"></div>
+                    <div className="w-[425px] h-12 bg-[#F9F9F9] absolute bottom-0 right-[0px]"></div>
                   </div>
 
                   <div className="flex justify-end relative">
