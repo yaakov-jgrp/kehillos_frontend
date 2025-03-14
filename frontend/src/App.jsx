@@ -10,7 +10,6 @@ import SignIn from "./views/auth/SignIn";
 import DefaultLayout from "./layout/DefaultLayout";
 import Request from "./views/Request";
 import Emails from "./views/Emails";
-import Pdfs from "./views/Pdfs";
 import NetFree from "./views/NetFree";
 import Clients from "./views/Clients";
 import ClientDetails from "./views/ClientDetails";
@@ -56,6 +55,8 @@ import { ACCESS_TOKEN_KEY } from "./constants";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import UserProvider from "./Hooks/permissionContext";
+import PdfMe from "./views/PdfMe";
+import PdfUnlayer from "./views/PdfUnlayer";
 
 const queryClient = new QueryClient();
 
@@ -226,11 +227,18 @@ function App() {
       component: <EmailTemplating />,
     },
     {
-      name: t("sidebar.pdft"),
-      path: "settings/pdfs",
+      name: t("sidebar.pdfs1"),
+      path: "settings/pdfs1",
       type: "menu",
       icon: <MdEditDocument className="h-6 w-6" />,
-      component: <Pdfs />,
+      component: <PdfMe />,
+    },
+    {
+      name: t("sidebar.pdfs2"),
+      path: "settings/pdfs2",
+      type: "menu",
+      icon: <MdEditDocument className="h-6 w-6" />,
+      component: <PdfUnlayer />,
     },
     {
       name: t("sidebar.logs"),

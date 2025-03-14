@@ -2,7 +2,7 @@ import api from "./api";
 
 const getTemplates = () => {
   return api
-    .get('/api/crm/template/')
+    .get('/api/crm/pdf-template/')
 }
 
 const getTemplatesnetfree = () => {
@@ -12,22 +12,22 @@ const getTemplatesnetfree = () => {
 
 const addNewTemplate = (data) => {
   return api
-    .post('/api/crm/template/', data)
+    .post('/api/crm/pdf-template/', data)
 }
 
 const updateTemplate = (data) => {
   return api
-    .patch('/api/crm/template/', data)
+    .patch('/api/crm/pdf-template/', data)
 }
 
 const getSingleTemplate = (id) => {
   return api
-    .get(`/api/crm/template/?id=${id}`)
+    .get(`/api/crm/pdf-template/?id=${id}`)
 }
 
 const deleteTemplate = (id) => {
   return api
-    .delete(`/api/crm/template/?id=${id}`)
+    .delete(`/api/crm/pdf-template/?id=${id}`)
 }
 
 const exportPdfFile = (data) => {
@@ -41,21 +41,8 @@ const exportPdfFile = (data) => {
     })
 }
 
-const sendEmail = (data) => {
-  return api
-    .post(`/api/crm/send-email`, data)
-}
-
-const loginEmail = (data) => {
-  return api.post(`/api/crm/smtp-email/`, data);
-}
-
-const getSMTPDetail = () => {
-  return api.get(`/api/crm/smtp-email/`);
-}
-
 const duplicateTemplate = (templateId) => {
-  return api.post('/api/crm/template-clone/', { id: templateId });
+  return api.post('/api/crm/pdf-template-clone/', { id: templateId });
 }
 
 const getTemplatingTexts = (params) => {
@@ -81,9 +68,6 @@ const pdfService = {
   updateTemplate,
   getSingleTemplate,
   deleteTemplate,
-  sendEmail,
-  loginEmail,
-  getSMTPDetail,
   duplicateTemplate,
   getTemplatingTexts,
   createTemplatingText,

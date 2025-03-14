@@ -23,6 +23,7 @@ import CustomSearchField from "../fields/CustomSearchField";
 
 const ListTemplate = ({
   newTemplate,
+  pdfType = "pdfme",
   onEdit,
   writePermission,
   updatePermission,
@@ -39,8 +40,9 @@ const ListTemplate = ({
   const getTemplates = async () => {
     setIsLoading(true);
     const response = await pdfService.getTemplates();
-    setTemplateList(response.data.data);
-    setFilteredTemplteList(response.data.data);
+    const data = response.data.data.filter((x) => x.type === pdfType);
+    setTemplateList(data);
+    setFilteredTemplteList(data);
     setIsLoading(false);
   };
 
@@ -95,7 +97,7 @@ const ListTemplate = ({
       <div className="w-full flex flex-col gap-4 p-4">
         <div className="flex items-center justify-between px-2">
           <p className="text-gray-11 font-medium text-2xl">
-            {t("pdfs.pdfTemplates")}
+            {t("pdfs.pdfTemplate")}
           </p>
           <div className="flex items-center gap-4">
             <CustomSearchField

@@ -1,13 +1,13 @@
 // React imports
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 // UI Components Imports
-import NewTemplate from "../component/pdf/NewTemplate";
 import ListTemplate from "../component/pdf/ListTemplate";
 import { USER_DETAILS } from "../constants";
 import { UserContext } from "../Hooks/permissionContext";
+import NewTemplateUnlayer from "../component/pdf/NewTemplateUnlayer";
 
-const Pdfs = () => {
+const PdfUnlayer = () => {
   const [showAddEditTemplate, setShowAddEditTemplate] = useState(false);
   const [editTemplateId, setEditTemplateId] = useState(null);
   const { userDetails, permissions } = useContext(UserContext);
@@ -45,7 +45,7 @@ const Pdfs = () => {
   return (
     <>
       {showAddEditTemplate ? (
-        <NewTemplate
+        <NewTemplateUnlayer
           writePermission={writePermission}
           updatePermission={updatePermission}
           deletePermission={deletePermission}
@@ -54,6 +54,7 @@ const Pdfs = () => {
         />
       ) : (
         <ListTemplate
+          pdfType={"unlayer"}
           writePermission={writePermission}
           updatePermission={updatePermission}
           deletePermission={deletePermission}
@@ -65,4 +66,4 @@ const Pdfs = () => {
   );
 };
 
-export default Pdfs;
+export default PdfUnlayer;

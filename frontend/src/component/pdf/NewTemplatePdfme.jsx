@@ -7,10 +7,9 @@ import pdfService from "../../services/pdf";
 import { DEFAULT_LANGUAGE } from "../../constants";
 import useAlert from "../../Hooks/useAlert";
 import { getBlankTemplate, getFontsData, getPlugins } from "./helper";
+import { Box, CircularProgress } from "@mui/material";
 
-const STORAGE_KEY = "pdfTemplate";
-
-const NewTemplate = ({
+const NewTemplatePdfme = ({
   editableTemplateId,
   onSave,
   writePermission,
@@ -25,7 +24,7 @@ const NewTemplate = ({
   const designer = useRef(null);
   const [formData, setFormData] = useState({
     name: "",
-    template: getBlankTemplate()
+    design: getBlankTemplate(),
   });
 
   const initDesigner = useCallback(async () => {
@@ -33,33 +32,29 @@ const NewTemplate = ({
 
     try {
       let template = getBlankTemplate();
-      const savedTemplate = localStorage.getItem(STORAGE_KEY);
-
-      if (savedTemplate) {
-        try {
-          const templateJson = JSON.parse(savedTemplate);
-          checkTemplate(templateJson);
-          template = templateJson;
-        } catch (error) {
-          console.error('Invalid saved template:', error);
-          localStorage.removeItem('pdfTemplate');
-        }
-      }
 
       designer.current = new Designer({
         domContainer: containerRef.current,
         template,
         options: {
-          lang: localStorage.getItem(DEFAULT_LANGUAGE) || 'en',
+          lang: localStorage.getItem(DEFAULT_LANGUAGE) || "en",
           theme: {
-            token: { colorPrimary: "#4f46e5" }
+            token: { colorPrimary: "#4f46e5" },
           },
-          font: getFontsData()
+          font: getFontsData(),
+          labels: {
+            "signature.clear": "🗑️",
+          },
+          icons: {
+            multiVariableText:
+              '<svg fill="#000000" width="24px" height="24px" viewBox="0 0 24 24"><path d="M6.643,13.072,17.414,2.3a1.027,1.027,0,0,1,1.452,0L20.7,4.134a1.027,1.027,0,0,1,0,1.452L9.928,16.357,5,18ZM21,20H3a1,1,0,0,0,0,2H21a1,1,0,0,0,0-2Z"/></svg>',
+          },
+          maxZoom: 250,
         },
-        plugins: getPlugins()
+        plugins: getPlugins(),
       });
 
-      setFormData(prev => ({ ...prev, template }));
+      setFormData((prev) => ({ ...prev, design: template }));
     } catch (error) {
       console.error("Error initializing designer:", error);
       setAlert(t("pdfs.designerInitFailed"), "error");
@@ -74,10 +69,11 @@ const NewTemplate = ({
       const template = designer.current.getTemplate();
       const data = {
         name: formData.name,
-        template: JSON.stringify(template),
+        type: "pdfme",
+        body: {
+          design: JSON.stringify(template),
+        },
       };
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(template));
 
       if (editableTemplateId) {
         await pdfService.updateTemplate({
@@ -89,11 +85,11 @@ const NewTemplate = ({
         await pdfService.addNewTemplate(data);
         setAlert(t("pdfs.templateAdded"), "success");
       }
-      
-      setFormData({ name: "", template: getBlankTemplate() });
+
+      setFormData({ name: "", design: getBlankTemplate() });
       onSave();
     } catch (error) {
-      console.error('Error saving template:', error);
+      console.error("Error saving template:", error);
       setAlert(
         editableTemplateId
           ? t("pdfs.templateUpdateFailed")
@@ -110,7 +106,7 @@ const NewTemplate = ({
   const handleFileInput = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
-    
+
     if (file.type !== "application/pdf") {
       setAlert(t("pdfs.invalidFileType"), "error");
       return;
@@ -124,7 +120,7 @@ const NewTemplate = ({
           const newTemplate = cloneDeep(designer.current.getTemplate());
           newTemplate.basePdf = basePdf;
           designer.current.updateTemplate(newTemplate);
-          setFormData(prev => ({ ...prev, template: newTemplate }));
+          setFormData((prev) => ({ ...prev, design: newTemplate }));
         }
       };
       reader.onerror = () => {
@@ -144,44 +140,43 @@ const NewTemplate = ({
     return true;
   };
 
-  const fetchEditableTemplateData = async () => {
-    setLoadingTemplate(true);
+  const fetchEditableTemplateData = useCallback(async () => {
+    // setLoadingTemplate(true);
     try {
       const response = await pdfService.getSingleTemplate(editableTemplateId);
       const templateData = response.data.data;
-      const parsedTemplate = JSON.parse(templateData.template);
+      const parsedTemplate = JSON.parse(templateData.design);
 
       try {
         checkTemplate(parsedTemplate);
       } catch (error) {
-        console.error('Invalid template structure:', error);
+        console.error("Invalid template structure:", error);
         parsedTemplate.schemas = getBlankTemplate().schemas;
       }
 
       if (designer.current) {
-        designer.current.updateTemplate(parsedTemplate);
+        const newTemplate = cloneDeep(designer.current.getTemplate());
+        newTemplate.schemas = parsedTemplate.schemas;
+        designer.current.updateTemplate(newTemplate);
       }
 
       setFormData({
         name: templateData.name,
-        template: parsedTemplate,
+        design: parsedTemplate,
       });
     } catch (error) {
       console.error("Error fetching template:", error);
-      setFormData({ name: "", template: getBlankTemplate() });
+      setFormData({ name: "", design: getBlankTemplate() });
       setAlert(t("pdfs.templateFetchFailed"), "error");
     }
-    setLoadingTemplate(false);
-  };
-
-  useEffect(() => {
-    if (editableTemplateId) {
-      fetchEditableTemplateData();
-    }
-  }, [editableTemplateId]);
+    // setLoadingTemplate(false);
+  }, [editableTemplateId, formData]);
 
   useEffect(() => {
     initDesigner();
+    if (editableTemplateId) {
+      fetchEditableTemplateData();
+    }
     return () => {
       if (designer.current) {
         designer.current?.destroy();
@@ -224,11 +219,21 @@ const NewTemplate = ({
               </div>
 
               <div className="w-full my-5 h-[calc(100vh-330px)]">
-                {!loadingTemplate && (
-                  <div
-                    ref={containerRef}
-                    className="w-full h-full border rounded-lg"
-                  />
+                <div
+                  ref={containerRef}
+                  className="w-full h-full border rounded-lg"
+                />
+                {loadingTemplate && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "200px",
+                    }}
+                  >
+                    <CircularProgress />
+                  </Box>
                 )}
               </div>
 
@@ -252,4 +257,4 @@ const NewTemplate = ({
   );
 };
 
-export default NewTemplate;
+export default NewTemplatePdfme;

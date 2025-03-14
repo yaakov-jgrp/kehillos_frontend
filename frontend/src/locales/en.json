@@ -76,7 +76,7 @@
     "websites": "Websites",
     "netfree": "NetFree",
     "emails": "Emails",
-    "pdfs": "Pdfs",
+    "pdfs": "PDFs",
     "profile": "Profile",
     "logout": "Logout",
     "formCreation": "Form Creation",
@@ -86,7 +86,11 @@
     "logs": "Logs History",
     "users": "Users",
     "templating": "Templating",
-    "forms": "Forms"
+    "forms": "Forms",
+    "export1": "Export PDF(pdfme)",
+    "export2": "Export PDF(unlayer)",
+    "pdfs1": "PDFs (pdfme)",
+    "pdfs2": "PDFs (unlayer)"
   },
   "automation": {
     "automation": "Automation",
@@ -255,6 +259,8 @@
     "netfree": "netfree",
     "emails": "emails",
     "pdfs": "pdfs",
+    "pdfs1": "pdfs-pdfme",
+    "pdfs2": "pdfs-unlayer",
     "logs": "logs",
     "templating": "templating",
     "forms": "Form Settings"
@@ -296,6 +302,21 @@
     "website": "Website",
     "default": "Default",
     "emailTemplate": "Email Templates"
+  },
+  "pdfs": {
+    "export": "Download PDF",
+    "selectTemplate": "Select Template",
+    "pdfTemplate": "PDF Template",
+    "pdfTemplate1": "PDF Template (pdfme)",
+    "pdfTemplate2": "PDF Template (unlayer)",
+    "pdfTemplates": "PDF Templates",
+    "newTemplate": "New Template",
+    "templateName": "PDF Template Name",
+    "basePdf": "Base PDF",
+    "save": "Save Template",
+    "edit": "Edit",
+    "duplicate": "Duplicate",
+    "delete": "Delete"
   },
   "websites": {
     "addDomain": "+ Add Domain",

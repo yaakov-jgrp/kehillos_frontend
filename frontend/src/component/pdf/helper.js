@@ -127,9 +127,7 @@ export const handleLoadTemplate = (e, currentRef) => {
         currentRef.updateTemplate(t);
       })
       .catch((e) => {
-        alert(`Invalid template file.
---------------------------
-${e}`);
+        alert(`Invalid template file. -------------------------- ${e}`);
       });
   }
 };

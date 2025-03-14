@@ -18,7 +18,7 @@ import pdfEditorHe from "../../../locales/pdfEditorHe.json";
 import useAlert from "../../../Hooks/useAlert";
 import pdfService from "../../../services/pdf";
 
-const ExportFormPanel = ({
+const ExportPdfPanelUnlayer = ({
   writePermission,
   clientId,
   clientData,
@@ -45,117 +45,124 @@ const ExportFormPanel = ({
     const getTemplates = async () => {
       setIsLoading(true);
       const response = await pdfService.getTemplates();
-      setTemplateList(response.data.data);
+      const data = response.data.data.filter((template) => template.type === "unlayer");
+      setTemplateList(data);
       setIsLoading(false);
     };
     getTemplates();
   }, []);
 
   useEffect(() => {
-    if(templateList?.length > 0) {
+    if (templateList?.length > 0) {
       setSelectedTemplateId(templateList[0].id);
     }
   }, [templateList]);
 
   const onReady = () => {
     setIsEditorReady(true);
-    pdfEditorRef.current.editor.setMergeTags({
-      request: {
-        name: t("email_builder.requests"),
-        mergeTags: {
-          // Note the use of 'mergeTags' instead of 'children' for nesting
-          $request_id: {
-            name: t("requests.$requestId"),
-            value: "{request_id}",
-          },
-          $client_name: {
-            name: t("requests.$clinetName"),
-            value: "{client_name}",
-          },
-          $client_email: {
-            name: t("requests.$clientEmail"),
-            value: "{client_email}",
-          },
-          $domain_requested: {
-            name: t("requests.$domainRequested"),
-            value: "{domain_requested}",
-          },
-          $admin_email: {
-            name: t("requests.$adminEmail"),
-            value: "{admin_email}",
-          },
-        },
-      },
-      client: {
-        name: t("email_builder.clients"),
-        mergeTags: mergeTagsData.client,
-      },
-      netfree_traffic: {
-        name: t("email_builder.netfree_traffic"),
-        mergeTags: {
-          $traffic_recording_open_domain_pre_text: {
-            name: t("email_builder.open_domain_pre_text"),
-            value: "{traffic_recording_open_domain_pre_text}",
-          },
-          $traffic_recording_open_domain_list: {
-            name: t("email_builder.open_domain_list"),
-            value: "{traffic_recording_open_domain_list}",
-          },
-          $traffic_recording_open_domain_after_text: {
-            name: t("email_builder.open_domain_after_text"),
-            value: "{traffic_recording_open_domain_after_text}",
-          },
-          $traffic_recording_open_url_pre_text: {
-            name: t("email_builder.open_url_pre_text"),
-            value: "{traffic_recording_open_url_pre_text}",
-          },
-          $traffic_recording_open_url_list: {
-            name: t("email_builder.open_url_list"),
-            value: "{traffic_recording_open_url_list}",
-          },
-          $traffic_recording_open_url_after_text: {
-            name: t("email_builder.open_url_after_text"),
-            value: "{traffic_recording_open_url_after_text}",
-          },
-          $traffic_recording_blocked_pre_text: {
-            name: t("email_builder.blocked_pre_text"),
-            value: "{traffic_recording_blocked_pre_text}",
-          },
-          $traffic_recording_blocked_list: {
-            name: t("email_builder.blocked_list"),
-            value: "{traffic_recording_blocked_list}",
-          },
-          $traffic_recording_blocked_after_text: {
-            name: t("email_builder.blocked_after_text"),
-            value: "{traffic_recording_blocked_after_text}",
-          },
-          $traffic_recording_open_domain_temporary_pre_text: {
-            name: t("email_builder.open_domain_temporary_pre_text"),
-            value: "{traffic_recording_open_domain_temporary_pre_text}",
-          },
-          $traffic_recording_open_domain_temporary: {
-            name: t("email_builder.open_domain_temporary"),
-            value: "{traffic_recording_open_domain_temporary}",
-          },
-          $traffic_recording_open_domain_temporary_after_text: {
-            name: t("email_builder.open_domain_temporary_after_text"),
-            value: "{traffic_recording_open_domain_temporary_after_text}",
-          },
-          $traffic_recording_open_url_temporary_pre_text: {
-            name: t("email_builder.open_url_temporary_pre_text"),
-            value: "{traffic_recording_open_url_temporary_pre_text}",
-          },
-          $traffic_recording_open_url_temporary: {
-            name: t("email_builder.open_url_temporary"),
-            value: "{traffic_recording_open_url_temporary}",
-          },
-          $traffic_recording_open_url_temporary_after_text: {
-            name: t("email_builder.open_url_temporary_after_text"),
-            value: "{traffic_recording_open_url_temporary_after_text}",
-          },
-        },
+    // pdfEditorRef.current.editor.setMergeTags({
+    //   request: {
+    //     name: t("email_builder.requests"),
+    //     mergeTags: {
+    //       // Note the use of 'mergeTags' instead of 'children' for nesting
+    //       $request_id: {
+    //         name: t("requests.$requestId"),
+    //         value: "{request_id}",
+    //       },
+    //       $client_name: {
+    //         name: t("requests.$clinetName"),
+    //         value: "{client_name}",
+    //       },
+    //       $client_email: {
+    //         name: t("requests.$clientEmail"),
+    //         value: "{client_email}",
+    //       },
+    //       $domain_requested: {
+    //         name: t("requests.$domainRequested"),
+    //         value: "{domain_requested}",
+    //       },
+    //       $admin_email: {
+    //         name: t("requests.$adminEmail"),
+    //         value: "{admin_email}",
+    //       },
+    //     },
+    //   },
+    //   client: {
+    //     name: t("email_builder.clients"),
+    //     mergeTags: mergeTagsData.client,
+    //   },
+    //   netfree_traffic: {
+    //     name: t("email_builder.netfree_traffic"),
+    //     mergeTags: {
+    //       $traffic_recording_open_domain_pre_text: {
+    //         name: t("email_builder.open_domain_pre_text"),
+    //         value: "{traffic_recording_open_domain_pre_text}",
+    //       },
+    //       $traffic_recording_open_domain_list: {
+    //         name: t("email_builder.open_domain_list"),
+    //         value: "{traffic_recording_open_domain_list}",
+    //       },
+    //       $traffic_recording_open_domain_after_text: {
+    //         name: t("email_builder.open_domain_after_text"),
+    //         value: "{traffic_recording_open_domain_after_text}",
+    //       },
+    //       $traffic_recording_open_url_pre_text: {
+    //         name: t("email_builder.open_url_pre_text"),
+    //         value: "{traffic_recording_open_url_pre_text}",
+    //       },
+    //       $traffic_recording_open_url_list: {
+    //         name: t("email_builder.open_url_list"),
+    //         value: "{traffic_recording_open_url_list}",
+    //       },
+    //       $traffic_recording_open_url_after_text: {
+    //         name: t("email_builder.open_url_after_text"),
+    //         value: "{traffic_recording_open_url_after_text}",
+    //       },
+    //       $traffic_recording_blocked_pre_text: {
+    //         name: t("email_builder.blocked_pre_text"),
+    //         value: "{traffic_recording_blocked_pre_text}",
+    //       },
+    //       $traffic_recording_blocked_list: {
+    //         name: t("email_builder.blocked_list"),
+    //         value: "{traffic_recording_blocked_list}",
+    //       },
+    //       $traffic_recording_blocked_after_text: {
+    //         name: t("email_builder.blocked_after_text"),
+    //         value: "{traffic_recording_blocked_after_text}",
+    //       },
+    //       $traffic_recording_open_domain_temporary_pre_text: {
+    //         name: t("email_builder.open_domain_temporary_pre_text"),
+    //         value: "{traffic_recording_open_domain_temporary_pre_text}",
+    //       },
+    //       $traffic_recording_open_domain_temporary: {
+    //         name: t("email_builder.open_domain_temporary"),
+    //         value: "{traffic_recording_open_domain_temporary}",
+    //       },
+    //       $traffic_recording_open_domain_temporary_after_text: {
+    //         name: t("email_builder.open_domain_temporary_after_text"),
+    //         value: "{traffic_recording_open_domain_temporary_after_text}",
+    //       },
+    //       $traffic_recording_open_url_temporary_pre_text: {
+    //         name: t("email_builder.open_url_temporary_pre_text"),
+    //         value: "{traffic_recording_open_url_temporary_pre_text}",
+    //       },
+    //       $traffic_recording_open_url_temporary: {
+    //         name: t("email_builder.open_url_temporary"),
+    //         value: "{traffic_recording_open_url_temporary}",
+    //       },
+    //       $traffic_recording_open_url_temporary_after_text: {
+    //         name: t("email_builder.open_url_temporary_after_text"),
+    //         value: "{traffic_recording_open_url_temporary_after_text}",
+    //       },
+    //     },
+    //   },
+    // });
+    pdfEditorRef.current.editor.setAppearance({
+      features: {
+        preview: false,
       },
     });
+    pdfEditorRef.current.editor.showPreview('tablet');
   };
 
   const exportHtml = () => {
@@ -193,7 +200,13 @@ const ExportFormPanel = ({
           link.href = url;
           link.setAttribute(
             "download",
-            `${clientId}_${data.name}_${new Date().toISOString().substr(0, 10).replace(/-/g, "_")}_${new Date().getHours()}${new Date().getMinutes()}.pdf`
+            `${clientId}_${data.name}_${new Date()
+              .toISOString()
+              .substr(0, 10)
+              .replace(
+                /-/g,
+                "_"
+              )}_${new Date().getHours()}${new Date().getMinutes()}.pdf`
           );
           document.body.appendChild(link);
           link.click();
@@ -296,13 +309,19 @@ const ExportFormPanel = ({
         },
       },
     },
+    displayMode: "email",
+    minWidth: "550px",
+    style: { width: "550px" },
+    isPreview: true,
   };
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-4">
       <div className="bg-white rounded-3xl w-full shadow-custom pb-4">
         <div className="flex justify-between items-center py-4 px-7 text-gray-11 font-medium text-2xl">
-          {t("pdfs.export_pdfs")}
+          <div className="w-full">
+            {t("pdfs.export")}
+          </div>
           <div className="w-full mb-4 flex items-center justify-end gap-5 mt-5">
             <label className="text-sm text-navy-700 dark:text-white">
               {t("pdfs.selectTemplate")}
@@ -366,4 +385,4 @@ const ExportFormPanel = ({
   );
 };
 
-export default ExportFormPanel;
+export default ExportPdfPanelUnlayer;

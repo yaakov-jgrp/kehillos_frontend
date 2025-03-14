@@ -27,6 +27,8 @@ import ClientFormsTable from "../../views/ClientFormsTable";
 import Config from "../../views/apiConfig";
 import { USER_DETAILS } from "../../constants";
 import { UserContext } from "../../Hooks/permissionContext";
+import PdfMe from "../../views/PdfMe";
+import PdfUnlayer from "../../views/PdfUnlayer";
 
 const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
@@ -146,11 +148,21 @@ const Sidebar = ({ open, onClose }) => {
         permissions?.pdfsPermission?.is_read ||
         userDetails?.organization_admin
           ? {
-              name: t("sidebar.pdfs"),
-              path: "settings/pdfs",
+              name: t("sidebar.pdfs1"),
+              path: "settings/pdfs1",
               type: "menu",
               icon: <MdEditDocument className="h-6 w-6" />,
-              component: <Emails />,
+              component: <PdfMe />,
+            }
+          : null,
+        permissions?.pdfsPermission?.is_read ||
+        userDetails?.organization_admin
+          ? {
+              name: t("sidebar.pdfs2"),
+              path: "settings/pdfs2",
+              type: "menu",
+              icon: <MdEditDocument className="h-6 w-6" />,
+              component: <PdfUnlayer />,
             }
           : null,
         permissions?.logshistoryPermission?.is_read ||

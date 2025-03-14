@@ -38,9 +38,6 @@ function TemplateCard({ duplicateTemplate, onEdit, deleteTemplate, template, wri
           <p className="text-gray-11 text-[20px] md:text-[24px] font-medium">
             {template.name}
           </p>
-          <p className="text-gray-11 text-[14px] font-normal">
-            {t("pdfs.templateDescription")}
-          </p>
         </div>
 
         {isMenuOpen && (
