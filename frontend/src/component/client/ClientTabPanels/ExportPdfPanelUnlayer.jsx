@@ -143,9 +143,12 @@ const ExportPdfPanelUnlayer = ({
 
       console.log("response", response.design);
       console.log("form", clientData);
+      
+      const processData = await clientsService.processPdfTemplate(clientId, response.design);
+      const processedTemplate = processData.data;
       setFormData({
         name: response.name,
-        message: response.design,
+        message: processedTemplate,
       });
       setLoadingTemplate(false);
     };

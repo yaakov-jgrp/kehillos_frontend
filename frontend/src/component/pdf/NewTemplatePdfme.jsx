@@ -74,7 +74,7 @@ const NewTemplatePdfme = ({
         name: formData.name,
         type: "pdfme",
         body: {
-          design: JSON.stringify(template),
+          design: template,
         },
       };
 

@@ -92,12 +92,9 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
   const buildUi = useCallback(async () => {
     if (!uiRef.current || !selectedTemplateId) return;
     try {
-      let template = getBlankTemplate();
-
       const response = await pdfService.getSingleTemplate(selectedTemplateId);
       const data = response.data.data;
-      template = JSON.parse(data.design);
-      const processData = await clientsService.processPdfTemplate(clientId, template);
+      const processData = await clientsService.processPdfTemplate(clientId, data.design);
       const processedTemplate = processData.data;
       checkTemplate(processedTemplate);
 
