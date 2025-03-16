@@ -10,9 +10,11 @@ import ClientDetails from "./views/ClientDetails";
 import EmailTemplating from "./views/EmailTemplating";
 
 // Icon imports
-import { MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
+import { MdEditDocument, MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
 import { HiOutlineUserGroup } from "react-icons/hi2";
 import Config from "./views/apiConfig";
+import PdfUnlayer from "./views/PdfUnlayer";
+import PdfMe from "./views/PdfMe";
 
 const routes = [
   // {
@@ -64,6 +66,20 @@ const routes = [
     type: "menu",
     icon: <MdOutlineSettings className="h-6 w-6" />,
     component: <EmailTemplating />,
+  },
+  {
+    name: t("sidebar.pdfs1"),
+    path: "settings/pdfs1",
+    type: "menu",
+    icon: <MdEditDocument className="h-6 w-6" />,
+    component: <PdfMe />,
+  },
+  {
+    name: t("sidebar.pdfs2"),
+    path: "settings/pdfs2",
+    type: "menu",
+    icon: <MdEditDocument className="h-6 w-6" />,
+    component: <PdfUnlayer />,
   },
   {
     name: t("sidebar.config"),
