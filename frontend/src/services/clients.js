@@ -107,6 +107,10 @@ const exportSampleFormat = () => {
     return api.get("/api/client/export/?sample=true");
 }
 
+const processPdfTemplate = (clientId, templateData) => {
+    return api.post(`/api/client/${clientId}/process-pdf-template/`, templateData);
+}
+
 const clientsService = {
     getClients,
     getClientsFormsPage,
@@ -130,6 +134,7 @@ const clientsService = {
     createFilter,
     deleteFilter,
     updateFilterGroup,
-    exportSampleFormat
+    exportSampleFormat,
+    processPdfTemplate
 }
 export default clientsService;

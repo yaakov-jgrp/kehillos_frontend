@@ -15,6 +15,7 @@ import {
   MdOutlineEmail,
   MdLogout,
   MdOutlineSettings,
+  MdEditDocument,
 } from "react-icons/md";
 import { IoLogoBuffer } from "react-icons/io";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
@@ -26,6 +27,8 @@ import ClientFormsTable from "../../views/ClientFormsTable";
 import Config from "../../views/apiConfig";
 import { USER_DETAILS } from "../../constants";
 import { UserContext } from "../../Hooks/permissionContext";
+import PdfMe from "../../views/PdfMe";
+import PdfUnlayer from "../../views/PdfUnlayer";
 
 const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
@@ -140,6 +143,26 @@ const Sidebar = ({ open, onClose }) => {
               type: "menu",
               icon: <MdOutlineEmail className="h-6 w-6" />,
               component: <Emails />,
+            }
+          : null,
+        permissions?.pdfsPermission?.is_read ||
+        userDetails?.organization_admin
+          ? {
+              name: t("sidebar.pdfs1"),
+              path: "settings/pdfs1",
+              type: "menu",
+              icon: <MdEditDocument className="h-6 w-6" />,
+              component: <PdfMe />,
+            }
+          : null,
+        permissions?.pdfsPermission?.is_read ||
+        userDetails?.organization_admin
+          ? {
+              name: t("sidebar.pdfs2"),
+              path: "settings/pdfs2",
+              type: "menu",
+              icon: <MdEditDocument className="h-6 w-6" />,
+              component: <PdfUnlayer />,
             }
           : null,
         permissions?.logshistoryPermission?.is_read ||

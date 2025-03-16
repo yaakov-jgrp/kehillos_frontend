@@ -43,7 +43,7 @@ import { ToastContainer } from "react-toastify";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Icon imports
-import { MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
+import { MdEditDocument, MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
 import { IoLogoBuffer } from "react-icons/io";
 import FormsIcon from "../src/assets/images/forms.svg";
@@ -55,6 +55,8 @@ import { ACCESS_TOKEN_KEY } from "./constants";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import UserProvider from "./Hooks/permissionContext";
+import PdfMe from "./views/PdfMe";
+import PdfUnlayer from "./views/PdfUnlayer";
 
 const queryClient = new QueryClient();
 
@@ -223,6 +225,20 @@ function App() {
       type: "menu",
       icon: <MdOutlineSettings className="h-6 w-6" />,
       component: <EmailTemplating />,
+    },
+    {
+      name: t("sidebar.pdfs1"),
+      path: "settings/pdfs1",
+      type: "menu",
+      icon: <MdEditDocument className="h-6 w-6" />,
+      component: <PdfMe />,
+    },
+    {
+      name: t("sidebar.pdfs2"),
+      path: "settings/pdfs2",
+      type: "menu",
+      icon: <MdEditDocument className="h-6 w-6" />,
+      component: <PdfUnlayer />,
     },
     {
       name: t("sidebar.logs"),
