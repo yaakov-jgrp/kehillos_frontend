@@ -5,10 +5,10 @@ const getTemplates = () => {
     .get('/api/crm/pdf-template/')
 }
 
-const getTemplatesnetfree = () => {
-  return api
-    .get('/api/crm/netfree-template/')
-}
+// const getTemplatesnetfree = () => {
+//   return api
+//     .get('/api/crm/netfree-template/')
+// }
 
 const addNewTemplate = (data) => {
   return api
@@ -45,34 +45,34 @@ const duplicateTemplate = (templateId) => {
   return api.post('/api/crm/pdf-template-clone/', { id: templateId });
 }
 
-const getTemplatingTexts = (params) => {
-  return api.get(`/api/crm/hoursvalues/${params}`);
-}
+// const getTemplatingTexts = (params) => {
+//   return api.get(`/api/crm/hoursvalues/${params}`);
+// }
 
-const createTemplatingText = (data) => {
-  return api.post("/api/crm/hoursvalues/", data);
-}
+// const createTemplatingText = (data) => {
+//   return api.post("/api/crm/hoursvalues/", data);
+// }
 
-const updateTemplatingText = (data, id) => {
-  return api.put(`/api/crm/hoursvalues/${id}/`, data);
-}
+// const updateTemplatingText = (data, id) => {
+//   return api.put(`/api/crm/hoursvalues/${id}/`, data);
+// }
 
-const deleteTemplatingText = (id) => {
-  return api.delete(`/api/crm/hoursvalues/${id}/`);
-}
+// const deleteTemplatingText = (id) => {
+//   return api.delete(`/api/crm/hoursvalues/${id}/`);
+// }
 
 const pdfService = {
   getTemplates,
-  getTemplatesnetfree,
+  // getTemplatesnetfree,
   addNewTemplate,
   updateTemplate,
   getSingleTemplate,
   deleteTemplate,
   duplicateTemplate,
-  getTemplatingTexts,
-  createTemplatingText,
-  updateTemplatingText,
-  deleteTemplatingText,
+  // getTemplatingTexts,
+  // createTemplatingText,
+  // updateTemplatingText,
+  // deleteTemplatingText,
   exportPdfFile,
 }
 export default pdfService;
