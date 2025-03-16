@@ -148,7 +148,7 @@ const NewTemplatePdfme = ({
     try {
       const response = await pdfService.getSingleTemplate(editableTemplateId);
       const templateData = response.data.data;
-      const parsedTemplate = JSON.parse(templateData.design);
+      const parsedTemplate = templateData.design;
 
       try {
         checkTemplate(parsedTemplate);
