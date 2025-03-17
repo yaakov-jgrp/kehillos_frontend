@@ -10,12 +10,27 @@ import emailEditorHe from "../../locales/emailEditorHe.json";
 import ToggleSwitch from "../common/ToggleSwitch";
 import clientsService from "../../services/clients";
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const multipleEmailsRegex = /^([^\s@]+@[^\s@]+\.[^\s@]+)(\s*,\s*[^\s@]+@[^\s@]+\.[^\s@]+)*$/;
+
 // Define validation schema using Yup
 const validationSchema = Yup.object().shape({
   action_title: Yup.string().required("Action title is required"),
   to_email: Yup.string()
-    .email("Invalid email format")
-    .required("Email is required"),
+  .required('At least one email is required')
+  .test(
+    'is-valid-email-or-emails',
+    'Enter a valid email or comma-separated emails',
+    (value) => {
+      if (!value) return false; // already handled by required, but double safety
+      const trimmedValue = value.trim();
+      return (
+        emailRegex.test(trimmedValue) ||
+        multipleEmailsRegex.test(trimmedValue)
+      );
+    }
+  ),
   subject: Yup.string().required("Subject is required"),
 });
 
@@ -299,7 +314,7 @@ function EmailModal({
                     </label>
                     <input
                       className="text-[13px] rounded-md h-[40px]"
-                      type="email"
+                      type="text"
                       {...register("to_email")}
                       placeholder={t("automation.toEmail")}
                     />

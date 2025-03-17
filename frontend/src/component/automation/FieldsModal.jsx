@@ -44,6 +44,7 @@ function FieldsModal({
         Yup.object().shape({
           field_name: Yup.string().required("Field Name is required"),
           field_value: Yup.string().required("Value is required"),
+          field_slug: Yup.string().required("Field Slug is required"),
         })
       )
       .required("At least one action is required"),
@@ -65,7 +66,7 @@ function FieldsModal({
     defaultValues: {
       action_title: isEdit ? editData?.action_title : "",
       status: isEdit ? editData?.status === 'active' ? true : false : false,
-      fields: isEdit ? id ? editData?.fields : editData?.fields : [{ field_name: "", field_value: "" }],
+      fields: isEdit ? id ? editData?.fields : editData?.fields : [{ field_name: "", field_slug: "", field_value: "" }],
     },
   });
 
@@ -199,7 +200,19 @@ function FieldsModal({
                         labelId="demo-select-small-label"
                         id="demo-select-small"
                         className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border border-[#E3E5E6] rounded-lg outline-none w-full p-2 text-gray-11 bg-white"
-                        {...register(`fields[${index}].field_name`)}
+                        // {...register(`fields[${index}].field_name`)}
+                        onChange={(event) => {
+                          setValue(
+                            `fields[${index}].field_name`,
+                            event.target.value,
+                            {shouldDirty: true, shouldValidate: true}
+                          )
+                          setValue(
+                            `fields[${index}].field_slug`,
+                            event.target.value,
+                            {shouldDirty: true, shouldValidate: true}
+                          )
+                        }}
                         defaultValue={item?.field_slug || item?.field_name}
                         MenuProps={{
                           sx: {
