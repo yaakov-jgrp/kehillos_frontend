@@ -27,9 +27,9 @@ import { mergetag } from "./mergetag";
 export const getPlugins = () => {
   return {
     MergeTag: mergetag,
-    Text: text,
-    "Multi-Variable Text": multiVariableText,
-    Table: table,
+    // Text: text,
+    // "Multi-Variable Text": multiVariableText,
+    // Table: table,
     Line: line,
     Rectangle: rectangle,
     Ellipse: ellipse,

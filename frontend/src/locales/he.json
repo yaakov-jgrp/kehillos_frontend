@@ -75,6 +75,7 @@
     "websites": "אתרי אינטרנט",
     "netfree": "נטפרי",
     "emails": "תבניות",
+    "pdfs": "מסמכים",
     "profile": "פרופיל",
     "logout": "התנתק",
     "formCreation": "יצירת טופס",
@@ -84,7 +85,11 @@
     "logs": "היסטוריה",
     "users": "משתמשים",
     "templating": "תגים",
-    "forms": "טפסים"
+    "forms": "טפסים",
+    "export1": "ייצוא PDF (pdfme)",
+    "export2": "ייצוא PDF (unlayer)",
+    "pdfs1": "מסמכים-pdfme",
+    "pdfs2": "מסמכים-unlayer"
   },
   "automation": {
     "automation": "אוטומציה",
@@ -244,6 +249,9 @@
     "users": "משתמשים",
     "netfree": "נטפרי",
     "emails": "אימייל",
+    "pdfs": "מסמכים",
+    "pdfs1": "מסמכים-pdfme",
+    "pdfs2": "מסמכים-unlayer",
     "logs": "יומן",
     "templating": "תבנית",
     "forms": "הגדרות טופס"
@@ -286,6 +294,21 @@
     "website": "פעולת תג",
     "default": "ברירת מחדל",
     "emailTemplate": "תבניות אימייל"
+  },
+  "pdfs": {
+    "export": "הורד PDF",
+    "selectTemplate": "בחר תבנית",
+    "pdfTemplate": "תבנית PDF",
+    "pdfTemplate1": "תבנית PDF (pdfme)",
+    "pdfTemplate2": "תבנית PDF (unlayer)",
+    "pdfTemplates": "תבניות PDF",
+    "newTemplate": "תבנית חדשה",
+    "templateName": "שם תבנית PDF",
+    "basePdf": "PDF בסיסי",
+    "save": "שמור תבנית",
+    "edit": "ערוך",
+    "duplicate": "שכפל",
+    "delete": "מחק"
   },
   "websites": {
     "addDomain": "+ הוסף דומיין",
@@ -371,7 +394,7 @@
   },
   "searchbox": {
     "placeHolder": "חיפוש",
-    "requestId": "מזהה פניה",
+    "requestId": "מספר פניה",
     "clientUserID": "מזהה משתמש",
     "name": "שם",
     "email": "אימייל",
@@ -916,5 +939,20 @@
     "enter": "הכנס",
     "value": "ערך",
     "clientsForms": "טפסי לקוח"
+  },
+  "pdf_builder": {
+    "merge_tags": "תגי מיזוג",
+    "requests": "בקשות",
+    "clients": "לקוחות",
+    "netfree_traffic": "נתוני תעבורה",
+    "template_designer": "עורך תבניות",
+    "save_template": "שמור תבנית",
+    "preview": "תצוגה מקדימה",
+    "download": "הורד PDF",
+    "font_settings": "הגדרות גופן",
+    "alignment": "יישור טקסט",
+    "text_color": "צבע טקסט",
+    "background_color": "צבע רקע",
+    "dynamic_font_size": "גודל גופן דינמי"
   }
 }

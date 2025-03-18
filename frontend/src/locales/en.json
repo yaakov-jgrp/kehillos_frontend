@@ -36,6 +36,21 @@
     "open_url_temporary": "List of Temporarily opened URL",
     "open_url_temporary_after_text": "After-text for temporarily opening a URL"
   },
+  "pdf_builder": {
+    "merge_tags": "Merge Tags",
+    "requests": "Requests",
+    "clients": "Clients",
+    "netfree_traffic": "Traffic Data",
+    "template_designer": "Template Designer",
+    "save_template": "Save Template",
+    "preview": "Preview",
+    "download": "Download PDF",
+    "font_settings": "Font Settings",
+    "alignment": "Text Alignment",
+    "text_color": "Text Color",
+    "background_color": "Background Color",
+    "dynamic_font_size": "Dynamic Font Size"
+  },
   "messages": {
     "mustBeValid": "must be a valid mail",
     "mustContain": "must contain atleast",
