@@ -22,6 +22,8 @@ import NoDataFound from "../component/common/NoDataFound";
 import CustomField from "../component/fields/CustomField";
 import IconButton from "@mui/material/IconButton";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { FaArrowUp, FaArrowDown, FaWhatsapp } from "react-icons/fa";
+import { Tooltip } from 'react-tooltip';
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
@@ -37,7 +39,6 @@ import categoryService from "../services/category";
 import VisibilityIcon from "../assets/images/visibility_icon.svg";
 import AddIcon from "../assets/images/add.svg";
 import ArrowUp from "../assets/images/arrow_upward.svg";
-import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 // Utils imports
 import { handleSort } from "../lib/CommonFunctions";
@@ -545,12 +546,22 @@ const Clients = () => {
                                     value = (
                                       <div className="flex items-center gap-1">
                                         <span>{dataValue.number}</span>
-                                        <span className={waStatus === "none" ? "text-red-500" : "text-green-600"}>
-                                          WA
-                                        </span>
-                                        {waStatus !== "none" && waTime && (
-                                          <span className="text-sm text-gray-500">({waTime})</span>
-                                        )}
+                                        <FaWhatsapp
+                                          data-tooltip-id={`whatsapp-tooltip-${dataValue.number}`}
+                                          data-tooltip-content={waStatus === "none" ? "Not on WhatsApp" : `WhatsApp ${waStatus} (last checked ${waTime})`}
+                                          className={`${
+                                            waStatus === "none" 
+                                              ? "text-red-500" 
+                                              : waStatus === "offline"
+                                              ? "text-green-400"
+                                              : "text-green-600"
+                                          }`}
+                                          style={{
+                                            width: "1rem",
+                                            height: "1rem",
+                                          }}
+                                        />
+                                        <Tooltip id={`whatsapp-tooltip-${dataValue.number}`} />
                                       </div>
                                     );
                                   }

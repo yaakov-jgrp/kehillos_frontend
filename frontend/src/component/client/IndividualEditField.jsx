@@ -7,6 +7,8 @@ import CustomField from "../fields/CustomField";
 import ErrorMessage from "../common/ErrorMessage";
 import FileViewModal from "../common/FileViewModal";
 import { MdOutlineCheck, MdCheckCircle } from "react-icons/md";
+import { FaEye, FaWhatsapp } from "react-icons/fa";
+import { Tooltip } from 'react-tooltip';
 
 // Third part Imports
 import dayjs from "dayjs";
@@ -20,7 +22,6 @@ import utc from "dayjs/plugin/utc";
 import clientsService from "../../services/clients";
 
 // Icon imports
-import { FaEye } from "react-icons/fa";
 
 // Utils imports
 import { DateFieldConstants, linkTypes } from "../../lib/FieldConstants";
@@ -61,6 +62,7 @@ function IndividualEditField({ field, clientData, setClientData }) {
   const data_type = field.data_type.value;
   const isDate = DateFieldConstants.includes(field.data_type.value);
   const isFile = field?.data_type?.value === "file";
+  const value_json = field?.value_json;
 
   const isPhoneNumberOk = (phoneNumber) => {
     return phonePatterns.some((pattern) => pattern.test(phoneNumber));
@@ -157,6 +159,36 @@ function IndividualEditField({ field, clientData, setClientData }) {
       .catch((err) => {
         errorsToastHandler(err?.response?.data?.error);
       });
+  };
+
+  const formatWhatsAppTime = (checkedAt) => {
+    if (!checkedAt) return "";
+    const now = dayjs();
+    const checkTime = dayjs(checkedAt);
+    const diffMinutes = now.diff(checkTime, "minute");
+    const diffHours = now.diff(checkTime, "hour");
+    const diffDays = now.diff(checkTime, "day");
+
+    if (diffDays > 30) {
+      return "1 month ago";
+    } else if (diffDays >= 7) {
+      return checkTime.format("DD/MM/YYYY");
+    } else if (diffDays >= 1) {
+      return `${diffDays}d ago`;
+    } else if (diffHours >= 1) {
+      return `${diffHours}h ago`;
+    } else if (diffMinutes >= 10) {
+      return `${diffMinutes}m ago`;
+    }
+    return "now";
+  };
+
+  const getWhatsAppTooltip = (status, checkedAt) => {
+    const timeAgo = formatWhatsAppTime(checkedAt);
+    if (status === "online" || status === "offline") {
+      return `WhatsApp ${status} (last checked ${timeAgo})`;
+    }
+    return `WhatsApp checked ${timeAgo}`;
   };
 
   useEffect(() => {
@@ -285,16 +317,40 @@ function IndividualEditField({ field, clientData, setClientData }) {
                   ) : (
                     ` ${fieldValue}`
                   )}
-                  {data_type === "phone" && isPhoneNumberOk(fieldValue) && (
-                    <MdCheckCircle
-                      color="green"
-                      style={{
-                        width: "1.2rem",
-                        height: "1.2rem",
-                        marginLeft: "0.2rem",
-                        marginBottom: "0.3rem",
-                      }}
-                    />
+                  {data_type === "phone" && (
+                    <>
+                      {isPhoneNumberOk(fieldValue) && (
+                        <MdCheckCircle
+                          color="green"
+                          style={{
+                            width: "1.2rem",
+                            height: "1.2rem",
+                            marginLeft: "0.2rem",
+                            marginBottom: "0.3rem",
+                          }}
+                        />
+                      )}
+                      {value_json?.whatsapp_status && value_json.whatsapp_status !== "unknown" && (
+                        <>
+                          <FaWhatsapp
+                            data-tooltip-id="whatsapp-tooltip"
+                            data-tooltip-content={getWhatsAppTooltip(value_json.whatsapp_status, value_json.whatsapp_checked_at)}
+                            className={`ml-1 ${
+                              value_json.whatsapp_status === "none" 
+                                ? "text-red-500" 
+                                : value_json.whatsapp_status === "offline"
+                                ? "text-green-400"
+                                : "text-green-600"
+                            }`}
+                            style={{
+                              width: "1.2rem",
+                              height: "1.2rem",
+                            }}
+                          />
+                          <Tooltip id="whatsapp-tooltip" />
+                        </>
+                      )}
+                    </>
                   )}
                   {data_type === "file" &&
                     !emptyValues.includes(fieldValue) && (
