@@ -175,10 +175,10 @@ const NewTemplateUnlayer = ({
           type: "unlayer",
         })
         .then((response) => {
-          setAlert(t("emails.templateUpdated"), "success");
+          setAlert(t("pdfs.templateUpdated"), "success");
         })
         .catch((error) => {
-          setAlert(t("emails.templateUpdateFailed"), "error");
+          setAlert(t("pdfs.templateUpdateFailed"), "error");
         });
     } else {
       // add new template
@@ -189,10 +189,10 @@ const NewTemplateUnlayer = ({
           type: "unlayer",
         })
         .then((response) => {
-          setAlert(t("emails.templateAdded"), "success");
+          setAlert(t("pdfs.templateAdded"), "success");
         })
         .catch((error) => {
-          setAlert(t("emails.templateAddFailed"), "error");
+          setAlert(t("pdfs.templateAddFailed"), "error");
         });
     }
     setFormData(formObject);
@@ -302,13 +302,13 @@ const NewTemplateUnlayer = ({
     <div className="w-full flex flex-col md:flex-row gap-4">
       <div className="bg-white rounded-3xl w-full shadow-custom pb-4">
         <p className="text-gray-11 font-medium text-2xl p-7">
-          {t("emails.emailTemplate")}
+          {t("pdfs.pdfTemplate")}
         </p>
         <form onSubmit={saveTemplate}>
           <div className="px-7 flex gap-4 text-gray-11 [&_input]:border-[1px] [&_textarea]:border-[1px] [&_input]:outline-none [&_textarea]:outline-0 [&_input]:w-full [&_textarea]:w-full [&_input]:!px-4 [&_textarea]:!px-4 [&_input]:!py-1 [&_textarea]:!py-1">
             <div className="w-[100%] [&_tr]:h-10">
               <div className="flex my-2 w-full gap-4">
-                <td className="w-1/2 md:w-1/5">{t("emails.templateName")}</td>
+                <td className="w-1/2 md:w-1/5">{t("pdfs.templateName")}</td>
                 <input
                   className="text-[13px] rounded-md h-[40px]"
                   id="templateName"
@@ -316,7 +316,7 @@ const NewTemplateUnlayer = ({
                   value={formdata.name}
                   onChange={handleInput}
                   name="name"
-                  placeholder={t("emails.templateName")}
+                  placeholder={t("pdfs.templateName")}
                 />
               </div>
 

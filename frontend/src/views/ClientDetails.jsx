@@ -82,6 +82,7 @@ function ClientDetails() {
         .getClient(id)
         .then((res) => {
           setClientData(res.data);
+          console.log("res_data", res.data);
           setIsloading(false);
           if (netfreeProfiles.length > 0) {
             const { netfree_profile } = res.data;
