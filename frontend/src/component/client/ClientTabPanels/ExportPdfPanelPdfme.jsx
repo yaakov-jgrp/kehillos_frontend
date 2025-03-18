@@ -107,7 +107,7 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
         inputs,
         options: {
           font: getFontsData(),
-          lang: defaultLanguageValue || "en",
+          lang: "en", //defaultLanguageValue || "en",
           labels: defaultLanguageValue === "he" ? pdfEditorHe : {},
           theme: {
             token: {
@@ -270,7 +270,7 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
             <div className="px-7 flex gap-4 text-gray-11 [&_input]:border-[1px] [&_textarea]:border-[1px] [&_input]:outline-none [&_textarea]:outline-0 [&_input]:w-full [&_textarea]:w-full [&_input]:!px-4 [&_textarea]:!px-4 [&_input]:!py-1 [&_textarea]:!py-1">
               <div className="w-[100%] [&_tr]:h-10">
                 <div className="w-full my-5 h-[calc(100vh-330px)] relative">
-                  <div ref={uiRef} className="flex-1 w-full min-h-[600px]" />
+                  <div ref={uiRef} className="flex-1 w-full min-h-[600px]" dir="ltr" />
                 </div>
 
                 <div className="flex justify-center">

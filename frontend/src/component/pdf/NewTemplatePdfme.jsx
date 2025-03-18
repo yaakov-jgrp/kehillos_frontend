@@ -39,7 +39,7 @@ const NewTemplatePdfme = ({
         domContainer: containerRef.current,
         template,
         options: {
-          lang: localStorage.getItem(DEFAULT_LANGUAGE) || "en",
+          lang: "en", //localStorage.getItem(DEFAULT_LANGUAGE) || "en",
           theme: {
             token: { colorPrimary: "#4f46e5" },
           },
@@ -224,6 +224,7 @@ const NewTemplatePdfme = ({
               <div
                 ref={containerRef}
                 className="w-full h-full border rounded-lg"
+                dir="ltr"
               />
               {loadingTemplate && (
                 <Box
