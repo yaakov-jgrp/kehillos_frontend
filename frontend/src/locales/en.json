@@ -333,7 +333,16 @@
     "save": "Save Template",
     "edit": "Edit",
     "duplicate": "Duplicate",
-    "delete": "Delete"
+    "delete": "Delete",
+    "templateUpdated": "Template Updated Successfully",
+    "templateUpdateFailed": "Template Update Failed",
+    "templateAdded": "Template Added Successfully",
+    "templateAddFailed": "Adding New Template Failed",
+    "deleteTemplateSuccess": "Deleted Template Successfully",
+    "deleteTemplateFailed": "Deleting Template Failed",
+    "duplicateTemplateSuccess": "Duplicated Template Successfully",
+    "duplicateTemplateFailed": "Duplicating Template Failed",
+    "errorFetchingTemplate": "Error fetching the template"
   },
   "websites": {
     "addDomain": "+ Add Domain",

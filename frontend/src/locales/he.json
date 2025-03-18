@@ -308,7 +308,16 @@
     "save": "שמור תבנית",
     "edit": "ערוך",
     "duplicate": "שכפל",
-    "delete": "מחק"
+    "delete": "מחק",
+    "templateUpdated": "התבנית עודכנה בהצלחה",
+    "templateUpdateFailed": "עדכון התבנית נכשל",
+    "templateAdded": "התבנית נוספה בהצלחה",
+    "templateAddFailed": "הוספת תבנית חדשה נכשלה",
+    "deleteTemplateSuccess": "התבנית נמחקה בהצלחה",
+    "deleteTemplateFailed": "מחיקת התבנית נכשלה",
+    "duplicateTemplateSuccess": "התבנית שוכפלה בהצלחה",
+    "duplicateTemplateFailed": "שכפול התבנית נכשלה",
+    "errorFetchingTemplate": "שגיאה בטעינת התבנית"
   },
   "websites": {
     "addDomain": "+ הוסף דומיין",
