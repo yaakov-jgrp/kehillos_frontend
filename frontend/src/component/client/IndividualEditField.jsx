@@ -163,24 +163,25 @@ function IndividualEditField({ field, clientData, setClientData }) {
 
   const formatWhatsAppTime = (checkedAt) => {
     if (!checkedAt) return "";
-    const now = dayjs();
-    const checkTime = dayjs(checkedAt);
-    const diffMinutes = now.diff(checkTime, "minute");
-    const diffHours = now.diff(checkTime, "hour");
-    const diffDays = now.diff(checkTime, "day");
+    return dayjs(checkedAt).format("DD/MM/YYYY HH:mm");
+    // const now = dayjs();
+    // const checkTime = dayjs(checkedAt);
+    // const diffMinutes = now.diff(checkTime, "minute");
+    // const diffHours = now.diff(checkTime, "hour");
+    // const diffDays = now.diff(checkTime, "day");
 
-    if (diffDays > 30) {
-      return "1 month ago";
-    } else if (diffDays >= 7) {
-      return checkTime.format("DD/MM/YYYY");
-    } else if (diffDays >= 1) {
-      return `${diffDays}d ago`;
-    } else if (diffHours >= 1) {
-      return `${diffHours}h ago`;
-    } else if (diffMinutes >= 10) {
-      return `${diffMinutes}m ago`;
-    }
-    return "now";
+    // if (diffDays > 30) {
+    //   return "1 month ago";
+    // } else if (diffDays >= 7) {
+    //   return checkTime.format("DD/MM/YYYY");
+    // } else if (diffDays >= 1) {
+    //   return `${diffDays}d ago`;
+    // } else if (diffHours >= 1) {
+    //   return `${diffHours}h ago`;
+    // } else if (diffMinutes >= 10) {
+    //   return `${diffMinutes}m ago`;
+    // }
+    // return "now";
   };
 
   const getWhatsAppTooltip = (status, checkedAt) => {
