@@ -661,13 +661,13 @@
   "editor.magic_image.first_experience.title": "תנו ל-{ai} ליצור תמונות",
   "editor.magic_image.modal_title": "תמונות קסם מאת {ai}",
   "editor.magic_image.prompt_placeholder": "צב שוחה מתחת למים, ציור אקספרסיוניסטי",
-  "editor.magic_image.stock_list.text": "קבל את התמונה המושלמת עם AI. פשוט הקלד מה שאתה רוצה ובינה מלאכותית תיצור אותה עבורך.",
+  "editor.magic_image.prompt_placeholder": "צב שוחה מתחת למים, ציור אקספרסיוניסטי",
   "editor.magic_image.text_prompt": "הנחיית הטקסט שלך",
   "editor.magic_image.the_prompt": "ההנחיה",
   "editor.margin.label": "שוליים",
   "editor.mobile.description": "אתה עורך כעת עבור מכשירים ניידים. עבור למחשב עבור כל אפשרויות הסגנון.",
   "editor.offline_mode_is_enabled": "מצב לא מקוון מופעל",
-  "editor.padding.label": "ריפוד",
+    "editor.padding.label": "ריפוד",
   "editor.placeholder.text": "אין כאן תוכן. גרור תוכן מימין.",
   "editor.placeholder.text.left": "אין כאן תוכן. גרור תוכן משמאל.",
   "editor.play_icon_color.label": "הפעל צבע סמל",
@@ -974,6 +974,14 @@
       "lineHeight": "גובה שורה",
       "fontFamily": "גופן",
       "alignment": "יישור"
+    }
+  },
+  "whatsapp": {
+    "status": {
+      "online": "מחובר",
+      "offline": "לא מחובר",
+      "withStatus": "נראה לאחרונה {{timeAgo}} • {{status}}",
+      "checked": "נראה לאחרונה {{timeAgo}}"
     }
   }
 }

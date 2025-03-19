@@ -542,5 +542,13 @@
       "fontFamily": "Font Family",
       "alignment": "Alignment"
     }
+  },
+  "whatsapp": {
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "withStatus": "{{status}} • Last seen {{timeAgo}}",
+      "checked": "Last seen {{timeAgo}}"
+    }
   }
 }

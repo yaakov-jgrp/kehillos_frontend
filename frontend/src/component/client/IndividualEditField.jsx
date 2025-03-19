@@ -187,9 +187,9 @@ function IndividualEditField({ field, clientData, setClientData }) {
   const getWhatsAppTooltip = (status, checkedAt) => {
     const timeAgo = formatWhatsAppTime(checkedAt);
     if (status === "online" || status === "offline") {
-      return `WhatsApp ${status} (last checked ${timeAgo})`;
+      return t('whatsapp.status.withStatus', { status: t(`whatsapp.status.${status}`), timeAgo });
     }
-    return `WhatsApp checked ${timeAgo}`;
+    return t('whatsapp.status.checked', { timeAgo });
   };
 
   useEffect(() => {
