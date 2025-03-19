@@ -528,5 +528,19 @@
     "selectSectorUrl": "Select Sector URL",
     "sectorUrls": "Sector URLs",
     "errorMessageForManualActions": "An error occurred while fetching manual actions."
+  },
+  "schemas": {
+    "text": {
+      "opacity": "Opacity",
+      "strikethrough": "Strikethrough",
+      "underline": "Underline",
+      "bold": "Bold",
+      "italic": "Italic",
+      "size": "Size",
+      "color": "Color",
+      "lineHeight": "Line Height",
+      "fontFamily": "Font Family",
+      "alignment": "Alignment"
+    }
   }
 }

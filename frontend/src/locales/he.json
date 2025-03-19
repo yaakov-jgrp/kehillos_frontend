@@ -875,8 +875,6 @@
   "tabs.audit.rules.image.alt_text.title": "חסר טקסט חלופי",
   "tabs.audit.rules.image.url.description": "ללא כתובת אתר של תמונה, התמונות הבאות לא יעובדו. העלה תמונה לתמונות הבאות.",
   "tabs.audit.rules.image.url.title": "תמונות חסרות",
-  "tabs.audit.rules.menu.empty_links.description": "ללא קישור, התפריט לא יעבוד כאשר משתמש ילחץ עליו. הוסף קישורים חסרים לתפריט הבא.",
-  "tabs.audit.rules.menu.empty_links.title": "קישורי התפריט ריקים",
   "tabs.audit.take_me_to_fix": "קח אותי לתקן",
   "tones.bold": "נועז",
   "tones.friendly": "ידידותי",
@@ -963,5 +961,19 @@
     "text_color": "צבע טקסט",
     "background_color": "צבע רקע",
     "dynamic_font_size": "גודל גופן דינמי"
+  },
+  "schemas": {
+    "text": {
+      "opacity": "שקיפות",
+      "strikethrough": "קו חוצה",
+      "underline": "קו תחתון",
+      "bold": "מודגש",
+      "italic": "נטוי",
+      "size": "גודל",
+      "color": "צבע",
+      "lineHeight": "גובה שורה",
+      "fontFamily": "גופן",
+      "alignment": "יישור"
+    }
   }
 }

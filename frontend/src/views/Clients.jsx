@@ -539,33 +539,33 @@ const Clients = () => {
                                 }
 
                                 // Special handling for phone display after basic value is set
-                                if (data_type === "phone" && typeof dataValue === "object" && dataValue.whatsapp_status) {
-                                  const waStatus = dataValue.whatsapp_status;
-                                  if (waStatus !== "unknown") {
-                                    const waTime = formatWhatsAppTime(dataValue.whatsapp_checked_at);
-                                    value = (
-                                      <div className="flex items-center gap-1">
-                                        <span>{dataValue.number}</span>
-                                        <FaWhatsapp
-                                          data-tooltip-id={`whatsapp-tooltip-${dataValue.number}`}
-                                          data-tooltip-content={waStatus === "none" ? "Not on WhatsApp" : `WhatsApp ${waStatus} (last checked ${waTime})`}
-                                          className={`${
-                                            waStatus === "none" 
-                                              ? "text-red-500" 
-                                              : waStatus === "offline"
-                                              ? "text-green-400"
-                                              : "text-green-600"
-                                          }`}
-                                          style={{
-                                            width: "1rem",
-                                            height: "1rem",
-                                          }}
-                                        />
-                                        <Tooltip id={`whatsapp-tooltip-${dataValue.number}`} />
-                                      </div>
-                                    );
-                                  }
-                                }
+                                // if (data_type === "phone" && typeof dataValue === "object" && dataValue.whatsapp_status) {
+                                //   const waStatus = dataValue.whatsapp_status;
+                                //   if (waStatus !== "unknown") {
+                                //     const waTime = formatWhatsAppTime(dataValue.whatsapp_checked_at);
+                                //     value = (
+                                //       <div className="flex items-center gap-1">
+                                //         <span>{dataValue.number}</span>
+                                //         <FaWhatsapp
+                                //           data-tooltip-id={`whatsapp-tooltip-${dataValue.number}`}
+                                //           data-tooltip-content={waStatus === "none" ? "Not on WhatsApp" : `WhatsApp ${waStatus} (last checked ${waTime})`}
+                                //           className={`${
+                                //             waStatus === "none" 
+                                //               ? "text-red-500" 
+                                //               : waStatus === "offline"
+                                //               ? "text-green-400"
+                                //               : "text-green-600"
+                                //           }`}
+                                //           style={{
+                                //             width: "1rem",
+                                //             height: "1rem",
+                                //           }}
+                                //         />
+                                //         <Tooltip id={`whatsapp-tooltip-${dataValue.number}`} />
+                                //       </div>
+                                //     );
+                                //   }
+                                // }
 
                                 return (
                                   <Fragment key={i}>
