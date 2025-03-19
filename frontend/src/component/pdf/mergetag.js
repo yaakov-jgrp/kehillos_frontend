@@ -385,9 +385,16 @@ export const mergetag = {
         props: {
           options: [
             { label: "Arial", value: "Arial" },
+            { label: "Arial Hebrew", value: "Arial Hebrew" },
+            { label: "David", value: "David" },
+            { label: "Frank Ruehl", value: "Frank Ruehl" },
             { label: "Times New Roman", value: "Times New Roman" },
             { label: "Helvetica", value: "Helvetica" },
+            { label: "Noto Sans Hebrew", value: "Noto Sans Hebrew" },
             { label: "Courier New", value: "Courier New" },
+            { label: "Georgia", value: "Georgia" },
+            { label: "Verdana", value: "Verdana" },
+            { label: "Tahoma", value: "Tahoma" }
           ],
         },
       },
