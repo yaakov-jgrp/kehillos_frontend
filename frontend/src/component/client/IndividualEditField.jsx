@@ -20,6 +20,7 @@ import utc from "dayjs/plugin/utc";
 
 // API services
 import clientsService from "../../services/clients";
+import thirdpartyService from "../../services/thirdparty";
 
 // Icon imports
 
@@ -191,6 +192,31 @@ function IndividualEditField({ field, clientData, setClientData }) {
     }
     return t('whatsapp.status.checked', { timeAgo });
   };
+  
+  const checkWhatsappStatus = async (phone) => {
+    if (phone) {
+      try {
+        const response = await thirdpartyService.getWhatsappStatus(phone);
+        console.log(response);
+        setWhatsappStatus(response.data.whatsapp_status);
+        setWhatsappCheckedAt(response.data.whatsapp_checked_at);
+      } catch (error) {
+        console.error("Error checking WhatsApp status:", error);
+      }
+    }
+  };
+
+  const [whatsappStatus, setWhatsappStatus] = useState(null);
+  const [whatsappCheckedAt, setWhatsappCheckedAt] = useState(null);
+
+  useEffect(() => {
+    if(data_type === "phone" && fieldValue) {
+      checkWhatsappStatus(fieldValue);
+      // Check status every hour
+      const interval = setInterval(checkWhatsappStatus, 60 * 60 * 1000);
+      return () => clearInterval(interval);
+    }
+  }, [fieldValue, data_type]);
 
   useEffect(() => {
     let defaultValue;
@@ -331,15 +357,15 @@ function IndividualEditField({ field, clientData, setClientData }) {
                           }}
                         />
                       )}
-                      {value_json?.whatsapp_status && value_json.whatsapp_status !== "unknown" && (
+                      {whatsappStatus && whatsappStatus !== "unknown" && (
                         <>
                           <FaWhatsapp
                             data-tooltip-id="whatsapp-tooltip"
-                            data-tooltip-content={getWhatsAppTooltip(value_json.whatsapp_status, value_json.whatsapp_checked_at)}
+                            data-tooltip-content={getWhatsAppTooltip(whatsappStatus, whatsappCheckedAt)}
                             className={`ml-1 ${
-                              value_json.whatsapp_status === "none" 
+                              whatsappStatus === "none" 
                                 ? "text-red-500" 
-                                : value_json.whatsapp_status === "offline"
+                                : whatsappStatus === "offline"
                                 ? "text-green-400"
                                 : "text-green-600"
                             }`}
