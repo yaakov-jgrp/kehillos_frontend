@@ -267,10 +267,10 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
       
       await pdfService.uploadPdf(clientId, formData);
       setPdfName("");
-      toast.success(t("common.success"));
+      toast.success(t("pdfs.uploadSuccess"));
     } catch (error) {
       console.error('Error uploading PDF:', error);
-      toast.error(t("common.error"));
+      toast.error(t("pdfs.genError"));
     }
   };
 
