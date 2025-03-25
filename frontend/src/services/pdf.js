@@ -5,6 +5,11 @@ const getTemplates = () => {
     .get('/api/crm/pdf-template/')
 }
 
+const getFullformEmailPageData = (params) => {
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  return api.get(`/api/crm/pdf-template/?lang=${lang}${params}`);
+}
+
 // const getTemplatesnetfree = () => {
 //   return api
 //     .get('/api/crm/netfree-template/')
@@ -61,6 +66,24 @@ const duplicateTemplate = (templateId) => {
 //   return api.delete(`/api/crm/hoursvalues/${id}/`);
 // }
 
+const uploadPdf = (clientId, data) => {
+  return api.post(`/api/crm/client-pdfs/${clientId}/`, data, {
+    headers: {
+      'Content-Type': 'application/pdf'
+    }
+  });
+};
+
+const getClientPdfs = (clientId) => {
+  return api.get(`/api/crm/client-pdfs/${clientId}/`);
+};
+
+const downloadPdf = (clientId, pdfId) => {
+  return api.get(`/api/crm/client-pdfs/${clientId}/${pdfId}/`, {
+    responseType: 'blob',
+  });
+};
+
 const pdfService = {
   getTemplates,
   // getTemplatesnetfree,
@@ -74,5 +97,9 @@ const pdfService = {
   // updateTemplatingText,
   // deleteTemplatingText,
   exportPdfFile,
+  uploadPdf,
+  getClientPdfs,
+  downloadPdf,
+  getFullformEmailPageData,
 }
 export default pdfService;

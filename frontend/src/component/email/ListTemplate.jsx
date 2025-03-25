@@ -21,6 +21,7 @@ import EmailEditIcon from "../../assets/images/email.svg";
 import AddIcon from "../../assets/images/add.svg";
 import CustomSearchField from "../fields/CustomSearchField";
 import EmailTemplating from "../../views/EmailTemplating";
+import PdfMe from "../../views/PdfMe";
 
 // initial state data
 const smtpFormObject = {
@@ -31,10 +32,16 @@ const smtpFormObject = {
   imap_email: "",
   imap_password: "",
   imap_server: "",
-  imap_port: 993
+  imap_port: 993,
 };
 
-const ListTemplate = ({ newTemplate, onEdit, writePermission, updatePermission, deletePermission }) => {
+const ListTemplate = ({
+  newTemplate,
+  onEdit,
+  writePermission,
+  updatePermission,
+  deletePermission,
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -260,7 +267,7 @@ const ListTemplate = ({ newTemplate, onEdit, writePermission, updatePermission, 
                   className="outline-none mb-2 border-[1px] w-full rounded-lg p-2"
                   onChange={handleSMTPInputChange}
                 />
-                
+
                 <button
                   type="submit"
                   disabled={!smtpFormValidate() || writePermission}
@@ -285,31 +292,35 @@ const ListTemplate = ({ newTemplate, onEdit, writePermission, updatePermission, 
             scrollButtons="auto"
             aria-label="basic tabs example"
           >
-            {[t("emails.newTemplate"), t("emails.templating")].map(
-              (tabItem, i) => {
-                return (
-                  <Tab
-                    key={i}
-                    label={
-                      <>
-                        <h5 className="text-start text-[12px] capitalize md:text-[16px] -mb-1 font-normal w-[100%] flex items-center justify-between">
-                          {tabItem}
-                        </h5>
-                      </>
-                    }
-                  />
-                );
-              }
-            )}
+            {[
+              t("emails.newTemplate"),
+              t("emails.templating"),
+              t("pdfs.pdfTemplate"),
+            ].map((tabItem, i) => {
+              return (
+                <Tab
+                  key={i}
+                  label={
+                    <>
+                      <h5 className="text-start text-[12px] capitalize md:text-[16px] -mb-1 font-normal w-[100%] flex items-center justify-between">
+                        {tabItem}
+                      </h5>
+                    </>
+                  }
+                />
+              );
+            })}
           </Tabs>
         </Box>
 
-        <div className="flex items-center justify-between px-2">
-          <p className="text-gray-11 font-medium text-2xl">
-            {currentTab === 0 ? t("emails.emailTemplate") : t("sidebar.emails")}
-          </p>
-          <div className="flex items-center gap-4">
-            {currentTab === 0 && (
+        {currentTab !== 2 && (
+          <div className="flex items-center justify-between px-2">
+            <p className="text-gray-11 font-medium text-2xl">
+              {currentTab === 0
+                ? t("emails.emailTemplate")
+                : t("sidebar.emails")}
+            </p>
+            <div className="flex items-center gap-4">
               <CustomSearchField
                 variant="templateSearch"
                 extra=""
@@ -321,25 +332,30 @@ const ListTemplate = ({ newTemplate, onEdit, writePermission, updatePermission, 
                 noUnderline="true"
                 borderRadius="30"
               />
-            )}
-            <button
-            disabled={writePermission}
-              className={`disabled:cursor-not-allowed mt-5 w-[180px] h-[40px] rounded-lg text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-1`}
-              onClick={
-                currentTab === 0
-                  ? newTemplate
-                  : () => {
-                      setTemplatingModal(true);
-                      setNewText(true);
-                      setEditText(null);
-                    }
-              }
-            >
-              <img src={AddIcon} alt="add_icon" className="mt-[-1px]" />
-              {currentTab === 0 ? t("emails.newTemplate") : t("emails.newText")}
-            </button>
+
+              <button
+                disabled={writePermission}
+                className={`disabled:cursor-not-allowed mt-5 w-[180px] h-[40px] rounded-lg text-[14px] font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 flex justify-center items-center border border-[#E3E5E6] gap-1`}
+                onClick={
+                  currentTab === 0
+                    ? newTemplate
+                    : currentTab === 1
+                    ? () => {
+                        setTemplatingModal(true);
+                        setNewText(true);
+                        setEditText(null);
+                      }
+                    : () => {}
+                }
+              >
+                <img src={AddIcon} alt="add_icon" className="mt-[-1px]" />
+                {currentTab === 0
+                  ? t("emails.newTemplate")
+                  : t("emails.newText")}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {currentTab === 0 && (
           <div className="w-full mt-4 p-4">
@@ -382,6 +398,7 @@ const ListTemplate = ({ newTemplate, onEdit, writePermission, updatePermission, 
             setEditText={setEditText}
           />
         )}
+        {currentTab === 2 && <PdfMe />}
       </div>
     </div>
   );

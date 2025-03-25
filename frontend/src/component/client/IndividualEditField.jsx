@@ -197,17 +197,19 @@ function IndividualEditField({ field, clientData, setClientData }) {
     if (phone) {
       try {
         const response = await thirdpartyService.getWhatsappStatus(phone);
-        console.log(response);
-        setWhatsappStatus(response.data.whatsapp_status);
-        setWhatsappCheckedAt(response.data.whatsapp_checked_at);
+        // console.log(response);
+        if(!response.data.error) {
+          setWhatsappStatus(response.data.whatsapp_status);
+          setWhatsappCheckedAt(response.data.whatsapp_checked_at);
+        }
       } catch (error) {
-        console.error("Error checking WhatsApp status:", error);
+        // console.error("Error checking WhatsApp status:", error);
       }
     }
   };
 
-  const [whatsappStatus, setWhatsappStatus] = useState(null);
-  const [whatsappCheckedAt, setWhatsappCheckedAt] = useState(null);
+  const [whatsappStatus, setWhatsappStatus] = useState(value_json?.whatsapp_status);
+  const [whatsappCheckedAt, setWhatsappCheckedAt] = useState(value_json?.whatsapp_checked_at);
 
   useEffect(() => {
     if(data_type === "phone" && fieldValue) {

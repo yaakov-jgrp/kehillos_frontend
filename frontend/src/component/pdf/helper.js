@@ -23,35 +23,28 @@ import {
   radioGroup,
 } from "@pdfme/schemas";
 import { mergetag } from "./mergetag";
+import { t } from "i18next";
 
 export const getPlugins = () => {
   return {
-    MergeTag: mergetag,
-    // Text: text,
-    // "Multi-Variable Text": multiVariableText,
-    // Table: table,
-    Line: line,
-    Rectangle: rectangle,
-    Ellipse: ellipse,
-    Image: image,
-    SVG: svg,
-    QR: barcodes.qrcode,
-    DateTime: dateTime,
-    Date: date,
-    Time: time,
-    Select: select,
-    Checkbox: checkbox,
-    RadioGroup: radioGroup,
-    // JAPANPOST: barcodes.japanpost,
-    EAN13: barcodes.ean13,
-    // EAN8: barcodes.ean8,
-    // Code39: barcodes.code39,
-    Code128: barcodes.code128,
-    // NW7: barcodes.nw7,
-    // ITF14: barcodes.itf14,
-    // UPCA: barcodes.upca,
-    // UPCE: barcodes.upce,
-    // GS1DataMatrix: barcodes.gs1datamatrix,
+    [t('pdfme.MergeTagEditor')]: mergetag,
+    [t('pdfme.Text')]: text,
+    [t('pdfme.MultiVariableText')]: multiVariableText,
+    [t('pdfme.Table')]: table,
+    [t('pdfme.Line')]: line,
+    [t('pdfme.Rectangle')]: rectangle,
+    [t('pdfme.Ellipse')]: ellipse,
+    [t('pdfme.Image')]: image,
+    [t('pdfme.SVG')]: svg,
+    [t('pdfme.QR')]: barcodes.qrcode,
+    [t('pdfme.DateTime')]: dateTime,
+    [t('pdfme.Date')]: date,
+    [t('pdfme.Time')]: time,
+    [t('pdfme.Select')]: select,
+    [t('pdfme.Checkbox')]: checkbox,
+    [t('pdfme.RadioGroup')]: radioGroup,
+    [t('pdfme.EAN13')]: barcodes.ean13,
+    [t('pdfme.Code128')]: barcodes.code128,
   };
 };
 
@@ -64,14 +57,38 @@ export function fromKebabCase(str) {
 
 export const getFontsData = () => ({
   ...getDefaultFont(),
-  // NotoSerifJP: {
-  //   fallback: false,
-  //   data: 'https://fonts.gstatic.com/s/notoserifjp/v30/xn71YHs72GKoTvER4Gn3b5eMRtWGkp6o7MjQ2bwxOubAILO5wBCU.ttf',
-  // },
-  // NotoSansJP: {
-  //   fallback: false,
-  //   data: 'https://fonts.gstatic.com/s/notosansjp/v53/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEj75vY0rw-oME.ttf',
-  // },
+  Arial: {
+    fallback: false,
+    data: "https://fonts.gstatic.com/s/arimo/v28/P5sfzZCDf9_T_3cV7NCUECyoxNk37cxsBxDAVQI4aA.ttf", // Using Arimo as Arial alternative
+  },
+  DavidLibre: {
+    fallback: false,
+    data: "https://fonts.gstatic.com/s/davidlibre/v14/snfus0W_99N64iuYSvp4W_l86p6TYS-Y.ttf",
+  },
+  David: {
+    fallback: false,
+    data: "https://fonts.gstatic.com/s/davidlibre/v14/snfus0W_99N64iuYSvp4W_l86p6TYS-Y.ttf", // Using David Libre as David alternative
+  },
+  RubikHebrew: {
+    fallback: false,
+    data: "https://fonts.gstatic.com/s/rubik/v28/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4i1UE80V4bVkA.ttf",
+  },
+  Heebo: {
+    fallback: false,
+    data: "https://fonts.gstatic.com/s/heebo/v21/NGSpv5_NC0k9P_v6ZUCbLRAHxK1EiSysdUmj.ttf",
+  },
+  Helvetica: {
+    fallback: false,
+    data: "https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxP.ttf", // Using Roboto as Helvetica alternative
+  },
+  Georgia: {
+    fallback: false,
+    data: "https://fonts.gstatic.com/s/merriweather/v30/u-440qyriQwlOrhSvowK_l5-fCZJ.ttf", // Using Merriweather as Georgia alternative
+  },
+  Tahoma: {
+    fallback: false,
+    data: "https://fonts.gstatic.com/s/opensans/v34/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4gaVc.ttf", // Using Open Sans as Tahoma alternative
+  },
   "PinyonScript-Regular": {
     fallback: false,
     data: "https://fonts.gstatic.com/s/pinyonscript/v22/6xKpdSJbL9-e9LuoeQiDRQR8aOLQO4bhiDY.ttf",

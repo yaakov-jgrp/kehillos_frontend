@@ -15,6 +15,7 @@ import emailEditorHe from "../../locales/emailEditorHe.json";
 
 // Custom hooks imports
 import useAlert from "../../Hooks/useAlert";
+import pdfService from "../../services/pdf";
 
 const NewTemplate = ({
   editableTemplateId,
@@ -37,6 +38,8 @@ const NewTemplate = ({
   const [loadingTemplate, setLoadingTemplate] = useState(false);
   const [loadingTags, setloadingTags] = useState(true);
   const [mergeTagsData, setMergeTagsData] = useState({});
+  const [pdfTemplateData, setPdfTemplateData] = useState({});
+  const [pdfClientData, setPdfClientData] = useState({});
 
   const onReady = () => {
     emailEditorRef.current.editor.setMergeTags({
@@ -135,6 +138,14 @@ const NewTemplate = ({
           },
         },
       },
+      attach_pdf_template: {
+        name: t("pdfs.attachPdfs"),
+        mergeTags: pdfTemplateData
+      },
+      attach_pdf_client: {
+        name: t("pdfs.attachClientPdfs"),
+        mergeTags: pdfClientData
+      }
     });
 
     if (editableTemplateId) {
@@ -243,8 +254,21 @@ const NewTemplate = ({
       const res = await clientsService.getFullformEmailPageData(
         "&field_email_template=true"
       );
-      console.log("result", res.data.result);
+      console.log("client tag result", res.data.result);
       setMergeTagsData(res.data.result);
+
+      const resTemp = await pdfService.getFullformEmailPageData(
+        "&field_email_template=true&type=pdfme"
+      );
+      console.log("pdf tag result", resTemp.data.result);
+      setPdfTemplateData(resTemp.data.result);
+      
+      const resPdf = await pdfService.getFullformEmailPageData(
+        "&field_email_pdf=true"
+      );
+      console.log("client pdf result", resPdf.data.result);
+      setPdfClientData(resPdf.data.result);
+
       setloadingTags(false);
     } catch (error) {
       console.log(error);

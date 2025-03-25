@@ -317,7 +317,9 @@
     "deleteTemplateFailed": "מחיקת התבנית נכשלה",
     "duplicateTemplateSuccess": "התבנית שוכפלה בהצלחה",
     "duplicateTemplateFailed": "שכפול התבנית נכשלה",
-    "errorFetchingTemplate": "שגיאה בטעינת התבנית"
+    "errorFetchingTemplate": "שגיאה בטעינת התבנית",
+    "attachPdfs": "Attach PDF Templates",
+    "attachClientPdfs": "Attach PDFs"
   },
   "websites": {
     "addDomain": "+ הוסף דומיין",
@@ -666,7 +668,7 @@
   "editor.magic_image.the_prompt": "ההנחיה",
   "editor.margin.label": "שוליים",
   "editor.mobile.description": "אתה עורך כעת עבור מכשירים ניידים. עבור למחשב עבור כל אפשרויות הסגנון.",
-  "editor.offline_mode_is_enabled": "מצב לא מקוון מופעל",
+    "editor.offline_mode_is_enabled": "מצב לא מקוון מופעל",
     "editor.padding.label": "ריפוד",
   "editor.placeholder.text": "אין כאן תוכן. גרור תוכן מימין.",
   "editor.placeholder.text.left": "אין כאן תוכן. גרור תוכן משמאל.",
@@ -983,5 +985,25 @@
       "withStatus": "נראה לאחרונה {{timeAgo}} • {{status}}",
       "checked": "נראה לאחרונה {{timeAgo}}"
     }
+  },
+  "pdfme": {
+    "MergeTagEditor": "עורך תגיות מיזוג",
+    "Text": "טקסט",
+    "MultiVariableText": "טקסט רב-משתנה",
+    "Table": "טבלה",
+    "Line": "קו",
+    "Rectangle": "מלבן",
+    "Ellipse": "אליפסה",
+    "Image": "תמונה",
+    "SVG": "SVG",
+    "QR": "ברקוד QR",
+    "DateTime": "תאריך ושעה",
+    "Date": "תאריך",
+    "Time": "שעה",
+    "Select": "בחירה",
+    "Checkbox": "תיבת סימון",
+    "RadioGroup": "קבוצת רדיו",
+    "EAN13": "EAN-13",
+    "Code128": "Code 128"
   }
 }

@@ -14,6 +14,7 @@ import {
   getPlugins,
 } from "../../../component/pdf/helper";
 import { toast } from "react-toastify";
+import pdfService from "../../../services/pdf";
 
 // API services
 import clientsService from "../../../services/clients";
@@ -24,7 +25,6 @@ import pdfEditorHe from "../../../locales/pdfEditorHe.json";
 
 // Custom hooks imports
 import useAlert from "../../../Hooks/useAlert";
-import pdfService from "../../../services/pdf";
 
 const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
   const { t } = useTranslation();
@@ -45,6 +45,8 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
   const [mode, setMode] = useState("form");
   const uiRef = useRef(null);
   const ui = useRef(null);
+  const fileInputRef = useRef(null);
+  const [pdfName, setPdfName] = useState("");
 
   const downloadPdf = async (event) => {
     event.preventDefault();
@@ -160,10 +162,7 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
   };
 
   const formValidate = () => {
-    // if (!formdata.name || !formdata.to || !formdata.subject) {
-    //   return false;
-    // }
-    return true;
+    return selectedTemplateId && pdfName.trim();
   };
 
   useEffect(() => {
@@ -242,6 +241,39 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
     isPreview: true,
   };
 
+  const handleFileUpload = async (event) => {
+    event.preventDefault();
+    if (!ui.current || !pdfName.trim()) return;
+
+    try {
+      const template = ui.current.getTemplate();
+      const inputs = ui.current.getInputs();
+      const font = getFontsData();
+
+      const pdf = await generate({
+        template,
+        inputs,
+        options: {
+          font,
+          title: pdfName,
+        },
+        plugins: getPlugins(),
+      });
+
+      const blob = new Blob([pdf.buffer], { type: "application/pdf" });
+      const formData = new FormData();
+      formData.append('file', blob, `${pdfName}.pdf`);
+      formData.append('name', pdfName);
+      
+      await pdfService.uploadPdf(clientId, formData);
+      setPdfName("");
+      toast.success(t("common.success"));
+    } catch (error) {
+      console.error('Error uploading PDF:', error);
+      toast.error(t("common.error"));
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <div className="w-full flex flex-col md:flex-row gap-4">
@@ -273,16 +305,39 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
                   <div ref={uiRef} className="flex-1 w-full min-h-[600px]" dir="ltr" />
                 </div>
 
-                <div className="flex justify-center">
-                  <button
-                    className={`disabled:cursor-not-allowed w-[150px] h-[40px] linear rounded-lg text-base font-medium transition duration-200 !z-[10] ${
-                      formValidate()
-                        ? "bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white"
-                        : "bg-gray-300"
-                    }`}
-                  >
-                    {t("pdfs.export")}
-                  </button>
+                <div className="flex justify-center gap-4 flex-col items-center">
+                  <div className="w-[300px] mb-2">
+                    <input
+                      type="text"
+                      value={pdfName}
+                      onChange={(e) => setPdfName(e.target.value)}
+                      placeholder={t("pdfs.enterName")}
+                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    />
+                  </div>
+                  <div className="flex gap-4">
+                    <button
+                      type="button"
+                      onClick={handleFileUpload}
+                      className={`w-[150px] h-[40px] linear rounded-lg text-base font-medium transition duration-200 !z-[10] ${
+                        formValidate()
+                          ? "bg-gray-100 hover:bg-gray-200 active:bg-gray-300"
+                          : "bg-gray-300 cursor-not-allowed"
+                      }`}
+                      disabled={!formValidate()}
+                    >
+                      {t("pdfs.upload")}
+                    </button>
+                    <button
+                      className={`disabled:cursor-not-allowed w-[150px] h-[40px] linear rounded-lg text-base font-medium transition duration-200 !z-[10] ${
+                        formValidate()
+                          ? "bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white"
+                          : "bg-gray-300"
+                      }`}
+                    >
+                      {t("pdfs.export")}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

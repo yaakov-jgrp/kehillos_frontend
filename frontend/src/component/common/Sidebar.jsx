@@ -145,26 +145,26 @@ const Sidebar = ({ open, onClose }) => {
               component: <Emails />,
             }
           : null,
-        permissions?.pdfsPermission?.is_read ||
-        userDetails?.organization_admin
-          ? {
-              name: t("sidebar.pdfs1"),
-              path: "settings/pdfs1",
-              type: "menu",
-              icon: <MdEditDocument className="h-6 w-6" />,
-              component: <PdfMe />,
-            }
-          : null,
-        permissions?.pdfsPermission?.is_read ||
-        userDetails?.organization_admin
-          ? {
-              name: t("sidebar.pdfs2"),
-              path: "settings/pdfs2",
-              type: "menu",
-              icon: <MdEditDocument className="h-6 w-6" />,
-              component: <PdfUnlayer />,
-            }
-          : null,
+        // permissions?.pdfsPermission?.is_read ||
+        // userDetails?.organization_admin
+        //   ? {
+        //       name: t("sidebar.pdfs1"),
+        //       path: "settings/pdfs1",
+        //       type: "menu",
+        //       icon: <MdEditDocument className="h-6 w-6" />,
+        //       component: <PdfMe />,
+        //     }
+        //   : null,
+        // permissions?.pdfsPermission?.is_read ||
+        // userDetails?.organization_admin
+        //   ? {
+        //       name: t("sidebar.pdfs2"),
+        //       path: "settings/pdfs2",
+        //       type: "menu",
+        //       icon: <MdEditDocument className="h-6 w-6" />,
+        //       component: <PdfUnlayer />,
+        //     }
+        //   : null,
         permissions?.logshistoryPermission?.is_read ||
         userDetails?.organization_admin
           ? {

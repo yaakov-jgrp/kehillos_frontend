@@ -29,6 +29,7 @@ import { ClientFormsTabPanel } from "../component/client/ClientTabPanels/ClientF
 import { FULL_FORM_DATA, PROFILE_LIST, SINGLE_CLIENT_DATA, USER_DETAILS } from "../constants";
 import ExportPdfPanelPdfme from "../component/client/ClientTabPanels/ExportPdfPanelPdfme";
 import ExportPdfPanelUnlayer from "../component/client/ClientTabPanels/ExportPdfPanelUnlayer";
+import ClientPdfPanel from "../component/client/ClientTabPanels/ClientPdfPanel";
 
 function ClientDetails() {
   const { id } = useParams();
@@ -44,8 +45,9 @@ function ClientDetails() {
     t("sidebar.netfree"),
     t("sidebar.request"),
     t("sidebar.forms"),
-    t("sidebar.export1"),
-    t("sidebar.export2"),
+    t("sidebar.pdflist"),
+    t("sidebar.pdf"),
+    // t("sidebar.export2"),
   ];
   const [isLoading, setIsloading] = useState(false);
   const [clientData, setClientData] = useState(null);
@@ -275,8 +277,10 @@ function ClientDetails() {
                 )}
 
                 {value === 3 && <ClientFormsTabPanel disabled={organizationAdmin ? false : clientsPermission ? !clientsPermission?.is_write : false} clientId={id} />}
-                {value === 4 && <ExportPdfPanelPdfme clientId={id} clientData={clientData} netfreeprofile={netfreeprofile} />}
-                {value === 5 && <ExportPdfPanelUnlayer clientId={id} clientData={clientData} netfreeprofile={netfreeprofile} />}
+                {/*here I want new page as tab*/}
+                {value === 4 && <ClientPdfPanel clientId={id}/>}
+                {value === 5 && <ExportPdfPanelPdfme clientId={id} clientData={clientData} netfreeprofile={netfreeprofile} />}
+                {/* {value === 5 && <ExportPdfPanelUnlayer clientId={id} clientData={clientData} netfreeprofile={netfreeprofile} />} */}
               </Box>
             ) : (
               t("clients.noClientFound") + " " + id

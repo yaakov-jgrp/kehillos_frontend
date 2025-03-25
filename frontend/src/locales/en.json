@@ -14,7 +14,8 @@
     "fileViewer": "File Viewer",
     "fileNotSupported": "File not supported",
     "select": "select",
-    "AddNewClient": "Add New Client"
+    "AddNewClient": "Add New Client",
+    "uploadSuccess": "upload successfully"
   },
   "email_builder": {
     "requests": "Requests",
@@ -102,6 +103,8 @@
     "users": "Users",
     "templating": "Templating",
     "forms": "Forms",
+    "pdf": "PDF View",
+    "pdflist": "PDF List",
     "export1": "Export PDF(pdfme)",
     "export2": "Export PDF(unlayer)",
     "pdfs1": "PDFs (pdfme)",
@@ -321,7 +324,9 @@
     "emailTemplate": "Email Templates"
   },
   "pdfs": {
-    "export": "Download PDF",
+    "export": "Export PDF",
+    "upload": "Save PDF",
+    "enterName": "Enter PDF name",
     "selectTemplate": "Select Template",
     "pdfTemplate": "PDF Template",
     "pdfTemplate1": "PDF Template (pdfme)",
@@ -342,7 +347,11 @@
     "deleteTemplateFailed": "Deleting Template Failed",
     "duplicateTemplateSuccess": "Duplicated Template Successfully",
     "duplicateTemplateFailed": "Duplicating Template Failed",
-    "errorFetchingTemplate": "Error fetching the template"
+    "errorFetchingTemplate": "Error fetching the template",
+    "uploadSuccess": "Upload PDF Successfully",
+    "downloadSuccess": "Download PDF Successfully",
+    "attachPdfs": "Attach PDF Templates",
+    "attachClientPdfs": "Attach PDFs"
   },
   "websites": {
     "addDomain": "+ Add Domain",
@@ -550,5 +559,25 @@
       "withStatus": "{{status}} • Last seen {{timeAgo}}",
       "checked": "Last seen {{timeAgo}}"
     }
+  },
+  "pdfme": {
+    "MergeTagEditor": "MergeTag Text Editor",
+    "Text": "Text",
+    "MultiVariableText": "Multi-Variable Text",
+    "Table": "Table",
+    "Line": "Line",
+    "Rectangle": "Rectangle",
+    "Ellipse": "Ellipse",
+    "Image": "Image",
+    "SVG": "SVG",
+    "QR": "QR Code",
+    "DateTime": "Date & Time",
+    "Date": "Date",
+    "Time": "Time",
+    "Select": "Select",
+    "Checkbox": "Checkbox",
+    "RadioGroup": "Radio Group",
+    "EAN13": "EAN-13",
+    "Code128": "Code 128"
   }
 }

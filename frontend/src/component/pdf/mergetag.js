@@ -1,20 +1,30 @@
-import { ZOOM } from "@pdfme/common";
 import { text } from "@pdfme/schemas";
 import clientsService from "../../services/clients";
 import i18next from "i18next";
 import { DEFAULT_LANGUAGE } from "../../constants";
 
-const TextAlignCenterIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>';
-const TextAlignLeftIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>';
-const TextAlignRightIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>';
-const TextAlignJustifyIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line></svg>';
-const TextStrikethroughIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.3 4.9c-2.3-.6-4.4-1-6.2-1-2.8 0-5.3.9-5.3 3.5 0 1.8 1.2 2.5 4 3.3l-1.8.6"></path><path d="M12 19c2.8 0 5.3-.9 5.3-3.5 0-1.8-1.2-2.5-4-3.3l1.8-.6"></path><line x1="4" y1="12" x2="20" y2="12"></line></svg>';
-const TextUnderlineIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"></path><line x1="4" y1="21" x2="20" y2="21"></line></svg>';
-const TextVerticalAlignTopIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3M16 3v3M4 7h16M4 11h16M4 15h16M4 19h16"></path></svg>';
-const TextVerticalAlignMiddleIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9v2M16 9v2M4 13h16M4 17h16M4 5h16M4 21h16"></path></svg>';
-const TextVerticalAlignBottomIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15v3M16 15v3M4 19h16M4 15h16M4 11h16M4 7h16"></path></svg>';
-const TextBoldIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg>';
-const TextItalicIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"></line><line x1="14" y1="20" x2="5" y2="20"></line><line x1="15" y1="4" x2="9" y2="20"></line></svg>';
+const TextAlignCenterIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>';
+const TextAlignLeftIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>';
+const TextAlignRightIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>';
+const TextAlignJustifyIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line></svg>';
+const TextStrikethroughIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.3 4.9c-2.3-.6-4.4-1-6.2-1-2.8 0-5.3.9-5.3 3.5 0 1.8 1.2 2.5 4 3.3l-1.8.6"></path><path d="M12 19c2.8 0 5.3-.9 5.3-3.5 0-1.8-1.2-2.5-4-3.3l1.8-.6"></path><line x1="4" y1="12" x2="20" y2="12"></line></svg>';
+const TextUnderlineIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"></path><line x1="4" y1="21" x2="20" y2="21"></line></svg>';
+const TextVerticalAlignTopIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3M16 3v3M4 7h16M4 11h16M4 15h16M4 19h16"></path></svg>';
+const TextVerticalAlignMiddleIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9v2M16 9v2M4 13h16M4 17h16M4 5h16M4 21h16"></path></svg>';
+const TextVerticalAlignBottomIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15v3M16 15v3M4 19h16M4 15h16M4 11h16M4 7h16"></path></svg>';
+const TextBoldIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg>';
+const TextItalicIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"></line><line x1="14" y1="20" x2="5" y2="20"></line><line x1="15" y1="4" x2="9" y2="20"></line></svg>';
 
 const DEFAULT_OPACITY = 1;
 const HEX_COLOR_PATTERN = "^#(?:[A-Fa-f0-9]{6})$";
@@ -47,30 +57,125 @@ const DEFAULT_ROTATION = 0;
 
 // Formatter enum
 export const Formatter = {
-  STRIKETHROUGH: 'strikethrough',
-  UNDERLINE: 'underline',
-  ALIGNMENT: 'alignment',
-  VERTICAL_ALIGNMENT: 'verticalAlignment',
-  BOLD: 'bold',
-  ITALIC: 'italic',
+  STRIKETHROUGH: "strikethrough",
+  UNDERLINE: "underline",
+  ALIGNMENT: "alignment",
+  VERTICAL_ALIGNMENT: "verticalAlignment",
+  BOLD: "bold",
+  ITALIC: "italic",
 };
 
 // Button types
 export const GroupButtonTypes = {
-  BOOLEAN: 'boolean',
-  SELECT: 'select',
+  BOOLEAN: "boolean",
+  SELECT: "select",
 };
+
+
+// const getFallbackFont = (font) => {
+//   const fallbackFontName = getFallbackFontName(font);
+//   return font[fallbackFontName];
+// };
+
+// const getCacheKey = (fontName) => `getFontKitFont-${fontName}`;
+
+// export const getFontKitFont = async (fontName, font, _cache) => {
+//   const fntNm = fontName || getFallbackFontName(font);
+//   const cacheKey = getCacheKey(fntNm);
+//   if (_cache.has(cacheKey)) {
+//     return _cache.get(cacheKey);
+//   }
+
+//   const currentFont =
+//     font[fntNm] || getFallbackFont(font) || getDefaultFont()[DEFAULT_FONT_FAMILY];
+//   let fontData = currentFont.data;
+//   if (typeof fontData === "string") {
+//     fontData = fontData.startsWith("http")
+//       ? await fetch(fontData).then((res) => res.arrayBuffer())
+//       : b64toUint8Array(fontData);
+//   }
+
+//   // Convert fontData to Buffer if it's not already a Buffer
+//   let fontDataBuffer;
+//   if (fontData instanceof Buffer) {
+//     fontDataBuffer = fontData;
+//   } else {
+//     fontDataBuffer = Buffer.from(fontData);
+//   }
+//   const fontKitFont = fontkit.create(fontDataBuffer);
+//   _cache.set(cacheKey, fontKitFont);
+
+//   return fontKitFont;
+// };
+
+// const embedAndGetFontObj = async ({ pdfDoc, font, _cache }) => {
+//   if (_cache.has(pdfDoc)) {
+//     return _cache.get(pdfDoc);
+//   }
+
+//   const fontValues = await Promise.all(
+//     Object.values(font).map(async (v) => {
+//       let fontData = v.data;
+//       if (typeof fontData === "string" && fontData.startsWith("http")) {
+//         fontData = await fetch(fontData).then((res) => res.arrayBuffer());
+//       }
+//       return pdfDoc.embedFont(fontData, {
+//         subset: typeof v.subset === "undefined" ? true : v.subset,
+//       });
+//     })
+//   );
+
+//   const fontObj = Object.keys(font).reduce(
+//     (acc, cur, i) => Object.assign(acc, { [cur]: fontValues[i] }),
+//     {}
+//   );
+
+//   _cache.set(pdfDoc, fontObj);
+//   return fontObj;
+// };
 
 export const getExtraFormatterSchema = () => {
   const buttons = [
-    { key: Formatter.STRIKETHROUGH, icon: TextStrikethroughIcon, type: GroupButtonTypes.BOOLEAN },
-    { key: Formatter.UNDERLINE, icon: TextUnderlineIcon, type: GroupButtonTypes.BOOLEAN },
+    {
+      key: Formatter.STRIKETHROUGH,
+      icon: TextStrikethroughIcon,
+      type: GroupButtonTypes.BOOLEAN,
+    },
+    {
+      key: Formatter.UNDERLINE,
+      icon: TextUnderlineIcon,
+      type: GroupButtonTypes.BOOLEAN,
+    },
     { key: Formatter.BOLD, icon: TextBoldIcon, type: GroupButtonTypes.BOOLEAN },
-    { key: Formatter.ITALIC, icon: TextItalicIcon, type: GroupButtonTypes.BOOLEAN },
-    { key: Formatter.ALIGNMENT, icon: TextAlignLeftIcon, type: GroupButtonTypes.SELECT, value: DEFAULT_ALIGNMENT },
-    { key: Formatter.ALIGNMENT, icon: TextAlignCenterIcon, type: GroupButtonTypes.SELECT, value: ALIGN_CENTER },
-    { key: Formatter.ALIGNMENT, icon: TextAlignRightIcon, type: GroupButtonTypes.SELECT, value: ALIGN_RIGHT },
-    { key: Formatter.ALIGNMENT, icon: TextAlignJustifyIcon, type: GroupButtonTypes.SELECT, value: ALIGN_JUSTIFY },
+    {
+      key: Formatter.ITALIC,
+      icon: TextItalicIcon,
+      type: GroupButtonTypes.BOOLEAN,
+    },
+    {
+      key: Formatter.ALIGNMENT,
+      icon: TextAlignLeftIcon,
+      type: GroupButtonTypes.SELECT,
+      value: DEFAULT_ALIGNMENT,
+    },
+    {
+      key: Formatter.ALIGNMENT,
+      icon: TextAlignCenterIcon,
+      type: GroupButtonTypes.SELECT,
+      value: ALIGN_CENTER,
+    },
+    {
+      key: Formatter.ALIGNMENT,
+      icon: TextAlignRightIcon,
+      type: GroupButtonTypes.SELECT,
+      value: ALIGN_RIGHT,
+    },
+    {
+      key: Formatter.ALIGNMENT,
+      icon: TextAlignJustifyIcon,
+      type: GroupButtonTypes.SELECT,
+      value: ALIGN_JUSTIFY,
+    },
     {
       key: Formatter.VERTICAL_ALIGNMENT,
       icon: TextVerticalAlignTopIcon,
@@ -93,7 +198,7 @@ export const getExtraFormatterSchema = () => {
 
   return {
     title: "Format", //i18next.t('schemas.text.format'),
-    widget: 'ButtonGroup',
+    widget: "ButtonGroup",
     buttons,
     span: 24,
   };
@@ -146,12 +251,13 @@ const createInlineEditor = (
   textInput.dir = dir;
 
   // Apply styling to the editor element
-  textInput.style.fontFamily = schema.fontName
+  textInput.style.fontName = schema.fontName
     ? `'${schema.fontName}'`
-    : schema.fontFamily || DEFAULT_FONT_FAMILY;
+    : schema.fontName || DEFAULT_FONT_FAMILY;
   textInput.style.fontSize = `${schema.fontSize || DEFAULT_FONT_SIZE}pt`;
   textInput.style.color = schema.fontColor || "#000000";
-  textInput.style.textAlign = schema.alignment || (dir === "ltr" ? "left" : "right");
+  textInput.style.textAlign =
+    schema.alignment || (dir === "ltr" ? "left" : "right");
   textInput.style.lineHeight = `${schema.lineHeight || DEFAULT_LINE_HEIGHT}em`;
   textInput.style.letterSpacing = `${
     schema.characterSpacing || DEFAULT_CHARACTER_SPACING
@@ -161,7 +267,8 @@ const createInlineEditor = (
   textInput.style.width = "100%";
   textInput.style.height = "100%";
   textInput.style.outline = "none";
-  textInput.style.backgroundColor = schema.backgroundColor || DEFAULT_BACKGROUND_COLOR;
+  textInput.style.backgroundColor =
+    schema.backgroundColor || DEFAULT_BACKGROUND_COLOR;
   textInput.style.opacity = schema.opacity || DEFAULT_OPACITY;
   // textInput.style.transform = `rotate(${schema.rotation || DEFAULT_ROTATION}deg)`;
   textInput.style.fontWeight = schema.bold ? "bold" : "normal";
@@ -318,9 +425,9 @@ export const mergetag = {
       textElement.textContent = value || "";
 
       // Apply text styling similar to reference implementation
-      textElement.style.fontFamily = schema.fontName
+      textElement.style.fontName = schema.fontName
         ? `'${schema.fontName}'`
-        : schema.fontFamily || DEFAULT_FONT_FAMILY;
+        : schema.fontName || DEFAULT_FONT_FAMILY;
       textElement.style.fontSize = `${schema.fontSize || DEFAULT_FONT_SIZE}pt`;
       textElement.style.color = schema.fontColor || "#000000";
       textElement.style.textAlign =
@@ -338,7 +445,8 @@ export const mergetag = {
       // textElement.style.transform = `rotate(${schema.rotation || DEFAULT_ROTATION}deg)`;
       textElement.style.fontWeight = schema.bold ? "bold" : "normal";
       textElement.style.fontStyle = schema.italic ? "italic" : "normal";
-      textElement.style.backgroundColor = schema.backgroundColor || DEFAULT_BACKGROUND_COLOR;
+      textElement.style.backgroundColor =
+        schema.backgroundColor || DEFAULT_BACKGROUND_COLOR;
       const textDecorations = [];
       if (schema.strikethrough) textDecorations.push("line-through");
       if (schema.underline) textDecorations.push("underline");
@@ -353,7 +461,8 @@ export const mergetag = {
       container.style.padding = "4px";
       container.style.position = "relative";
       container.style.zIndex = "9999";
-      container.style.backgroundColor = schema.backgroundColor || DEFAULT_BACKGROUND_COLOR;
+      container.style.backgroundColor =
+        schema.backgroundColor || DEFAULT_BACKGROUND_COLOR;
 
       container.dir = dir;
 
@@ -377,29 +486,24 @@ export const mergetag = {
   propPanel: {
     schema: {
       formatter: getExtraFormatterSchema(),
-      fontFamily: {
-        title: "FontFamily", //i18next.t("schemas.text.fontFamily"),
+      fontName: {
+        title: "FontName", //i18next.t("schemas.text.fontName"),
         type: "string",
         widget: "select",
         span: 12,
         props: {
           options: [
             { label: "Arial", value: "Arial" },
-            { label: "Arial Hebrew", value: "Arial Hebrew" },
+            { label: "RubikHebrew", value: "Rubik Hebrew" },
             { label: "David", value: "David" },
-            { label: "Frank Ruehl", value: "Frank Ruehl" },
-            { label: "Times New Roman", value: "Times New Roman" },
             { label: "Helvetica", value: "Helvetica" },
-            { label: "Noto Sans Hebrew", value: "Noto Sans Hebrew" },
-            { label: "Courier New", value: "Courier New" },
             { label: "Georgia", value: "Georgia" },
-            { label: "Verdana", value: "Verdana" },
-            { label: "Tahoma", value: "Tahoma" }
+            { label: "Tahoma", value: "Tahoma" },
           ],
         },
       },
       fontSize: {
-        title: "Size",//i18next.t("schemas.text.size"),
+        title: "Size", //i18next.t("schemas.text.size"),
         type: "number",
         widget: "inputNumber",
         span: 6,
@@ -470,7 +574,7 @@ export const mergetag = {
       width: 200,
       height: 80,
       rotate: 0,
-      fontFamily: DEFAULT_FONT_FAMILY,
+      fontName: DEFAULT_FONT_FAMILY,
       fontSize: DEFAULT_FONT_SIZE,
       bold: false,
       italic: false,
