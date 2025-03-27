@@ -204,6 +204,14 @@ const ListTemplate = ({
                   </p>
                 )}
                 <input
+                  type="text"
+                  placeholder={t("auth.from_name")}
+                  value={smtpFormdata.from_name}
+                  name="from_name"
+                  className="outline-none mb-2 border-[1px] w-full rounded-lg p-2"
+                  onChange={handleSMTPInputChange}
+                />
+                <input
                   type="email"
                   placeholder={t("auth.email")}
                   value={smtpFormdata.email}

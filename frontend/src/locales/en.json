@@ -75,6 +75,7 @@
     "loginFailed": "Login failed, try again!!!",
     "namePlaceholder": "Enter Name",
     "smtp_server": "SMTP Server",
+    "from_name": "From Name",
     "smtp_port": "SMTP Port",
     "smtp_username": "SMTP Username",
     "smtp_password": "SMTP Password",
