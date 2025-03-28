@@ -46,6 +46,8 @@ const ListTemplate = ({
   const navigate = useNavigate();
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
   const [smtpFormdata, setSmtpFormdata] = useState(smtpFormObject);
+  const [initialSMTPFormdata, setInitialSMTPFormdata] =
+    useState(smtpFormObject);
   const [isLoading, setIsLoading] = useState(false);
   const [templateList, setTemplateList] = useState([]);
   const [addEditMode, setAddEditMode] = useState(false);
@@ -119,15 +121,52 @@ const ListTemplate = ({
   };
 
   const smtpFormValidate = () => {
-    if (!smtpFormdata.email || !smtpFormdata.password) {
+    const {
+      email,
+      password,
+      from_name,
+      smtp_server,
+      smtp_port,
+      imap_email,
+      imap_password,
+      imap_server,
+      imap_port,
+    } = smtpFormdata;
+
+    // Check that all required fields (except password fields) are filled
+    if (
+      !from_name ||
+      !email ||
+      !smtp_server ||
+      !smtp_port ||
+      !imap_email ||
+      !imap_server ||
+      !imap_port
+    ) {
       return false;
     }
-    if (smtpFormdata.email && !/\S+@\S+\.\S+/.test(smtpFormdata.email)) {
-      return false;
+
+    // If email changed, password is required and must be valid
+    const isEmailChanged = smtpFormdata.email !== initialSMTPFormdata.email;
+    if (isEmailChanged) {
+      if (!password || password.length < 2 || !/\S+@\S+\.\S+/.test(email)) {
+        return false;
+      }
     }
-    if (smtpFormdata.password && smtpFormdata.password.length < 2) {
-      return false;
+
+    // If IMAP email changed, imap password is required
+    const isImapEmailChanged =
+      smtpFormdata.imap_email !== initialSMTPFormdata.imap_email;
+    if (isImapEmailChanged) {
+      if (
+        !imap_password ||
+        imap_password.length < 2 ||
+        !/\S+@\S+\.\S+/.test(imap_email)
+      ) {
+        return false;
+      }
     }
+
     return true;
   };
 
@@ -135,6 +174,7 @@ const ListTemplate = ({
     const res = await emailService.getSMTPDetail();
     if (res.status === 200 && res.data.data) {
       setConnectedSMTPData(res.data.data);
+      setInitialSMTPFormdata(res.data.data);
       setAddEditMode(false);
     } else {
       setAddEditMode(true);
