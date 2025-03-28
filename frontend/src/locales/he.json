@@ -60,6 +60,7 @@
     "loginFailed": "הכניסה נכשלה, נסה שוב!!!",
     "namePlaceholder": "הכנס שם",
     "smtp_server": "כתובת מייל המחובר לחשבון",
+    "from_name": "שם שלוח",
     "smtp_port": "מספר משתמש",
     "smtp_username": "שם משתמש",
     "smtp_password": "סיסמה",
