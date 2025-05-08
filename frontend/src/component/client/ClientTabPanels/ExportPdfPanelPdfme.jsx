@@ -305,7 +305,7 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
                   <div ref={uiRef} className="flex-1 w-full min-h-[600px]" dir="ltr" />
                 </div>
 
-                <div className="flex justify-center gap-4 flex-col items-center">
+                <div className="flex justify-center gap-4 flex-col items-center relative">
                   <div className="w-[300px] mb-2">
                     <input
                       type="text"
