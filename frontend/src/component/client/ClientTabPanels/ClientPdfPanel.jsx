@@ -62,9 +62,9 @@ const ClientPdfPanel = ({ clientId }) => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">{t('client.pdfs.title')}</h2>
+      <h2 className="text-2xl font-bold mb-4">{t('pdfs.pdfList')}</h2>
       {pdfs.length === 0 ? (
-        <p className="text-gray-500">{t('client.pdfs.noPdfs')}</p>
+        <p className="text-gray-500">{t('pdfs.pdfNo')}</p>
       ) : (
         <div className="grid gap-4">
           {pdfs.map((pdf) => (
@@ -72,7 +72,7 @@ const ClientPdfPanel = ({ clientId }) => {
               <div>
                 <h3 className="font-semibold">{pdf.name}</h3>
                 <p className="text-sm text-gray-500">
-                  {t('client.pdfs.created')}: {new Date(pdf.created_at).toLocaleDateString()}
+                  {t('pdfs.pdfCreated')}: {new Date(pdf.created_at).toLocaleDateString()}
                 </p>
               </div>
               <div className="flex space-x-2">

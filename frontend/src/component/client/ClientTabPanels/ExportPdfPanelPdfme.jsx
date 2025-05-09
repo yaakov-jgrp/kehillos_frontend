@@ -267,10 +267,10 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
       
       await pdfService.uploadPdf(clientId, formData);
       setPdfName("");
-      toast.success(t("common.success"));
+      toast.success(t("pdfs.uploadSuccess"));
     } catch (error) {
       console.error('Error uploading PDF:', error);
-      toast.error(t("common.error"));
+      toast.error(t("pdfs.genError"));
     }
   };
 
@@ -305,7 +305,7 @@ const ExportPdfPanelPdfme = ({ clientId, clientData, netfreeprofile }) => {
                   <div ref={uiRef} className="flex-1 w-full min-h-[600px]" dir="ltr" />
                 </div>
 
-                <div className="flex justify-center gap-4 flex-col items-center">
+                <div className="flex justify-center gap-4 flex-col items-center relative">
                   <div className="w-[300px] mb-2">
                     <input
                       type="text"

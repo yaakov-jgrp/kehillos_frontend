@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+import tailwindcssRtl from 'tailwindcss-rtl';
+
+export default {
   darkMode: "class",
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
@@ -344,5 +346,5 @@ module.exports = {
       },
     }),
   },
-  plugins: [require("tailwindcss-rtl")],
+  plugins: [tailwindcssRtl],
 };

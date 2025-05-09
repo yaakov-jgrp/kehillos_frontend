@@ -223,7 +223,7 @@ export default function CreateClientFormModal({
           enum_values: field.enum_values,
           required: field.required,
           unique: field.unique,
-          defaultvalue: field.defaultvalue,
+          defaultvalue: field.defaultvalue.toString() == "" ? "false" : field.defaultvalue.toString(),
         }));
       console.log("The final payload for the API is: ");
       const newClientFormRequestBody =

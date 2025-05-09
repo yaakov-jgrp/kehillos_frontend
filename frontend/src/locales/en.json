@@ -352,7 +352,11 @@
     "uploadSuccess": "Upload PDF Successfully",
     "downloadSuccess": "Download PDF Successfully",
     "attachPdfs": "Attach PDF Templates",
-    "attachClientPdfs": "Attach PDFs"
+    "attachClientPdfs": "Attach PDFs",
+    "pdfList": "All PDF Files",
+    "pdfCreated": "PDF Created",
+    "pdfNo": "No PDF",
+    "genError": "PDF Generation Error."
   },
   "websites": {
     "addDomain": "+ Add Domain",
