@@ -46,29 +46,16 @@ function SearchField(props) {
         </label>
       )}
       <div className="flex justify-center items-end relative">
-        {value && (
-          <input
-            value={value}
-            disabled={disabled}
-            type={type}
-            id={id}
-            onChange={onChange}
-            name={name}
-            placeholder={placeholder}
-            className={`font-normal mt-6 h-9 w-full px-7 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal bg-white border-[1px] border-[#E3E5E6] rounded-full`}
-          />
-        )}
-        {!value && (
-          <input
-            disabled={disabled}
-            type={type}
-            id={id}
-            onChange={onChange}
-            name={name}
-            placeholder={placeholder}
-            className={`font-normal mt-6 h-9 w-full px-7 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal bg-white border-[1px] border-[#E3E5E6] rounded-full`}
-          />
-        )}
+        <input
+          value={value}
+          disabled={disabled}
+          type={type}
+          id={id}
+          onChange={onChange}
+          name={name}
+          placeholder={placeholder}
+          className={`font-normal mt-6 h-9 w-full px-7 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal bg-white border-[1px] border-[#E3E5E6] rounded-full`}
+        />
         <img
           src={SearchSvg}
           alt="Search-Icon"

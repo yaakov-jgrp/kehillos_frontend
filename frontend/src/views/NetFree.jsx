@@ -31,6 +31,7 @@ import { MenuItem, Select } from "@mui/material";
 import { deleteNetfreeStatus } from "../lib/CommonFunctions";
 import { USER_DETAILS } from "../constants";
 import { UserContext } from "../Hooks/permissionContext";
+import Urls from "../component/Netfree/urls";
 
 const NetFree = () => {
   const [tab, setTab] = useState(0);
@@ -66,7 +67,11 @@ const NetFree = () => {
   const [defaultStatus, setDefaultStatus] = useState(null);
   const [trafficStatus, setTrafficStatus] = useState(null);
   const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
-  const NetfreePageTabs = [t("netfree.categories"), t("netfree.websites")];
+  const NetfreePageTabs = [
+    t("netfree.categories"),
+    t("netfree.websites"),
+    t("netfree.urls"),
+  ];
   const [currentProfileTab, setCurrentProfileTab] = useState(0);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const { userDetails, permissions } = useContext(UserContext);
@@ -784,6 +789,7 @@ const NetFree = () => {
             handleTabChange={handleChange}
           />
         )}
+        {tab === 2 && <Urls />}
       </div>
 
       {profilesList && activeProfile && (
