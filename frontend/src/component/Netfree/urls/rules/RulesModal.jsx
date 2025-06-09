@@ -158,6 +158,7 @@ function RulesModal({
                   render={({ field }) => (
                     <input
                       {...field}
+                      disabled={editRule}
                       className="appearance-none outline-none border rounded-lg w-full py-2 px-2 text-gray-11"
                     />
                   )}
