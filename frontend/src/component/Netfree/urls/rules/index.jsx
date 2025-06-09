@@ -9,6 +9,7 @@ import SearchField from "../../../fields/SearchField";
 import EditButtonIcon from "../../../common/EditButton";
 import Loader from "../../../common/Loader";
 import DeleteConfirmationModal from "../../../common/DeleteConfirmationModal";
+import { toast } from "react-toastify";
 
 // Icon imports
 import BinIcon from "../../../../assets/images/bin.svg";
