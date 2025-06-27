@@ -82,7 +82,8 @@
     "workflowTypeRequired": "Workflow type is required",
     "workflowTypeInvalid": "Invalid workflow type. Must be 'open' or 'close'",
     "frequencyRequired": "Frequency is required",
-    "frequencyInvalid": "Invalid frequency. Must be 'once' or 'twice'"
+    "frequencyInvalid": "Invalid frequency. Must be 'once' or 'twice'",
+    "searchOpenUrlsDescription": "Search for URLs or domains that are currently open and accessible to clients by entering the address you want to check."
   },
   "auth": {
     "email": "Email",
@@ -119,6 +120,7 @@
     "formCreation": "Form Creation",
     "automation": "Automation",
     "clients": "Clients",
+    "openurls": "Open Urls",
     "details": "Details",
     "logs": "Logs History",
     "users": "Users",
@@ -296,18 +298,21 @@
     "automation": "Automation",
     "new-workflow": "New Workflow",
     "clients": "Clients",
+    "openurls": "Open Urls",
     "request": "Request",
     "settings": "settings",
     "formSettings": "formSettings",
     "users": "users",
     "netfree": "netfree",
+    "config": "Field Configuration",
     "emails": "emails",
     "pdfs": "pdfs",
     "pdfs1": "pdfs-pdfme",
     "pdfs2": "pdfs-unlayer",
     "logs": "logs",
     "templating": "templating",
-    "forms": "Form Settings"
+    "forms": "Form Settings",
+    "new-form": "New Form"
   },
   "emails": {
     "templates": "Templates",

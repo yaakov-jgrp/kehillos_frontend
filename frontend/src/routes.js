@@ -10,25 +10,26 @@ import ClientDetails from "./views/ClientDetails";
 import EmailTemplating from "./views/EmailTemplating";
 
 // Icon imports
-import { MdEditDocument, MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
+import { MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
 import { HiOutlineUserGroup } from "react-icons/hi2";
 import Config from "./views/apiConfig";
-import PdfUnlayer from "./views/PdfUnlayer";
-import PdfMe from "./views/PdfMe";
+import { CgWebsite } from "react-icons/cg";
+import OpenUrls from "./views/OpenUrls";
 
 const routes = [
-  // {
-  //   name: t('sidebar.dashboard'),
-  //   path: "dashboard",
-  //   icon: <MdHome className="h-6 w-6" />,
-  //   component: <Dashboard />,
-  // },
   {
     name: t("sidebar.clients"),
     path: "clients",
     type: "menu",
     icon: <HiOutlineUserGroup className="h-6 w-6" />,
     component: <Clients />,
+  },
+  {
+    name: t("sidebar.openurls"),
+    path: "openurls",
+    type: "menu",
+    icon: <CgWebsite className="h-6 w-6" />,
+    component: <OpenUrls />,
   },
   {
     name: t("clients.clientDetails"),

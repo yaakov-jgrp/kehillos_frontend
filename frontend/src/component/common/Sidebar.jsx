@@ -29,6 +29,8 @@ import { USER_DETAILS } from "../../constants";
 import { UserContext } from "../../Hooks/permissionContext";
 import PdfMe from "../../views/PdfMe";
 import PdfUnlayer from "../../views/PdfUnlayer";
+import { CgWebsite } from "react-icons/cg";
+import OpenUrls from "../../views/OpenUrls";
 
 const Sidebar = ({ open, onClose }) => {
   const { t, i18n } = useTranslation();
@@ -44,6 +46,15 @@ const Sidebar = ({ open, onClose }) => {
           type: "menu",
           icon: <HiOutlineUserGroup className="h-6 w-6" />,
           component: <Clients />,
+        }
+      : null,
+    permissions?.clientsPermission?.is_read || userDetails?.organization_admin
+      ? {
+          name: t("sidebar.openurls"),
+          path: "openurls",
+          type: "menu",
+          icon: <CgWebsite className="h-6 w-6" />,
+          component: <OpenUrls />,
         }
       : null,
     permissions?.formsPermission?.is_read || userDetails?.organization_admin

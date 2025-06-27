@@ -109,8 +109,6 @@ const Navbar = (props) => {
               <span className="ml-4">
                 {routeTextArray[0].toLowerCase() === "clients"
                   ? "Clients Details"
-                  : routeTextArray[1].toLowerCase() === "form settings"
-                  ? ""
                   : routeText}
               </span>
             ) : routeText === "routes.client-forms" ? (

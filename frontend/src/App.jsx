@@ -25,6 +25,7 @@ import Automation from "./views/Automation";
 import FormDetails from "./views/FormDetails";
 import AutomationDetails from "./views/AutomationDetails";
 import RouteGuard from "./component/common/RouteGuard";
+import OpenUrls from "./views/OpenUrls";
 
 // CSS imports
 import "./App.css";
@@ -43,11 +44,16 @@ import { ToastContainer } from "react-toastify";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Icon imports
-import { MdEditDocument, MdOutlineContactSupport, MdOutlineSettings } from "react-icons/md";
+import {
+  MdEditDocument,
+  MdOutlineContactSupport,
+  MdOutlineSettings,
+} from "react-icons/md";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
 import { IoLogoBuffer } from "react-icons/io";
 import FormsIcon from "../src/assets/images/forms.svg";
 import FormsDarkIcon from "../src/assets/images/forms_dark.svg";
+import { CgWebsite } from "react-icons/cg";
 
 // Utils imports
 import { DEFAULT_LANGUAGE } from "./constants";
@@ -124,18 +130,19 @@ function App() {
   );
 
   const routes = [
-    // {
-    //   name: t('sidebar.dashboard'),
-    //   path: "dashboard",
-    //   icon: <MdHome className="h-6 w-6" />,
-    //   component: <Dashboard />,
-    // },
     {
       name: t("sidebar.clients"),
       path: "clients",
       type: "menu",
       icon: <HiOutlineUserGroup className="h-6 w-6" />,
       component: <Clients />,
+    },
+    {
+      name: t("sidebar.openurls"),
+      path: "openurls",
+      type: "menu",
+      icon: <CgWebsite className="h-6 w-6" />,
+      component: <OpenUrls />,
     },
     {
       name: t("sidebar.forms"),

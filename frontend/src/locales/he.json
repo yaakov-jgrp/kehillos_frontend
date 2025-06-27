@@ -67,7 +67,8 @@
     "workflowTypeRequired": "נדרש סוג זרימת עבודה",
     "workflowTypeInvalid": "סוג זרימת עבודה לא חוקי. חייב להיות 'פתוח' או 'סגור'",
     "frequencyRequired": "נדרשת תדירות",
-    "frequencyInvalid": "תדירות לא חוקית. חייב להיות 'פעם אחת' או 'פעמיים'"
+    "frequencyInvalid": "תדירות לא חוקית. חייב להיות 'פעם אחת' או 'פעמיים'",
+    "searchOpenUrlsDescription": "חפשו כתובות URL או דומיינים שזמינים ונגישים ללקוחות על ידי הזנת הכתובת שברצונכם לבדוק"
   },
   "auth": {
     "email": "אימייל",
@@ -114,7 +115,8 @@
     "export1": "ייצוא PDF (pdfme)",
     "export2": "ייצוא PDF (unlayer)",
     "pdfs1": "מסמכים-pdfme",
-    "pdfs2": "מסמכים-unlayer"
+    "pdfs2": "מסמכים-unlayer",
+    "openurls": "פתח כתובות אינטרנט"
   },
   "automation": {
     "automation": "אוטומציה",
@@ -291,6 +293,8 @@
     "automation": "אוטומציה",
     "new-workflow": "זרימת עבודה חדשה",
     "clients": "לקוחות",
+    "openurls": "פתח כתובות אינטרנט",
+    "config": "תצורת שדה",
     "request": "פניות",
     "settings": "הגדרות",
     "formSettings": "לקוחות",
@@ -302,7 +306,8 @@
     "pdfs2": "מסמכים-unlayer",
     "logs": "יומן",
     "templating": "תבנית",
-    "forms": "הגדרות טופס"
+    "forms": "הגדרות טופס",
+    "new-form": "טופס חדש"
   },
   "emails": {
     "templates": "תבניות",
