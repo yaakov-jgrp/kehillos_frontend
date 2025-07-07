@@ -23,7 +23,7 @@ import CustomField from "../component/fields/CustomField";
 import IconButton from "@mui/material/IconButton";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { FaArrowUp, FaArrowDown, FaWhatsapp } from "react-icons/fa";
-import { Tooltip } from 'react-tooltip';
+import { Tooltip } from "react-tooltip";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
@@ -261,7 +261,7 @@ const Clients = () => {
   };
 
   return (
-    <div className="w-full bg-white rounded-3xl mt-1 shadow-custom">
+    <div className="w-full bg-white rounded-3xl mt-1 shadow-custom h-full overflow-hidden">
       {allClients && netfreeprofiles && editClient && clientModal && (
         <ClientModal
           organizationAdmin={organizationAdmin}
@@ -347,7 +347,7 @@ const Clients = () => {
         </div>
       </div>
 
-      <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2 mt-4 custom-scroll-container">
+      <div className="h-[90%] overflow-y-auto overflow-x-auto mx-5 px-2 mt-4 custom-scroll-container">
         <table
           className="!table text-[12px] md:text-[14px] min-w-[100%] mb-3"
           ref={tableRef}
@@ -550,8 +550,8 @@ const Clients = () => {
                                 //           data-tooltip-id={`whatsapp-tooltip-${dataValue.number}`}
                                 //           data-tooltip-content={waStatus === "none" ? "Not on WhatsApp" : `WhatsApp ${waStatus} (last checked ${waTime})`}
                                 //           className={`${
-                                //             waStatus === "none" 
-                                //               ? "text-red-500" 
+                                //             waStatus === "none"
+                                //               ? "text-red-500"
                                 //               : waStatus === "offline"
                                 //               ? "text-green-400"
                                 //               : "text-green-600"
@@ -603,8 +603,11 @@ const Clients = () => {
                                                 href={
                                                   data_type !== "phone"
                                                     ? `mailto:${
-                                                        typeof value === "object"
-                                                          ? value.props.children[0].props.children
+                                                        typeof value ===
+                                                        "object"
+                                                          ? value.props
+                                                              .children[0].props
+                                                              .children
                                                           : value
                                                       }`
                                                     : "#"

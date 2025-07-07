@@ -240,7 +240,7 @@ const Request = () => {
   }, [lang, page, rowsPerPage, JSON.stringify(searchParams)]);
 
   return (
-    <div className="w-full bg-white rounded-3xl shadow-custom">
+    <div className="w-full bg-white rounded-3xl shadow-custom h-full overflow-hidden">
       <div className="flex py-4 px-7 justify-between text-gray-11 font-medium text-2xl">
         {t("requests.title")}
         <RequestStatusModal
@@ -251,7 +251,7 @@ const Request = () => {
           fetchRequestStatuses={fetchRequestStatuses}
         />
       </div>
-      <div className="h-[calc(100vh-210px)] overflow-y-auto overflow-x-auto mx-5 px-2">
+      <div className="h-[90%] overflow-y-auto overflow-x-auto mx-5 px-2">
         <table className="!table text-[12px] md:text-[14px] mb-3 xl:w-full">
           <thead className="sticky top-0 z-10 [&_th]:min-w-[8.5rem] bg-[#F9FBFC]">
             <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>

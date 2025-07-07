@@ -24,7 +24,7 @@ const DefaultLayout = ({ children, route }) => {
     <div className="flex gap-4 max-h-[100vh] scrollbar-hide h-full w-full">
       <AlertPopup />
       <Sidebar open={open} onClose={() => setOpen(false)} />
-      <div className="h-full w-full bg-[#F9FBFC] pb-12">
+      <div className="h-full w-full bg-[#F9FBFC]">
         <main
           className={`mx-[14px] h-full flex-none transition-all md:pe-2 ${
             i18n.dir() === "rtl" ? "xl:mr-[220px]" : "xl:ml-[220px]"

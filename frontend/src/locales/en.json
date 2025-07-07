@@ -83,7 +83,8 @@
     "workflowTypeInvalid": "Invalid workflow type. Must be 'open' or 'close'",
     "frequencyRequired": "Frequency is required",
     "frequencyInvalid": "Invalid frequency. Must be 'once' or 'twice'",
-    "searchOpenUrlsDescription": "Search for URLs or domains that are currently open and accessible to clients by entering the address you want to check."
+    "searchOpenUrlsDescription": "Search for URLs or domains that are currently open and accessible to clients by entering the address you want to check.",
+    "noDataToExport": "No data available to export"
   },
   "auth": {
     "email": "Email",
