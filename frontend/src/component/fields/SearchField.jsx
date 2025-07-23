@@ -22,6 +22,8 @@ function SearchField(props) {
     value,
     noUnderline,
     borderRadius,
+    inputClass,
+    showSearchIcon = true,
   } = props;
 
   const { i18n } = useTranslation();
@@ -54,21 +56,23 @@ function SearchField(props) {
           onChange={onChange}
           name={name}
           placeholder={placeholder}
-          className={`font-normal mt-6 h-9 w-full px-7 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal bg-white border-[1px] border-[#E3E5E6] rounded-full`}
+          className={`font-normal mt-6 h-9 w-full px-7 text-[14px] bg-transparent outline-none placeholder:text-gray-10 placeholder:font-normal bg-white border-[1px] border-[#E3E5E6] rounded-full ${inputClass}`}
         />
-        <img
-          src={SearchSvg}
-          alt="Search-Icon"
-          className={`absolute ${
-            i18n.dir() === "rtl"
-              ? variant === "auth"
-                ? "right-2"
-                : "right-[10px]"
-              : variant === "auth"
-              ? "left-2"
-              : "left-[10px]"
-          } top-[42px] transform -translate-y-1/2`}
-        />
+        {showSearchIcon && (
+          <img
+            src={SearchSvg}
+            alt="Search-Icon"
+            className={`absolute ${
+              i18n.dir() === "rtl"
+                ? variant === "auth"
+                  ? "right-2"
+                  : "right-[10px]"
+                : variant === "auth"
+                ? "left-2"
+                : "left-[10px]"
+            } top-[42px] transform -translate-y-1/2`}
+          />
+        )}
         {/* <span
           className={`absolute ${
             i18n.dir() === "rtl"

@@ -69,7 +69,15 @@
     "frequencyRequired": "נדרשת תדירות",
     "frequencyInvalid": "תדירות לא חוקית. חייב להיות 'פעם אחת' או 'פעמיים'",
     "searchOpenUrlsDescription": "חפשו כתובות URL או דומיינים שזמינים ונגישים ללקוחות על ידי הזנת הכתובת שברצונכם לבדוק",
-    "noDataToExport": "אין נתונים זמינים לייצוא"
+    "noDataToExport": "אין נתונים זמינים לייצוא",
+    "rulesCategoryDescription": "הגדירו קטגוריות לאתרים שברצונכם לסגור או לפתוח, לחצו על הקטגוריה כדי לעבור מקטגוריה סגורה לפתוחה או להיפך.",
+    "ruleCategoryUpdateSuccess": "קטגוריות כללים עודכנו בהצלחה",
+    "ruleCategoryAddSuccess": "קטגורית כללים נוספה בהצלחה",
+    "ruleCategoryDeleteSuccess": "קטגורית כללים נמחקה בהצלחה",
+    "ruleUrlsDescription": "הזן כתובות אתרים (URL) שברצונך להגדיר בעצמך.",
+    "ruleUrlDeleteSuccess": "כתובת URL נמחקה בהצלחה",
+    "ruleUrlAddSuccess": "כתובת URL נוספה בהצלחה",
+    "ruleUrlUpdateSuccess": "כתובת URL עודכנה בהצלחה"
   },
   "auth": {
     "email": "אימייל",
@@ -178,7 +186,9 @@
     "sunday": "יום ראשון",
     "workflowName": "שם זרימת עבודה",
     "workflowType": "סוג זרימת עבודה",
-    "frequency": "תדירות"
+    "frequency": "תדירות",
+    "preBlock":"סגור בהתחלה",
+    "antiAddiction":"הגנה נגד תלות"
   },
   "requests": {
     "title": "פניות",

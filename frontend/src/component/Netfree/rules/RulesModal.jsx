@@ -1,5 +1,5 @@
 // React imports
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 // Third part Imports
 import { useTranslation } from "react-i18next";
@@ -9,63 +9,38 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
 
 // UI Components
-import ErrorMessage from "../../../common/ErrorMessage";
-import CrossIcon from "../../../../assets/images/cross.svg";
+import ErrorMessage from "../../common/ErrorMessage";
+import CrossIcon from "../../../assets/images/cross.svg";
 
 // API Services
-import workflowRulesServices from "../../../../services/workflowRules";
+import rulesServices from "../../../services/rules";
 import { CircularProgress, MenuItem, Select } from "@mui/material";
 import { toast } from "react-toastify";
+import { RuleUrlsActionsList } from "../../../constants/rulesUtils";
 
-function WorkflowModal({
+function RulesModal({
   setShowModal,
-  editWorkflow,
-  setEditWorkflow,
+  editRule,
+  setEditRule,
   onClick,
-  refetchWorkflows,
+  refetchRules,
+  rulesData,
+  updateRuleHandler,
 }) {
   const { t } = useTranslation();
+  const [isUpdatingRule, setIsUpdatingRule] = useState(false);
 
   const defaultValues = {
-    workflow_name: "",
-    workflow_type: "open",
-    frequency: "once",
+    url: "",
+    action: "open",
   };
 
-  const workflowTypeList = [
-    {
-      id: "open",
-      label: t("automation.open"),
-    },
-    {
-      id: "close",
-      label: t("automation.close"),
-    },
-  ];
-
-  const frequencyList = [
-    {
-      id: "once",
-      label: t("automation.once"),
-    },
-    {
-      id: "twice",
-      label: t("automation.twice"),
-    },
-  ];
-
   const schema = yup.object().shape({
-    workflow_name: yup.string().required(t("messages.workflowNameRequired")),
-
-    workflow_type: yup
+    url: yup
       .string()
-      .oneOf(["open", "close"], t("messages.workflowTypeInvalid"))
-      .required(t("messages.workflowTypeRequired")),
-
-    frequency: yup
-      .string()
-      .oneOf(["once", "twice"], t("messages.frequencyInvalid"))
-      .required(t("messages.frequencyRequired")),
+      .url(t("messages.urlInvalidError"))
+      .required(t("messages.urlAddError")),
+    action: yup.string().required(t("messages.actionAddError")),
   });
 
   const {
@@ -80,51 +55,53 @@ function WorkflowModal({
     resolver: yupResolver(schema),
   });
 
-  const { mutate: createWorkflowHandler, isPending: isCreatingWorkflow } =
-    useMutation({
-      mutationKey: ["addWorkflow"],
-      mutationFn: (data) => workflowRulesServices.createWorkflow(data),
-    });
-
-  const { mutate: editWorkflowHandler, isPending: isEditingWorkflow } =
-    useMutation({
-      mutationKey: ["editWorkflow"],
-      mutationFn: (data) =>
-        workflowRulesServices.editWorkflow(data, editWorkflow.id),
-    });
-
   const submitForm = async (data, e) => {
     e.preventDefault();
+    setIsUpdatingRule(true);
     try {
       const formData = new FormData();
-      formData.append("workflow_name", data.workflow_name);
-      formData.append("workflow_type", data.workflow_type);
-      formData.append("frequency", data.frequency);
-      const res = editWorkflow
-        ? editWorkflowHandler(formData, {
+      const newUrlsData = editRule
+        ? [
+            ...(rulesData?.urls ?? []).filter(
+              (el, index) => index !== editRule.id
+            ),
+            { url: data.url, rule: data.action },
+          ]
+        : [...(rulesData?.urls ?? []), { url: data.url, rule: data.action }];
+      const formattedData = {
+        category_list: rulesData?.category?.reduce((acc, curr) => {
+          acc[curr.categories_id] = curr.rule;
+          return acc;
+        }, {}),
+        urls_data: newUrlsData,
+      };
+      const res = editRule
+        ? updateRuleHandler(formattedData, {
             onSuccess: () => {
               reset();
               setShowModal(false);
               onClick();
-              toast.success(t("messages.workflowEditSuccess"));
-              setEditWorkflow(null);
-              refetchWorkflows();
+              toast.success(t("messages.ruleEditSuccess"));
+              setEditRule(null);
+              refetchRules();
+              setIsUpdatingRule(false);
             },
             onError: () => {
-              toast.error(t("messages.workflowEditError"));
+              toast.error(t("messages.ruleEditError"));
             },
           })
-        : createWorkflowHandler(formData, {
+        : updateRuleHandler(formattedData, {
             onSuccess: () => {
               reset();
               setShowModal(false);
               onClick();
-              toast.success(t("messages.workflowAddSuccess"));
-              setEditWorkflow(null);
-              refetchWorkflows();
+              setEditRule(null);
+              toast.success(t("messages.ruleAddSuccess"));
+              refetchRules();
+              setIsUpdatingRule(false);
             },
             onError: () => {
-              toast.error(t("messages.workflowAddError"));
+              toast.error(t("messages.ruleAddError"));
             },
           });
     } catch (error) {
@@ -133,12 +110,11 @@ function WorkflowModal({
   };
 
   useEffect(() => {
-    if (editWorkflow) {
-      setValue("workflow_name", editWorkflow.workflow_name);
-      setValue("workflow_type", editWorkflow.workflow_type);
-      setValue("frequency", editWorkflow.frequency);
+    if (editRule) {
+      setValue("url", editRule.url);
+      setValue("action", editRule.rule);
     }
-  }, [editWorkflow]);
+  }, [editRule]);
 
   return (
     <div className="fixed left-0 bottom-0 z-[9999] h-screen w-screen bg-[#00000080] flex justify-center items-center">
@@ -157,19 +133,13 @@ function WorkflowModal({
             >
               <div className="flex items-center justify-between px-5 py-4 border-b border-b-[#E3E5E6] rounded-t">
                 <h3 className="text-lg font-medium">
-                  {t(
-                    `${
-                      editWorkflow
-                        ? "netfree.editWorkflow"
-                        : "netfree.addWorkflow"
-                    }`
-                  )}
+                  {t(`${editRule ? "netfree.editRule" : "netfree.addRule"}`)}
                 </h3>
                 <button
                   type="button"
                   className="bg-transparent border-0 text-black float-right"
                   onClick={() => {
-                    setEditWorkflow(null);
+                    setEditRule(null);
                     setShowModal(false);
                   }}
                 >
@@ -179,29 +149,28 @@ function WorkflowModal({
 
               <div className="relative px-6 py-3 flex-auto">
                 <label className="block text-gray-11 text-md mb-1">
-                  {t("automation.workflowName")}
+                  {t("netfree.url")}
                 </label>
                 <Controller
-                  name="workflow_name"
+                  name="url"
                   control={control}
                   render={({ field }) => (
                     <input
                       {...field}
+                      disabled={editRule}
                       className="appearance-none outline-none border rounded-lg w-full py-2 px-2 text-gray-11"
                     />
                   )}
                 />
-                {errors.workflow_name && (
-                  <ErrorMessage message={errors.workflow_name.message} />
-                )}
+                {errors.url && <ErrorMessage message={errors.url.message} />}
               </div>
 
               <div className="relative px-6 py-3 flex-auto">
                 <label className="block text-gray-11 text-md mb-1">
-                  {t("automation.workflowType")}
+                  {t("automation.action")}
                 </label>
                 <Controller
-                  name="workflow_type"
+                  name="action"
                   control={control}
                   render={({ field }) => (
                     <Select
@@ -217,53 +186,18 @@ function WorkflowModal({
                       <MenuItem value={"selectAction"} disabled>
                         {t("netfree.selectAction")}
                       </MenuItem>
-                      {workflowTypeList?.map((el) => {
+                      {RuleUrlsActionsList?.map((el) => {
                         return el ? (
                           <MenuItem key={el.id} value={el.id}>
-                            {el.label}
+                            {t(el.label)}
                           </MenuItem>
                         ) : null;
                       })}
                     </Select>
                   )}
                 />
-                {errors.workflow_type && (
-                  <ErrorMessage message={errors.workflow_type.message} />
-                )}
-              </div>
-              <div className="relative px-6 py-3 flex-auto">
-                <label className="block text-gray-11 text-md mb-1">
-                  {t("automation.frequency")}
-                </label>
-                <Controller
-                  name="frequency"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      MenuProps={{
-                        sx: {
-                          zIndex: 9999,
-                        },
-                      }}
-                      className="[&_div]:p-0.5 [&_fieldset]:border-none appearance-none border rounded outline-none w-full p-2 text-black bg-white"
-                      {...field}
-                      placeholder="Select Action"
-                    >
-                      <MenuItem value={"selectAction"} disabled>
-                        {t("netfree.selectAction")}
-                      </MenuItem>
-                      {frequencyList?.map((el) => {
-                        return el ? (
-                          <MenuItem key={el.id} value={el.id}>
-                            {el.label}
-                          </MenuItem>
-                        ) : null;
-                      })}
-                    </Select>
-                  )}
-                />
-                {errors.frequencyList && (
-                  <ErrorMessage message={errors.frequencyList.message} />
+                {errors.action && (
+                  <ErrorMessage message={errors.action.message} />
                 )}
               </div>
 
@@ -272,7 +206,7 @@ function WorkflowModal({
                   className="text-gray-11 background-transparent font-normal py-2 text-sm outline-none w-[136px] focus:outline-none border border-gray-11 rounded-lg"
                   type="button"
                   onClick={() => {
-                    setEditWorkflow(null);
+                    setEditRule(null);
                     setShowModal(false);
                   }}
                 >
@@ -282,7 +216,7 @@ function WorkflowModal({
                   className="text-white text-[14px] text-sm font-normal transition duration-200 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 w-[136px] py-[9px] rounded-lg focus:outline-none"
                   type="submit"
                 >
-                  {isCreatingWorkflow || isEditingWorkflow ? (
+                  {isUpdatingRule ? (
                     <CircularProgress className="!text-white mt-1" size={16} />
                   ) : (
                     <>{t("netfree.save")}</>
@@ -297,4 +231,4 @@ function WorkflowModal({
   );
 }
 
-export default React.memo(WorkflowModal);
+export default React.memo(RulesModal);

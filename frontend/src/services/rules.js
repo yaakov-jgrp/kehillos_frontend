@@ -42,10 +42,19 @@ const deleteRule = (ruleID) => {
   );
 };
 
+const updateRulesData = (data) => {
+  const lang = localStorage.getItem("DEFAULT_LANGUAGE");
+  const filterProfileID = localStorage.getItem("FILTER_PROFILE_ID");
+  return api.patch(
+    `/api/automation-workflow/netfree-rules/?lang=${lang}&profile=${filterProfileID}`,
+    data
+  );
+};
 const rulesServices = {
   getRules,
   createRule,
   editRule,
+  updateRulesData,
   deleteRule,
 };
 export default rulesServices;

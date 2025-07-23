@@ -376,7 +376,7 @@ const Categories = ({
   };
 
   return (
-    <div className="overflow-x-auto overflow-y-auto mb-12 w-full h-[30rem]">
+    <div className="overflow-x-auto overflow-y-auto w-full min-h-[30vh]">
       {isLoading && <Loader className="!min-h-fit" />}
       {!isLoading && categoriesData && (
         <table className="!table text-[12px] overflow-y-auto w-full">

@@ -31,7 +31,7 @@ import { MenuItem, Select } from "@mui/material";
 import { deleteNetfreeStatus } from "../lib/CommonFunctions";
 import { USER_DETAILS } from "../constants";
 import { UserContext } from "../Hooks/permissionContext";
-import Urls from "../component/Netfree/urls";
+import Rules from "../component/Netfree/rules";
 
 const NetFree = () => {
   const [tab, setTab] = useState(0);
@@ -70,7 +70,7 @@ const NetFree = () => {
   const NetfreePageTabs = [
     t("netfree.categories"),
     t("netfree.websites"),
-    t("netfree.urls"),
+    t("netfree.rules"),
   ];
   const [currentProfileTab, setCurrentProfileTab] = useState(0);
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -386,7 +386,7 @@ const NetFree = () => {
   }, [categoryFilter]);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex h-full flex-col gap-3">
       <div className="shadow-custom rounded-lg px-4 py-3 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <p className="text-gray-11 font-medium text-2xl">
@@ -688,7 +688,7 @@ const NetFree = () => {
         </div> */}
       </div>
 
-      <div className="shadow-custom rounded-2xl px-4 py-3 flex flex-col gap-3 bg-white">
+      <div className="shadow-custom rounded-2xl px-4 py-3 flex flex-col gap-3 bg-white overflow-hidden flex-1  min-h-0">
         <div className="flex items-center justify-between w-full">
           <NetfreeTabs
             currentTab={tab}
@@ -789,7 +789,7 @@ const NetFree = () => {
             handleTabChange={handleChange}
           />
         )}
-        {tab === 2 && <Urls />}
+        {tab === 2 && <Rules />}
       </div>
 
       {profilesList && activeProfile && (

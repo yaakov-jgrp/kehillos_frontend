@@ -30,7 +30,13 @@ import BinIcon from "../../../assets/images/bin.svg";
 // Utils imports
 import websiteServices from "../../../services/website";
 
-const Websites = ({ currentTab, handleTabChange, writePermission, updatePermission, deletePermission }) => {
+const Websites = ({
+  currentTab,
+  handleTabChange,
+  writePermission,
+  updatePermission,
+  deletePermission,
+}) => {
   const { t, i18n } = useTranslation();
   const defaultLanguageValue = localStorage.getItem("DEFAULT_LANGUAGE");
   const lang = localStorage.getItem("DEFAULT_LANGUAGE");
@@ -299,7 +305,7 @@ const Websites = ({ currentTab, handleTabChange, writePermission, updatePermissi
       <div className="bg-white rounded-3xl overflow-x-auto relative w-full">
         <div className="flex items-center justify-end w-full px-5">
           <button
-          disabled={writePermission}
+            disabled={writePermission}
             className={`disabled:cursor-not-allowed w-fit mb-2 ml-auto rounded-lg py-2 px-4 text-[12px] font-medium bg-brand-500 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 text-white dark:hover:bg-brand-300 dark:active:bg-brand-200`}
             onClick={() => {
               setEditDomain(null);
@@ -310,7 +316,7 @@ const Websites = ({ currentTab, handleTabChange, writePermission, updatePermissi
           </button>
         </div>
 
-        <div className="overflow-x-auto overflow-y-auto mb-12 w-full h-[30rem]">
+        <div className="overflow-x-auto overflow-y-auto w-full min-h-[30vh]">
           <table className="!table text-[12px] overflow-y-auto w-full">
             <thead className="sticky top-0 z-10 bg-[#F9FBFC]">
               <div className="w-full h-[0.5px] bg-[#E3E5E6] absolute top-9"></div>
@@ -385,20 +391,36 @@ const Websites = ({ currentTab, handleTabChange, writePermission, updatePermissi
                         </p>
                         <div className="flex items-center justify-center">
                           <EditButtonIcon
-                            extra={`mr-2 justify-self-end ${updatePermission ? "cursor-not-allowed" : "cursor-pointer"}`}
-                            onClick={updatePermission ? ()=>{} : () => {
-                              setEditDomain(el);
-                              setShowWebsiteModal(true);
-                            }}
+                            extra={`mr-2 justify-self-end ${
+                              updatePermission
+                                ? "cursor-not-allowed"
+                                : "cursor-pointer"
+                            }`}
+                            onClick={
+                              updatePermission
+                                ? () => {}
+                                : () => {
+                                    setEditDomain(el);
+                                    setShowWebsiteModal(true);
+                                  }
+                            }
                           />
                           <img
                             src={BinIcon}
                             alt="BinIcon"
-                            onClick={deletePermission ? ()=>{} : () => {
-                              setDomain(el);
-                              setConfirmationModal(!confirmationModal);
-                            }}
-                            className={deletePermission ? "cursor-not-allowed" : "cursor-pointer"}
+                            onClick={
+                              deletePermission
+                                ? () => {}
+                                : () => {
+                                    setDomain(el);
+                                    setConfirmationModal(!confirmationModal);
+                                  }
+                            }
+                            className={
+                              deletePermission
+                                ? "cursor-not-allowed"
+                                : "cursor-pointer"
+                            }
                           />
                         </div>
                       </div>
@@ -458,18 +480,30 @@ const Websites = ({ currentTab, handleTabChange, writePermission, updatePermissi
                                       "שלח תבנית אימייל"
                                     )) && (
                                     <div
-                                      className={`py-1 px-3 border-b-[1px] hover:bg-[#f2f3f5] ${updatePermission ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                                      onClick={updatePermission ? ()=>{} : () =>
-                                        editSelectedAction(el, action)
+                                      className={`py-1 px-3 border-b-[1px] hover:bg-[#f2f3f5] ${
+                                        updatePermission
+                                          ? "cursor-not-allowed"
+                                          : "cursor-pointer"
+                                      }`}
+                                      onClick={
+                                        updatePermission
+                                          ? () => {}
+                                          : () => editSelectedAction(el, action)
                                       }
                                     >
                                       {t("netfree.edit")}
                                     </div>
                                   )}
                                   <div
-                                    className={`py-1 px-3 hover:bg-[#f2f3f5] ${deletePermission ? "cursor-not-allowed" : "cursor-pointer"}`}
-                                    onClick={deletePermission ? ()=>{} : () =>
-                                      deleteAction(el.id, action.id)
+                                    className={`py-1 px-3 hover:bg-[#f2f3f5] ${
+                                      deletePermission
+                                        ? "cursor-not-allowed"
+                                        : "cursor-pointer"
+                                    }`}
+                                    onClick={
+                                      deletePermission
+                                        ? () => {}
+                                        : () => deleteAction(el.id, action.id)
                                     }
                                   >
                                     {t("netfree.remove")}
@@ -491,10 +525,18 @@ const Websites = ({ currentTab, handleTabChange, writePermission, updatePermissi
                       )}
                       {
                         <AddButtonIcon
-                          extra={writePermission ? "cursor-not-allowed" : "cursor-pointer"}
-                          onClick={writePermission ? ()=>{} : () => {
-                            enableActionUpdate(el);
-                          }}
+                          extra={
+                            writePermission
+                              ? "cursor-not-allowed"
+                              : "cursor-pointer"
+                          }
+                          onClick={
+                            writePermission
+                              ? () => {}
+                              : () => {
+                                  enableActionUpdate(el);
+                                }
+                          }
                         />
                       }
                     </td>

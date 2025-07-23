@@ -84,7 +84,15 @@
     "frequencyRequired": "Frequency is required",
     "frequencyInvalid": "Invalid frequency. Must be 'once' or 'twice'",
     "searchOpenUrlsDescription": "Search for URLs or domains that are currently open and accessible to clients by entering the address you want to check.",
-    "noDataToExport": "No data available to export"
+    "noDataToExport": "No data available to export",
+    "rulesCategoryDescription": "Set categories for websites you want to close or open, click on the category to switch from closed to open or vice versa.",
+    "ruleCategoryUpdateSuccess": "Rule categories updated successfully",
+    "ruleCategoryAddSuccess": "Rule category added successfully",
+    "ruleCategoryDeleteSuccess": "Rule category deleted successfully",
+    "ruleUrlsDescription": "Enter Website Addresses (URLs) which you would like to configure on your own.",
+    "ruleUrlDeleteSuccess": "Rule URL deleted successfully",
+    "ruleUrlAddSuccess": "Rule URL added successfully",
+    "ruleUrlUpdateSuccess": "Rule URL updated successfully"
   },
   "auth": {
     "email": "Email",
@@ -193,7 +201,9 @@
     "sunday": "Sunday",
     "workflowName": "Workflow Name",
     "workflowType": "Workflow Type",
-    "frequency": "Frequency"
+    "frequency": "Frequency",
+    "preBlock":"Closed initially",
+    "antiAddiction":"Anti-Addiction"
   },
   "requests": {
     "title": "Requests",
