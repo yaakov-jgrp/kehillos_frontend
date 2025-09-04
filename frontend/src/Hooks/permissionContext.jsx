@@ -8,7 +8,7 @@ const UserProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
   const [permissions, setPermissions] = useState([]);
-  const [loading, setLoading] = useState(true);  
+  const [loading, setLoading] = useState(true);
 
   const fetchUserDetails = async () => {
     try {
@@ -25,7 +25,10 @@ const UserProvider = ({ children }) => {
           {}
         );
         localStorage.setItem(USER_DETAILS, JSON.stringify(response?.data));
-        localStorage.setItem('permissionsObjects', JSON.stringify(permissionsObjects));
+        localStorage.setItem(
+          "permissionsObjects",
+          JSON.stringify(permissionsObjects)
+        );
         setUserDetails(response?.data);
         setPermissions(permissionsObjects);
       } else {
@@ -42,17 +45,19 @@ const UserProvider = ({ children }) => {
     if (accessToken || localStorage.getItem(ACCESS_TOKEN_KEY)) {
       fetchUserDetails(); // Initial fetch
       const interval = setInterval(() => {
-        if(accessToken || localStorage.getItem(ACCESS_TOKEN_KEY)){
-          fetchUserDetails(); // Refresh every 10 seconds
+        if (accessToken || localStorage.getItem(ACCESS_TOKEN_KEY)) {
+          fetchUserDetails(); // Refresh every 1 minute
         }
-      }, 10000);
+      }, 60000);
 
       return () => clearInterval(interval); // Cleanup on unmount
     }
   }, [accessToken]);
 
   return (
-    <UserContext.Provider value={{ userDetails, permissions, loading, setAccessToken }}>
+    <UserContext.Provider
+      value={{ userDetails, permissions, loading, setAccessToken }}
+    >
       {children}
     </UserContext.Provider>
   );
